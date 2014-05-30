@@ -48,7 +48,7 @@ void varOp(boost::shared_ptr<MT> result,
 	   int& transposeFlag,
 	   bool& identityCurrentFlag, 
 	   bool& zeroResultFlag) {
-  assert( NULL != node && // check node type
+    assert( NULL != node && // check node type
 	  NULL == node->leftChild &&
 	  NULL == node->rightChild &&
 	  !node->isConst &&

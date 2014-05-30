@@ -61,7 +61,7 @@ void testMatrixMatrixFunc() {
 				AMD::SymbolicScalarMatlab> SMFunc;
   std::string ans;
   AMD::SymbolicMatrixMatlab x("X",3,3);
-  MMFunc fx(x,true); // f_x(X) = X
+  MMFunc fx(x,false); // f_x(X) = X
   fx.println();
   AMD::SymbolicMatrixMatlab y("Y",3,3);
   MMFunc fy(y); // f_y(X) = Y
@@ -133,9 +133,6 @@ void testMatrixMatrixFunc() {
   	    << " = " << func.derivativeVal.getString() << std::endl;
 
 }
-
-
-
 
 int main() {
   testSymbolicScalarMatlab();

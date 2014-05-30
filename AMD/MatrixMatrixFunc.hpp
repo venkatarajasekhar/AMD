@@ -7,6 +7,7 @@
 #include "boost/shared_ptr.hpp"
 #include "utility.hpp"
 #include "ScalarMatrixFunc.hpp"
+#include "MatrixAdaptor.hpp"
 
 // definitions of enum, operators and callBackFunctions
 #include "MatrixMatrixFuncHelper.hpp" 
@@ -17,6 +18,7 @@ template <class MT, class ST>
 class MatrixMatrixFunc {
 
 public:
+  typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   typedef void (*CallBackFuncType)(boost::shared_ptr<MT>, 
 				                           boost::shared_ptr<MT>,
 				                           boost::shared_ptr<MT>, 
@@ -94,8 +96,8 @@ public:
       /**
        * TODO: Wrap getNumCols() and getNumRows() in an adaptor class 
        */ 
-      varNumRows = matrixPtr->getNumRows();
-      varNumCols = matrixPtr->getNumCols();
+      varNumRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
+      varNumCols = MatrixAdaptorType::getNumCols(*(matrixPtr));
       callBackFunc = varOp<MT,ST>;
       opNum = VAR;
     }
