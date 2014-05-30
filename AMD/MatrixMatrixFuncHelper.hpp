@@ -256,7 +256,7 @@ MatrixMatrixFunc<MT,ST> transpose (const MatrixMatrixFunc<MT,ST> &lhs)
     result.unaryOpSet( transposePtr, TRANSPOSE, transposeOp<MT,ST>, lhs );
   } else {
     assert(NULL!=lhs.leftChild);
-    result.deepCopy(result,*lhs.leftChild);
+    result.deepCopy(*lhs.leftChild);
   }
   return(result);
 }
@@ -304,7 +304,7 @@ MatrixMatrixFunc<MT,ST> inv(const MatrixMatrixFunc<MT,ST> &lhs)
     result.unaryOpSet( invPtr, INV, invOp<MT,ST>, lhs );
   } else {
     assert(NULL!=lhs.leftChild);
-    result.deepCopy(result,*lhs.leftChild);
+    result.deepCopy(*lhs.leftChild);
   }
   return(result);
 }
@@ -369,8 +369,6 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
     return(result);
   }
 }
-
-
 
 }  /** namespace AMD */
 
