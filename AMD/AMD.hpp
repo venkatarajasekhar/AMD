@@ -18,8 +18,6 @@
 
 #include "MatrixMatrixFunc2.hpp"
 
-#include "MatrixMatrixFunc.hpp"
-
 #include "SymbolicScalarMatlab.hpp"
 
 #include "SymbolicScalarMatlabHelper.hpp"

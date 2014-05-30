@@ -55,7 +55,7 @@ void testSymbolicMatrixMatlab() {
 }
 
 void testMatrixMatrixFunc() {
-  typedef AMD::MatrixMatrixFunc<AMD::SymbolicMatrixMatlab,
+  typedef AMD::MatrixMatrixFunc2<AMD::SymbolicMatrixMatlab,
 				AMD::SymbolicScalarMatlab> MMFunc;
   typedef AMD::ScalarMatrixFunc<AMD::SymbolicMatrixMatlab,
 				AMD::SymbolicScalarMatlab> SMFunc;
