@@ -55,95 +55,16 @@ void testSymbolicMatrixMatlab() {
 }
 
 void testMatrixMatrixFunc() {
-  typedef AMD::MatrixMatrixFunc2<AMD::SymbolicMatrixMatlab,
-				AMD::SymbolicScalarMatlab> MMFunc;
-  typedef AMD::ScalarMatrixFunc<AMD::SymbolicMatrixMatlab,
-				AMD::SymbolicScalarMatlab> SMFunc;
-
-  std::string ans;
-  AMD::SymbolicMatrixMatlab x("X",3,3);
-  MMFunc fx(x,true); // a matrix variable
-  AMD::SymbolicMatrixMatlab y("Y",3,3);
-  MMFunc fy(y); // a matrix variable
-  SMFunc func;
-
-  ans = "Y'";
-  // d/dX trace(X*Y)=Y^T
-  func = trace(fx*fy);
-  assert(func.derivativeVal.getString()==ans);
-
-  // d/dX trace(X^T*Y^T)=Y^T
-  func = trace(transpose(fx)*transpose(fy));
-  assert(func.derivativeVal.getString()==ans);
-
-  // d/dX trace((X*Y)^T)=Y^T
-  func = trace(transpose(fx*fy));
-  assert(func.derivativeVal.getString()==ans);
-
-
-  ans = "Y";
-  // d/dX trace(X*Y^T) = Y
-  func = trace(fx*transpose(fy));
-  assert(func.derivativeVal.getString()==ans);
-
-  // d/dX trace(Y*X^T) = Y
-  func = trace(fy*transpose(fx));
-  assert(func.derivativeVal.getString()==ans);
-
-  ans = "eye(3)";
-  // d/dX trace(X) = I
-  func = trace(fx);
-  assert(func.derivativeVal.getString()==ans);
-
-  // d/dX trace(Y+X^T+Y) = I
-  func = trace(fy+transpose(fx)+fy);
-  assert(func.derivativeVal.getString()==ans);
-
-  func = trace(fy*inv(fx));
-  ans = "(((-inv(X))*Y)*inv(X))'";
-  assert(func.derivativeVal.getString()==ans);
-
-  assert(func.derivativeVal.getString()==ans);
-  func = trace(fy-fx);
-  ans = "(-eye(3))";
-  assert(func.derivativeVal.getString()==ans);
-
-  func = logdet(fx);
-  ans = "inv(X)'";
-  assert(func.derivativeVal.getString()==ans);
-
-  func = logdet(transpose(fx));
-  assert(func.derivativeVal.getString()==ans);
-
-  func = logdet(fy+fx);
-  ans = "inv(Y+X)'";
-  assert(func.derivativeVal.getString()==ans);
-
-  func = logdet(fy-fx);
-  ans = "(-inv(Y-X))'";
-  assert(func.derivativeVal.getString()==ans);
-
-  func = logdet(inv(transpose(fx)));
-  ans = "(-inv(X)')";
-  assert(func.derivativeVal.getString()==ans);
-
-  std::cout << "d/dX " << func.functionVal.getString() 
-	    << " = " << func.derivativeVal.getString() << std::endl;
-
-}
-
-
-void testMatrixMatrixFunc2() {
-  typedef AMD::MatrixMatrixFunc2<AMD::SymbolicMatrixMatlab,
-				 AMD::SymbolicScalarMatlab> MMFunc2;
+  typedef AMD::MatrixMatrixFunc<AMD::SymbolicMatrixMatlab,
+				 AMD::SymbolicScalarMatlab> MMFunc;
   typedef AMD::ScalarMatrixFunc<AMD::SymbolicMatrixMatlab,
 				AMD::SymbolicScalarMatlab> SMFunc;
   std::string ans;
   AMD::SymbolicMatrixMatlab x("X",3,3);
-  MMFunc2 fx(x,true); // f_x(X) = X
+  MMFunc fx(x,true); // f_x(X) = X
   fx.println();
   AMD::SymbolicMatrixMatlab y("Y",3,3);
-  MMFunc2 fy(y); // f_y(X) = Y
+  MMFunc fy(y); // f_y(X) = Y
   fy.println();
 
   SMFunc func;
@@ -220,7 +141,7 @@ int main() {
   testSymbolicScalarMatlab();
   testSymbolicMatrixMatlab();
   //  testMatrixMatrixFunc();
-  testMatrixMatrixFunc2();
+  testMatrixMatrixFunc();
   std::cout << "All tests passed." << std::endl;
   return(0);
 }

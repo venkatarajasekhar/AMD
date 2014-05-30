@@ -1,5 +1,5 @@
-#ifndef MatrixMatrixFunc2_H
-#define MatrixMatrixFunc2_H
+#ifndef MatrixMatrixFunc_H
+#define MatrixMatrixFunc_H
 
 #include <string>
 #include <cstdio>
@@ -14,7 +14,7 @@
 namespace AMD {
 
 template <class MT, class ST> 
-class MatrixMatrixFunc2 {
+class MatrixMatrixFunc {
 
 public:
   typedef MT MatrixType;
@@ -23,7 +23,7 @@ public:
 				      boost::shared_ptr<MatrixType>,
 				      boost::shared_ptr<MatrixType>, 
 				      boost::shared_ptr<MatrixType>,
-				      const MatrixMatrixFunc2<MT,ST>*,
+				      const MatrixMatrixFunc<MT,ST>*,
 				      int&, bool&, bool& );
 
   // Once recorded the matrix should never be changed - so a pointer
@@ -36,18 +36,18 @@ public:
   int varNumRows; // number of rows in matrix variable
   int varNumCols; // number of cols in matrix variable
 
-  MatrixMatrixFunc2* leftChild;
-  MatrixMatrixFunc2* rightChild;
+  MatrixMatrixFunc* leftChild;
+  MatrixMatrixFunc* rightChild;
 
 
-  MatrixMatrixFunc2() : matrixPtr(), callBackFunc(NULL), opNum(NONE), 
+  MatrixMatrixFunc() : matrixPtr(), callBackFunc(NULL), opNum(NONE), 
 			isConst(true), varNumRows(0), varNumCols(0), 
 			leftChild(NULL), rightChild(NULL)
   { }
 
   // Makes an expensive copy of matrix -- avoid this constructor
   // if your matrices are large.
-  MatrixMatrixFunc2(MT matrix, bool isVariable=false) 
+  MatrixMatrixFunc(MT matrix, bool isVariable=false) 
     : matrixPtr(), leftChild(NULL), rightChild(NULL) { 
     boost::shared_ptr<MT> copy (new MT(matrix));
     matrixPtr = copy;
@@ -56,7 +56,7 @@ public:
 
 
 
-  MatrixMatrixFunc2(boost::shared_ptr<MT> _matrixPtr, bool isVariable=false) 
+  MatrixMatrixFunc(boost::shared_ptr<MT> _matrixPtr, bool isVariable=false) 
     : matrixPtr(), leftChild(NULL), rightChild(NULL) { 
     matrixPtr = _matrixPtr;
     setVariableType(isVariable);
@@ -83,7 +83,7 @@ public:
   }
 
   // Need to recursively delete information
-  ~MatrixMatrixFunc2() {
+  ~MatrixMatrixFunc() {
     if (NULL!=leftChild) {
       delete leftChild;
     }
@@ -93,12 +93,12 @@ public:
   }
 
   // need to recursively copy information
-  MatrixMatrixFunc2& operator= ( const MatrixMatrixFunc2 &x) {
+  MatrixMatrixFunc& operator= ( const MatrixMatrixFunc &x) {
     deepCopy(*this, x);
     return(*this);
   }
 
-  void shallowCopy( MatrixMatrixFunc2 &copy, const MatrixMatrixFunc2 &x) { 
+  void shallowCopy( MatrixMatrixFunc &copy, const MatrixMatrixFunc &x) { 
     copy.matrixPtr = x.matrixPtr;
     copy.opNum = x.opNum;
     copy.isConst = x.isConst;
@@ -109,7 +109,7 @@ public:
     copy.rightChild = NULL;
   }
 
-  void deepCopy( MatrixMatrixFunc2 &copy, const MatrixMatrixFunc2 &x) { 
+  void deepCopy( MatrixMatrixFunc &copy, const MatrixMatrixFunc &x) { 
     if (copy.leftChild) {
       delete copy.leftChild;
       copy.leftChild = NULL;
@@ -120,11 +120,11 @@ public:
     }
     shallowCopy(copy,x);
     if (NULL != x.leftChild) {
-      copy.leftChild = new MatrixMatrixFunc2<MT,ST>;
+      copy.leftChild = new MatrixMatrixFunc<MT,ST>;
       deepCopy(*(copy.leftChild), *(x.leftChild));
     }
     if (NULL != x.rightChild) {
-      copy.rightChild = new MatrixMatrixFunc2<MT,ST>;
+      copy.rightChild = new MatrixMatrixFunc<MT,ST>;
       deepCopy(*(copy.rightChild), *(x.rightChild));
     }
   }
@@ -132,10 +132,10 @@ public:
   void binOpSet( boost::shared_ptr<MT> resultPtr,
 		 OpType _opNum,
 		 CallBackFuncType cbf,
-		 const MatrixMatrixFunc2<MT,ST> &lhs, 
-		 const MatrixMatrixFunc2<MT,ST> &rhs ) {
+		 const MatrixMatrixFunc<MT,ST> &lhs, 
+		 const MatrixMatrixFunc<MT,ST> &rhs ) {
     unaryOpSet(resultPtr,_opNum,cbf,lhs);
-    rightChild = new MatrixMatrixFunc2<MT,ST>;
+    rightChild = new MatrixMatrixFunc<MT,ST>;
     deepCopy(*rightChild,rhs);
 
     isConst = lhs.isConst && rhs.isConst;
@@ -146,7 +146,7 @@ public:
   void unaryOpSet( boost::shared_ptr<MT> resultPtr,
 		   OpType _opNum,
 		   CallBackFuncType cbf,
-		   const MatrixMatrixFunc2<MT,ST> &lhs ) {
+		   const MatrixMatrixFunc<MT,ST> &lhs ) {
     varNumRows = lhs.varNumRows;  // should be 0 or a size
     varNumCols = lhs.varNumCols;
     matrixPtr = resultPtr;
@@ -154,7 +154,7 @@ public:
     isConst = lhs.isConst;
     callBackFunc = cbf;
 
-    leftChild = new MatrixMatrixFunc2<MT,ST>;
+    leftChild = new MatrixMatrixFunc<MT,ST>;
     deepCopy(*leftChild,lhs);
   }
 

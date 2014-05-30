@@ -15,14 +15,14 @@ std::string opName[] =
   { "none", "const", "var", "+", "-", "*", "transpose", "inv" };
 
 // forward declaration
-template <class MT, class ST> class MatrixMatrixFunc2;
+template <class MT, class ST> class MatrixMatrixFunc;
 
 
 /// Callback function for differentiation involving constant matrices
 template <class MT,class ST>
 void constOp(boost::shared_ptr<MT> result, boost::shared_ptr<MT> current, 
 	     boost::shared_ptr<MT> left, boost::shared_ptr<MT> right,
-	     const MatrixMatrixFunc2<MT,ST>* node, 
+	     const MatrixMatrixFunc<MT,ST>* node, 
 	     int& transposeFlag,
 	     bool& identityCurrentFlag, 
 	     bool& zeroResultFlag) {
@@ -44,7 +44,7 @@ void varOp(boost::shared_ptr<MT> result,
 	   boost::shared_ptr<MT> current, 
 	   boost::shared_ptr<MT> left, 
 	   boost::shared_ptr<MT> right,
-	   const MatrixMatrixFunc2<MT,ST>* node, 
+	   const MatrixMatrixFunc<MT,ST>* node, 
 	   int& transposeFlag,
 	   bool& identityCurrentFlag, 
 	   bool& zeroResultFlag) {
@@ -80,7 +80,7 @@ void plusOp( boost::shared_ptr<MT> result,
 	     boost::shared_ptr<MT> current, 
 	     boost::shared_ptr<MT> left, 
 	     boost::shared_ptr<MT> right,
-	     const MatrixMatrixFunc2<MT,ST>* node, 
+	     const MatrixMatrixFunc<MT,ST>* node, 
 	     int& transposeFlag,
 	     bool& identityCurrentFlag, 
 	     bool& zeroResultFlag) {
@@ -99,14 +99,14 @@ void plusOp( boost::shared_ptr<MT> result,
 }
 
 template <class MT, class ST>
-MatrixMatrixFunc2<MT,ST> operator+ (const MatrixMatrixFunc2<MT,ST> &lhs, 
-				    const MatrixMatrixFunc2<MT,ST> &rhs)
+MatrixMatrixFunc<MT,ST> operator+ (const MatrixMatrixFunc<MT,ST> &lhs, 
+				    const MatrixMatrixFunc<MT,ST> &rhs)
 {
   assert( lhs.isConst || rhs.isConst || 
 	  (lhs.varNumRows==rhs.varNumRows && 
 	   lhs.varNumCols==rhs.varNumCols ) );
 
-  MatrixMatrixFunc2<MT,ST> result;
+  MatrixMatrixFunc<MT,ST> result;
   boost::shared_ptr<MT> sumPtr( new MT((*lhs.matrixPtr) + (*rhs.matrixPtr)) );
   result.binOpSet( sumPtr, PLUS, plusOp<MT,ST>, lhs, rhs );
   return(result);
@@ -119,7 +119,7 @@ void minusOp( boost::shared_ptr<MT> result,
 	      boost::shared_ptr<MT> current, 
 	      boost::shared_ptr<MT> left, 
 	      boost::shared_ptr<MT> right,
-	      const MatrixMatrixFunc2<MT,ST>* node, 
+	      const MatrixMatrixFunc<MT,ST>* node, 
 	      int& transposeFlag,
 	      bool& identityCurrentFlag, 
 	      bool& zeroResultFlag) {
@@ -139,14 +139,14 @@ void minusOp( boost::shared_ptr<MT> result,
 
 
 template <class MT, class ST>
-MatrixMatrixFunc2<MT,ST> operator- (const MatrixMatrixFunc2<MT,ST> &lhs, 
-				    const MatrixMatrixFunc2<MT,ST> &rhs)
+MatrixMatrixFunc<MT,ST> operator- (const MatrixMatrixFunc<MT,ST> &lhs, 
+				    const MatrixMatrixFunc<MT,ST> &rhs)
 {
   assert( lhs.isConst || rhs.isConst || 
 	  (lhs.varNumRows==rhs.varNumRows && 
 	   lhs.varNumCols==rhs.varNumCols ) );
 
-  MatrixMatrixFunc2<MT,ST> result;
+  MatrixMatrixFunc<MT,ST> result;
   boost::shared_ptr<MT> diffPtr( new MT((*lhs.matrixPtr) - (*rhs.matrixPtr)) );
   result.binOpSet( diffPtr, MINUS, minusOp<MT,ST>, lhs, rhs );
   return(result);
@@ -160,7 +160,7 @@ void timesOp( boost::shared_ptr<MT> result,
 	      boost::shared_ptr<MT> current, 
 	      boost::shared_ptr<MT> left, 
 	      boost::shared_ptr<MT> right,
-	      const MatrixMatrixFunc2<MT,ST>* node, 
+	      const MatrixMatrixFunc<MT,ST>* node, 
 	      int& transposeFlag,
 	      bool& identityCurrentFlag, 
 	      bool& zeroResultFlag) {
@@ -205,14 +205,14 @@ void timesOp( boost::shared_ptr<MT> result,
 }
 
 template <class MT, class ST>
-MatrixMatrixFunc2<MT,ST> operator* (const MatrixMatrixFunc2<MT,ST> &lhs, 
-				    const MatrixMatrixFunc2<MT,ST> &rhs)
+MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs, 
+				    const MatrixMatrixFunc<MT,ST> &rhs)
 {
   assert( lhs.isConst || rhs.isConst || 
 	  (lhs.varNumRows==rhs.varNumRows && 
 	   lhs.varNumCols==rhs.varNumCols ) );
 
-  MatrixMatrixFunc2<MT,ST> result;
+  MatrixMatrixFunc<MT,ST> result;
   boost::shared_ptr<MT> timesPtr( new MT((*lhs.matrixPtr) * (*rhs.matrixPtr)) );
   result.binOpSet( timesPtr, TIMES, timesOp<MT,ST>, lhs, rhs );
   return(result);
@@ -226,7 +226,7 @@ void transposeOp( boost::shared_ptr<MT> result,
 		  boost::shared_ptr<MT> current, 
 		  boost::shared_ptr<MT> left, 
 		  boost::shared_ptr<MT> right,
-		  const MatrixMatrixFunc2<MT,ST>* node, 
+		  const MatrixMatrixFunc<MT,ST>* node, 
 		  int& transposeFlag,
 		  bool& identityCurrentFlag, 
 		  bool& zeroResultFlag) {
@@ -248,9 +248,9 @@ void transposeOp( boost::shared_ptr<MT> result,
 
 
 template <class MT, class ST>
-MatrixMatrixFunc2<MT,ST> transpose (const MatrixMatrixFunc2<MT,ST> &lhs)
+MatrixMatrixFunc<MT,ST> transpose (const MatrixMatrixFunc<MT,ST> &lhs)
 {
-  MatrixMatrixFunc2<MT,ST> result;
+  MatrixMatrixFunc<MT,ST> result;
   if (TRANSPOSE!=lhs.opNum) {
     boost::shared_ptr<MT> transposePtr( new MT(transpose(*lhs.matrixPtr)) );
     result.unaryOpSet( transposePtr, TRANSPOSE, transposeOp<MT,ST>, lhs );
@@ -270,7 +270,7 @@ void invOp( boost::shared_ptr<MT> result,
 	    boost::shared_ptr<MT> current, 
 	    boost::shared_ptr<MT> left, 
 	    boost::shared_ptr<MT> right,
-	    const MatrixMatrixFunc2<MT,ST>* node, 
+	    const MatrixMatrixFunc<MT,ST>* node, 
 	    int& transposeFlag,
 	    bool& identityCurrentFlag, 
 	    bool& zeroResultFlag) {
@@ -296,9 +296,9 @@ void invOp( boost::shared_ptr<MT> result,
 
 
 template <class MT, class ST>
-MatrixMatrixFunc2<MT,ST> inv(const MatrixMatrixFunc2<MT,ST> &lhs)
+MatrixMatrixFunc<MT,ST> inv(const MatrixMatrixFunc<MT,ST> &lhs)
 {
-  MatrixMatrixFunc2<MT,ST> result;
+  MatrixMatrixFunc<MT,ST> result;
   if (INV!=lhs.opNum) {
     boost::shared_ptr<MT> invPtr( new MT(inv(*lhs.matrixPtr)) );
     result.unaryOpSet( invPtr, INV, invOp<MT,ST>, lhs );
@@ -312,7 +312,7 @@ MatrixMatrixFunc2<MT,ST> inv(const MatrixMatrixFunc2<MT,ST> &lhs)
 
 
 template <class MT, class ST>
-ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc2<MT,ST> &lhs) {
+ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
   // matrix must be square in order to compute trace
   assert( lhs.matrixPtr->getNumRows() == lhs.matrixPtr->getNumCols() );
   int n = lhs.matrixPtr->getNumRows();
@@ -337,7 +337,7 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc2<MT,ST> &lhs) {
 }
 
 template <class MT, class ST>
-ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc2<MT,ST> &lhs) {
+ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
   // matrix must be square in order to compute trace
   assert( lhs.matrixPtr->getNumRows() == lhs.matrixPtr->getNumCols() );
   int n = lhs.matrixPtr->getNumRows();

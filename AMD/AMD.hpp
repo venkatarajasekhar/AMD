@@ -16,7 +16,7 @@
 
 #include "ScalarMatrixFunc.hpp"
 
-#include "MatrixMatrixFunc2.hpp"
+#include "MatrixMatrixFunc.hpp"
 
 #include "SymbolicScalarMatlab.hpp"
 
