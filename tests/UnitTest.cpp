@@ -148,23 +148,23 @@ void testMatrixMatrixFunc3 () {
   MMFunc2 fB(B, false);
   MMFunc2 fC(C, false);
 
-//  MMFunc2 fBX = fB * fX;
-//  MMFunc2 fCX = fC * fX;
-//  MMFunc2 fDX = fBX + fCX;
-//  MMFunc2 fAXDX = fA * fDX;
+  MMFunc2 fBX = fB * fX;
+  MMFunc2 fCX = fC * fX;
+  MMFunc2 fDX = fBX + fCX;
+  MMFunc2 fAXDX = fA * fDX;
 
-//  SMFunc func = trace(fAXDX);
+  SMFunc func = trace(fAXDX);
 
-//  std::cout << "function" << std::endl;
-//  std::cout << func.functionVal.getString() << std::endl;
-//  std::cout << "derivative" << std::endl;
-//  std::cout << func.derivativeVal.getString() << std::endl;
+  std::cout << "function" << std::endl;
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << "derivative" << std::endl;
+  std::cout << func.derivativeVal.getString() << std::endl;
 }
 
 int main() {
-//  testSymbolicScalarMatlab();
-// testSymbolicMatrixMatlab();
-//  testMatrixMatrixFunc();
+  testSymbolicScalarMatlab();
+  testSymbolicMatrixMatlab();
+  testMatrixMatrixFunc();
   testMatrixMatrixFunc3();
   std::cout << "All tests passed." << std::endl;
   return(0);
