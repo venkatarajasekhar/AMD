@@ -47,7 +47,7 @@ public:
                        varNumRows(0), 
                        varNumCols(0), 
 			                 leftChild(NULL), 
-                       rightChild(NULL) {}
+                       rightChild(NULL) {std::cout << "constructor 1" << std::endl;}
 
   /**
    * Makes an expensive copy of matrix -- avoid this constructor
@@ -61,9 +61,9 @@ public:
                                                    varNumCols(0), 
                                                    leftChild(NULL), 
                                                    rightChild(NULL) {
-    setVariableType (isConst);
     boost::shared_ptr<MT> copy (new MT(matrix));
     matrixPtr = copy;
+    setVariableType (isConst);
   }
 
 
@@ -77,6 +77,7 @@ public:
                                         varNumCols(0), 
                                         leftChild(NULL), 
                                         rightChild(NULL) {
+                                          std::cout << "constructor 3" << std::endl;
     setVariableType (isConst);
   }
 
@@ -96,6 +97,7 @@ public:
       /**
        * TODO: Wrap getNumCols() and getNumRows() in an adaptor class 
        */ 
+      //varNumRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
       varNumRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
       varNumCols = MatrixAdaptorType::getNumCols(*(matrixPtr));
       callBackFunc = varOp<MT,ST>;

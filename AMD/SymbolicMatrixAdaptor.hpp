@@ -16,7 +16,7 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
 
   /** 2. get the number of cols */
   static int getNumCols (const SymbolicMatrixMatlab& matrix) {
-    return matrix.getNumRows();
+    return matrix.getNumCols();
   }
 
   /** 3. add two matrices */

@@ -29,6 +29,7 @@ namespace AMD {
  * variables representing matrices must already be defined.
  */ 
 struct SymbolicMatrixMatlab {
+  public:
   /** Default constructor giving X as the symbol name */
   SymbolicMatrixMatlab() : symbol("X"), nRows(1), nCols(1) {}
 

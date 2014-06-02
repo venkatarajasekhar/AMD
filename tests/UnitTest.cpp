@@ -143,23 +143,22 @@ void testMatrixMatrixFunc3 () {
   AMD::SymbolicMatrixMatlab A("A", 2, 2);
   AMD::SymbolicMatrixMatlab B("B", 2, 2);
   AMD::SymbolicMatrixMatlab C("C", 2, 2);
-
   MMFunc2 fX(X, true);
   MMFunc2 fA(A, false);
   MMFunc2 fB(B, false);
   MMFunc2 fC(C, false);
 
-  MMFunc2 fBX = fB * fX;
-  MMFunc2 fCX = fC * fX;
-  MMFunc2 fDX = fBX + fCX;
-  MMFunc2 fAXDX = fA * fDX;
+//  MMFunc2 fBX = fB * fX;
+//  MMFunc2 fCX = fC * fX;
+//  MMFunc2 fDX = fBX + fCX;
+//  MMFunc2 fAXDX = fA * fDX;
 
-  SMFunc func = trace(fAXDX);
+//  SMFunc func = trace(fAXDX);
 
-  std::cout << "function" << std::endl;
-  std::cout << func.functionVal.getString() << std::endl;
-  std::cout << "derivative" << std::endl;
-  std::cout << func.derivativeVal.getString() << std::endl;
+//  std::cout << "function" << std::endl;
+//  std::cout << func.functionVal.getString() << std::endl;
+//  std::cout << "derivative" << std::endl;
+//  std::cout << func.derivativeVal.getString() << std::endl;
 }
 
 int main() {
