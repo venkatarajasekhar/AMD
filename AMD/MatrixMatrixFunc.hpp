@@ -47,7 +47,7 @@ public:
                        varNumRows(0), 
                        varNumCols(0), 
 			                 leftChild(NULL), 
-                       rightChild(NULL) {std::cout << "constructor 1" << std::endl;}
+                       rightChild(NULL) {}
 
   /**
    * Makes an expensive copy of matrix -- avoid this constructor
@@ -77,7 +77,6 @@ public:
                                         varNumCols(0), 
                                         leftChild(NULL), 
                                         rightChild(NULL) {
-                                          std::cout << "constructor 3" << std::endl;
     setVariableType (isConst);
   }
 
@@ -237,11 +236,13 @@ public:
 		               bool& zeroResultFlag ) const {
 
     /** Make these into individual asserts */
+    // TODO: replate getNumRows with traits
+    
     assert(initial.use_count()>=1 && 
 	         result.use_count()>=1  &&
 	         isConst || 
-           (result->getNumRows() == varNumRows &&
-			      result->getNumCols() == varNumCols));
+           (MatrixAdaptor::getNumRows(*(result)) == varNumRows &&
+			      MatrixAdaptor::getNumCols(*(result)) == varNumCols));
 
     // If the function is constant then the derivative is zero -- so
     // we don't need to do any computation

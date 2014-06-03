@@ -36,6 +36,46 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
                                         const SymbolicMatrixMatlab& second) {
     return (first*second);
   }
+  /** 6. matrix transpose */
+  static SymbolicMatrixMatlab transposeAdaptor(
+                                        const SymbolicMatrixMatlab& a) {
+    return (transpose(a));
+  }
+
+  /** 7. matrix negation */
+  static SymbolicMatrixMatlab negation(const SymbolicMatrixMatlab& a) {
+    return (-a);
+  }
+  /** 8. matrix inverse */
+  static SymbolicMatrixMatlab invAdaptor(
+                                    const SymbolicMatrixMatlab& a) {
+    return (inv(a));
+  }
+
+  /** 9. matrix trace */
+  static SymbolicScalarMatlab traceAdaptor(
+                                    const SymbolicMatrixMatlab& a) {
+    return (trace(a));
+  }
+
+  /** 10. matrix identity */
+  // a cannot be const. Why?
+  static SymbolicMatrixMatlab eyeAdaptor(SymbolicMatrixMatlab& a,  int n)
+  {
+    return (a.eye(n));
+  }
+
+  /** 11. matrix zero */ 
+  static SymbolicMatrixMatlab zerosAdaptor(SymbolicMatrixMatlab& a, 
+                                      int m, int n) {
+    return (a.zeros(m,n));
+  }
+
+  /** 12. matrix logdet */
+  static SymbolicScalarMatlab logdetAdaptor(const SymbolicMatrixMatlab& a) {
+    return (logdet(a));
+  }
+  
 
 #if 0
   /** Need to fix this */

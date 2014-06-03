@@ -176,6 +176,10 @@ struct SymbolicMatrixMatlab {
   std::string symbol; /**< This is the internal string variable */
   int nRows;
   int nCols;
+  /** 
+   * Copy content of one SymbolicMatrixMatlab to another.
+   * @param[in] rhs The matrix that we are copying .
+   */
 };
 
 } /** namespace AMD */
