@@ -60,8 +60,8 @@ namespace AMD {
    */
   SymbolicMatrixMatlab transpose(const SymbolicMatrixMatlab& a) {
     return SymbolicMatrixMatlab (a.symbol+"'",
-				 a.getNumCols(),
-				 a.getNumRows());
+				                         a.getNumCols(),
+				                         a.getNumRows());
   }
 
 

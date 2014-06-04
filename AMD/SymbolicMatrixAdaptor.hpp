@@ -3,6 +3,7 @@
 
 #include "MatrixAdaptor.hpp"
 #include "SymbolicMatrixMatlab.hpp"
+#include "SymbolicMatrixMatlabHelper.hpp"
 
 namespace AMD {
 
@@ -37,65 +38,53 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
     return (first*second);
   }
   /** 6. matrix transpose */
-  static SymbolicMatrixMatlab transposeAdaptor(
-                                        const SymbolicMatrixMatlab& a) {
-    return (transpose(a));
+  static SymbolicMatrixMatlab transpose(const SymbolicMatrixMatlab& a) {
+    return (AMD::transpose(a));
   }
 
   /** 7. matrix negation */
   static SymbolicMatrixMatlab negation(const SymbolicMatrixMatlab& a) {
     return (-a);
   }
+
   /** 8. matrix inverse */
-  static SymbolicMatrixMatlab invAdaptor(
-                                    const SymbolicMatrixMatlab& a) {
-    return (inv(a));
+  static SymbolicMatrixMatlab inv(const SymbolicMatrixMatlab& a) {
+    return (AMD::inv(a));
   }
 
   /** 9. matrix trace */
-  static SymbolicScalarMatlab traceAdaptor(
-                                    const SymbolicMatrixMatlab& a) {
-    return (trace(a));
+  static SymbolicScalarMatlab trace(const SymbolicMatrixMatlab& a) {
+    return (AMD::trace(a));
   }
 
   /** 10. matrix identity */
   // a cannot be const. Why?
-  static SymbolicMatrixMatlab eyeAdaptor(SymbolicMatrixMatlab& a,  int n)
-  {
+  static SymbolicMatrixMatlab eye(SymbolicMatrixMatlab& a,  int n) {
     return (a.eye(n));
   }
 
   /** 11. matrix zero */ 
-  static SymbolicMatrixMatlab zerosAdaptor(SymbolicMatrixMatlab& a, 
-                                      int m, int n) {
+  static SymbolicMatrixMatlab zeros(SymbolicMatrixMatlab& a, 
+                                           int m, 
+                                           int n) {
     return (a.zeros(m,n));
   }
 
   /** 12. matrix logdet */
-  static SymbolicScalarMatlab logdetAdaptor(const SymbolicMatrixMatlab& a) {
-    return (logdet(a));
+  static SymbolicScalarMatlab logdet(const SymbolicMatrixMatlab& a) {
+    return (AMD::logdet(a));
   }
 
 
 
   /** 13. matrix copy operator */
-  static void copyAdaptor ( SymbolicMatrixMatlab &a,      /**< target obj */
-                            const SymbolicMatrixMatlab &b /**< source obj */ )
-  {
+  static void copy (SymbolicMatrixMatlab &a,      /**< target obj */
+                    const SymbolicMatrixMatlab &b /**< source obj */ ) {
     // TODO symbol nRows nCols are private variables
     a.copy(b);
   }
 
-#if 0
-  /** Need to fix this */
-  /** 6. divide two matrices */
-  static SymbolicMatrixMatlab divide (const SymbolicMatrixMatlab& first,
-                                      const SymbolicMatrixMatlab& second) {
-    return (first/second);
-  }
-#endif
-
-  /** 7. print out the matrix */
+  /** 14. print out the matrix */
   static void print (const SymbolicMatrixMatlab& matrix, FILE* fp) {
     matrix.print(fp);
   }
