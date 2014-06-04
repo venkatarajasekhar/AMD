@@ -83,9 +83,8 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
                             const SymbolicMatrixMatlab &b /**< source obj */ )
   {
     // TODO symbol nRows nCols are private variables
-    a = b;
+    a.copy(b);
   }
-  
 
 #if 0
   /** Need to fix this */

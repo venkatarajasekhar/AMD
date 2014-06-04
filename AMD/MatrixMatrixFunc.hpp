@@ -61,8 +61,11 @@ public:
                                                    varNumCols(0), 
                                                    leftChild(NULL), 
                                                    rightChild(NULL) {
+    typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     boost::shared_ptr<MT> copy (new MT(matrix));
-    matrixPtr = copy;
+    // TODO adaptor.copy
+//    matrixPtr = copy;
+    MatrixAdaptorType::copyAdaptor(*matrixPtr, *copy);
     setVariableType (isConst);
   }
 
