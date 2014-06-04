@@ -5,7 +5,7 @@
 ###############################################################################
 
 # We need at least CMake 2.6.0 to compile
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 ###############################################################################
 
@@ -91,6 +91,67 @@ if (Boost_FOUND)
   include_directories (${Boost_INCLUDE_DIRS})
   link_directories (${Boost_LIBRARY_DIRS})
 endif (Boost_FOUND)
+
+# 3. Optionally, the user can build AMD with Elemental support
+option (USE_ELEMENTAL "Build with Elemental Matrix support" OFF)
+if (USE_ELEMENTAL)
+  set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
+  find_package(Elemental REQUIRED)
+  if (Elemental_FOUND)
+    include_directories (${Elemental_INCLUDE_DIR})
+    link_directories (${Elemental_LIBRARY_DIR})
+
+    # enable C++11 flags by default as Elemental needs it after version 0.83?
+    #include(FindCXXFeatures)
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
+      set(CXX11_COMPILER_FLAGS "-qlanglvl=extended0x")
+    else ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
+      set(CXX11_COMPILER_FLAGS "-std=c++11")
+    endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
+    message(STATUS "CXX11_COMPILER_FLAGS=${CXX11_COMPILER_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CXX11_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS}")
+
+    set (AMD_HAVE_ELEMENTAL
+         1
+         CACHE
+         STRING
+         "Enables use of Elemental Libraries"
+         FORCE)
+
+    # check if elemental build type is Hybrid
+    file(STRINGS "${Elemental_INCLUDE_DIR}/elemental/config.h"
+      ELEMENTAL_HYBRID_BUILD_TYPE REGEX "^[ \t]*#define[ \t]+CMAKE_BUILD_TYPE[ \t]+\"HybridRelease\"")
+
+    if(ELEMENTAL_HYBRID_BUILD_TYPE)
+      message(STATUS "Elemental was built in hybrid mode. Enabling support as well.")
+      set (USE_HYBRID
+           1
+           CACHE
+           STRING
+           "Enables use of hybrid MPI/OpenMP parallelization"
+           FORCE)
+    endif(ELEMENTAL_HYBRID_BUILD_TYPE)
+  endif (Elemental_FOUND)
+
+  # Elemental requires BLAS and LAPACK libraries
+  set(BLAS_LIBRARIES $ENV{BLAS_LIBRARIES})
+  set(LAPACK_LIBRARIES $ENV{LAPACK_LIBRARIES})
+  if(NOT BLAS_LIBRARIES OR NOT LAPACK_LIBRARIES)
+    find_package(BLAS)
+    find_package(LAPACK)
+  endif(NOT BLAS_LIBRARIES OR NOT LAPACK_LIBRARIES)
+
+  if(NOT BLAS_LIBRARIES OR NOT LAPACK_LIBRARIES)
+      message(FATAL_ERROR "Elemental needs BLAS and LAPACK")
+  endif(NOT BLAS_LIBRARIES OR NOT LAPACK_LIBRARIES)
+  set (Elemental_LIBRARY
+    ${Elemental_LIBRARY}
+    ${LAPACK_LIBRARIES}
+    ${BLAS_LIBRARIES}
+  )
+endif (USE_ELEMENTAL)
+
+###############################################################################
 
 # Add the subdirectories
 add_subdirectory (AMD)
