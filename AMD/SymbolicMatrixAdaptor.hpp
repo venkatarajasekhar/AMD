@@ -75,6 +75,16 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
   static SymbolicScalarMatlab logdetAdaptor(const SymbolicMatrixMatlab& a) {
     return (logdet(a));
   }
+
+
+
+  /** 13. matrix copy operator */
+  static void copyAdaptor ( SymbolicMatrixMatlab &a,      /**< target obj */
+                            const SymbolicMatrixMatlab &b /**< source obj */ )
+  {
+    // TODO symbol nRows nCols are private variables
+    a = b;
+  }
   
 
 #if 0

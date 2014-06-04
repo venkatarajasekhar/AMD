@@ -128,6 +128,13 @@ struct SymbolicMatrixMatlab {
     return(*this);
   }
 
+  SymbolicMatrixMatlab& copy (const SymbolicMatrixMatlab& rhs) {
+    symbol = rhs.getString();
+    nRows = rhs.getNumRows();
+    nCols = rhs.getNumCols();
+    return(*this);
+  }
+
   /** 
    * Return representation of nxn identity matrix.
    * @param[in] n The size of the identity matrix.

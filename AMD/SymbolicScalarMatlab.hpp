@@ -89,6 +89,11 @@ struct SymbolicScalarMatlab {
     return(*this);
   }
 
+  SymbolicScalarMatlab& copy(const SymbolicScalarMatlab& rhs) {
+    symbol = rhs.symbol;
+    return(*this);
+  }
+
 
   /** 
    * Return the string representation of the class.
