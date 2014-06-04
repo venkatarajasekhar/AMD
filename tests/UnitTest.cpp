@@ -135,7 +135,7 @@ void testMatrixMatrixFunc() {
 }
 
 void testMatrixMatrixFunc3 () {
-  typedef AMD::MatrixMatrixFunc<AMD::SymbolicMatrixMatlab, AMD::SymbolicScalarMatlab> MMFunc2;
+  typedef AMD::MatrixMatrixFunc<AMD::SymbolicMatrixMatlab, AMD::SymbolicScalarMatlab> MMFunc;
   typedef AMD::ScalarMatrixFunc<AMD::SymbolicMatrixMatlab, AMD::SymbolicScalarMatlab> SMFunc;
 
   std::string ans;
@@ -143,15 +143,15 @@ void testMatrixMatrixFunc3 () {
   AMD::SymbolicMatrixMatlab A("A", 2, 2);
   AMD::SymbolicMatrixMatlab B("B", 2, 2);
   AMD::SymbolicMatrixMatlab C("C", 2, 2);
-  MMFunc2 fX(X, true);
-  MMFunc2 fA(A, false);
-  MMFunc2 fB(B, false);
-  MMFunc2 fC(C, false);
+  MMFunc fX(X, true);
+  MMFunc fA(A, false);
+  MMFunc fB(B, false);
+  MMFunc fC(C, false);
 
-  MMFunc2 fBX = fB * fX;
-  MMFunc2 fCX = fC * fX;
-  MMFunc2 fDX = fBX + fCX;
-  MMFunc2 fAXDX = fA * fDX;
+  MMFunc fBX = fB * fX;
+  MMFunc fCX = fC * fX;
+  MMFunc fDX = fBX + fCX;
+  MMFunc fAXDX = fA * fDX;
 
   SMFunc func = trace(fAXDX);
 

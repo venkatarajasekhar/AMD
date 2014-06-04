@@ -41,6 +41,12 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
   static SymbolicMatrixMatlab transpose(const SymbolicMatrixMatlab& a) {
     return (AMD::transpose(a));
   }
+  /** 6. matrix transpose */
+
+//  static void transpose (const SymbolicMatrixMatlab& a, 
+//                         SymbolicMatrixMatlab &b) {
+//    b.copy(a);
+//  }
 
   /** 7. matrix negation */
   static SymbolicMatrixMatlab negation(const SymbolicMatrixMatlab& a) {
