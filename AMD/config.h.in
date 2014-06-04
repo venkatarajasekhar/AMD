@@ -15,3 +15,6 @@
 
 /** Are we running AIX */
 #cmakedefine AMD_AIX 1
+
+/** Are we using Elemental */
+#cmakedefine AMD_HAVE_ELEMENTAL 1
