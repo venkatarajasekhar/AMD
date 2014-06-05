@@ -242,8 +242,8 @@ public:
     assert(initial.use_count()>=1 && 
 	         result.use_count()>=1  &&
 	         isConst || 
-           (MatrixAdaptor::getNumRows(*(result)) == varNumRows &&
-			      MatrixAdaptor::getNumCols(*(result)) == varNumCols));
+           (MatrixAdaptorType::getNumRows(*(result)) == varNumRows &&
+			      MatrixAdaptorType::getNumCols(*(result)) == varNumCols));
 
     // If the function is constant then the derivative is zero -- so
     // we don't need to do any computation

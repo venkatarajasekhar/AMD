@@ -63,16 +63,19 @@ void varOp(boost::shared_ptr<MT> result,
   if (zeroResultFlag) {
     zeroResultFlag = false;
     if (transposeFlag) {
-      (*result) = MatrixAdaptorType::transpose(*current);  
+      MatrixAdaptorType::transpose(*current, *result);  
+
     } else {
       (*result) = (*current);
     }
   } else {
     if (transposeFlag) {
-      (*result) = MatrixAdaptorType::add((*result), 
-      MatrixAdaptorType::transpose(*current));
+      // FIXME Any way to avoid tmp?
+      MT tmp;
+      MatrixAdaptorType::transpose(*current, tmp);
+      MatrixAdaptorType::add(*result, tmp, *result);
     } else {
-      (*result) = MatrixAdaptorType::add((*result), (*current));
+      MatrixAdaptorType::add((*result), (*current), (*result));
     }
   }
 }
@@ -112,8 +115,9 @@ MatrixMatrixFunc<MT,ST> operator+ (const MatrixMatrixFunc<MT,ST> &lhs,
 	       lhs.varNumCols==rhs.varNumCols));
 
   MatrixMatrixFunc<MT,ST> result;
-  boost::shared_ptr<MT> sumPtr(new MT(MatrixAdaptorType::add((*lhs.matrixPtr),
-                               (*rhs.matrixPtr))));
+  MT tmp;
+  MatrixAdaptorType::add((*lhs.matrixPtr),(*rhs.matrixPtr), tmp);
+  boost::shared_ptr<MT> sumPtr(new MT(tmp));
   result.binOpSet( sumPtr, PLUS, plusOp<MT,ST>, lhs, rhs );
   return(result);
 }
@@ -138,7 +142,7 @@ void minusOp( boost::shared_ptr<MT> result,
 	        left.use_count()>=1 && 
 	        right.use_count()>=1 );
   MatrixAdaptorType::copy(*left, *current);
-  (*right) = MatrixAdaptorType::negation((*current));
+  MatrixAdaptorType::negation((*current), (*right));
   if (transposeFlag) {
     transposeFlag=3; // both left and right should inherit transpose
   }
@@ -154,8 +158,10 @@ MatrixMatrixFunc<MT,ST> operator- (const MatrixMatrixFunc<MT,ST> &lhs,
 	       lhs.varNumCols==rhs.varNumCols));
 
   MatrixMatrixFunc<MT,ST> result;
+  MT tmp;
+  MatrixAdaptorType::minus(*(lhs.matrixPtr), *(rhs.matrixPtr), tmp);
   boost::shared_ptr<MT> diffPtr
-   (new MT(MatrixAdaptorType::minus(*lhs.matrixPtr, *rhs.matrixPtr)));
+   (new MT(tmp));
   result.binOpSet( diffPtr, MINUS, minusOp<MT,ST>, lhs, rhs );
   return(result);
 }
@@ -202,22 +208,26 @@ void timesOp( boost::shared_ptr<MT> result,
       // use A^T*B^T = (B*A)^T to reduce the numbder of trans
       // Why is this comment here? Peder?
       //(*left) = transpose(*current) * transpose(node->rightChild->val);
-      MatrixAdaptorType::copy((*left),
-        MatrixAdaptorType::multiply(*(node->rightChild->matrixPtr), *current));      
+      MT tmp0, tmp1, tmp2, tmp3;
+      MatrixAdaptorType::multiply(*(node->rightChild->matrixPtr), (*current), tmp0);
+
+      MatrixAdaptorType::copy((*left), tmp0);      
 
       // Why is this comment here? Peder?
       //(*right) = transpose(node->leftChild->val) * transpose(*current);
-      MatrixAdaptorType::copy((*right),
-        MatrixAdaptorType::multiply(*current, *(node->leftChild->matrixPtr)));      
+      MatrixAdaptorType::multiply((*current), *(node->leftChild->matrixPtr), tmp1);
+      MatrixAdaptorType::copy((*right), tmp1);      
       transposeFlag = 3;
     } else {
-      MatrixAdaptorType::copy ((*left),
-        MatrixAdaptorType::multiply(*current,
-          MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr))));     
+      MT tmp0, tmp1, tmp2, tmp3;
+      MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), tmp0);
+      MatrixAdaptorType::multiply((*current), tmp0, tmp1);
+      MatrixAdaptorType::copy ((*left), tmp1);
 
-      MatrixAdaptorType::copy ((*right), MatrixAdaptorType::multiply
-        (MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr)),
-         *current));      
+      MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), tmp2);
+      MatrixAdaptorType::multiply(tmp2, *current, tmp3);
+      MatrixAdaptorType::copy((*right), tmp3);
+
       transposeFlag = 0;
     }
   }
@@ -233,8 +243,9 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
 	        lhs.varNumCols==rhs.varNumCols));
 
   MatrixMatrixFunc<MT,ST> result;
-  boost::shared_ptr<MT> timesPtr(new MT((
-  MatrixAdaptorType::multiply(*(lhs.matrixPtr), *(rhs.matrixPtr)))));
+  MT tmp;
+  MatrixAdaptorType::multiply(*(lhs.matrixPtr), *(rhs.matrixPtr), tmp);
+  boost::shared_ptr<MT> timesPtr(new MT((tmp)));
   result.binOpSet(timesPtr, TIMES, timesOp<MT,ST>, lhs, rhs);
   return(result);
 }
@@ -275,8 +286,9 @@ MatrixMatrixFunc<MT,ST> transpose (const MatrixMatrixFunc<MT,ST> &lhs) {
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   MatrixMatrixFunc<MT,ST> result;
   if (TRANSPOSE!=lhs.opNum) {
-    boost::shared_ptr<MT> transposePtr(
-              new MT(MatrixAdaptorType::transpose(*lhs.matrixPtr))); 
+    MT tmp;
+    MatrixAdaptorType::transpose(*(lhs.matrixPtr), tmp);
+    boost::shared_ptr<MT> transposePtr(new MT(tmp)); 
     result.unaryOpSet(transposePtr, TRANSPOSE, transposeOp<MT,ST>, lhs);
   } else {
     assert(NULL!=lhs.leftChild);
@@ -309,21 +321,25 @@ void invOp( boost::shared_ptr<MT> result,
   boost::shared_ptr<MT> tmp = node->matrixPtr;
   if (!identityCurrentFlag) {
     if (transposeFlag) {
-      MatrixAdaptorType::copy((*left),
-             MatrixAdaptorType::negation(
-                MatrixAdaptorType::multiply(*tmp, 
-                  MatrixAdaptorType::multiply(*current, *tmp))));      
+      MT tmp0, tmp1, tmp2;
+      MatrixAdaptorType::multiply(*current, *tmp, tmp0);
+      MatrixAdaptorType::multiply(*tmp, tmp0, tmp1);
+      MatrixAdaptorType::negation(tmp1, tmp2);
+      MatrixAdaptorType::copy((*left), tmp2);      
 
     } else {
-      MatrixAdaptorType::copy((*left),
-                MatrixAdaptorType::negation(
-                  MatrixAdaptorType::multiply(*tmp,
-                    MatrixAdaptorType::multiply(
-                      MatrixAdaptorType::transpose(*current), *tmp))));      
+      MT tmp0, tmp1, tmp2, tmp3;
+      MatrixAdaptorType::transpose(*current, tmp0);
+      MatrixAdaptorType::multiply(tmp0, *tmp, tmp1);
+      MatrixAdaptorType::multiply(*tmp, tmp1, tmp2);
+      MatrixAdaptorType::negation(tmp2, tmp3);
+      MatrixAdaptorType::copy((*left), tmp3);
     }
   } else {
-    MatrixAdaptorType::copy((*left),
-      MatrixAdaptorType::negation(MatrixAdaptorType::multiply(*tmp, *tmp)));    
+    MT tmp0, tmp1;
+    MatrixAdaptorType::multiply(*tmp, *tmp, tmp0);
+    MatrixAdaptorType::negation(tmp0, tmp1);
+    MatrixAdaptorType::copy((*left), tmp1);    
   }
   transposeFlag = 3;
   identityCurrentFlag = false;
@@ -334,8 +350,9 @@ MatrixMatrixFunc<MT,ST> inv(const MatrixMatrixFunc<MT,ST> &lhs) {
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   MatrixMatrixFunc<MT,ST> result;
   if (INV!=lhs.opNum) {
-    boost::shared_ptr<MT> invPtr(new MT(
-      MatrixAdaptorType::inv(*lhs.matrixPtr)));      
+    MT tmp0;
+    MatrixAdaptorType::inv(*lhs.matrixPtr, tmp0);
+    boost::shared_ptr<MT> invPtr(new MT(tmp0));      
     result.unaryOpSet( invPtr, INV, invOp<MT,ST>, lhs );
   } else {
     assert(NULL!=lhs.leftChild);
@@ -353,24 +370,26 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
   const int n = MatrixAdaptorType::getNumRows(*lhs.matrixPtr);  
   boost::shared_ptr<MT> initPtr(new MT);
   boost::shared_ptr<MT> resPtr(new MT);
-  MatrixAdaptorType::copy((*initPtr),
-                          MatrixAdaptorType::eye(*resPtr, n));  
-  MatrixAdaptorType::copy((*resPtr),
-            MatrixAdaptorType::zeros(*resPtr, lhs.varNumRows, lhs.varNumCols));
+  MT tmp0, tmp1;
+  MatrixAdaptorType::eye(*resPtr, n, tmp0);
+  MatrixAdaptorType::copy((*initPtr), tmp0); 
+  MatrixAdaptorType::zeros(*resPtr, lhs.varNumRows, lhs.varNumCols, tmp1); 
+  MatrixAdaptorType::copy((*resPtr), tmp1);
   bool zeroFlag = true;
 
   // TODO any need to deal with gradientVec? Not at this moment
   lhs.gradientVec(initPtr, resPtr, false, true, zeroFlag);
-
+  ST tmp2;
   if (zeroFlag) {
+    MatrixAdaptorType::trace(*lhs.matrixPtr, tmp2);
     ScalarMatrixFunc<MT, ST> result( 
-              MatrixAdaptorType::trace(*(lhs.matrixPtr)),
+              tmp2,
               lhs.varNumRows,
               lhs.varNumCols);
     return(result);
   } else {
-    ScalarMatrixFunc<MT, ST> result (
-              MatrixAdaptorType::trace(*(lhs.matrixPtr)), *resPtr);				    
+    MatrixAdaptorType::trace(*lhs.matrixPtr, tmp2);
+    ScalarMatrixFunc<MT, ST> result (tmp2, *resPtr);				    
     return(result);
   }
 }
@@ -386,8 +405,10 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
   const int n = MatrixAdaptorType::getNumRows(*(lhs.matrixPtr));
   boost::shared_ptr<MT> initPtr(new MT);
   boost::shared_ptr<MT> resPtr(new MT);
-  MatrixAdaptorType::copy ((*resPtr),
-    MatrixAdaptorType::zeros(*(resPtr), lhs.varNumRows, lhs.varNumCols)); 
+  MT tmp0, tmp1;
+  ST tmp2;
+  MatrixAdaptorType::zeros(*(resPtr), lhs.varNumRows, lhs.varNumCols, tmp0);
+  MatrixAdaptorType::copy ((*resPtr), tmp0); 
   bool transposeFlag = true;
 
   if (TRANSPOSE==lhs.opNum) { // logdet(X^T) == logdet(X)
@@ -398,21 +419,23 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
     // logdet for MMF 
     return(-logdet((*lhs.leftChild)));
   }
-
-  MatrixAdaptorType::copy(*initPtr, MatrixAdaptorType::inv(*(lhs.matrixPtr)));  
+  MatrixAdaptorType::inv(*lhs.matrixPtr, tmp1);
+  MatrixAdaptorType::copy(*initPtr, tmp1);  
   bool zeroFlag = true;
   lhs.gradientVec(initPtr, resPtr, transposeFlag, false, zeroFlag);
   if (zeroFlag) { 
+    MatrixAdaptorType::logdet(*lhs.matrixPtr, tmp2);
     ScalarMatrixFunc<MT,ST> result(
-                MatrixAdaptorType::logdet(*(lhs.matrixPtr)),
+                tmp2,
                 lhs.varNumRows, 
                 lhs.varNumCols);
     // pass on knowledge that function is constant
     return(result);
   } else {
     // TODO template adaptor
+    MatrixAdaptorType::logdet(*lhs.matrixPtr, tmp2);
     ScalarMatrixFunc<MT,ST> result( 
-                MatrixAdaptorType::logdet(*(lhs.matrixPtr)),
+                tmp2,
 				        *resPtr);
     return(result);
   }
