@@ -31,7 +31,8 @@ struct MatrixAdaptor_t {
 #include "SymbolicMatrixAdaptor.hpp"
 
 #if AMD_HAVE_ELEMENTAL
-  #include "ElementalMatrixAdaptor.hpp"
+// Include this when it actually works
+//  #include "ElementalMatrixAdaptor.hpp"
 #endif
 
 #endif /** MATRIX_ADAPTOR_HPP */
