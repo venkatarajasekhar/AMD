@@ -71,14 +71,16 @@ endif (CMAKE_BUILD_TYPE MATCHES "Release" OR CMAKE_BUILD_TYPE MATCHES "None")
 ###############################################################################
 # 2. Find Boost with the relevant packages --- Use dynamic boost!
 # Without dynamic linking, it's tough to create python bindings.
-set(BOOST_ROOT $ENV{BOOST_ROOT})
+set(BOOST_ROOT $ENV{BOOST_ROOT} $ENV{HOME}/Project/Tool/boost_1_55/)
 set(BOOST_NO_SYSTEM_PATHS TRUE)
-set(BOOST_INCLUDEDIR $ENV{BOOST_ROOT})
-set(BOOST_LIBRARYDIR $ENV{BOOST_ROOT}}/lib)
-set(BOOST_MIN_VERSION 1.49.0)
+set(BOOST_INCLUDEDIR $BOOST_ROOT ) 
+set(BOOST_LIBRARYDIR $BOOST_ROOT/lib ) 
+set(BOOST_MIN_VERSION 1.55.0)
 find_package (Boost
               REQUIRED
-              mpi
+# TODO currently does not install mpi successfully in boost.
+# Ignore now but need to fix it later
+#              mpi
               serialization
               random)
 if (Boost_FOUND)
@@ -106,7 +108,7 @@ if (USE_ELEMENTAL)
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
       set(CXX11_COMPILER_FLAGS "-qlanglvl=extended0x")
     else ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
-      set(CXX11_COMPILER_FLAGS "-std=c++11")
+      set(CXX11_COMPILER_FLAGS "-std=c++11 -I /home/suyang/Project/Tool/boost_1_55/include/ -L /home/suyang/Project/Tool/boost_1_55/lib/")
     endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
     message(STATUS "CXX11_COMPILER_FLAGS=${CXX11_COMPILER_FLAGS}")
     set (CMAKE_CXX_FLAGS "${CXX11_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS}")
