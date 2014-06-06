@@ -10,12 +10,6 @@ namespace AMD {
 template <>
 struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
 
-  /** 13. matrix copy operator */
-  static void copy (SymbolicMatrixMatlab &a,      /**< target obj */
-                    const SymbolicMatrixMatlab &b /**< source obj */ ) {
-    // TODO symbol nRows nCols are private variables
-    a.copy(b);
-  }
   /** 1. get the number of rows */
   static int getNumRows (const SymbolicMatrixMatlab& matrix) {
     return matrix.getNumRows();
@@ -102,6 +96,13 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
                      SymbolicScalarMatlab& dest
                      ) {
     dest.copy(AMD::logdet(a));
+  }
+
+  /** 13. matrix copy operator */
+  static void copy (SymbolicMatrixMatlab &a,      /**< target obj */
+                    const SymbolicMatrixMatlab &b /**< source obj */ ) {
+    // TODO symbol nRows nCols are private variables
+    a.copy(b);
   }
 
   /** 14. print out the matrix */
