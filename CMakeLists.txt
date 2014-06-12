@@ -71,7 +71,7 @@ endif (CMAKE_BUILD_TYPE MATCHES "Release" OR CMAKE_BUILD_TYPE MATCHES "None")
 ###############################################################################
 # 2. Find Boost with the relevant packages --- Use dynamic boost!
 # Without dynamic linking, it's tough to create python bindings.
-set(BOOST_ROOT $ENV{BOOST_ROOT} $ENV{HOME}/Project/Tool/boost_1_55/)
+set(BOOST_ROOT $ENV{BOOST_ROOT} $ENV{HOME}/Project/Tool/boost_1_55_0/)
 set(BOOST_NO_SYSTEM_PATHS TRUE)
 set(BOOST_INCLUDEDIR $BOOST_ROOT ) 
 set(BOOST_LIBRARYDIR $BOOST_ROOT/lib ) 
