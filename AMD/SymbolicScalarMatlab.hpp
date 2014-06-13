@@ -89,6 +89,10 @@ struct SymbolicScalarMatlab {
     return(*this);
   }
 
+  /**
+   * Copy content of one SymbolicScalarMatlab to another.
+   * @param[in] rhs The variable that we are making a copy of.
+   */
   SymbolicScalarMatlab& copy(const SymbolicScalarMatlab& rhs) {
     symbol = rhs.symbol;
     return(*this);

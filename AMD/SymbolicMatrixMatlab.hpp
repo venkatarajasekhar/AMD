@@ -109,17 +109,20 @@ struct SymbolicMatrixMatlab {
 
   /** 
    * number of Rows in matrix.  For symbolic matrices this is always 1.
+   * @return number of SymbolicMatrix rows.
    */
   int getNumRows() const { return(nRows); }
 
   /** 
    * number of Columns in matrix.  For symbolic matrices this is always 1.
+   * @return number of SymbolicMatrix columns. 
    */
   int getNumCols() const { return(nCols); }
 
   /** 
    * Copy content of one SymbolicMatrixMatlab to another.
    * @param[in] rhs The matrix that we are copying .
+   * @return SymbolicMatrixMatlab object which is the deep-copy from another.
    */
   SymbolicMatrixMatlab& operator=(const SymbolicMatrixMatlab& rhs) {
     symbol = rhs.getString();
@@ -127,7 +130,11 @@ struct SymbolicMatrixMatlab {
     nCols = rhs.getNumCols();
     return(*this);
   }
-
+  /**
+   * Copy content of one SymbolicMatrixMatlab to another.
+   * @param[in] rhs The matrix that we are copying.
+   * @return SymbolicMatrixMatlab object which is the deep-copy from another. 
+   */
   SymbolicMatrixMatlab& copy (const SymbolicMatrixMatlab& rhs) {
     symbol = rhs.getString();
     nRows = rhs.getNumRows();
@@ -181,12 +188,8 @@ struct SymbolicMatrixMatlab {
 
   private:
   std::string symbol; /**< This is the internal string variable */
-  int nRows;
-  int nCols;
-  /** 
-   * Copy content of one SymbolicMatrixMatlab to another.
-   * @param[in] rhs The matrix that we are copying .
-   */
+  int nRows;          /**< The number of SymbolicMatrixMatlab rows. */
+  int nCols;          /**< The number of SymbolicMatrixMatlab columns. */
 };
 
 } /** namespace AMD */
