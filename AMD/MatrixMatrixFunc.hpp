@@ -14,6 +14,10 @@
 
 namespace AMD {
 
+/**
+ * @brief MatrixMatrixFunc class.
+ */
+
 template <class MT, class ST>
 class MatrixMatrixFunc {
 
@@ -38,7 +42,7 @@ public:
   MatrixMatrixFunc* rightChild; /**< optional right child */
 
   /**
-   * This is an empty constructor that initializes all values to defaults.
+   * @brief This is an empty constructor that initializes all values to defaults.
    */ 
   MatrixMatrixFunc() : matrixPtr(), 
                        callBackFunc(NULL), 
@@ -50,7 +54,7 @@ public:
                        rightChild(NULL) {}
 
   /**
-   * Makes an expensive copy of matrix -- avoid this constructor
+   * @brief Makes an expensive copy of matrix -- avoid this constructor
    * if your matrices are large.
    */ 
   MatrixMatrixFunc(MT matrix, bool isConst=true) : matrixPtr(), 
@@ -67,7 +71,10 @@ public:
     setVariableType (isConst);
   }
 
-
+  /**
+   * @brief Constructor for a constant matrix.
+   */
+    
 
   MatrixMatrixFunc(boost::shared_ptr<MT> matrixPtr, 
                    bool isConst=true) : matrixPtr(matrixPtr),
@@ -84,6 +91,13 @@ public:
   /**
    * Do what's necessary to set up a variable or a constant
    */ 
+  /**
+   * @brief Intiialize the object. 
+   *
+   * @param[in] isVariable Boolean value indicates whether the implicit
+   * matrix is a variable. If so, initialize the object as a variable.
+   * Otherwise initialize as a constant.
+   */
   void setVariableType( bool isVariable ) {
     // constant and variable matrices must be leaf nodes
     assert( NULL == leftChild && NULL == rightChild );
@@ -106,7 +120,7 @@ public:
   }
 
   /**
-   * Reset the entire MMFunc.
+   * @brief Reset the entire MMFunc.
    */
   void reset () {
     callBackFunc = NULL;
@@ -118,7 +132,7 @@ public:
   }
 
   /**
-   * Delete the left and the right children recursively
+   * @brief Destructor. Delete the left and the right children recursively
    */
   ~MatrixMatrixFunc() { reset(); }
 
@@ -163,7 +177,15 @@ public:
       rightChild->deepCopy(*(other.rightChild));
     }
   }
-
+  /**
+   * @brief Set the binary operator[Node].
+   *
+   * @param[in] resultPtr Pointer to the result [Matrix].
+   * @param[in] _opNum Operator number.
+   * @param[in] cbf Call back function type.
+   * @param[in] lhs Become the left child of current node.
+   * @param[in] rhs Become the right child of current node.
+   */
   void binOpSet(boost::shared_ptr<MT> resultPtr,
 		            OpType _opNum,
 		            CallBackFuncType cbf,
@@ -177,7 +199,14 @@ public:
     varNumRows = lhs.varNumRows | rhs.varNumRows;  // should be 0 or a size
     varNumCols = lhs.varNumCols | rhs.varNumCols;
   }
-
+  /**
+   * @brief Set the unary operator[Node].
+   *
+   * @param[in] resultPtr pointer to result[Matrix].
+   * @param[in] _opNum    Operator number.
+   * @param[in] cbf       Callback function type.
+   * @param[in] lhs       Become the left child of current node.
+   */
   void unaryOpSet(boost::shared_ptr<MT> resultPtr,
 		              OpType _opNum,
 		              CallBackFuncType cbf,
@@ -192,7 +221,9 @@ public:
     leftChild = new MatrixMatrixFunc<MT,ST>;
     leftChild->deepCopy(lhs);
   }
-
+  /**
+   * @brief Print out the computational tree to file.
+   */
   void print(FILE *fp) const {
     matrixPtr->print();
     if (NULL==leftChild && NULL==rightChild) {
@@ -209,27 +240,59 @@ public:
       fprintf(fp,")");
     }
   }
-
+  /**
+   * @brief Print the computational tree to file.
+   */
   void println(FILE *fp) const {
     print(fp);
     fprintf(fp,"\n");
   }
-
+  /**
+   * @brief Print the tree.
+   */
   void print() const {
     print(stdout);
   }
-
+  /**
+   * @brief Print out the tree.
+   */
   void println() const {
     println(stdout);
   }
-
+  /**
+   * @brief  Get the number of rows.
+   *
+   * @return Number of rows.
+   */
   int numRows() const { return varNumRows; }
 
+  /**
+   * @brief Get the number of columns.
+   *
+   * @return Number of columns.
+   */
+
   int numCols() const { return varNumCols; }
+
+  /**
+   * @brief  Get the matrix associated to this node.
+   *
+   * @return The matxi associated to this node.
+   */
 
   virtual MT value() const { return(*matrixPtr); }
 
   // initial and result must point to existing MatrixTypes
+  /**
+   * @brief Calculate derivative from top to bottom in recursion.
+   *
+   * @param[in] initial Initial matrix.
+   * @param[in] result  Result matrix.
+   * @param[in] transposeFlag Transpose flag.
+   * @param[in] identityInitialFlag Boolean value for identity matrices.
+   * @param[in] zeroResultFlag      Boolean value if it is a zero matrix.
+   *
+   */
   void gradientVec(boost::shared_ptr<MT> initial, 
 		               boost::shared_ptr<MT> result, 
 		               int transposeFlag, 
