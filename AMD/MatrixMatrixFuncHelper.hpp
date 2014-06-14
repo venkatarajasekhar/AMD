@@ -10,7 +10,9 @@
 #include "MatrixAdaptor.hpp"
 
 namespace AMD {
-
+/**
+ * @enum Enum type for operators.
+ */
 enum OpType { NONE, CONST, VAR, PLUS, MINUS, TIMES, TRANSPOSE, INV};
 std::string opName[] = 
   { "none", "const", "var", "+", "-", "*", "transpose", "inv" };
@@ -18,9 +20,24 @@ std::string opName[] =
 // forward declaration
 template <class MT, class ST> class MatrixMatrixFunc;
 
-/// Callback function for differentiation involving constant matrices
-// since the matrix is constant the derivative is zero, and we don't
-// need to do anything.
+/** 
+ * @brief Callback function for differentiation involving constant matrices
+ * since the matrix is constant the derivative is zero, and we don't
+ * need to do anything.
+ *
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ * @param[in] result
+ * @param[in] current
+ * @param[in] left
+ * @param[in] right
+ * @param[in] node
+ * @param[in] transposeFlag
+ * @param[in] identityCurrentFlag
+ * @param[in] zeroResultFlag
+ *
+ */
 template <class MT,class ST>
 void constOp(boost::shared_ptr<MT> result, 
              boost::shared_ptr<MT> current, 
@@ -39,8 +56,22 @@ void constOp(boost::shared_ptr<MT> result,
 	          0 == node->varNumCols);
 }
 
-/// Callback function for differentiation involving a variable matrix
-/// on the leaf node.
+/** 
+ * @brief Callback function for differentiation involving a variable matrix
+ * on the leaf node.
+ *
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ * @param[in] result
+ * @param[in] current
+ * @param[in] left
+ * @param[in] right
+ * @param[in] node
+ * @param[in] transposeFlag
+ * @param[in] identityCurrentFlag
+ * @param[in] zeroResultFlag
+ */
 template <class MT, class ST>
 void varOp(boost::shared_ptr<MT> result, 
 	   boost::shared_ptr<MT> current, 
@@ -80,8 +111,22 @@ void varOp(boost::shared_ptr<MT> result,
   }
 }
 
-// Functions to deal with opNum==PLUS
-/// Callback function for differentiation involving operator+
+/** 
+  * @brief Functions to deal with opNum==PLUS
+  * Callback function for differentiation involving operator+
+  *
+  * @tparam MT Matrix type
+  * @tparam ST Scalar type
+  *
+  * @param result
+  * @param current
+  * @param left
+  * @param right
+  * @param node
+  * @param transposeFlag
+  * @param identityCurrentFlag
+  * @param zeroResultFlag
+  */
 template <class MT, class ST>
 void plusOp( boost::shared_ptr<MT> result, 
 	     boost::shared_ptr<MT> current, 
@@ -104,7 +149,15 @@ void plusOp( boost::shared_ptr<MT> result,
     transposeFlag=3; // both left and right should inherit transpose
   }
 }
-
+/**
+ * @brief Operator "+" overloading for MMFunc.
+ *
+ * @tparam MT Matrix type.
+ * @tparam ST Scalar type.
+ *
+ * @param lhs
+ * @param rhs 
+ */ 
 template <class MT, class ST>
 MatrixMatrixFunc<MT,ST> operator+ (const MatrixMatrixFunc<MT,ST> &lhs, 
 				                           const MatrixMatrixFunc<MT,ST> &rhs) {
@@ -122,8 +175,22 @@ MatrixMatrixFunc<MT,ST> operator+ (const MatrixMatrixFunc<MT,ST> &lhs,
   return(result);
 }
 
-// Functions to deal with opNum==MINUS
-/// Callback function for differentiation involving operator-
+/**
+ * @brief Functions to deal with opNum==MINUS
+ * Callback function for differentiation involving operator-
+ *
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ * @param result
+ * @param current 
+ * @param left
+ * @param right
+ * @param node
+ * @param transposeFlag
+ * @param identityCurrentFlag
+ * @param zeroResultFlag
+ */
 template <class MT, class ST>
 void minusOp( boost::shared_ptr<MT> result, 
 	      boost::shared_ptr<MT> current, 
@@ -147,7 +214,15 @@ void minusOp( boost::shared_ptr<MT> result,
     transposeFlag=3; // both left and right should inherit transpose
   }
 }
-
+/**
+ * @brief Operator - overloading.
+ *
+ * @tparam MT Matrix type.
+ * @tparam ST Scalar type.
+ *
+ * @param lhs
+ * @param rhs
+ */
 template <class MT, class ST>
 MatrixMatrixFunc<MT,ST> operator- (const MatrixMatrixFunc<MT,ST> &lhs, 
                         				   const MatrixMatrixFunc<MT,ST> &rhs) {
@@ -167,8 +242,22 @@ MatrixMatrixFunc<MT,ST> operator- (const MatrixMatrixFunc<MT,ST> &lhs,
 }
 
 
-// Functions to deal with opNum==TIMES
-/// Callback function for differentiation involving operator*
+/**
+ * @brief Functions to deal with opNum==TIMES
+ * Callback function for differentiation involving operator*
+ *
+ * @tparam MT Matrix type.
+ * @tparam ST Scalar type.
+ *
+ * @param result
+ * @param current
+ * @param left
+ * @param right
+ * @param node
+ * @param transposeFlag
+ * @param identityCurrentFlag
+ * @param zeroResultFlag
+*/
 template <class MT, class ST>
 void timesOp( boost::shared_ptr<MT> result, 
 	      boost::shared_ptr<MT> current, 
@@ -232,7 +321,15 @@ void timesOp( boost::shared_ptr<MT> result,
     }
   }
 }
-
+/**
+ * @brief Operator * overloading 
+ *
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ * @param lhs
+ * @param rhs
+ */
 template <class MT, class ST>
 MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs, 
 			                        	   const MatrixMatrixFunc<MT,ST> &rhs) {
@@ -251,8 +348,18 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
 }
 
 
-// Functions to deal with opNum==TRANSPOSE
-/// Callback function for differentiation involving the matrix transpose
+/** 
+ * @brief Functions to deal with opNum==TRANSPOSE
+ * Callback function for differentiation involving the matrix transpose
+ *
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ * @param result
+ * @param current
+ * @param left 
+ * @param right
+ */
 template <class MT, class ST>
 void transposeOp( boost::shared_ptr<MT> result, 
 		  boost::shared_ptr<MT> current, 
@@ -280,7 +387,14 @@ void transposeOp( boost::shared_ptr<MT> result,
   }
 }
 
-
+/**
+ * @brief Transpose MMFunc node. 
+ *
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ * @param lhs
+ */
 template <class MT, class ST>
 MatrixMatrixFunc<MT,ST> transpose (const MatrixMatrixFunc<MT,ST> &lhs) {
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
@@ -299,8 +413,22 @@ MatrixMatrixFunc<MT,ST> transpose (const MatrixMatrixFunc<MT,ST> &lhs) {
 
 
 
-// Functions to deal with opNum==INV
-/// Callback function for differentiation involving the matrix inverse
+/** 
+ * @brief Functions to deal with opNum==INV
+ * Callback function for differentiation involving the matrix inverse
+ *
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ * @param result
+ * @param current
+ * @param left
+ * @param right
+ * @param node
+ * @param transposeFlag
+ * @param identityCurrentFlag
+ * @param zeroResultFlag
+ */
 template <class MT, class ST>
 void invOp( boost::shared_ptr<MT> result, 
 	    boost::shared_ptr<MT> current, 
@@ -345,6 +473,15 @@ void invOp( boost::shared_ptr<MT> result,
   identityCurrentFlag = false;
 }
 
+/**
+ * @brief Operator "inv" overloading
+ *
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ * @param lhs 
+ */
+
 template <class MT, class ST>
 MatrixMatrixFunc<MT,ST> inv(const MatrixMatrixFunc<MT,ST> &lhs) {
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
@@ -360,7 +497,14 @@ MatrixMatrixFunc<MT,ST> inv(const MatrixMatrixFunc<MT,ST> &lhs) {
   }
   return(result);
 }
-
+/**
+ * @brief Trace of a node
+ *
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ * @param lhs
+ */
 template <class MT, class ST>
 ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
@@ -393,7 +537,14 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
     return(result);
   }
 }
-
+/**
+ * @brief Logdet of a MMFunc
+ *
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ * @param lhs
+ */
 template <class MT, class ST>
 ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
