@@ -43,6 +43,7 @@ public:
 
   /**
    * @brief This is an empty constructor that initializes all values to defaults.
+   * Create a constant function.
    */ 
   MatrixMatrixFunc() : matrixPtr(), 
                        callBackFunc(NULL), 
@@ -66,13 +67,14 @@ public:
                                                    leftChild(NULL), 
                                                    rightChild(NULL) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+    // Makes an deep-copy of the matrix.
     boost::shared_ptr<MT> copy (new MT(matrix));
     matrixPtr = copy;
     setVariableType (isConst);
   }
 
   /**
-   * @brief Constructor for a constant matrix.
+   * @brief Constructor with a MT type variable.
    */
     
 
@@ -101,16 +103,13 @@ public:
   void setVariableType( bool isVariable ) {
     // constant and variable matrices must be leaf nodes
     assert( NULL == leftChild && NULL == rightChild );
-
+    // If is constant, call the callbackfunction for constant.
     if (isConst) {
       callBackFunc = constOp<MT,ST>;
       opNum = CONST;
       varNumRows = 0;
       varNumCols = 0;
     } else {
-      /**
-       * TODO: Wrap getNumCols() and getNumRows() in an adaptor class 
-       */ 
       //varNumRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
       varNumRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
       varNumCols = MatrixAdaptorType::getNumCols(*(matrixPtr));
@@ -120,13 +119,14 @@ public:
   }
 
   /**
-   * @brief Reset the entire MMFunc.
+   * @brief Reset the entire computational tree.
    */
   void reset () {
     callBackFunc = NULL;
     opNum = NONE;
     varNumRows = 0;
     varNumCols = 0;
+    // Reset its left & right child recursively.
     if (NULL!=leftChild) delete leftChild;
     if (NULL!=rightChild) delete rightChild;
   }
@@ -178,13 +178,14 @@ public:
     }
   }
   /**
-   * @brief Set the binary operator[Node].
+   * @brief Set the binary operator for this node. Different methods for matrix 
+   * replacement apply to different operators. TODO need to be more accurate.
    *
-   * @param[in] resultPtr Pointer to the result [Matrix].
+   * @param[in] resultPtr Pointer to the matrix associated to this node.
    * @param[in] _opNum Operator number.
-   * @param[in] cbf Call back function type.
-   * @param[in] lhs Become the left child of current node.
-   * @param[in] rhs Become the right child of current node.
+   * @param[in] cbf The Call back function type.
+   * @param[in] lhs The left operand of the binary operation.
+   * @param[in] rhs The right operand of the binary operation.
    */
   void binOpSet(boost::shared_ptr<MT> resultPtr,
 		            OpType _opNum,
@@ -200,12 +201,12 @@ public:
     varNumCols = lhs.varNumCols | rhs.varNumCols;
   }
   /**
-   * @brief Set the unary operator[Node].
+   * @brief Set the unary operator for this node.
    *
    * @param[in] resultPtr pointer to result[Matrix].
    * @param[in] _opNum    Operator number.
    * @param[in] cbf       Callback function type.
-   * @param[in] lhs       Become the left child of current node.
+   * @param[in] lhs       The operand of the unary operation.
    */
   void unaryOpSet(boost::shared_ptr<MT> resultPtr,
 		              OpType _opNum,
@@ -222,7 +223,7 @@ public:
     leftChild->deepCopy(lhs);
   }
   /**
-   * @brief Print out the computational tree to file.
+   * @brief Print out the computational tree to log file.
    */
   void print(FILE *fp) const {
     matrixPtr->print();
@@ -284,13 +285,20 @@ public:
 
   // initial and result must point to existing MatrixTypes
   /**
-   * @brief Calculate derivative from top to bottom in recursion.
+   * @brief Traversse computational tree in post-order. Replace the matrix
+   * as moving towards the leaf nodes(Reverse Mode).
+   * Track the changes according to different methods associated with 
+   * different operators.  TODO need to improve.
    *
    * @param[in] initial Initial matrix.
    * @param[in] result  Result matrix.
-   * @param[in] transposeFlag Transpose flag.
+   * @param[in] transposeFlag Transpose Flag. TODO 1? 
    * @param[in] identityInitialFlag Boolean value for identity matrices.
+   *                                If set 1 the matrix of this node is 
+   *                                identity matrix. 
    * @param[in] zeroResultFlag      Boolean value if it is a zero matrix.
+   *                                If set 1 the matrix of this node is 
+   *                                zero matrix.
    *
    */
   void gradientVec(boost::shared_ptr<MT> initial, 
@@ -315,7 +323,8 @@ public:
       if (NULL != leftChild) *leftPtr  = *(leftChild->matrixPtr);
       boost::shared_ptr<MT> rightPtr(new MT);
       if (NULL != rightChild) *rightPtr  = *(rightChild->matrixPtr);
-
+    // Replace matrices of its children according to different type
+    // of callBackFunctions.
       callBackFunc(result, 
                    initial, 
                    leftPtr, 
@@ -324,7 +333,7 @@ public:
 		               transposeFlag,
                    identityInitialFlag, 
                    zeroResultFlag);
-
+      // Update the matrices recursively towards the leaf nodes.
       if (NULL!=leftChild) {
 	      int leftFlag = transposeFlag & 1;
 	      leftChild->gradientVec(leftPtr, 

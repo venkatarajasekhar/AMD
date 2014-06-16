@@ -10,7 +10,7 @@ namespace AMD {
   /** 
    * Compute the scalar trace(a) from the matrix a.
    * @param[in] a A symbolic matrix argument.
-   * @return the SymbolicScalarMatlab trace(a)
+   * @return The SymbolicScalarMatlab representation trace(a)
    */
   SymbolicScalarMatlab trace(const SymbolicMatrixMatlab& a)  {
     assert(a.getNumRows() == a.getNumCols());
@@ -21,7 +21,7 @@ namespace AMD {
   /** 
    * Compute the scalar logdet(a) from the matrix a.
    * @param[in] a A symbolic matrix argument.
-   * @return the SymbolicScalarMatlab logdet(a)
+   * @return The SymbolicScalarMatlab representation logdet(a)
    */
   SymbolicScalarMatlab logdet(const SymbolicMatrixMatlab& a)  {
     assert(a.getNumRows() == a.getNumCols());
@@ -32,7 +32,7 @@ namespace AMD {
   /** 
    * Compute the scalar frobenius norm from the matrix a.
    * @param[in] a A symbolic matrix argument.
-   * @return the SymbolicScalarMatlab representation of ||a||_F.
+   * @return The SymbolicScalarMatlab representation of ||a||_F.
    */
   SymbolicScalarMatlab fnorm(const SymbolicMatrixMatlab& a)  {
     return 
@@ -43,7 +43,7 @@ namespace AMD {
   /** 
    * Compute the inverse matrix of the matrix a.
    * @param[in] a A symbolic matrix argument.
-   * @return the SymbolicMatrixMatlab representation of inv(a).
+   * @return The SymbolicMatrixMatlab representation of inv(a).
    */
   SymbolicMatrixMatlab inv(const SymbolicMatrixMatlab& a) {
     assert(a.getNumRows() == a.getNumCols());
@@ -56,7 +56,7 @@ namespace AMD {
   /** 
    * Compute the transposed matrix of the matrix a.
    * @param[in] a A symbolic matrix argument.
-   * @return the SymbolicMatrixMatlab representation of a^T.
+   * @return The SymbolicMatrixMatlab representation of a^T.
    */
   SymbolicMatrixMatlab transpose(const SymbolicMatrixMatlab& a) {
     return SymbolicMatrixMatlab (a.symbol+"'",
@@ -70,7 +70,7 @@ namespace AMD {
    * Compute the elementwise product between a and b.
    * @param[in] a A symbolic matrix argument.
    * @param[in] b Another symbolic matrix argument.
-   * @return the SymbolicMatrixMatlab representation of a .* b.
+   * @return The SymbolicMatrixMatlab representation of a .* b.
    */
   SymbolicMatrixMatlab elementwiseProd(const SymbolicMatrixMatlab& a, 
 				       const SymbolicMatrixMatlab& b) {
@@ -85,7 +85,7 @@ namespace AMD {
    * Compute a+b, where a and b are matrices.
    * @param[in] a A symbolic matrix argument.
    * @param[in] b Another symbolic matrix argument.
-   * @return the SymbolicMatrixMatlab representation of a + b.
+   * @return The SymbolicMatrixMatlab representation of a + b.
    */
   SymbolicMatrixMatlab operator+(const SymbolicMatrixMatlab& a, 
 				 const SymbolicMatrixMatlab& b) {
@@ -100,7 +100,7 @@ namespace AMD {
    * Compute a-b, where a and b are matrices.
    * @param[in] a A symbolic matrix argument.
    * @param[in] b Another symbolic matrix argument.
-   * @return the SymbolicMatrixMatlab representation of a - b.
+   * @return The SymbolicMatrixMatlab representation of a - b.
    */
   SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a, 
 				 const SymbolicMatrixMatlab& b) {
@@ -114,7 +114,7 @@ namespace AMD {
   /** 
    * Unary minus: Compute the negation -a, where a is a matrix.
    * @param[in] a A symbolic matrix argument.
-   * @return the SymbolicMatrixMatlab representation of -a.
+   * @return The SymbolicMatrixMatlab representation of -a.
    */
   SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a) {
     return SymbolicMatrixMatlab("(-"+a.symbol+")",
@@ -127,7 +127,7 @@ namespace AMD {
    * Compute a*b, where a and b are matrices.
    * @param[in] a A symbolic matrix argument.
    * @param[in] b Another symbolic matrix argument.
-   * @return the SymbolicMatrixMatlab representation of a * b.
+   * @return The SymbolicMatrixMatlab representation of a * b.
    */
   SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a, 
 				 const SymbolicMatrixMatlab& b) {
@@ -144,7 +144,7 @@ namespace AMD {
    * Compute a.*b, where a is a scalar and b is a matrix.
    * @param[in] a A SymbolicScalarMatlab.
    * @param[in] b A SymbolicMatrixMatlab.
-   * @return the SymbolicMatrixMatlab representation of a .* b.
+   * @return The SymbolicMatrixMatlab representation of a .* b.
    */
   SymbolicMatrixMatlab operator*(const SymbolicScalarMatlab& a, 
 				 const SymbolicMatrixMatlab& b) {
@@ -156,7 +156,7 @@ namespace AMD {
    * Compute a.*b, where a is a matrix and b is a scalar.
    * @param[in] a A SymbolicMatrixMatlab.
    * @param[in] b A SymbolicScalarMatlab.
-   * @return the SymbolicMatrixMatlab representation of a .* b.
+   * @return The SymbolicMatrixMatlab representation of a .* b.
    */
   SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a, 
 				 const SymbolicScalarMatlab& b) {
@@ -170,7 +170,7 @@ namespace AMD {
    * Compute a./b, where a is a matrix and b is a scalar.
    * @param[in] a A SymbolicMatrixMatlab.
    * @param[in] b A SymbolicScalarMatlab.
-   * @return the SymbolicMatrixMatlab representation of a ./ b.
+   * @return The SymbolicMatrixMatlab representation of a ./ b.
    */
   SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a,
 				 const SymbolicScalarMatlab& b) {
