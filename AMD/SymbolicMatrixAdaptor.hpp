@@ -109,6 +109,19 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
   static void print (const SymbolicMatrixMatlab& matrix, FILE* fp) {
     matrix.print(fp);
   }
+
+  /** 15. matrix diagonal */
+  static void diag(const SymbolicMatrixMatlab& a,
+                   SymbolicMatrixMatlab& dest
+                  ) {
+    copy(dest, AMD::diag(a));
+  }
+  /** 16. matrix element-wise product */
+  static void elementwiseProd(const SymbolicMatrixMatlab& first,
+                              const SymbolicMatrixMatlab& second,
+                              SymbolicMatrixMatlab& dest) {
+    copy(dest, AMD::elementwiseProd(first, second));
+  }
 };
 
 } 

@@ -73,7 +73,7 @@ namespace AMD {
    */
 
   SymbolicMatrixMatlab diag(const SymbolicMatrixMatlab &a) {
-    assert(a.getNumRows() == a.getNumCols());
+    assert(a.getNumRows() == a.getNumCols()); // check square matrix.
     return SymbolicMatrixMatlab("diag(" +
                                 detail::removeParenthesis(a.symbol)+")",
                                 a.getNumRows(),
