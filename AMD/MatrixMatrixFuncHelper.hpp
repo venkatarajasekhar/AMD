@@ -28,19 +28,20 @@ template <class MT, class ST> class MatrixMatrixFunc;
  * @tparam MT Matrix type
  * @tparam ST Scalar type
  *
- * @param[in] result Matrix after calling call back function.
- * @param[in] current Matrix before calling call back function.
- * @param[in] left The matrix associated with the left child node after
- *                 calling call back function.
- * @param[in] right The matrix associated with the right child node after
- *                  calling call back function.
- * @param[in] node  Current node.
- * @param[in] transposeFlag Indicate whether the matrix for this node is
- *                          transpose matrix.
- * @param[in] identityCurrentFlag  Indicate whether the matrix for this 
- *                                 node is identity matrix.
- * @param[in] zeroResultFlag  Indicate whether the result for this node is 
- *                            zero.
+ * @param[in] result                Matrix after calling call back function.
+ * @param[in] current               Matrix before calling call back function.
+ * @param[in] left                  The matrix associated with the left child
+ *                                  node after calling call back function.
+ * @param[in] right                 The matrix associated with the right 
+ *                                  child node after calling call 
+ *                                  back function.
+ * @param[in] node                  Current node.
+ * @param[in] transposeFlag         Indicate whether the matrix for this node 
+ *                                  is transpose matrix.
+ * @param[in] identityCurrentFlag   Indicate whether the matrix for this 
+ *                                  node is identity matrix.
+ * @param[in] zeroResultFlag        Indicate whether the result for this node
+ *                                  is zero.
  *
  */
 template <class MT,class ST>
@@ -52,13 +53,14 @@ void constOp(boost::shared_ptr<MT> result,
 	           int& transposeFlag,
 	           bool& identityCurrentFlag, 
 	           bool& zeroResultFlag) {
-    assert( NULL != node && // check node type
-	          NULL == node->leftChild &&
+    assert( NULL != node && // check node type. 
+	          NULL == node->leftChild &&  // node must be leaf node.
 	          NULL == node->rightChild &&
 	          node->isConst &&
 	          CONST == node->opNum && 
 	          0 == node->varNumRows &&
 	          0 == node->varNumCols);
+    // Nothing to do with constant matrices.
 }
 
 /** 
@@ -87,7 +89,7 @@ void varOp(boost::shared_ptr<MT> result,
 	   bool& identityCurrentFlag, 
 	   bool& zeroResultFlag) {
     assert( NULL != node && // check node type
-	  NULL == node->leftChild &&
+	  NULL == node->leftChild &&  // node must be leaf node.
 	  NULL == node->rightChild &&
 	  !node->isConst &&
 	  VAR == node->opNum && 
@@ -118,7 +120,8 @@ void varOp(boost::shared_ptr<MT> result,
 
 /** 
   * @brief Functions to deal with opNum==PLUS
-  * Callback function for differentiation involving operator+
+  * Callback function for differentiation involving plus operator
+  * applying on this node.
   *
   * @tparam MT Matrix type
   * @tparam ST Scalar type
@@ -155,7 +158,8 @@ void plusOp( boost::shared_ptr<MT> result,
   }
 }
 /**
- * @brief Operator "+" overloading for MMFunc.
+ * @brief MatrixMatrixFunc operator "+" overloading. Create a new node
+ * which is the sum of its child node in the computational tree.
  *
  * @tparam MT Matrix type.
  * @tparam ST Scalar type.
@@ -171,18 +175,21 @@ MatrixMatrixFunc<MT,ST> operator+ (const MatrixMatrixFunc<MT,ST> &lhs,
          rhs.isConst || 
 	       (lhs.varNumRows==rhs.varNumRows && 
 	       lhs.varNumCols==rhs.varNumCols));
-
+  // The new node of MatrixMatrixFunction.
   MatrixMatrixFunc<MT,ST> result;
   MT tmp;
+  // Add the matrices of left node and right node.
   MatrixAdaptorType::add((*lhs.matrixPtr),(*rhs.matrixPtr), tmp);
   boost::shared_ptr<MT> sumPtr(new MT(tmp));
+  // Initialize the node in computational tree with the new matrix and PLUS 
+  // operator.
   result.binOpSet( sumPtr, PLUS, plusOp<MT,ST>, lhs, rhs );
   return(result);
 }
 
 /**
  * @brief Functions to deal with opNum==MINUS
- * Callback function for differentiation involving operator-
+ * Callback function for differentiation involving minus operation.
  *
  * @tparam MT Matrix type
  * @tparam ST Scalar type
@@ -220,7 +227,8 @@ void minusOp( boost::shared_ptr<MT> result,
   }
 }
 /**
- * @brief Operator - overloading.
+ * @brief Operator - overloading. Create a new node in computational tree 
+ * which is the substraction of its left and right child.
  *
  * @tparam MT Matrix type.
  * @tparam ST Scalar type.
@@ -236,12 +244,13 @@ MatrixMatrixFunc<MT,ST> operator- (const MatrixMatrixFunc<MT,ST> &lhs,
          rhs.isConst || 
 	       (lhs.varNumRows==rhs.varNumRows && 
 	       lhs.varNumCols==rhs.varNumCols));
-
+  // The new node.
   MatrixMatrixFunc<MT,ST> result;
   MT tmp;
   MatrixAdaptorType::minus(*(lhs.matrixPtr), *(rhs.matrixPtr), tmp);
   boost::shared_ptr<MT> diffPtr
    (new MT(tmp));
+  // Initialize the new node with pointers and call back functions.
   result.binOpSet( diffPtr, MINUS, minusOp<MT,ST>, lhs, rhs );
   return(result);
 }
@@ -314,10 +323,11 @@ void timesOp( boost::shared_ptr<MT> result,
       transposeFlag = 3;
     } else {
       MT tmp0, tmp1, tmp2, tmp3;
+      // left = current * right->matrix^T
       MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), tmp0);
       MatrixAdaptorType::multiply((*current), tmp0, tmp1);
       MatrixAdaptorType::copy ((*left), tmp1);
-
+      // right = left->matrix^T * current
       MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), tmp2);
       MatrixAdaptorType::multiply(tmp2, *current, tmp3);
       MatrixAdaptorType::copy((*right), tmp3);
@@ -327,7 +337,8 @@ void timesOp( boost::shared_ptr<MT> result,
   }
 }
 /**
- * @brief Operator * overloading 
+ * @brief Operator * overloading. Create a new node with "*" operator 
+ * in computational tree.
  *
  * @tparam MT Matrix type
  * @tparam ST Scalar type
@@ -343,11 +354,12 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
           rhs.isConst || 
 	        (lhs.varNumRows==rhs.varNumRows && 
 	        lhs.varNumCols==rhs.varNumCols));
-
+  // New node in computational tree.
   MatrixMatrixFunc<MT,ST> result;
   MT tmp;
   MatrixAdaptorType::multiply(*(lhs.matrixPtr), *(rhs.matrixPtr), tmp);
   boost::shared_ptr<MT> timesPtr(new MT((tmp)));
+  // Initialize new node with time operator.
   result.binOpSet(timesPtr, TIMES, timesOp<MT,ST>, lhs, rhs);
   return(result);
 }
@@ -382,6 +394,7 @@ void transposeOp( boost::shared_ptr<MT> result,
 	  TRANSPOSE== node->opNum &&
 	  current.use_count()>=1 && // current, left and right must be present 
 	  left.use_count()>=1 );
+  // *left = *current;
   MatrixAdaptorType::copy ((*left), (*current));
   if (!identityCurrentFlag) {
     if (transposeFlag) {
@@ -393,7 +406,8 @@ void transposeOp( boost::shared_ptr<MT> result,
 }
 
 /**
- * @brief Transpose MMFunc node. 
+ * @brief Create a new node with operator Transpose in computational 
+ * tree.
  *
  * @tparam MT Matrix type
  * @tparam ST Scalar type
@@ -479,7 +493,8 @@ void invOp( boost::shared_ptr<MT> result,
 }
 
 /**
- * @brief Operator "inv" overloading
+ * @brief Operator "inv" overloading. Create a new node inverse 
+ * in computational tree.
  *
  * @tparam MT Matrix type
  * @tparam ST Scalar type
@@ -494,7 +509,8 @@ MatrixMatrixFunc<MT,ST> inv(const MatrixMatrixFunc<MT,ST> &lhs) {
   if (INV!=lhs.opNum) {
     MT tmp0;
     MatrixAdaptorType::inv(*lhs.matrixPtr, tmp0);
-    boost::shared_ptr<MT> invPtr(new MT(tmp0));      
+    boost::shared_ptr<MT> invPtr(new MT(tmp0));     
+    // Initialize the node. 
     result.unaryOpSet( invPtr, INV, invOp<MT,ST>, lhs );
   } else {
     assert(NULL!=lhs.leftChild);
@@ -503,7 +519,9 @@ MatrixMatrixFunc<MT,ST> inv(const MatrixMatrixFunc<MT,ST> &lhs) {
   return(result);
 }
 /**
- * @brief Trace of a node
+ * @brief Create the root node for a Scalar-Matrix function trace.
+ * Once creating this node, the calculation of derivatives through
+ * the computational tree (gradienVec) will be trigged.
  *
  * @tparam MT Matrix type
  * @tparam ST Scalar type
@@ -521,14 +539,18 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
   boost::shared_ptr<MT> resPtr(new MT);
   MT tmp0, tmp1;
   MatrixAdaptorType::eye(*resPtr, n, tmp0);
+  // The starting point for trace is a identity matrix.
   MatrixAdaptorType::copy((*initPtr), tmp0); 
   MatrixAdaptorType::zeros(*resPtr, lhs.varNumRows, lhs.varNumCols, tmp1); 
   MatrixAdaptorType::copy((*resPtr), tmp1);
   bool zeroFlag = true;
 
   // TODO any need to deal with gradientVec? Not at this moment
+  // Trigger gradientVec to calculate the derivative along the computational
+  // tree reversely.
   lhs.gradientVec(initPtr, resPtr, false, true, zeroFlag);
   ST tmp2;
+  
   if (zeroFlag) {
     MatrixAdaptorType::trace(*lhs.matrixPtr, tmp2);
     ScalarMatrixFunc<MT, ST> result( 
@@ -543,7 +565,9 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
   }
 }
 /**
- * @brief Logdet of a MMFunc
+ * @brief Create the root node for Scalar-Matrix function logdet. Once
+ * creating this node, the calculation of derivative along the computational
+ * tree is triggered.  
  *
  * @tparam MT Matrix type
  * @tparam ST Scalar type
@@ -575,6 +599,7 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
     // logdet for MMF 
     return(-logdet((*lhs.leftChild)));
   }
+  // The starting point for logdet is a inverse matrix.
   MatrixAdaptorType::inv(*lhs.matrixPtr, tmp1);
   MatrixAdaptorType::copy(*initPtr, tmp1);  
   bool zeroFlag = true;

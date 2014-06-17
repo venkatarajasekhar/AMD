@@ -188,20 +188,20 @@ public:
     }
   }
   /**
-   * @brief Set the binary operator for this node. Different methods for matrix 
-   * replacement apply to different operators. TODO need to be more accurate.
+   * @brief Create a node with matrix binary operation.
    *
    * @param[in] resultPtr Pointer to the matrix associated to this node.
    * @param[in] _opNum Operator number.
-   * @param[in] cbf The Call back function type.
-   * @param[in] lhs The left operand of the binary operation.
-   * @param[in] rhs The right operand of the binary operation.
+   * @param[in] cbf The call back function for this node.
+   * @param[in] lhs The left child node.
+   * @param[in] rhs The right child node.
    */
   void binOpSet(boost::shared_ptr<MT> resultPtr,
 		            OpType _opNum,
 		            CallBackFuncType cbf,
 		            const MatrixMatrixFunc<MT,ST> &lhs, 
 		            const MatrixMatrixFunc<MT,ST> &rhs) {
+    // Set the unary operation for its left child node.
     unaryOpSet(resultPtr,_opNum,cbf,lhs);
     rightChild = new MatrixMatrixFunc<MT,ST>;
     rightChild->deepCopy(rhs);

@@ -143,10 +143,10 @@ void testMatrixMatrixFunc3 () {
   AMD::SymbolicMatrixMatlab A("A", 2, 2);
   AMD::SymbolicMatrixMatlab B("B", 2, 2);
   AMD::SymbolicMatrixMatlab C("C", 2, 2);
-  MMFunc fX(X, true);
-  MMFunc fA(A, false);
-  MMFunc fB(B, false);
-  MMFunc fC(C, false);
+  MMFunc fX(X, false);
+  MMFunc fA(A, true);
+  MMFunc fB(B, true);
+  MMFunc fC(C, true);
 
   MMFunc fBX = fB * fX;
   MMFunc fCX = fC * fX;
@@ -159,6 +159,15 @@ void testMatrixMatrixFunc3 () {
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << "derivative" << std::endl;
   std::cout << func.derivativeVal.getString() << std::endl;
+  // test transpose
+  
+  MMFunc fX1(X, false);
+  MMFunc fA1(A, true);
+  MMFunc fAT = fA1 * fX1;
+  SMFunc func2 = trace(fAT);
+  std::cout << "test Transpose" << std::endl;
+  std::cout << func2.functionVal.getString() << std::endl;
+  std::cout << func2.derivativeVal.getString() << std::endl;
 }
 
 int main() {
