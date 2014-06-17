@@ -15,7 +15,11 @@
 namespace AMD {
 
 /**
- * @brief MatrixMatrixFunc class.
+ * @brief MatrixMatrixFunc class. The computational tree consists of 
+ * nodes of MatrixMatrixFunc type. In reverse mode differentiation, 
+ * the computation of derivative is passing down to the leaf 
+ * nodes of the tree and the derivate is the sum of matrices of all
+ * leaf nodes.
  */
 
 template <class MT, class ST>
@@ -94,7 +98,12 @@ public:
    * Do what's necessary to set up a variable or a constant
    */ 
   /**
-   * @brief Intiialize the object. 
+   * @brief Set the value of member variables of leaf nodes. 
+   * If the matrix of leaf node is constant matrix, the callBackFunc 
+   * is constOp, the varNumRows and varNumCols are set to zero and the 
+   * opNum is set to CONST. Else if the matrix of the leaf node is 
+   * variable matrix, the varNumRows and varNumCols are set to the size
+   * of the matrix associated to this node.
    *
    * @param[in] isVariable Boolean value indicates whether the implicit
    * matrix is a variable. If so, initialize the object as a variable.
@@ -138,7 +147,7 @@ public:
 
   /**
    * @function
-   * Create a shallow copy of the current MMFunc 
+   * Create a shallow copy of the current MatrixMatrixFunc node. 
    * @param[in] other The MMFunc that we want to copy from.
    * @return Nothing
    */ 
@@ -155,7 +164,8 @@ public:
 
   /**
    * @function
-   * Create a deep copy of the current MMFunc 
+   * Create a deep copy of the current MatrixMatrixFunc node. This function
+   * will create a copy of this node as well as its children nodes.
    * @param[in] other The MMFunc that we want to copy from.
    * @return Nothing
    */ 
@@ -294,11 +304,11 @@ public:
    * @param[in] result  Result matrix.
    * @param[in] transposeFlag Transpose Flag. TODO 1? 
    * @param[in] identityInitialFlag Boolean value for identity matrices.
-   *                                If set 1 the matrix of this node is 
+   *                                If 1 the matrix of this node is 
    *                                identity matrix. 
-   * @param[in] zeroResultFlag      Boolean value if it is a zero matrix.
-   *                                If set 1 the matrix of this node is 
-   *                                zero matrix.
+   * @param[in] zeroResultFlag      Boolean value for identity matrices.
+   *                                If 1 the matrix is a zero matrix.
+   *                 
    *
    */
   void gradientVec(boost::shared_ptr<MT> initial, 
