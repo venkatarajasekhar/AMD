@@ -49,7 +49,7 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
   static void transpose (const SymbolicMatrixMatlab& a, 
                          SymbolicMatrixMatlab& dest
                          ) {
-    copy(dest, a);
+    copy(dest, AMD::transpose(a));
   }
 
   /** 7. matrix negation */
