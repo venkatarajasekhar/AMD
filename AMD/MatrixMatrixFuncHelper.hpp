@@ -13,9 +13,9 @@ namespace AMD {
 /**
  * @enum Enum type for operators.
  */
-enum OpType { NONE, CONST, VAR, PLUS, MINUS, TIMES, TRANSPOSE, INV};
+enum OpType { NONE, CONST, VAR, PLUS, MINUS, TIMES, TRANSPOSE, INV, DIAG};
 std::string opName[] = 
-  { "none", "const", "var", "+", "-", "*", "transpose", "inv" };
+  { "none", "const", "var", "+", "-", "*", "transpose", "inv", "diag" };
 
 // forward declaration
 template <class MT, class ST> class MatrixMatrixFunc;
@@ -429,6 +429,55 @@ MatrixMatrixFunc<MT,ST> transpose (const MatrixMatrixFunc<MT,ST> &lhs) {
   }
   return(result);
 }
+/**
+ * @brief Functions to deal with opNum = DIAG
+ * Callback function for differentiation involving the matrix transpose.
+ * 
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ *
+ */
+
+template <class MT, class ST>
+void diagOp ( boost::shared_ptr<MT>   result,
+              boost::shared_ptr<MT>   current,
+              boost::shared_ptr<MT>   left,
+              boost::shared_ptr<MT>   right,
+              const MatrixMatrixFunc<MT,ST>* node, // current node.
+              int& transposeFlag,
+              bool& identityCurrentFlag,
+              bool& zeroResultFlag) {
+  typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  assert( NULL != node && // check node type
+          NULL != node->leftChild &&  // unary operator
+          NULL == node->rightChild &&
+          DIAG == node->opNum &&
+          current.use_count() >= 1 &&
+          left.use_count() >= 1 );
+  MatrixAdaptorType::diag((*current), (*left));
+}
+
+/**
+ * @brief Create a new node with operator Diag in computational tree.
+ */
+
+template <class MT, class ST> 
+MatrixMatrixFunc<MT,ST> diag (const MatrixMatrixFunc<MT,ST>& lhs) {
+  typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  MatrixMatrixFunc<MT,ST> result;
+  if (DIAG != lhs.opNum) {
+    MT tmp;
+    MatrixAdaptorType::diag(*(lhs.matrixPtr), tmp);
+    boost::shared_ptr<MT> diagPtr(new MT(tmp));
+    result.unaryOpSet(diagPtr, DIAG, diagOp<MT,ST>, lhs);
+  } else {
+    assert(NULL != lhs.leftChild);
+    result.deepCopy(*lhs.leftChild);
+  }
+}
+
+
 
 
 
