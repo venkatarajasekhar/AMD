@@ -28,14 +28,19 @@ template <class MT, class ST> class MatrixMatrixFunc;
  * @tparam MT Matrix type
  * @tparam ST Scalar type
  *
- * @param[in] result
- * @param[in] current
- * @param[in] left
- * @param[in] right
- * @param[in] node
- * @param[in] transposeFlag
- * @param[in] identityCurrentFlag
- * @param[in] zeroResultFlag
+ * @param[in] result Matrix after calling call back function.
+ * @param[in] current Matrix before calling call back function.
+ * @param[in] left The matrix associated with the left child node after
+ *                 calling call back function.
+ * @param[in] right The matrix associated with the right child node after
+ *                  calling call back function.
+ * @param[in] node  Current node.
+ * @param[in] transposeFlag Indicate whether the matrix for this node is
+ *                          transpose matrix.
+ * @param[in] identityCurrentFlag  Indicate whether the matrix for this 
+ *                                 node is identity matrix.
+ * @param[in] zeroResultFlag  Indicate whether the result for this node is 
+ *                            zero.
  *
  */
 template <class MT,class ST>

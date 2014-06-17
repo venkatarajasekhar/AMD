@@ -295,14 +295,13 @@ public:
 
   // initial and result must point to existing MatrixTypes
   /**
-   * @brief Traversse computational tree in post-order. Replace the matrix
-   * as moving towards the leaf nodes(Reverse Mode).
-   * Track the changes according to different methods associated with 
-   * different operators.  TODO need to improve.
+   * @brief Traversse the computational tree in post-order. Replace the matrix
+   * as moving towards the leaf nodes(Reverse Mode) by applying different 
+   * specific callBackFunction to each node.
    *
    * @param[in] initial Initial matrix.
    * @param[in] result  Result matrix.
-   * @param[in] transposeFlag Transpose Flag. TODO 1? 
+   * @param[in] transposeFlag Transpose Flag. 
    * @param[in] identityInitialFlag Boolean value for identity matrices.
    *                                If 1 the matrix of this node is 
    *                                identity matrix. 
