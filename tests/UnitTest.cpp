@@ -163,7 +163,7 @@ void testMatrixMatrixFunc3 () {
   
   MMFunc fX1(X, false);
   MMFunc fA1(A, true);
-  MMFunc fAT = fA1 * fX1;
+  MMFunc fAT = fA1 % fX1;
   SMFunc func2 = trace(fAT);
   std::cout << "test Transpose" << std::endl;
   std::cout << func2.functionVal.getString() << std::endl;

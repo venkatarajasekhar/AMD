@@ -13,9 +13,9 @@ namespace AMD {
 /**
  * @enum Enum type for operators.
  */
-enum OpType { NONE, CONST, VAR, PLUS, MINUS, TIMES, TRANSPOSE, INV, DIAG};
+enum OpType { NONE, CONST, VAR, PLUS, MINUS, TIMES,ELEWISE, TRANSPOSE, INV, DIAG};
 std::string opName[] = 
-  { "none", "const", "var", "+", "-", "*", "transpose", "inv", "diag" };
+  { "none", "const", "var", "+", "-", "*", "elewise", "transpose", "inv", "diag" };
 
 // forward declaration
 template <class MT, class ST> class MatrixMatrixFunc;
@@ -363,7 +363,46 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
   result.binOpSet(timesPtr, TIMES, timesOp<MT,ST>, lhs, rhs);
   return(result);
 }
+// Functions to deal with opNum = ELEWISE
+// Callback function for differentiation involving elementwise product
 
+template<class MT, class ST> 
+void elewiseOp (  boost::shared_ptr<MT>   result,
+                  boost::shared_ptr<MT>   current,
+                  boost::shared_ptr<MT>   left,
+                  boost::shared_ptr<MT>   right,
+                  const MatrixMatrixFunc<MT,ST>* node,
+                  int& transposeFlag,
+                  bool& identityCurrentFlag,
+                  bool& zeroResultFlag) {
+  typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  assert( NULL != node &&
+          NULL != node->leftChild &&
+          NULL != node->rightChild &&
+          ELEWISE == node->opNum &&
+          current.use_count() >= 1 &&
+          left.use_count() >= 1 &&
+          right.use_count()>= 1);
+  MatrixAdaptorType::elementwiseProd(*(node->leftChild->matrixPtr), *(current), *right);
+  MatrixAdaptorType::elementwiseProd(*(node->rightChild->matrixPtr), *(current), *left);
+}
+
+// Use operator % to present elementwise (temporary)
+template <class MT, class ST> 
+MatrixMatrixFunc<MT,ST> operator% ( const MatrixMatrixFunc<MT,ST>& lhs,
+                                    const MatrixMatrixFunc<MT,ST>& rhs) {
+  typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  assert( lhs.isConst ||
+          rhs.isConst ||
+          (lhs.varNumRows == rhs.varNumRows &&
+           lhs.varNumCols == rhs.varNumCols));
+  MatrixMatrixFunc<MT,ST> result;
+  MT tmp;
+  MatrixAdaptorType::elementwiseProd(*(lhs.matrixPtr), *(rhs.matrixPtr), tmp);
+  boost::shared_ptr<MT> elewisePtr(new MT(tmp));
+  result.binOpSet(elewisePtr, ELEWISE, elewiseOp<MT,ST>, lhs, rhs);
+  return (result);
+}
 
 /** 
  * @brief Functions to deal with opNum==TRANSPOSE
