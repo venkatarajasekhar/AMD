@@ -29,6 +29,7 @@ namespace AMD {
 				detail::removeParenthesis(a.symbol)+"))");
   }
 
+
   /** 
    * Compute the scalar frobenius norm from the matrix a.
    * @param[in] a A symbolic matrix argument.
@@ -62,6 +63,21 @@ namespace AMD {
     return SymbolicMatrixMatlab (a.symbol+"'",
 				                         a.getNumCols(),
 				                         a.getNumRows());
+  }
+
+  /**
+   * Compute the diagnol matrix of matrix a.
+   *
+   * @param[in] a A symbolic matrix argument.
+   * @return The SymbolicMatrixMatlab representation of diag(a).
+   */
+
+  SymbolicMatrixMatlab diag(const SymbolicMatrixMatlab &a) {
+    assert(a.getNumRows() == a.getNumCols());
+    return SymbolicMatrixMatlab("diag(" +
+                                detail::removeParenthesis(a.symbol)+")",
+                                a.getNumRows(),
+                                a.getNumCols());
   }
 
 
