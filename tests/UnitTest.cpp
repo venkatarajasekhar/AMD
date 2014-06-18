@@ -163,9 +163,16 @@ void testMatrixMatrixFunc3 () {
   // test transpose
   
   MMFunc fX1(X, false);
-  MMFunc fA1(A, true);
-  MMFunc fAT = AMD::elementwiseProd(fA1, fX1);
-  SMFunc func2 = trace(fAT);
+  MMFunc fX2(X, false);
+  MMFunc fX3(X, false);
+  MMFunc fAX = AMD::elementwiseProd(fA, fX2);
+  
+  MMFunc fXX = AMD::elementwiseProd(fX1, fX2);
+  MMFunc fXXX = AMD::elementwiseProd(fX3, fXX);
+  MMFunc fX1INV = inv (fX1);
+  MMFunc fX2INV = inv (fX2);
+  MMFunc fX1INVfX2INV = AMD::elementwiseProd(fX1INV, fX2INV);
+  SMFunc func2 = trace(fAX);
   std::cout << "test Transpose" << std::endl;
   std::cout << func2.functionVal.getString() << std::endl;
   std::cout << func2.derivativeVal.getString() << std::endl;
