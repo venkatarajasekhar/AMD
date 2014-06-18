@@ -38,8 +38,7 @@ install (DIRECTORY .
          PATTERN "CMake*" EXCLUDE
          PATTERN "cmake_tests" EXCLUDE
          PATTERN "config.h.in" EXCLUDE
-         PATTERN "Makefile" EXCLUDE
-         PATTERN ".svn" EXCLUDE)
+         PATTERN "Makefile" EXCLUDE)
 
 # Make sure you install config.h also. This is not in the source directory.
 install (FILES
