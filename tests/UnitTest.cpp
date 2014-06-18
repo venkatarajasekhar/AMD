@@ -82,7 +82,6 @@ void testMatrixMatrixFunc() {
   func = trace(transpose(fx*fy));
   assert(func.derivativeVal.getString()==ans);
 
-
   ans = "Y";
   // d/dX trace(X*Y^T) = Y
   func = trace(fx*transpose(fy));
@@ -135,8 +134,10 @@ void testMatrixMatrixFunc() {
 }
 
 void testMatrixMatrixFunc3 () {
-  typedef AMD::MatrixMatrixFunc<AMD::SymbolicMatrixMatlab, AMD::SymbolicScalarMatlab> MMFunc;
-  typedef AMD::ScalarMatrixFunc<AMD::SymbolicMatrixMatlab, AMD::SymbolicScalarMatlab> SMFunc;
+  typedef AMD::MatrixMatrixFunc<AMD::SymbolicMatrixMatlab, 
+                                AMD::SymbolicScalarMatlab> MMFunc;
+  typedef AMD::ScalarMatrixFunc<AMD::SymbolicMatrixMatlab, 
+                                AMD::SymbolicScalarMatlab> SMFunc;
 
   std::string ans;
   AMD::SymbolicMatrixMatlab X("X", 2, 2);
@@ -163,7 +164,7 @@ void testMatrixMatrixFunc3 () {
   
   MMFunc fX1(X, false);
   MMFunc fA1(A, true);
-  MMFunc fAT = fA1 % fX1;
+  MMFunc fAT = AMD::elementwiseProd(fA1, fX1);
   SMFunc func2 = trace(fAT);
   std::cout << "test Transpose" << std::endl;
   std::cout << func2.functionVal.getString() << std::endl;
