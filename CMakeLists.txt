@@ -87,7 +87,7 @@ set(BOOST_LIBS_TO_CHECK random program_options)
 
 if (USE_ELEMENTAL)
   message(STATUS "Checking for mpi as Elemental support is turned on")
-#  set(BOOST_LIBS_TO_CHECK ${BOOST_LIBS_TO_CHECK} mpi)
+  set(BOOST_LIBS_TO_CHECK ${BOOST_LIBS_TO_CHECK} mpi)
 endif (USE_ELEMENTAL)
 
 if (BUILD_PYTHON)
