@@ -1,6 +1,7 @@
 #ifndef MatrixMatrixFunc_H
 #define MatrixMatrixFunc_H
 
+#include <iostream>
 #include <string>
 #include <cstdio>
 #include <assert.h>
@@ -234,42 +235,29 @@ public:
   }
   /**
    * @brief Print out the computational tree to log file.
+   * @param[out] os Output stream to print to.
    */
-  void print(FILE *fp) const {
-    matrixPtr->print();
-    if (NULL==leftChild && NULL==rightChild) {
-      fprintf(fp,":%s",opName[opNum].c_str());
-    } else {
-      fprintf(fp,":%s(",opName[opNum].c_str());
-      if (NULL!=leftChild) {
-	      leftChild->print(fp);
-      } 
-      if (NULL!=rightChild) {
-	      fprintf(fp,",");
-	      rightChild->print(fp);
-      } 
-      fprintf(fp,")");
+  void print(std::ostream& os=std::cout) const {
+    matrixPtr->print(os);
+
+    if (NULL==leftChild && NULL==rightChild) os << ":" << opName[opNum];
+    else {
+      os << "(" << opName[opNum];
+      if (NULL!=leftChild) leftChild->print(os);
+      if (NULL!=rightChild) { os << ","; rightChild->print(os); }
+      os << ")";
     }
   }
+
   /**
    * @brief Print the computational tree to file.
+   * @param[out] os Output stream to print to.
    */
-  void println(FILE *fp) const {
-    print(fp);
-    fprintf(fp,"\n");
+  void println(std::ostream& os=std::cout) const {
+    print(os);
+    os << std::endl;
   }
-  /**
-   * @brief Print the tree.
-   */
-  void print() const {
-    print(stdout);
-  }
-  /**
-   * @brief Print out the tree.
-   */
-  void println() const {
-    println(stdout);
-  }
+
   /**
    * @brief  Get the number of rows.
    *

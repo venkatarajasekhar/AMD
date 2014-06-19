@@ -68,37 +68,20 @@ struct SymbolicMatrixMatlab {
    */
   std::string getString() const { return(symbol); }
 
-   /** 
-   * Print internal string representation to a file.
-   * @param[in] fp File to print to.
-   */
-  void print(FILE *fp) const {
-    std::string tmp = detail::removeParenthesis(symbol);
-    fprintf(fp, "%s", tmp.c_str());
-  }
-
-   /** 
-   * Print internal string representation to a file.
-   * @param[in] fp File to print to.
-   */
- void println(FILE *fp) const {
-   std::string tmp = detail::removeParenthesis(symbol);
-    fprintf(fp, "%s\n", tmp.c_str());
-  }
-
-
   /** 
-   * Print internal string representation to stdout.
+   * Print internal string representation to a file.
+   * @param[out] os Outputstream to print to.
    */
-  void print() const {
-    print(stdout);
+  void print(std::ostream& os=std::cout) const {
+    os << detail::removeParenthesis(symbol);
   }
 
   /** 
-   * Print internal string representation to stdout.
+   * Print internal string representation to a file.
+   * @param[out] os Outputstream to print to.
    */
-  void println() const {
-    println(stdout);
+  void println(std::ostream os=std::cout) const {
+    os << detail::removeParenthesis(symbol) << std::endl;
   }
 
   // Below are functions needed to plug into the automatic

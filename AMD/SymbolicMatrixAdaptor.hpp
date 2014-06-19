@@ -23,53 +23,46 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
   /** 3. add two matrices */
   static void add (const SymbolicMatrixMatlab& first,
                    const SymbolicMatrixMatlab& second,
-                   SymbolicMatrixMatlab& dest
-                   ) {
+                   SymbolicMatrixMatlab& dest) {
     copy(dest, first+second);
   }
 
   /** 4. subtract two matrices */
   static void minus (const SymbolicMatrixMatlab& first,
                      const SymbolicMatrixMatlab& second, 
-                     SymbolicMatrixMatlab& dest
-                     ) {
+                     SymbolicMatrixMatlab& dest) {
     copy(dest, first-second);
   }
 
   /** 5. multiply two matrices */
   static void multiply (const SymbolicMatrixMatlab& first,
                         const SymbolicMatrixMatlab& second,
-                        SymbolicMatrixMatlab& dest
-                        ) {
+                        SymbolicMatrixMatlab& dest) {
     copy(dest, first*second);
   }
 
   /** 6. matrix transpose */
 
   static void transpose (const SymbolicMatrixMatlab& a, 
-                         SymbolicMatrixMatlab& dest
-                         ) {
+                         SymbolicMatrixMatlab& dest) {
     copy(dest, AMD::transpose(a));
   }
 
   /** 7. matrix negation */
   static void negation(const SymbolicMatrixMatlab& a,
-                       SymbolicMatrixMatlab& dest
-                       ) {
+                       SymbolicMatrixMatlab& dest) {
     copy(dest, -a);
   }
 
   /** 8. matrix inverse */
   static void inv(const SymbolicMatrixMatlab& a,
-                  SymbolicMatrixMatlab& dest
-                  ) {
+                  SymbolicMatrixMatlab& dest) {
     copy(dest, AMD::inv(a));
   }
 
   /** 9. matrix trace */
   static void trace(const SymbolicMatrixMatlab& a,
-                    SymbolicScalarMatlab& dest
-                    ) {
+                    SymbolicScalarMatlab& dest) {
     dest.copy(AMD::trace(a));
   }
 
@@ -77,8 +70,7 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
   // a cannot be const. Why?
   static void eye(SymbolicMatrixMatlab& a,  
                   int n,
-                  SymbolicMatrixMatlab& dest
-                  ) {
+                  SymbolicMatrixMatlab& dest) {
     copy(dest, a.eye(n));
   }
 
@@ -86,15 +78,13 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
   static void zeros(SymbolicMatrixMatlab& a, 
                     int m, 
                     int n,
-                    SymbolicMatrixMatlab& dest
-                    ) {
+                    SymbolicMatrixMatlab& dest) {
     copy(dest, a.zeros(m,n));
   }
 
   /** 12. matrix logdet */
   static void logdet(const SymbolicMatrixMatlab& a,
-                     SymbolicScalarMatlab& dest
-                     ) {
+                     SymbolicScalarMatlab& dest) {
     dest.copy(AMD::logdet(a));
   }
 
@@ -106,21 +96,22 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
   }
 
   /** 14. print out the matrix */
-  static void print (const SymbolicMatrixMatlab& matrix, FILE* fp) {
-    matrix.print(fp);
+  static void print (const SymbolicMatrixMatlab& matrix, 
+                     std::ostream& os=std::cout) {
+    matrix.print(os);
   }
 
   /** 15. matrix diagonal */
-  static void diag(const SymbolicMatrixMatlab& a,
-                   SymbolicMatrixMatlab& dest
-                  ) {
-    copy(dest, AMD::diag(a));
+  static void diag(const SymbolicMatrixMatlab& A,
+                   SymbolicMatrixMatlab& B) {
+    copy(B, AMD::diag(A));
   }
+
   /** 16. matrix element-wise product */
-  static void elementwiseProd(const SymbolicMatrixMatlab& first,
-                              const SymbolicMatrixMatlab& second,
-                              SymbolicMatrixMatlab& dest) {
-    copy(dest, AMD::elementwiseProd(first, second));
+  static void elementwiseProd(const SymbolicMatrixMatlab& A,
+                              const SymbolicMatrixMatlab& B,
+                              SymbolicMatrixMatlab& C) {
+    copy(C, AMD::elementwiseProd(A, B));
   }
 };
 
