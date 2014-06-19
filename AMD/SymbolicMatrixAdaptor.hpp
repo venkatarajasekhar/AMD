@@ -11,94 +11,94 @@ template <>
 struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
 
   /** 1. get the number of rows */
-  static int getNumRows (const SymbolicMatrixMatlab& matrix) {
-    return matrix.getNumRows();
+  static int getNumRows (const SymbolicMatrixMatlab& A) {
+    return A.getNumRows();
   }
 
   /** 2. get the number of cols */
-  static int getNumCols (const SymbolicMatrixMatlab& matrix) {
-    return matrix.getNumCols();
+  static int getNumCols (const SymbolicMatrixMatlab& A) {
+    return A.getNumCols();
   }
 
   /** 3. add two matrices */
-  static void add (const SymbolicMatrixMatlab& first,
-                   const SymbolicMatrixMatlab& second,
-                   SymbolicMatrixMatlab& dest) {
-    copy(dest, first+second);
+  static void add (const SymbolicMatrixMatlab& A,
+                   const SymbolicMatrixMatlab& B,
+                   SymbolicMatrixMatlab& C) {
+    copy(C, A+B);
   }
 
   /** 4. subtract two matrices */
-  static void minus (const SymbolicMatrixMatlab& first,
-                     const SymbolicMatrixMatlab& second, 
-                     SymbolicMatrixMatlab& dest) {
-    copy(dest, first-second);
+  static void minus (const SymbolicMatrixMatlab& A,
+                     const SymbolicMatrixMatlab& B, 
+                     SymbolicMatrixMatlab& C) {
+    copy(C, A-B);
   }
 
   /** 5. multiply two matrices */
-  static void multiply (const SymbolicMatrixMatlab& first,
-                        const SymbolicMatrixMatlab& second,
-                        SymbolicMatrixMatlab& dest) {
-    copy(dest, first*second);
+  static void multiply (const SymbolicMatrixMatlab& A,
+                        const SymbolicMatrixMatlab& B,
+                        SymbolicMatrixMatlab& C) {
+    copy(C, A*B);
   }
 
   /** 6. matrix transpose */
 
-  static void transpose (const SymbolicMatrixMatlab& a, 
-                         SymbolicMatrixMatlab& dest) {
-    copy(dest, AMD::transpose(a));
+  static void transpose (const SymbolicMatrixMatlab& A, 
+                         SymbolicMatrixMatlab& B) {
+    copy(B, AMD::transpose(A));
   }
 
   /** 7. matrix negation */
-  static void negation(const SymbolicMatrixMatlab& a,
-                       SymbolicMatrixMatlab& dest) {
-    copy(dest, -a);
+  static void negation(const SymbolicMatrixMatlab& A,
+                       SymbolicMatrixMatlab& B) {
+    copy(B, -A);
   }
 
   /** 8. matrix inverse */
-  static void inv(const SymbolicMatrixMatlab& a,
-                  SymbolicMatrixMatlab& dest) {
-    copy(dest, AMD::inv(a));
+  static void inv(const SymbolicMatrixMatlab& A,
+                  SymbolicMatrixMatlab& B) {
+    copy(B, AMD::inv(A));
   }
 
   /** 9. matrix trace */
-  static void trace(const SymbolicMatrixMatlab& a,
-                    SymbolicScalarMatlab& dest) {
-    dest.copy(AMD::trace(a));
+  static void trace(const SymbolicMatrixMatlab& A,
+                    SymbolicScalarMatlab& B) {
+    B.copy(AMD::trace(A));
   }
 
   /** 10. matrix identity */
   // a cannot be const. Why?
-  static void eye(SymbolicMatrixMatlab& a,  
+  static void eye(SymbolicMatrixMatlab& A,  
                   int n,
-                  SymbolicMatrixMatlab& dest) {
-    copy(dest, a.eye(n));
+                  SymbolicMatrixMatlab& B) {
+    copy(B, A.eye(n));
   }
 
   /** 11. matrix zero */ 
-  static void zeros(SymbolicMatrixMatlab& a, 
+  static void zeros(SymbolicMatrixMatlab& A, 
                     int m, 
                     int n,
-                    SymbolicMatrixMatlab& dest) {
-    copy(dest, a.zeros(m,n));
+                    SymbolicMatrixMatlab& B) {
+    copy(B, A.zeros(m,n));
   }
 
   /** 12. matrix logdet */
-  static void logdet(const SymbolicMatrixMatlab& a,
-                     SymbolicScalarMatlab& dest) {
-    dest.copy(AMD::logdet(a));
+  static void logdet(const SymbolicMatrixMatlab& A,
+                     SymbolicScalarMatlab& B) {
+    B.copy(AMD::logdet(A));
   }
 
   /** 13. matrix copy operator */
-  static void copy (SymbolicMatrixMatlab &a,      /**< target obj */
-                    const SymbolicMatrixMatlab &b /**< source obj */ ) {
+  static void copy (SymbolicMatrixMatlab &A,      /**< target obj */
+                    const SymbolicMatrixMatlab &B /**< source obj */ ) {
     // TODO symbol nRows nCols are private variables
-    a.copy(b);
+    A.copy(B);
   }
 
   /** 14. print out the matrix */
-  static void print (const SymbolicMatrixMatlab& matrix, 
+  static void print (const SymbolicMatrixMatlab& A, 
                      std::ostream& os=std::cout) {
-    matrix.print(os);
+    A.print(os);
   }
 
   /** 15. matrix diagonal */
