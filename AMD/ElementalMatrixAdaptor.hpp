@@ -1,6 +1,7 @@
 #ifndef MATRIX_MATRIX_ADAPATOR_HPP
 #define MATRIX_MATRIX_ADAPATOR_HPP
 
+#include <ostream>
 #include "MatrixAdaptor.hpp"
 #include "elem.hpp"
 
@@ -9,23 +10,39 @@ namespace AMD {
 template <typename T>
 struct MatrixAdaptor_t<elem::Matrix<T> > {
 
-  /** define the type of the values */
+  /**< define the type of the values */
   typedef T value_type;
 
-  /** typedef the matrix so that we can reuse it */
+  /**< typedef the matrix so that we can reuse it */
   typedef typename elem::Matrix<T> matrix_type;
 
-  /** 1. get the number of rows */
+  /**
+   * 1. 
+   * @brief A function to return the number of rows in a matrix
+   * @param[in] A The matrix for which we need the number of rows.
+   * @return number of rows in A
+   */
   static int getNumRows (const matrix_type& A) {
     return A.Height();
   }
 
-  /** 2. get the number of cols */
+  /**
+   * 2.
+   * @brief A function to return the number of cols in a matrix
+   * @param[in] A The matrix for which we need the number of cols.
+   * @return number of cols in A
+   */
   static int getNumCols (const matrix_type& A) {
     return A.Width();
   }
 
-  /** 3. add two matrices */
+  /** 
+   * 3. 
+   * @brief Add two matrices 
+   * @param[in] A The first matrix
+   * @param[in] B The second matrix
+   * @param[out] C C is overwritten with (A+B)
+   */
   static void add (const matrix_type& A,
                    const matrix_type& B,
                    matrix_type& C) {
@@ -37,7 +54,13 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
     elem::Axpy (1.0, B, C);
   }
 
-  /** 4. subtract two matrices */
+  /** 
+   * 4. 
+   * @brief Subtract one matrix from another.
+   * @param[in] A The first matrix
+   * @param[in] B The second matrix
+   * @param[out] C C is overwritten with (A-B)
+   */
   static void minus (const matrix_type& A,
                      const matrix_type& B, 
                      matrix_type& C) {
@@ -49,7 +72,13 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
     elem::Axpy (-1.0, B, C);
   }
 
-  /** 5. multiply two matrices */
+  /** 
+   * 5. 
+   * @brief Multiply one matrix with another.
+   * @param[in] A The first matrix
+   * @param[in] B The second matrix
+   * @param[out] C C is overwritten with (A*B)
+   */
   static void multiply (const matrix_type& A,
                         const matrix_type& B,
                         matrix_type& C) {
@@ -58,13 +87,23 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
     elem::Gemm (elem::NORMAL, elem::NORMAL, 1.0, A, B, 0.0, C);
   }
 
-  /** 6. matrix transpose */
+  /** 
+   * 6. 
+   * @brief Compute the matrix transpose.
+   * @param[in] A The matrix to be transposed.
+   * @param[out] B B is overwritten with A^{T}
+   */
   static void transpose (const matrix_type& A, 
                          matrix_type& B) {
     elem::Transpose (A, B);
   }
 
-  /** 7. matrix negation */
+  /** 
+   * 7. 
+   * @brief Compute element-wise negation of a matrix.
+   * @param[in] A The matrix to be negated.
+   * @param[out] B B is overwritten with -1.0*A
+   */
   static void negation(const matrix_type& A,
                        matrix_type& B) {
 
@@ -75,7 +114,12 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
     elem::Scal(-1.0, B);
   }
 
-  /** 8. matrix inverse */
+  /** 
+   * 8. 
+   * @brief Compute the inverse of a matrix.
+   * @param[in] A The (non-singular and square) matrix to be inverted.
+   * @param[out] B B is overwritten with A's inverse.
+   */
   static void inv(const matrix_type& A,
                   matrix_type& B) {
 
@@ -89,8 +133,12 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
     elem::lu::SolveAfter(elem::NORMAL, A, B);
   }
 
-  /** 9. matrix trace */
-  /** TODO: This needs to be fixed somehow --- there is something wrong here */
+  /** 
+   * 9. 
+   * @brief Compute the inverse of a matrix.
+   * @param[in] A The (square) matrix whose trace is to be computed.
+   * @return Trace of A
+   */
   static value_type trace(const matrix_type& A) {
     value_type traceVal = 0.0;
     for (int i=0; i<a.Height(); ++i) traceVal += A.Get(i,i);
@@ -98,26 +146,51 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
     return traceVal;
   }
 
-  /** 10. matrix identity */
+  /** 
+   * 10. 
+   * @brief Create an identity matrix of the requested size.
+   * @param[in] n The dimension of the identity matrix.
+   * @return Identity matrix of the required size.
+   */
   static matrix_type eye(int n) {
     matrix_type I(n,n);
     for (i=0; i<n; ++i) I.Set(i,i,1.0);
     return I;
   }
 
-  /** 11. matrix zero */ 
+  /** 
+   * 11. 
+   * @brief Create an zero matrix of the requested size.
+   * @param[in] n The dimension of the zero matrix.
+   * @return Zero matrix of the required size.
+   */
   static matrix_type zeros(int m, int n) {
-    return matrix_type(m,n);
+    matrix_type zeroMat(m,n);
+    elem::Zero(zeroMat);
+
+    return zeroMat;
   }
 
-  /** 12. matrix logdet */
+  /** 
+   * 13. 
+   * @brief Compute the logdet of a matrix A.
+   * @param[out] A Symmetrix positive definite matrix.
+   * @return logdet of A
+   */
   static value_type logdet(const matrix_type& A) {
-    /** TODO */
+    /** We compute the logdet by first computing the Cholesky factorization */
+
+    /** The above step fails if the matrix is not PSD */
 
     return value_type(0.0);
   }
 
-  /** 13. matrix copy operator */
+  /** 
+   * 13. 
+   * @brief Copy the contents of a matrix.
+   * @param[out] A A is overwritten with B.
+   * @param[in] B The matrix to be copied.
+   */
   static void copy (matrix_type &A,      /**< target obj */
                     const matrix_type &B /**< source obj */) {
 
@@ -125,10 +198,51 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
     elem::copy (A, B);
   }
 
-  /** 14. print out the matrix */
-  /** TODO: Elemental does not accept FILE*, it needs std::ostream */
-  static void print (const matrix_type& A, FILE* fp) {
-    A.print(fp);
+  /** 
+   * 14. 
+   * @brief print out the matrix 
+   * @param[in] A The matrix to be printed out.
+   * @param[out] os Output stream for the printing.
+   */
+  static void print (const matrix_type& A, 
+                     std::ostream& os=std::cout) {
+    elem::Print(A, "", os);
+  }
+
+  /** 
+   * 15. 
+   * @brief Extract the diagonal elements of a matrix.
+   * @param[in] A The (square) matrix whose diagonal is to be extracted.
+   * @param[out] B A diagonal matrix containing entries from A.
+   */
+  static void diag(const SymbolicMatrixMatlab& A,
+                   SymbolicMatrixMatlab& B) {
+    /* create a zeros matrix of the right dimension and assign to B */
+    const int n = A.Width();
+    B = zeros(n);
+
+    /* Set the diagonals of B */
+    for (int i=0; i<n; ++i) B.Set(i,i) = A.Get(i,i);
+  }
+
+  /** 
+   * 16. 
+   * @brief Compute the element-wise product of two matrices.
+   * @param[in] A the first matrix.
+   * @param[in] B the second matrix.
+   * @param[out] C the result, which contains A.*B.
+   */ 
+  static void elementwiseProd(const SymbolicMatrixMatlab& A,
+                              const SymbolicMatrixMatlab& B,
+                              SymbolicMatrixMatlab& C) {
+    /* Get the matrix dimensions */
+    const int m = A.Height();
+    const int n = A.Width();
+
+    /* Simple element-wise product */
+    for (int i=0; i<m; ++i) 
+      for (int j=0; j<n; ++j) 
+        C.Set(i,j) = A.Get(i.j) * B.Get(i,j);
   }
 };
 
