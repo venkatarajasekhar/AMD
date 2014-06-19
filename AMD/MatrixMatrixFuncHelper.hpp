@@ -405,7 +405,7 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
   MatrixAdaptorType::elementwiseProd(*(node->rightChild->matrixPtr), 
                                      *(current), 
                                      *left);
-//  transposeFlag = 0;
+  transposeFlag = 0;
 }
 
 // function for elementwise 
