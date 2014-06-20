@@ -1,7 +1,7 @@
 #ifndef MATRIX_ADAPTOR_HPP
 #define MATRIX_ADAPTOR_HPP
 
-//#include "../config.h"
+#include "AMD/config.h"
 
 namespace AMD {
 
@@ -149,8 +149,7 @@ struct MatrixAdaptor_t {
 #include "SymbolicMatrixAdaptor.hpp"
 
 #if AMD_HAVE_ELEMENTAL
-// Include this when it actually works
-//  #include "ElementalMatrixAdaptor.hpp"
+  #include "ElementalMatrixAdaptor.hpp"
 #endif
 
 #endif /** MATRIX_ADAPTOR_HPP */
