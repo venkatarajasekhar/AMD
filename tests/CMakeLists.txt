@@ -8,5 +8,8 @@ include_directories (BEFORE ${AMD_SOURCE_DIR} ${AMD_BINARY_DIR})
 # Create a custom target for all the executables
 add_custom_target (cxx_tests ALL)
 
-add_executable (UnitTest UnitTest.cpp)
-add_dependencies (cxx_tests UnitTest)
+add_executable (TestSymbolicMatrices TestSymbolicMatrices.cpp)
+add_dependencies (cxx_tests TestSymbolicMatrices)
+
+add_executable (TestMatrixMatrixFunc TestMatrixMatrixFunc.cpp)
+add_dependencies (cxx_tests TestMatrixMatrixFunc)
