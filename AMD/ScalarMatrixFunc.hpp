@@ -51,9 +51,7 @@ public:
    * @param[in] n     Number of columns.
    */ 
   ScalarMatrixFunc(ST fVal, int m, int n ) 
-    : functionVal(fVal), derivativeVal(), isConst(true) { 
-    derivativeVal.zeros(m,n);
-  }
+    : functionVal(fVal), derivativeVal(MT::zeros(m,n)), isConst(true) { }
 
   /**
    * @brief Operator overloading for "=". rhs and lhs are 
