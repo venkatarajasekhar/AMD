@@ -80,7 +80,7 @@ struct SymbolicMatrixMatlab {
    * Print internal string representation to a file.
    * @param[out] os Outputstream to print to.
    */
-  void println(std::ostream os=std::cout) const {
+  void println(std::ostream& os=std::cout) const {
     os << detail::removeParenthesis(symbol) << std::endl;
   }
 
