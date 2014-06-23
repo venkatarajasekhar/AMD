@@ -408,13 +408,22 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
           current.use_count() >= 1 &&
           left.use_count() >= 1 &&
           right.use_count()>= 1);
-  MatrixAdaptorType::elementwiseProd(*(node->leftChild->matrixPtr), 
-                                     *(current), 
-                                     *right);
-  MatrixAdaptorType::elementwiseProd(*(node->rightChild->matrixPtr), 
-                                     *(current), 
-                                     *left);
-  transposeFlag = 0;
+  if (transposeFlag) {
+    MT tmp0, tmp1;
+    MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), tmp0);
+    MatrixAdaptorType::elementwiseProd(tmp0, *(current), *right);
+    MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), tmp1);
+    MatrixAdaptorType::elementwiseProd(tmp1, *(current), *left);
+    transposeFlag = 3;
+  } else {
+    MatrixAdaptorType::elementwiseProd(*(node->leftChild->matrixPtr), 
+                                       *(current), 
+                                       *right);
+    MatrixAdaptorType::elementwiseProd(*(node->rightChild->matrixPtr), 
+                                       *(current), 
+                                       *left);
+    transposeFlag = 0;
+  }
 }
 
 // function for elementwise 
