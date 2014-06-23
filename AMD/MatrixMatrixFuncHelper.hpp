@@ -177,8 +177,9 @@ void plusOp( boost::shared_ptr<MT> result,
 	  current.use_count()>=1 && // current, left and right must be present 
 	  left.use_count()>=1 && 
 	  right.use_count()>=1 );
-  (*left)  = (*current);
-  (*right) = (*current);
+  typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  MatrixAdaptorType::copy(*left, *current);
+  MatrixAdaptorType::copy(*right, *current);
   if (transposeFlag) {
     transposeFlag=3; // both left and right should inherit transpose
   }
@@ -401,6 +402,7 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
                      bool& identityCurrentFlag,
                      bool& zeroResultFlag) {
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  MT tmp0, tmp1;
   assert( NULL != node &&
           NULL != node->leftChild &&
           NULL != node->rightChild &&
@@ -408,6 +410,24 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
           current.use_count() >= 1 &&
           left.use_count() >= 1 &&
           right.use_count()>= 1);
+  if (identityCurrentFlag) {
+    transposeFlag = 0;
+    if (TRANSPOSE == node->rightChild->opNum) {
+      MatrixAdaptorType::elementwiseProd(*(node->rightChild->leftChild->matrixPtr), *(current), tmp0);
+      MatrixAdaptorType::copy(*(left), tmp0);
+    } else {
+      MatrixAdaptorType::elementwiseProd(*(node->rightChild->matrixPtr), *current, tmp0);
+      MatrixAdaptorType::copy(*(left), tmp0);
+    }
+    if (TRANSPOSE == node->leftChild->opNum) {
+      MatrixAdaptorType::elementwiseProd(*(node->leftChild->leftChild->matrixPtr), *current, tmp1);
+      MatrixAdaptorType::copy(*(right), tmp1);
+    } else {
+      MatrixAdaptorType::elementwiseProd(*(node->leftChild->matrixPtr), *current, tmp1);
+      MatrixAdaptorType::copy(*(right), tmp1);
+    }
+    identityCurrentFlag = 0;
+  } else {
   if (transposeFlag) {
     MT tmp0, tmp1;
     MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), tmp0);
@@ -423,6 +443,7 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
                                        *(current), 
                                        *left);
     transposeFlag = 0;
+  }
   }
 }
 
