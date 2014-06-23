@@ -1,6 +1,15 @@
 #ifndef AMD_UTILITY_HPP
 #define AMD_UTILITY_HPP
 
+/**
+ * @file utility.hpp
+ *
+ * @author Peder Olsen, Anju Kambadur
+ *
+ * @brief This file defines utility functions for SymbolicScalarMatlab class and 
+ * SymbolicMatrixMatlab class.
+ */
+
 #include <string>
 
 namespace AMD { namespace detail {

@@ -2,8 +2,9 @@
 #define MATRIX_MATRIX_ADAPATOR_HPP
 
 #include <ostream>
+#include <elemental.hpp>
+
 #include "MatrixAdaptor.hpp"
-#include "elem.hpp"
 
 namespace AMD {
 
@@ -14,7 +15,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
   typedef T value_type;
 
   /**< typedef the matrix so that we can reuse it */
-  typedef typename elem::Matrix<T> matrix_type;
+  typedef elem::Matrix<T> matrix_type;
 
   /**
    * 1. 
@@ -48,7 +49,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
                    matrix_type& C) {
 
     /** first copy the matrix over */
-    elem::Copy (C, A);
+    elem::Copy (A, C);
 
     /** now, subtract the other matrix in */
     elem::Axpy (1.0, B, C);
@@ -66,7 +67,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
                      matrix_type& C) {
 
     /** first copy the matrix over */
-    elem::Copy (C, A);
+    elem::Copy (A, C);
 
     /** now, subtract the other matrix in */
     elem::Axpy (-1.0, B, C);
@@ -104,11 +105,11 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    * @param[in] A The matrix to be negated.
    * @param[out] B B is overwritten with -1.0*A
    */
-  static void negation(const matrix_type& A,
-                       matrix_type& B) {
+  static void negation (const matrix_type& A,
+                        matrix_type& B) {
 
     /** Copy over the matrix */
-    elem::Copy (B, A);
+    elem::Copy (A, B);
 
     /** Multiply by -1.0 */
     elem::Scal(-1.0, B);
@@ -127,7 +128,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
     const int n = A.Height();
 
     /** First, copy over an identity as the right hand side */
-    elem::Copy(B, eye(n));
+    B = eye(n);
 
     /** Solve the linear system using LU */
     elem::lu::SolveAfter(elem::NORMAL, A, B);
@@ -141,7 +142,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    */
   static value_type trace(const matrix_type& A) {
     value_type traceVal = 0.0;
-    for (int i=0; i<a.Height(); ++i) traceVal += A.Get(i,i);
+    for (int i=0; i<A.Height(); ++i) traceVal += A.Get(i,i);
 
     return traceVal;
   }
@@ -154,7 +155,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    */
   static matrix_type eye(int n) {
     matrix_type I(n,n);
-    for (i=0; i<n; ++i) I.Set(i,i,1.0);
+    for (int i=0; i<n; ++i) I.Set(i,i,1.0);
     return I;
   }
 
@@ -191,11 +192,10 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    * @param[out] A A is overwritten with B.
    * @param[in] B The matrix to be copied.
    */
-  static void copy (matrix_type &A,      /**< target obj */
-                    const matrix_type &B /**< source obj */) {
+  static void copy (matrix_type &A, const matrix_type &B) { 
 
-    /** This one is pretty simple */
-    elem::copy (A, B);
+    /** This one is pretty simple, but the order is different */
+    elem::Copy (B, A);
   }
 
   /** 
@@ -215,8 +215,8 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    * @param[in] A The (square) matrix whose diagonal is to be extracted.
    * @param[out] B A diagonal matrix containing entries from A.
    */
-  static void diag(const SymbolicMatrixMatlab& A,
-                   SymbolicMatrixMatlab& B) {
+  static void diag(const matrix_type& A,
+                   matrix_type& B) {
     /* create a zeros matrix of the right dimension and assign to B */
     const int n = A.Width();
     B = zeros(n);
@@ -232,9 +232,9 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    * @param[in] B the second matrix.
    * @param[out] C the result, which contains A.*B.
    */ 
-  static void elementwiseProd(const SymbolicMatrixMatlab& A,
-                              const SymbolicMatrixMatlab& B,
-                              SymbolicMatrixMatlab& C) {
+  static void elementwiseProd(const matrix_type& A,
+                              const matrix_type& B,
+                              matrix_type& C) {
     /* Get the matrix dimensions */
     const int m = A.Height();
     const int n = A.Width();
@@ -242,7 +242,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
     /* Simple element-wise product */
     for (int i=0; i<m; ++i) 
       for (int j=0; j<n; ++j) 
-        C.Set(i,j) = A.Get(i.j) * B.Get(i,j);
+        C.Set(i,j) = A.Get(i,j) * B.Get(i,j);
   }
 };
 

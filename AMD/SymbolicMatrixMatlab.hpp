@@ -80,7 +80,7 @@ struct SymbolicMatrixMatlab {
    * Print internal string representation to a file.
    * @param[out] os Outputstream to print to.
    */
-  void println(std::ostream os=std::cout) const {
+  void println(std::ostream& os=std::cout) const {
     os << detail::removeParenthesis(symbol) << std::endl;
   }
 
@@ -130,7 +130,7 @@ struct SymbolicMatrixMatlab {
    * @param[in] n The size of the identity matrix.
    * @return the SymbolicScalarMatlab eye(n)
    */
-  SymbolicMatrixMatlab eye(int n)  {
+  static SymbolicMatrixMatlab eye(int n)  {
     std::ostringstream ss;
     ss << "eye(" << n << ")";
     return SymbolicMatrixMatlab(ss.str(),n,n);
@@ -142,7 +142,7 @@ struct SymbolicMatrixMatlab {
    * @param[in] n Number of cols.
    * @return the SymbolicScalarMatlab zeros(m,n)
    */
-  SymbolicMatrixMatlab zeros(int m, int n)  {
+  static SymbolicMatrixMatlab zeros(int m, int n)  {
     std::ostringstream ss;
     ss << "zeros(" << m << "," << n << ")";
     return SymbolicMatrixMatlab(ss.str(),m,n);

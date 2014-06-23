@@ -1,6 +1,17 @@
 #ifndef ScalarMatrixFunc_H
 #define ScalarMatrixFunc_H
 
+/**
+ * @file ScalarMatrixFunc.hpp
+ *
+ * @author Peder Olsen, Anju Kambadur
+ *
+ * @brief This file defines a Scalar-Matrix Function class and 
+ * the operator overloading for this class.This class act as the root node 
+ * in the computational tree. Currently the program can 
+ * compute derivates for Scalar-Matrix Function "trace" and "logdet".
+ **/
+
 #include <string>
 #include <cstdio>
 #include <assert.h>
@@ -51,9 +62,7 @@ public:
    * @param[in] n     Number of columns.
    */ 
   ScalarMatrixFunc(ST fVal, int m, int n ) 
-    : functionVal(fVal), derivativeVal(), isConst(true) { 
-    derivativeVal.zeros(m,n);
-  }
+    : functionVal(fVal), derivativeVal(MT::zeros(m,n)), isConst(true) { }
 
   /**
    * @brief Operator overloading for "=". rhs and lhs are 

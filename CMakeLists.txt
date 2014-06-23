@@ -134,7 +134,11 @@ if (USE_ELEMENTAL)
       message(FATAL_ERROR "Elemental needs BLAS and LAPACK")
   endif(NOT BLAS_LIBRARIES OR NOT LAPACK_LIBRARIES)
 
-  # 3.2 If BLAS and LAPACK are present, check for Elemental
+  # 3.2 Check for MPI 
+  find_package(MPI REQUIRED)
+  include_directories(${MPI_INCLUDE_PATH})
+
+  # 3.3 If BLAS and LAPACK are present, check for Elemental
   set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
   find_package(Elemental REQUIRED)
   if (Elemental_FOUND)
@@ -176,10 +180,13 @@ if (USE_ELEMENTAL)
     endif(ELEMENTAL_HYBRID_BUILD_TYPE)
   endif (Elemental_FOUND)
 
-  set (Elemental_LIBRARY
+  # Elemental_LIBRARY will be used for any target that uses Elemntal
+  set (Elemental_LIBRARIES
        ${Elemental_LIBRARY}
        ${LAPACK_LIBRARIES}
-       ${BLAS_LIBRARIES})
+       ${BLAS_LIBRARIES}
+       ${MPI_LIBRARIES})
+
 endif (USE_ELEMENTAL)
 
 ###############################################################################

@@ -1,29 +1,158 @@
 #ifndef MATRIX_ADAPTOR_HPP
 #define MATRIX_ADAPTOR_HPP
 
-//#include "../config.h"
+/**
+ * @file MatrixAdaptor.hpp
+ *
+ * @author Anju Kambadur Peder Olsen
+ *
+ * @brief This file defines a adaptor interface. The user has two options
+ * for matrix computation currently. One option is symbolic computation 
+ * using SymbolicMatrixMatlab and SymbolicScalarMatlab methonds. Another 
+ * option is calling the Elemental-083 APIs.
+ */
+
+#include "AMD/config.h"
 
 namespace AMD {
 
 template <typename MatrixType>
 struct MatrixAdaptor_t {
-  /** empty declaration --- fill in functions in the specialization */
 
-  /** 1. get the number of rows */
-  
-  /** 2. get the number of cols */
+  /** define value_type */
 
-  /** 3. add two matrices */
+  /** define matrix_type */
 
-  /** 4. subtract two matrices */
+  /**
+   * 1. static int getNumRows (const matrix_type& A);
+   * @brief A function to return the number of rows in a matrix
+   * @param[in] A The matrix for which we need the number of rows.
+   * @return number of rows in A
+   */
 
-  /** 5. multiply two matrices */
+  /**
+   * 2. static int getNumCols (const matrix_type& A);
+   * @brief A function to return the number of cols in a matrix
+   * @param[in] A The matrix for which we need the number of cols.
+   * @return number of cols in A
+   */
 
-  /** 6. divide two matrices */
+  /** 
+   * 3.  static void add (const matrix_type& A,
+   *                      const matrix_type& B,
+   *                      matrix_type& C);
+   * @brief Add two matrices 
+   * @param[in] A The first matrix
+   * @param[in] B The second matrix
+   * @param[out] C C is overwritten with (A+B)
+   */
 
-  /** 7. print out the matrix */
+  /** 
+   * 4.  static void subtract (const matrix_type& A,
+   *                           const matrix_type& B,
+   *                           matrix_type& C);
+   * @brief Subtract one matrix from another.
+   * @param[in] A The first matrix
+   * @param[in] B The second matrix
+   * @param[out] C C is overwritten with (A-B)
+   */
 
-  /** There are more functions to add --- trace, inv, logdet, etc */
+  /** 
+   * 5.  static void multiply (const matrix_type& A,
+   *                           const matrix_type& B,
+   *                           matrix_type& C);
+   * @brief Multiply one matrix with another.
+   * @param[in] A The first matrix
+   * @param[in] B The second matrix
+   * @param[out] C C is overwritten with (A*B)
+   */
+
+  /** 
+   * 6.  static void transpose (const matrix_type& A, 
+   *                            matrix_type& B);
+   * @brief Compute the matrix transpose.
+   * @param[in] A The matrix to be transposed.
+   * @param[out] B B is overwritten with A^{T}
+   */
+
+  /** 
+   * 7.  static void negation(const matrix_type& A,
+   *                          matrix_type& B);
+   * @brief Compute element-wise negation of a matrix.
+   * @param[in] A The matrix to be negated.
+   * @param[out] B B is overwritten with -1.0*A
+   */
+
+  /** 
+   * 8.  static void inv(const matrix_type& A,
+   *                     matrix_type& B);
+   * @brief Compute the inverse of a matrix.
+   * @param[in] A The (non-singular and square) matrix to be inverted.
+   * @param[out] B B is overwritten with A's inverse.
+   */
+
+
+  /** 
+   * 9.  static value_type trace(const matrix_type& A);
+   * @brief Compute the inverse of a matrix.
+   * @param[in] A The (square) matrix whose trace is to be computed.
+   * @return Trace of A
+   */
+
+  /** 
+   * 10. static matrix_type eye(int n);
+   * @brief Create an identity matrix of the requested size.
+   * @param[in] n The dimension of the identity matrix.
+   * @return Identity matrix of the required size.
+   */
+
+  /** 
+   * 11. static matrix_type zeros(int m, int n);
+   * @brief Create an zero matrix of the requested size.
+   * @param[in] n The dimension of the zero matrix.
+   * @return Zero matrix of the required size.
+   */
+
+  /** 
+   * 12. static value_type logdet(const matrix_type& A);
+   * @brief Compute the logdet of a matrix A.
+   * @param[out] A Symmetrix positive definite matrix.
+   * @return logdet of A
+   */
+
+  /** 
+   * 13. static void copy (matrix_type &A, const matrix_type &B);
+   * @brief Copy the contents of a matrix.
+   * @param[out] A A is overwritten with B.
+   * @param[in] B The matrix to be copied.
+   */
+
+
+  /** 
+   * 14. static void print (const matrix_type& A, 
+   *                        std::ostream& os=std::cout);
+   * @brief print out the matrix 
+   * @param[in] A The matrix to be printed out.
+   * @param[out] os Output stream for the printing.
+   */
+
+  /** 
+   * 15.  static void diag(const SymbolicMatrixMatlab& A,
+   *                       SymbolicMatrixMatlab& B);
+   * @brief Extract the diagonal elements of a matrix.
+   * @param[in] A The (square) matrix whose diagonal is to be extracted.
+   * @param[out] B A diagonal matrix containing entries from A.
+   */
+
+  /** 
+   * 16. static void elementwiseProd(const SymbolicMatrixMatlab& A,
+   *                                 const SymbolicMatrixMatlab& B,
+   *                                 SymbolicMatrixMatlab& C);
+   * @brief Compute the element-wise product of two matrices.
+   * @param[in] A the first matrix.
+   * @param[in] B the second matrix.
+   * @param[out] C the result, which contains A.*B.
+   */ 
 };
 
 }
@@ -31,8 +160,7 @@ struct MatrixAdaptor_t {
 #include "SymbolicMatrixAdaptor.hpp"
 
 #if AMD_HAVE_ELEMENTAL
-// Include this when it actually works
-//  #include "ElementalMatrixAdaptor.hpp"
+  #include "ElementalMatrixAdaptor.hpp"
 #endif
 
 #endif /** MATRIX_ADAPTOR_HPP */

@@ -26,4 +26,6 @@
 
 #include "SymbolicMatrixMatlabHelper.hpp"
 
+#include "ElementalMatrixAdaptor.hpp"
+
 #endif /** AMD_HPP */

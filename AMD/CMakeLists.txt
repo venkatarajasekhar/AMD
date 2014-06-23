@@ -1,13 +1,3 @@
-# Author: BAMS
-# 
-# Here are a list of things that we need to check for
-# 
-# 1. Operating system: Windows, Linux, Apple, AIX.
-# 2. Elemental (TODO)
-# 3. MPI (TODO)
-# 4. Boost (TODO)
-#
-
 # Generate header file
 include (CheckIncludeFileCXX)
 
@@ -29,8 +19,12 @@ else (CMAKE_SYSTEM MATCHES "Linux")
   AIX and Darwin")
 endif (CMAKE_SYSTEM MATCHES "Linux")
 
+# Set up the configure 
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.h.in 
                 ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
+# Make sure this is added to the list of -I flags
+include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 # Now to set the install files
 install (DIRECTORY .

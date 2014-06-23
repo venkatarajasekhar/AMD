@@ -1,6 +1,15 @@
 #ifndef MatrixMatrixFunHelper_H
 #define MatrixMatrixFuncHelper_H
 
+/**
+ * @file MatrixMatrixFuncHelper.hpp
+ *
+ * @author Peder Olsen, Anju Kambadur, Suyang Zhu
+ *
+ * @brief This file defines different types call-back functions
+ * (callBackFunc) and operator overloading for MatrixMatrixFunc class. 
+ */
+
 #include <string>
 #include <cstdio>
 #include <assert.h>
@@ -646,12 +655,8 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
   const int n = MatrixAdaptorType::getNumRows(*lhs.matrixPtr);  
   boost::shared_ptr<MT> initPtr(new MT);
   boost::shared_ptr<MT> resPtr(new MT);
-  MT tmp0, tmp1;
-  MatrixAdaptorType::eye(*resPtr, n, tmp0);
-  // The starting point for trace is a identity matrix.
-  MatrixAdaptorType::copy((*initPtr), tmp0); 
-  MatrixAdaptorType::zeros(*resPtr, lhs.varNumRows, lhs.varNumCols, tmp1); 
-  MatrixAdaptorType::copy((*resPtr), tmp1);
+  *initPtr = MatrixAdaptorType::eye(n);
+  *resPtr = MatrixAdaptorType::zeros(lhs.varNumRows, lhs.varNumCols); 
   bool zeroFlag = true;
 
   // TODO any need to deal with gradientVec? Not at this moment
@@ -694,10 +699,8 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
   const int n = MatrixAdaptorType::getNumRows(*(lhs.matrixPtr));
   boost::shared_ptr<MT> initPtr(new MT);
   boost::shared_ptr<MT> resPtr(new MT);
-  MT tmp0, tmp1;
   ST tmp2;
-  MatrixAdaptorType::zeros(*(resPtr), lhs.varNumRows, lhs.varNumCols, tmp0);
-  MatrixAdaptorType::copy ((*resPtr), tmp0); 
+  *resPtr = MatrixAdaptorType::zeros(lhs.varNumRows, lhs.varNumCols);
   bool transposeFlag = true;
 
   if (TRANSPOSE==lhs.opNum) { // logdet(X^T) == logdet(X)
@@ -709,25 +712,16 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
     return(-logdet((*lhs.leftChild)));
   }
   // The starting point for logdet is a inverse matrix.
-  MatrixAdaptorType::inv(*lhs.matrixPtr, tmp1);
-  MatrixAdaptorType::copy(*initPtr, tmp1);  
+  MatrixAdaptorType::inv(*lhs.matrixPtr, *initPtr);
   bool zeroFlag = true;
   lhs.gradientVec(initPtr, resPtr, transposeFlag, false, zeroFlag);
   if (zeroFlag) { 
-    MatrixAdaptorType::logdet(*lhs.matrixPtr, tmp2);
-    ScalarMatrixFunc<MT,ST> result(
-                tmp2,
-                lhs.varNumRows, 
-                lhs.varNumCols);
-    // pass on knowledge that function is constant
-    return(result);
+    return ScalarMatrixFunc<MT,ST> (MatrixAdaptorType::logdet(*lhs.matrixPtr),
+                                    lhs.varNumRows, 
+                                    lhs.varNumCols);
   } else {
-    // TODO template adaptor
-    MatrixAdaptorType::logdet(*lhs.matrixPtr, tmp2);
-    ScalarMatrixFunc<MT,ST> result( 
-                tmp2,
-				        *resPtr);
-    return(result);
+    return ScalarMatrixFunc<MT,ST> (MatrixAdaptorType::logdet(*lhs.matrixPtr), 
+				                           *resPtr);
   }
 }
 
