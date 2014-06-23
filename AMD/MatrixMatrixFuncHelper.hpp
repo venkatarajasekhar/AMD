@@ -392,6 +392,7 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
 }
 // Functions to deal with opNum = ELEWISE
 // Callback function for differentiation involving elementwise product
+// The elementwiseOp deal with transpose in a opposite way of timesOp.
 template<class MT, class ST> 
 void elementwiseOp ( boost::shared_ptr<MT>   result,
                      boost::shared_ptr<MT>   current,
@@ -411,19 +412,33 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
           left.use_count() >= 1 &&
           right.use_count()>= 1);
   if (identityCurrentFlag) {
+    // If the current matrix is identymatrix, the left and right
+    // matrix will be the element-wise product of the current matix 
+    // and the leftChild's and rightChild's matrix respectively.
+    // This is different from timesOp with ignore the identity matrix.
     transposeFlag = 0;
     if (TRANSPOSE == node->rightChild->opNum) {
-      MatrixAdaptorType::elementwiseProd(*(node->rightChild->leftChild->matrixPtr), *(current), tmp0);
+      MatrixAdaptorType::elementwiseProd(*(node->rightChild-> \
+                                          leftChild->matrixPtr),
+                                         *(current),
+                                         tmp0);
       MatrixAdaptorType::copy(*(left), tmp0);
     } else {
-      MatrixAdaptorType::elementwiseProd(*(node->rightChild->matrixPtr), *current, tmp0);
+      MatrixAdaptorType::elementwiseProd(*(node->rightChild->matrixPtr),
+                                         *current, 
+                                         tmp0);
       MatrixAdaptorType::copy(*(left), tmp0);
     }
     if (TRANSPOSE == node->leftChild->opNum) {
-      MatrixAdaptorType::elementwiseProd(*(node->leftChild->leftChild->matrixPtr), *current, tmp1);
+      MatrixAdaptorType::elementwiseProd(*(node->leftChild-> \
+                                         leftChild->matrixPtr),
+                                         *current,
+                                         tmp1);
       MatrixAdaptorType::copy(*(right), tmp1);
     } else {
-      MatrixAdaptorType::elementwiseProd(*(node->leftChild->matrixPtr), *current, tmp1);
+      MatrixAdaptorType::elementwiseProd(*(node->leftChild->matrixPtr),
+                                         *current,
+                                         tmp1);
       MatrixAdaptorType::copy(*(right), tmp1);
     }
     identityCurrentFlag = 0;

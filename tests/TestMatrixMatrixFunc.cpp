@@ -203,7 +203,6 @@ void testMatrixMatrixFunc3 () {
   func4 = logdet (eTest7);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
 //  func4 = logdet(fX * fX);
 //  std::cout << func4.functionVal.getString() << std::endl;
 //  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
