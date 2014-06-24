@@ -96,7 +96,7 @@ namespace AMD {
    * @param[in] b Another symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of a .* b.
    */
-  SymbolicMatrixMatlab elementwiseProd(const SymbolicMatrixMatlab& a, 
+  SymbolicMatrixMatlab elementwiseProduct(const SymbolicMatrixMatlab& a, 
 				       const SymbolicMatrixMatlab& b) {
     assert(a.getNumRows() == b.getNumRows() && 
 	   a.getNumCols() == b.getNumCols());

@@ -242,7 +242,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    * @param[in] B the second matrix.
    * @param[out] C the result, which contains A.*B.
    */ 
-  static void elementwiseProd(const matrix_type& A,
+  static void elementwiseProduct(const matrix_type& A,
                               const matrix_type& B,
                               matrix_type& C) {
     /* Get the matrix dimensions */

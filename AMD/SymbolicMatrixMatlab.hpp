@@ -154,7 +154,7 @@ struct SymbolicMatrixMatlab {
   friend SymbolicMatrixMatlab inv(const SymbolicMatrixMatlab& a);
   friend SymbolicMatrixMatlab transpose(const SymbolicMatrixMatlab& a);
   friend SymbolicMatrixMatlab diag(const SymbolicMatrixMatlab& a);
-  friend SymbolicMatrixMatlab elementwiseProd(const SymbolicMatrixMatlab& a, 
+  friend SymbolicMatrixMatlab elementwiseProduct(const SymbolicMatrixMatlab& a, 
 					      const SymbolicMatrixMatlab& b);
   friend SymbolicMatrixMatlab operator+(const SymbolicMatrixMatlab& a, 
                                         const SymbolicMatrixMatlab& b);

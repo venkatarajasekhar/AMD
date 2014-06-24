@@ -39,7 +39,7 @@ void testSymbolicMatrixMatlab() {
   ans = "log(det(A-(B*C)))";
   assert(e.getString() == ans);
 
-  e = AMD::fnorm(a+AMD::elementwiseProd(b,c));
+  e = AMD::fnorm(a+AMD::elementwiseProduct(b,c));
   ans = "norm(A+(B.*C),'fro')";
   assert( e.getString() == ans );
 

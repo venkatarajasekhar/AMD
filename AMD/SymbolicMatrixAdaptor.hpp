@@ -200,10 +200,10 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
    * @param[in] B the second matrix.
    * @param[out] C the result, which contains A.*B.
    */ 
-  static void elementwiseProd(const matrix_type& A,
+  static void elementwiseProduct(const matrix_type& A,
                               const matrix_type& B,
                               matrix_type& C) {
-    copy(C, AMD::elementwiseProd(A, B));
+    copy(C, AMD::elementwiseProduct(A, B));
   }
 };
 

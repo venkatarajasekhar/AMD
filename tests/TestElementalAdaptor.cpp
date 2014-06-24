@@ -49,7 +49,7 @@ void testAddMinusMultiplyElemWise () {
   adaptor_type::add (A, B, C);
   adaptor_type::minus (A, B, D);
   adaptor_type::multiply (A, B, E);
-  adaptor_type::elementwiseProd (A, B, F);
+  adaptor_type::elementwiseProduct (A, B, F);
 
   /** Check answer */
   const int n = A.Width();
@@ -180,7 +180,7 @@ int main(int argc, char** argv) {
   testRowAndCols();
   std::cout << "DONE" << std::endl;
 
-  std::cout << "Testing add(), minus(), multiply(), elementwiseProd() .... ";
+  std::cout << "Testing add(), minus(), multiply(), elementwiseProduct() .... ";
   testAddMinusMultiplyElemWise();
   std::cout << "DONE" << std::endl;
 

@@ -417,22 +417,22 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
     // This is different from timesOp with ignore the identity matrix.
     transposeFlag = 0;
     if (TRANSPOSE == node->rightChild->opNum) {
-      MatrixAdaptorType::elementwiseProd(*(node->rightChild-> \
+      MatrixAdaptorType::elementwiseProduct(*(node->rightChild-> \
                                           leftChild->matrixPtr),
                                          *(current),
                                          *left);
     } else {
-      MatrixAdaptorType::elementwiseProd(*(node->rightChild->matrixPtr),
+      MatrixAdaptorType::elementwiseProduct(*(node->rightChild->matrixPtr),
                                          *current, 
                                          *left);
     }
     if (TRANSPOSE == node->leftChild->opNum) {
-      MatrixAdaptorType::elementwiseProd(*(node->leftChild-> \
+      MatrixAdaptorType::elementwiseProduct(*(node->leftChild-> \
                                          leftChild->matrixPtr),
                                          *current,
                                          *right);
     } else {
-      MatrixAdaptorType::elementwiseProd(*(node->leftChild->matrixPtr),
+      MatrixAdaptorType::elementwiseProduct(*(node->leftChild->matrixPtr),
                                          *current,
                                          *right);
     }
@@ -441,15 +441,15 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
   if (transposeFlag) {
     MT tmp0, tmp1;
     MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), tmp0);
-    MatrixAdaptorType::elementwiseProd(tmp0, *(current), *right);
+    MatrixAdaptorType::elementwiseProduct(tmp0, *(current), *right);
     MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), tmp1);
-    MatrixAdaptorType::elementwiseProd(tmp1, *(current), *left);
+    MatrixAdaptorType::elementwiseProduct(tmp1, *(current), *left);
     transposeFlag = 3;
   } else {
-    MatrixAdaptorType::elementwiseProd(*(node->leftChild->matrixPtr), 
+    MatrixAdaptorType::elementwiseProduct(*(node->leftChild->matrixPtr), 
                                        *(current), 
                                        *right);
-    MatrixAdaptorType::elementwiseProd(*(node->rightChild->matrixPtr), 
+    MatrixAdaptorType::elementwiseProduct(*(node->rightChild->matrixPtr), 
                                        *(current), 
                                        *left);
     transposeFlag = 0;
@@ -459,7 +459,7 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
 
 // function for elementwise 
 template <class MT, class ST> 
-MatrixMatrixFunc<MT,ST> elementwiseProd ( const MatrixMatrixFunc<MT,ST>& lhs,
+MatrixMatrixFunc<MT,ST> elementwiseProduct ( const MatrixMatrixFunc<MT,ST>& lhs,
                                           const MatrixMatrixFunc<MT,ST>& rhs) {
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   assert( lhs.isConst ||
@@ -468,7 +468,7 @@ MatrixMatrixFunc<MT,ST> elementwiseProd ( const MatrixMatrixFunc<MT,ST>& lhs,
            lhs.varNumCols == rhs.varNumCols));
   MatrixMatrixFunc<MT,ST> result;
   MT tmp;
-  MatrixAdaptorType::elementwiseProd(*(lhs.matrixPtr), *(rhs.matrixPtr), tmp);
+  MatrixAdaptorType::elementwiseProduct(*(lhs.matrixPtr), *(rhs.matrixPtr), tmp);
   boost::shared_ptr<MT> elewisePtr(new MT(tmp));
   result.binOpSet(elewisePtr, ELEWISE, elementwiseOp<MT,ST>, lhs, rhs);
   return (result);

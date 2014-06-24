@@ -145,7 +145,7 @@ struct MatrixAdaptor_t {
    */
 
   /** 
-   * 16. static void elementwiseProd(const SymbolicMatrixMatlab& A,
+   * 16. static void elementwiseProduct(const SymbolicMatrixMatlab& A,
    *                                 const SymbolicMatrixMatlab& B,
    *                                 SymbolicMatrixMatlab& C);
    * @brief Compute the element-wise product of two matrices.
