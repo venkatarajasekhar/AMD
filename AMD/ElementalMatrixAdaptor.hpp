@@ -154,7 +154,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    * @return Identity matrix of the required size.
    */
   static matrix_type eye(int n) {
-    matrix_type I(n,n);
+    matrix_type I = zeros(n,n);
     for (int i=0; i<n; ++i) I.Set(i,i,1.0);
     return I;
   }
@@ -179,11 +179,21 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    * @return logdet of A
    */
   static value_type logdet(const matrix_type& A) {
+    /** First, create a copy because we want to preserve A */
+    matrix_type L(A);
+
     /** We compute the logdet by first computing the Cholesky factorization */
+    elem::Cholesky(elem::UPPER, L);
 
     /** The above step fails if the matrix is not PSD */
+    const int n = L.Height();
+    value_type result = 0.0;
+    for (int i=0; i<n; ++i) result += log(L.Get(i,i));
 
-    return value_type(0.0);
+    /** Multiply by 2 coz A = L'L */
+    result *= 2.0;
+
+    return result;
   }
 
   /** 

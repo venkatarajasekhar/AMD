@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <assert.h>
+#include <cmath>
 #include <elemental.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -16,13 +17,19 @@ typedef typename adaptor_type::value_type value_type;
  * can follow suite.
  */
 
+void assert_close (double a, double b) {
+  double error = a-b;
+  error = (0.0 > error) ? -error: error;
+  assert (error <= 1e-9);
+}
+
 void testRowAndCols() {
   /** Define two matrices */
   matrix_type A(5,10);
 
   /** Check the dimensions */
-  assert (adaptor_type::getNumRows() == A.Height());
-  assert (adaptor_type::getNumCols() == A.Width());
+  assert (adaptor_type::getNumRows(A) == A.Height());
+  assert (adaptor_type::getNumCols(A) == A.Width());
 }
 
 void testAddMinusMultiply () { 
@@ -43,11 +50,10 @@ void testAddMinusMultiply () {
   adaptor_type::multiply (A, B, E);
 
   /** Check answer */
-  const int m = A.Height();
   const int n = A.Width();
 
   /* Simple add and multiply product */
-  for (int i=0; i<m; ++i)  {
+  for (int i=0; i<n; ++i)  {
     for (int j=0; j<n; ++j) {
       assert(C.Get(i,j) == (A.Get(i,j) + B.Get(i,j)));
       assert(D.Get(i,j) == (A.Get(i,j) - B.Get(i,j)));
@@ -55,13 +61,13 @@ void testAddMinusMultiply () {
   }
 
   /* TODO: Suyang check multiply more efficiently */
-  for (int i=0; i<m; ++i)  {
+  for (int i=0; i<n; ++i)  {
     for (int j=0; j<n; ++j) {
       double sum = 0.0;
       for (int k=0; k<n; ++k) {
         sum += A.Get(i,k)*B.Get(k,j);
       }
-      assert (sum == C(i,j));
+      assert_close(sum, E.Get(i,j));
     }
   }
 }
@@ -99,9 +105,7 @@ void testTransposeNegationInverse () {
   /* Check for inverse using multiply */
   adaptor_type::multiply (A, D, E);
   const double l2_norm = elem::Nrm2(E);
-  double error = (l2_norm - 1.0); 
-  error = (0.0 > error) ? -error: error;
-  assert (error <= 1e-9);
+  assert_close (l2_norm, 1.0); 
 }
 
 void testEyeZerosCopy () { 
@@ -132,6 +136,30 @@ void testEyeZerosCopy () {
   }
 }
 
+void testTraceLogdet () { 
+  /** Define two matrices */
+  matrix_type A(2,2);
+
+  /** Fill with random entries drawn from Uniform(0,1) */
+  elem::MakeGaussian(A);
+
+  /** Make symmetric, positive deifnitene */
+  A.Set(1, 0, A.Get(0,1));
+  A.Set(0, 0, 2.0 + A.Get(0, 0));
+  A.Set(1, 1, 2.0 + A.Get(1, 1));
+
+  /** Perform the operations */
+  const double trace = adaptor_type::trace (A);
+  const double logdet = adaptor_type::logdet (A);
+
+  /** Do simple checks */
+  double trace_manual = A.Get(0,0) + A.Get(1,1);
+  double logdet_manual = log (A.Get(0,0)*A.Get(1,1) - A.Get(0,1)*A.Get(1,0));
+
+  assert_close (trace ,trace_manual);
+  assert_close (logdet ,logdet_manual);
+}
+
 int main(int argc, char** argv) {
   /** Initialize elemental */
   elem::Initialize(argc, argv);
@@ -150,6 +178,10 @@ int main(int argc, char** argv) {
 
   std::cout << "Testing eye(), zeros(), and copy() .... ";
   testEyeZerosCopy();
+  std::cout << "DONE" << std::endl;
+
+  std::cout << "Testing trace() and logdet() .... ";
+  testTraceLogdet();
   std::cout << "DONE" << std::endl;
 
   std::cout << "All tests passed." << std::endl;

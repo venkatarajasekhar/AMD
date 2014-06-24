@@ -21,6 +21,7 @@ if (USE_ELEMENTAL)
   add_dependencies (cxx_tests TestElementalAdaptor)
 
   # You have to add link to Elemental_LIBRARIES for all executables!  
+  target_link_libraries (TestElementalAdaptor "-lm")
   target_link_libraries (TestElementalAdaptor ${Elemental_LIBRARIES})
   target_link_libraries (TestMatrixMatrixFunc ${Elemental_LIBRARIES})
   target_link_libraries (TestSymbolicMatrices ${Elemental_LIBRARIES})
