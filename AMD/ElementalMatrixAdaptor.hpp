@@ -178,7 +178,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    * @param[out] A Symmetrix positive definite matrix.
    * @return logdet of A
    */
-  static value_type logdet(const matrix_type& A) {
+  static double logdet(const matrix_type& A) {
     /** First, create a copy because we want to preserve A */
     matrix_type L(A);
 
