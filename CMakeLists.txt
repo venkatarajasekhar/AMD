@@ -70,10 +70,6 @@ endif (CMAKE_BUILD_TYPE MATCHES "Release" OR CMAKE_BUILD_TYPE MATCHES "None")
 
 ###############################################################################
 
-# Add the main subdirectory
-add_subdirectory (AMD)
-
-###############################################################################
 # 2. Find Boost with the relevant packages --- Use dynamic linking in boost!
 # Without dynamic linking, it's tough to create python bindings, so watch out.
 # 
@@ -107,12 +103,6 @@ find_package (Boost
               REQUIRED
               ${BOOST_LIBS_TO_CHECK})
 if (Boost_FOUND)
-  set (AMD_HAVE_BOOST
-       1
-       CACHE
-       STRING
-       "Enables use of Boost Libraries"
-       FORCE)
   include_directories (${Boost_INCLUDE_DIRS})
   link_directories (${Boost_LIBRARY_DIRS})
 endif (Boost_FOUND)
@@ -154,12 +144,11 @@ if (USE_ELEMENTAL)
     message(STATUS "CXX11_COMPILER_FLAGS=${CXX11_COMPILER_FLAGS}")
     set (CMAKE_CXX_FLAGS "${CXX11_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS}")
 
-    set (AMD_HAVE_ELEMENTAL
-         1
-         CACHE
-         STRING
-         "Enables use of Elemental Libraries"
-         FORCE)
+    # Technically, we need to set AMD_HAVE_ELEMENTAL here, but since all the
+    # configure file things are being written in AMD/CMakelists.txt, we defer
+    # the writing to there. Somehow it works better there. If written from 
+    # here, you need to run "cmake" twice.
+    # set(AMD_HAVE_ELEMENTAL 1)
 
     # check if elemental build type is Hybrid
     file(STRINGS 
@@ -224,6 +213,11 @@ option (BUILD_TESTS "Whether to build tests" OFF)
 if (BUILD_TESTS)
   add_subdirectory (tests)
 endif (BUILD_TESTS)
+
+###############################################################################
+
+# Add the main subdirectory
+add_subdirectory (AMD)
 
 ###############################################################################
 

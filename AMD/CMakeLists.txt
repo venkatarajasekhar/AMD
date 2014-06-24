@@ -19,6 +19,11 @@ else (CMAKE_SYSTEM MATCHES "Linux")
   AIX and Darwin")
 endif (CMAKE_SYSTEM MATCHES "Linux")
 
+# Set AMD_HAVE_ELEMENTAL 
+if (Elemental_FOUND)
+  set(AMD_HAVE_ELEMENTAL 1)
+endif(Elemental_FOUND)
+
 # Set up the configure 
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.h.in 
                 ${CMAKE_CURRENT_BINARY_DIR}/config.h)
