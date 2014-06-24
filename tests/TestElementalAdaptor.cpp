@@ -7,6 +7,9 @@
 
 #include <AMD/AMD.hpp>
 
+#define M 2
+#define N 2
+
 typedef elem::Matrix<double> matrix_type;
 typedef AMD::MatrixAdaptor_t<matrix_type> adaptor_type;
 typedef typename adaptor_type::value_type value_type;
@@ -179,20 +182,43 @@ void testTraceLogdet () {
  */
 void testMatrixMatrixFunc() {
 
-  matrix_type A(2, 2);
-  matrix_type B(2, 2);
-  matrix_type C(2, 2);
-  matrix_type X(2, 2);
+  matrix_type A(N, N);
+  matrix_type B(N, N);
+  matrix_type X(N, N);
+
+  matrix_type AT(N, N);   /**< A transpose  */
+  matrix_type AI(N, N);   /**< A inverse    */
+  matrix_type AN(N, N);   /**< A negation   */
+  matrix_type BT(N, N);   /**< A transpose  */
+  matrix_type BI(N, N);   /**< A inverse    */
+  matrix_type BN(N, N);   /**< A negation   */
+  matrix_type XT(N, N);   /**< A transpose  */
+  matrix_type XI(N, N);   /**< A inverse    */
+  matrix_type XN(N, N);   /**< A negation   */
+
+
   elem::MakeGaussian(A);
   elem::MakeGaussian(B);
-  elem::MakeGaussian(C);
+
+  adaptor_type::transpose(A, AT);
+  adaptor_type::negation(A, AN);
+  adaptor_type::inv(A, AI);
+  adaptor_type::transpose(B, BT);
+  adaptor_type::negation(B, BN);
+  adaptor_type::inv(B, BI);
+
   MMFunc fA(A, true);
   MMFunc fX(X, false);
   MMFunc fAfX = fA*fX;
   SMFunc func;
-  func = trace(fAfX);
 
-  
+  // trace(AX). derivative == A transpose;
+  func = trace(fA * fX);
+  for (int i = 0; i < N; i++) {
+    for (int j = 0; j < N; j++) {
+      assert_close(func.derivativeVal.Get(i,j), AT.Get(i,j));
+    }
+  }
 }
 
 int main(int argc, char** argv) {
