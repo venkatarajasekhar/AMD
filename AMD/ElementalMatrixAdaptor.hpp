@@ -24,6 +24,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    * @return number of rows in A
    */
   static int getNumRows (const matrix_type& A) {
+//    std::cout << "Rows = " << A.Height() << std::endl;
     return A.Height();
   }
 
@@ -34,6 +35,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    * @return number of cols in A
    */
   static int getNumCols (const matrix_type& A) {
+ //   std::cout << "Cols = " << A.Width() << std::endl; 
     return A.Width();
   }
 

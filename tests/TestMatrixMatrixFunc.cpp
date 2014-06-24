@@ -143,6 +143,9 @@ void testMatrixMatrixFunc3 () {
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
   
+  func4 = trace (fA * fX * fX);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
   // Element-wise Production test cases
   std::cout << "Now lets test some cases for element-wise product" << std::endl
    << std::endl;

@@ -168,14 +168,15 @@ void testTraceLogdet () {
 
   /** Perform the operations */
 //  const double trace = adaptor_type::trace (A);
-//  const double logdet = adaptor_type::logdet (A);
-
+  const double logdet = adaptor_type::logdet (A);
+    double trace;
+    adaptor_type::trace (A, trace);
   /** Do simple checks */
-//  double trace_manual = A.Get(0,0) + A.Get(1,1);
-//  double logdet_manual = log (A.Get(0,0)*A.Get(1,1) - A.Get(0,1)*A.Get(1,0));
+  double trace_manual = A.Get(0,0) + A.Get(1,1);
+  double logdet_manual = log (A.Get(0,0)*A.Get(1,1) - A.Get(0,1)*A.Get(1,0));
 
-//  assert_close (trace ,trace_manual);
-//  assert_close (logdet ,logdet_manual);
+  assert_close (trace ,trace_manual);
+  assert_close (logdet ,logdet_manual);
 }
 /**
  * @brief Test numerical matrix derivatives.
@@ -184,6 +185,11 @@ void testMatrixMatrixFunc() {
 
   matrix_type A(N, N);
   matrix_type B(N, N);
+  matrix_type C(N, N);
+  matrix_type D(N, N);
+  matrix_type E(N, N);
+  matrix_type F(N, N);
+  matrix_type RESULT(N, N);
   matrix_type X(N, N);
 
   matrix_type AT(N, N);   /**< A transpose  */
@@ -199,6 +205,7 @@ void testMatrixMatrixFunc() {
 
   elem::MakeGaussian(A);
   elem::MakeGaussian(B);
+  elem::MakeGaussian(X);
 
   adaptor_type::transpose(A, AT);
   adaptor_type::negation(A, AN);
@@ -206,19 +213,46 @@ void testMatrixMatrixFunc() {
   adaptor_type::transpose(B, BT);
   adaptor_type::negation(B, BN);
   adaptor_type::inv(B, BI);
+  adaptor_type::transpose(X, XT);
+  adaptor_type::negation(X, XN);
+  adaptor_type::inv(X, XI);
 
   MMFunc fA(A, true);
+  MMFunc fB(B, true);
   MMFunc fX(X, false);
-  MMFunc fAfX = fA*fX;
+  MMFunc fAfX = fA * fX;
+  MMFunc fAfXfX = fAfX * fX;
   SMFunc func;
 
-  // trace(AX). derivative == A transpose;
+  // 1. trace(AX). 
   func = trace(fA * fX);
+  // derivatie == A';
+  adaptor_type::copy(RESULT, AT);
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
-      assert_close(func.derivativeVal.Get(i,j), AT.Get(i,j));
+      assert_close(func.derivativeVal.Get(i,j), RESULT.Get(i,j));
     }
   }
+
+  // 2. trace(AXBX).
+  // TODO fix the bug here
+  func = trace(fAfXfX);
+  // derivative = A'X'B' + B'X'A'
+  adaptor_type::multiply (AT, XT, C);
+  adaptor_type::multiply (C, BT, E);
+  adaptor_type::multiply (BT, XT, D);
+  adaptor_type::multiply (D, AT, F);
+  adaptor_type::add (E, F, RESULT); 
+  
+  for (int i = 0; i < N; i++) {
+    for (int j = 0; j < N; j++) {
+//     assert_close(func.derivativeVal.Get(i,j), RESULT.Get(i,j));
+        std::cout << func.derivativeVal.Get(i, j) << " " ;
+    }
+    std::cout << std::endl;
+  }
+  
+ 
 }
 
 int main(int argc, char** argv) {
