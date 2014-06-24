@@ -58,12 +58,14 @@ void testMatrixMatrixFunc() {
   assert(func.derivativeVal.getString()==ans);
 
   func = trace(fy*inv(fx));
-  ans = "(((-inv(X))*Y)*inv(X))'";
+//  ans = "(((-inv(X))*Y)*inv(X))'";
+  ans = "(-(inv(X)*(Y*inv(X))))'";
+  std::cout << func.derivativeVal.getString() << "  " <<  ans <<std::endl;
   assert(func.derivativeVal.getString()==ans);
 
-  assert(func.derivativeVal.getString()==ans);
   func = trace(fy-fx);
   ans = "(-eye(3))";
+  std::cout << func.derivativeVal.getString() << "  " <<  ans << std::endl;
   assert(func.derivativeVal.getString()==ans);
 
   func = logdet(fx);
