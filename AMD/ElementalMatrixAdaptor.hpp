@@ -229,10 +229,10 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
                    matrix_type& B) {
     /* create a zeros matrix of the right dimension and assign to B */
     const int n = A.Width();
-    B = zeros(n);
+    B = zeros(n, n);
 
     /* Set the diagonals of B */
-    for (int i=0; i<n; ++i) B.Set(i,i) = A.Get(i,i);
+    for (int i=0; i<n; ++i) B.Set(i, i, A.Get(i,i));
   }
 
   /** 
@@ -252,7 +252,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
     /* Simple element-wise product */
     for (int i=0; i<m; ++i) 
       for (int j=0; j<n; ++j) 
-        C.Set(i,j) = A.Get(i,j) * B.Get(i,j);
+        C.Set(i, j, (A.Get(i,j)*B.Get(i,j)));
   }
 };
 

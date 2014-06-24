@@ -32,13 +32,14 @@ void testRowAndCols() {
   assert (adaptor_type::getNumCols(A) == A.Width());
 }
 
-void testAddMinusMultiply () { 
+void testAddMinusMultiplyElemWise () { 
   /** Define two matrices */
   matrix_type A(5,5);
   matrix_type B(5,5);
   matrix_type C(5,5);
   matrix_type D(5,5);
   matrix_type E(5,5);
+  matrix_type F(5,5);
 
   /** Fill with random entries drawn from Uniform(0,1) */
   elem::MakeGaussian(A);
@@ -48,6 +49,7 @@ void testAddMinusMultiply () {
   adaptor_type::add (A, B, C);
   adaptor_type::minus (A, B, D);
   adaptor_type::multiply (A, B, E);
+  adaptor_type::elementwiseProd (A, B, F);
 
   /** Check answer */
   const int n = A.Width();
@@ -57,10 +59,10 @@ void testAddMinusMultiply () {
     for (int j=0; j<n; ++j) {
       assert(C.Get(i,j) == (A.Get(i,j) + B.Get(i,j)));
       assert(D.Get(i,j) == (A.Get(i,j) - B.Get(i,j)));
+      assert(F.Get(i,j) == (A.Get(i,j) * B.Get(i,j)));
     }
   }
 
-  /* TODO: Suyang check multiply more efficiently */
   for (int i=0; i<n; ++i)  {
     for (int j=0; j<n; ++j) {
       double sum = 0.0;
@@ -72,13 +74,14 @@ void testAddMinusMultiply () {
   }
 }
 
-void testTransposeNegationInverse () {
+void testTransposeNegationDiagInverse () {
   /** Define two matrices */
   matrix_type A(5,5);
   matrix_type B(5,5);
   matrix_type C(5,5);
   matrix_type D(5,5);
   matrix_type E(5,5);
+  matrix_type F(5,5);
 
   /** Fill A with random entries drawn from Uniform(0,1) */
   elem::MakeGaussian(A);
@@ -87,6 +90,7 @@ void testTransposeNegationInverse () {
   adaptor_type::transpose (A, B);
   adaptor_type::negation (A, C);
   adaptor_type::inv (A, D);
+  adaptor_type::diag(A, F);
 
   /** Check answer */
   const int m = A.Height();
@@ -106,6 +110,14 @@ void testTransposeNegationInverse () {
   adaptor_type::multiply (A, D, E);
   const double l2_norm = elem::Nrm2(E);
   assert_close (l2_norm, 1.0); 
+
+  /* Check for diagonal */
+  for (int i=0; i<m; ++i) { 
+    for (int j=0; j<n; ++j)  {
+      if (i==j) assert (F.Get(i,j) == A.Get(i,j));
+      else assert (F.Get(i,j) == 0.0);
+    }
+  }
 }
 
 void testEyeZerosCopy () { 
@@ -168,12 +180,12 @@ int main(int argc, char** argv) {
   testRowAndCols();
   std::cout << "DONE" << std::endl;
 
-  std::cout << "Testing add(), minus(), and multiply() .... ";
-  testAddMinusMultiply();
+  std::cout << "Testing add(), minus(), multiply(), elementwiseProd() .... ";
+  testAddMinusMultiplyElemWise();
   std::cout << "DONE" << std::endl;
 
-  std::cout << "Testing transpose(), negation(), and inverse() .... ";
-  testTransposeNegationInverse();
+  std::cout << "Testing transpose(), negation(), diag(), inverse() .... ";
+  testTransposeNegationDiagInverse();
   std::cout << "DONE" << std::endl;
 
   std::cout << "Testing eye(), zeros(), and copy() .... ";
