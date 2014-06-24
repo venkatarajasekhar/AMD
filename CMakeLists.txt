@@ -180,8 +180,14 @@ endif (USE_ELEMENTAL)
 
 ###############################################################################
 
+# Add the main subdirectory
+# The order of adding the subdirectories is important --- do not move
+add_subdirectory (AMD)
+
+###############################################################################
+
 # 4. Optionally, users can also request building of python bindings
-option (USE_ELEMENTAL "Build with Elemental Matrix support" OFF)
+option (BUILD_PYTHON "Build with Python support" OFF)
 if (BUILD_PYTHON)
   # We need to find out python support. Remember that we have already
   # checked for Boost python up at the top along with Boost.
@@ -213,11 +219,6 @@ option (BUILD_TESTS "Whether to build tests" OFF)
 if (BUILD_TESTS)
   add_subdirectory (tests)
 endif (BUILD_TESTS)
-
-###############################################################################
-
-# Add the main subdirectory
-add_subdirectory (AMD)
 
 ###############################################################################
 
