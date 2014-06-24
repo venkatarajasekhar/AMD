@@ -136,7 +136,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
 
   /** 
    * 9. 
-   * @brief Compute the inverse of a matrix.
+   * @brief Compute the trace of a matrix.
    * @param[in] A The (square) matrix whose trace is to be computed.
    * @return Trace of A
    */
@@ -173,7 +173,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
   }
 
   /** 
-   * 13. 
+   * 12. 
    * @brief Compute the logdet of a matrix A.
    * @param[out] A Symmetrix positive definite matrix.
    * @return logdet of A

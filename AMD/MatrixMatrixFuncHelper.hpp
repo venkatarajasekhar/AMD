@@ -1,6 +1,15 @@
 #ifndef MatrixMatrixFunHelper_H
 #define MatrixMatrixFuncHelper_H
 
+/**
+ * @file MatrixMatrixFuncHelper.hpp
+ *
+ * @author Peder Olsen, Anju Kambadur, Suyang Zhu
+ *
+ * @brief This file defines different types call-back functions
+ * (callBackFunc) and operator overloading for MatrixMatrixFunc class. 
+ */
+
 #include <string>
 #include <cstdio>
 #include <assert.h>
@@ -168,8 +177,9 @@ void plusOp( boost::shared_ptr<MT> result,
 	  current.use_count()>=1 && // current, left and right must be present 
 	  left.use_count()>=1 && 
 	  right.use_count()>=1 );
-  (*left)  = (*current);
-  (*right) = (*current);
+  typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  MatrixAdaptorType::copy(*left, *current);
+  MatrixAdaptorType::copy(*right, *current);
   if (transposeFlag) {
     transposeFlag=3; // both left and right should inherit transpose
   }
@@ -382,6 +392,7 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
 }
 // Functions to deal with opNum = ELEWISE
 // Callback function for differentiation involving elementwise product
+// The elementwiseOp deal with transpose in a opposite way of timesOp.
 template<class MT, class ST> 
 void elementwiseOp ( boost::shared_ptr<MT>   result,
                      boost::shared_ptr<MT>   current,
@@ -399,13 +410,51 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
           current.use_count() >= 1 &&
           left.use_count() >= 1 &&
           right.use_count()>= 1);
-  MatrixAdaptorType::elementwiseProd(*(node->leftChild->matrixPtr), 
-                                     *(current), 
-                                     *right);
-  MatrixAdaptorType::elementwiseProd(*(node->rightChild->matrixPtr), 
-                                     *(current), 
-                                     *left);
-  transposeFlag = 0;
+  if (identityCurrentFlag) {
+    // If the current matrix is identymatrix, the left and right
+    // matrix will be the element-wise product of the current matix 
+    // and the leftChild's and rightChild's matrix respectively.
+    // This is different from timesOp with ignore the identity matrix.
+    transposeFlag = 0;
+    if (TRANSPOSE == node->rightChild->opNum) {
+      MatrixAdaptorType::elementwiseProd(*(node->rightChild-> \
+                                          leftChild->matrixPtr),
+                                         *(current),
+                                         *left);
+    } else {
+      MatrixAdaptorType::elementwiseProd(*(node->rightChild->matrixPtr),
+                                         *current, 
+                                         *left);
+    }
+    if (TRANSPOSE == node->leftChild->opNum) {
+      MatrixAdaptorType::elementwiseProd(*(node->leftChild-> \
+                                         leftChild->matrixPtr),
+                                         *current,
+                                         *right);
+    } else {
+      MatrixAdaptorType::elementwiseProd(*(node->leftChild->matrixPtr),
+                                         *current,
+                                         *right);
+    }
+    identityCurrentFlag = 0;
+  } else {
+  if (transposeFlag) {
+    MT tmp0, tmp1;
+    MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), tmp0);
+    MatrixAdaptorType::elementwiseProd(tmp0, *(current), *right);
+    MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), tmp1);
+    MatrixAdaptorType::elementwiseProd(tmp1, *(current), *left);
+    transposeFlag = 3;
+  } else {
+    MatrixAdaptorType::elementwiseProd(*(node->leftChild->matrixPtr), 
+                                       *(current), 
+                                       *right);
+    MatrixAdaptorType::elementwiseProd(*(node->rightChild->matrixPtr), 
+                                       *(current), 
+                                       *left);
+    transposeFlag = 0;
+  }
+  }
 }
 
 // function for elementwise 

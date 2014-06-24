@@ -1,6 +1,16 @@
 #ifndef MatrixMatrixFunc_H
 #define MatrixMatrixFunc_H
 
+/**
+ * @file MatrixMatrixFunc.hpp
+ *
+ * @author Peder Olsen, Anju Kambadur
+ *
+ * @brief This file defines a class to present Matrix-Matrix function. This 
+ * class act as nodes in  the computational tree. The computation of matrix 
+ * derivatives is by traversing the computation tree in the reverse mode.
+ */
+
 #include <iostream>
 #include <string>
 #include <cstdio>

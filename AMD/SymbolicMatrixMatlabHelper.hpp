@@ -1,6 +1,14 @@
 #ifndef AMD_SYMBOLIC_MATRIX_MATLAB_HELPER_HPP
 #define AMD_SYMBOLIC_MATRIX_MATLAB_HELPER_HPP
 
+/**
+ * @file SymbolicMatrixMatlabHelper.hpp
+ *
+ * @author Peder Olsen, Anju Kambadur
+ *
+ * @brief This file defines methods for SymbolicMatrixMatlab class.
+ */
+
 #include <sstream>
 #include "SymbolicMatrixMatlab.hpp"
 

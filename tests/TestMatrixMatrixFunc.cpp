@@ -147,6 +147,10 @@ void testMatrixMatrixFunc3 () {
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
 
+//  func4 = trace(fA * fX);
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
   MMFunc eTest1 = AMD::elementwiseProd(fX, fX);
   func4 = trace (eTest1);
   std::cout << func4.functionVal.getString() << std::endl;
@@ -157,29 +161,60 @@ void testMatrixMatrixFunc3 () {
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
   
+//  func4 = trace(fX * fX);
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
   MMFunc eTest3 = AMD::elementwiseProd(inv(fX), inv(fX));
   func4 = trace (eTest3);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  
+//  func4 = trace(inv(fX) * inv(fX));
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
   MMFunc eTest4 = AMD::elementwiseProd(fX, inv(fX));
   func4 = trace (eTest4);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
   
+//  func4 = trace(fX * inv(fX));
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
   MMFunc eTest5 = AMD::elementwiseProd(fA, fX);
   func4 = logdet (eTest5);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
 
+//  func4 = logdet(fA * fX);
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
   MMFunc eTest6 = AMD::elementwiseProd(fA, transpose(fX));
   func4 = logdet (eTest6);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+//  func4 = logdet(fA * transpose(fX));
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
   MMFunc eTest7 = AMD::elementwiseProd(fX, fX);
   func4 = logdet (eTest7);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+//  func4 = logdet(fX * fX);
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+  MMFunc eTest8 = AMD::elementwiseProd(fX, transpose(fX));
+  func4 = logdet (eTest8);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+//  func4 = logdet(fX * transpose(fX));
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
 }
 
 int main() {

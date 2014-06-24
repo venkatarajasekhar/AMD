@@ -1,6 +1,17 @@
 #ifndef MATRIX_ADAPTOR_HPP
 #define MATRIX_ADAPTOR_HPP
 
+/**
+ * @file MatrixAdaptor.hpp
+ *
+ * @author Anju Kambadur Peder Olsen
+ *
+ * @brief This file defines a adaptor interface. The user has two options
+ * for matrix computation currently. One option is symbolic computation 
+ * using SymbolicMatrixMatlab and SymbolicScalarMatlab methonds. Another 
+ * option is calling the Elemental-083 APIs.
+ */
+
 #include "AMD/config.h"
 
 namespace AMD {

@@ -1,6 +1,14 @@
 #ifndef AMD_SYMBOLIC_SCALAR_MATLAB_HPP
 #define AMD_SYMBOLIC_SCALAR_MATLAB_HPP
 
+/**
+ * @file SymbolicScalarMatlab.hpp
+ *
+ * @author Peder Olsen, Anju Kambadur
+ *
+ * @brief This file defines methods for SymbolicScalarMatlab class.
+ */
+
 #include "SymbolicScalarMatlab.hpp"
 
 namespace AMD {
