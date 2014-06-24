@@ -14,6 +14,7 @@
 
 #include <string>
 #include <cstdio>
+#include "MatrixAdaptor.hpp"
 #include <assert.h>
 
 namespace AMD {
@@ -30,6 +31,7 @@ class ScalarMatrixFunc {
 public:
   typedef MT MatrixType;
   typedef ST ScalarType;
+  typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
   ST functionVal;
   MT derivativeVal;
@@ -62,7 +64,7 @@ public:
    * @param[in] n     Number of columns.
    */ 
   ScalarMatrixFunc(ST fVal, int m, int n ) 
-    : functionVal(fVal), derivativeVal(MT::zeros(m,n)), isConst(true) { }
+    : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m,n)), isConst(true) { }
 
   /**
    * @brief Operator overloading for "=". rhs and lhs are 

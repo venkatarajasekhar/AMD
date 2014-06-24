@@ -29,6 +29,8 @@ void testMatrixMatrixFunc() {
   /** test out the derivative of trace(AX) -- should be A' */
   ans = "Y'";
   func = trace(fx*fy);
+  std::cout << func.functionVal.getString() << "  " \
+  << func.derivativeVal.getString()  << std::endl;
   assert(func.derivativeVal.getString()==ans);
 
   // d/dX trace(X^T*Y^T)=Y^T

@@ -140,11 +140,20 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    * @param[in] A The (square) matrix whose trace is to be computed.
    * @return Trace of A
    */
+  /*
   static value_type trace(const matrix_type& A) {
     value_type traceVal = 0.0;
     for (int i=0; i<A.Height(); ++i) traceVal += A.Get(i,i);
 
     return traceVal;
+  }
+  */
+
+  static void trace(const matrix_type& A,
+                    value_type& B) {
+    value_type traceVal = 0.0;
+    for (int i=0; i<A.Height(); ++i) traceVal += A.Get(i,i);
+    B = traceVal;
   }
 
   /** 
