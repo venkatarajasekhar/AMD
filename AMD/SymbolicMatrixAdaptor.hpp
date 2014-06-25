@@ -124,10 +124,7 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
    * @param[in] A The (square) matrix whose trace is to be computed.
    * @return Trace of A
    */
-  static void trace(const matrix_type& A,
-                    value_type& B) {
-    B.copy(AMD::trace(A));
-  }
+  static value_type trace(const matrix_type& A) { return AMD::trace(A); }
 
   /** 
    * 10. 
@@ -135,9 +132,7 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
    * @param[in] n The dimension of the identity matrix.
    * @return Identity matrix of the required size.
    */
-  static matrix_type eye(int n) { 
-    return matrix_type::eye(n);
-  }
+  static matrix_type eye(int n) { return matrix_type::eye(n); }
 
   /** 
    * 11. 
@@ -145,9 +140,7 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
    * @param[in] n The dimension of the zero matrix.
    * @return Zero matrix of the required size.
    */
-  static matrix_type zeros(int m, int n) {
-    return matrix_type::zeros(m, n);
-  }
+  static matrix_type zeros(int m, int n) { return matrix_type::zeros(m, n); }
 
   /** 
    * 12. 
@@ -155,9 +148,7 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
    * @param[out] A Symmetrix positive definite matrix.
    * @return logdet of A
    */
-  static value_type logdet(const matrix_type& A) { 
-    return AMD::logdet(A);
-  }
+  static value_type logdet(const matrix_type& A) { return AMD::logdet(A); }
 
   /** 
    * 13. 
@@ -165,11 +156,7 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
    * @param[out] A A is overwritten with B.
    * @param[in] B The matrix to be copied.
    */
-  static void copy (matrix_type &A,      /**< target obj */
-                    const matrix_type &B /**< source obj */ ) {
-    // TODO symbol nRows nCols are private variables
-    A.copy(B);
-  }
+  static void copy (matrix_type &A, const matrix_type &B) { A.copy(B); }
 
   /** 
    * 14. 

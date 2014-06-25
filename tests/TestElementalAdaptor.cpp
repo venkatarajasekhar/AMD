@@ -167,10 +167,9 @@ void testTraceLogdet () {
   A.Set(1, 1, 2.0 + A.Get(1, 1));
 
   /** Perform the operations */
-//  const double trace = adaptor_type::trace (A);
+  const double trace = adaptor_type::trace (A);
   const double logdet = adaptor_type::logdet (A);
-    double trace;
-    adaptor_type::trace (A, trace);
+                                   
   /** Do simple checks */
   double trace_manual = A.Get(0,0) + A.Get(1,1);
   double logdet_manual = log (A.Get(0,0)*A.Get(1,1) - A.Get(0,1)*A.Get(1,0));
@@ -178,6 +177,7 @@ void testTraceLogdet () {
   assert_close (trace ,trace_manual);
   assert_close (logdet ,logdet_manual);
 }
+
 /**
  * @brief Test numerical matrix derivatives.
  */

@@ -129,10 +129,7 @@ public:
       opNum = CONST;
       varNumRows = 0;
       varNumCols = 0;
-//      varNumRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
-//      varNumCols = MatrixAdaptorType::getNumCols(*(matrixPtr));
     } else {
-      //varNumRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
       varNumRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
       varNumCols = MatrixAdaptorType::getNumCols(*(matrixPtr));
       callBackFunc = varOp<MT,ST>;
@@ -317,14 +314,6 @@ public:
 		               bool& zeroResultFlag ) const {
 
     /** Make these into individual asserts */
-    // TODO: replate getNumRows with traits 
-    /*
-    if (!(initial.use_count()>=1 && result.use_count()>=1 && isConst)) {
-    std::cout << "--------------------" << std::endl;
-    std::cout << MatrixAdaptorType::getNumRows(*(result)) << "    " << varNumRows <<  std::endl;
-    std::cout << MatrixAdaptorType::getNumCols(*(result)) << "    " << varNumCols << std::endl;
-    }
-    */
     assert(initial.use_count()>=1 && 
 	         result.use_count()>=1  &&
 	         isConst || 

@@ -439,11 +439,11 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
     identityCurrentFlag = 0;
   } else {
   if (transposeFlag) {
-    MT tmp0, tmp1;
-    MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), tmp0);
-    MatrixAdaptorType::elementwiseProduct(tmp0, *(current), *right);
-    MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), tmp1);
-    MatrixAdaptorType::elementwiseProduct(tmp1, *(current), *left);
+    MT lcTrans, rcTrans;
+    MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), lcTrans);
+    MatrixAdaptorType::elementwiseProduct(lcTrans, *(current), *right);
+    MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), rcTrans);
+    MatrixAdaptorType::elementwiseProduct(rcTrans, *(current), *left);
     transposeFlag = 3;
   } else {
     MatrixAdaptorType::elementwiseProduct(*(node->leftChild->matrixPtr), 
@@ -467,9 +467,11 @@ MatrixMatrixFunc<MT,ST> elementwiseProduct ( const MatrixMatrixFunc<MT,ST>& lhs,
           (lhs.varNumRows == rhs.varNumRows &&
            lhs.varNumCols == rhs.varNumCols));
   MatrixMatrixFunc<MT,ST> result;
-  MT tmp;
-  MatrixAdaptorType::elementwiseProduct(*(lhs.matrixPtr), *(rhs.matrixPtr), tmp);
-  boost::shared_ptr<MT> elewisePtr(new MT(tmp));
+  MT lcrcEwisePdt;
+  MatrixAdaptorType::elementwiseProduct(*(lhs.matrixPtr), 
+                                        *(rhs.matrixPtr), 
+                                        lcrcEwisePdt);
+  boost::shared_ptr<MT> elewisePtr(new MT(lcrcEwisePdt));
   result.binOpSet(elewisePtr, ELEWISE, elementwiseOp<MT,ST>, lhs, rhs);
   return (result);
 }
@@ -703,21 +705,20 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
   // Trigger gradientVec to calculate the derivative along the computational
   // tree reversely.
   lhs.gradientVec(initPtr, resPtr, false, true, zeroFlag);
-  ST tmp2;
   
   if (zeroFlag) {
-    MatrixAdaptorType::trace(*lhs.matrixPtr, tmp2);
     ScalarMatrixFunc<MT, ST> result( 
-              tmp2,
+              MatrixAdaptorType::trace(*lhs.matrixPtr),
               lhs.varNumRows,
               lhs.varNumCols);
     return(result);
   } else {
-    MatrixAdaptorType::trace(*lhs.matrixPtr, tmp2);
-    ScalarMatrixFunc<MT, ST> result (tmp2, *resPtr);				    
+    ScalarMatrixFunc<MT, ST> result(MatrixAdaptorType::trace(*lhs.matrixPtr), 
+                                    *resPtr);				    
     return(result);
   }
 }
+
 /**
  * @brief Create the root node for Scalar-Matrix function logdet. Once
  * creating this node, the calculation of derivative along the computational
