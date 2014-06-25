@@ -44,6 +44,9 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
                    const matrix_type& B,
                    matrix_type& C) {
 
+    /** Result matrices should always have sufficient space */
+    C.Resize(A.Height(), A.Width());
+
     /** first copy the matrix over */
     elem::Copy (A, C);
 
@@ -61,6 +64,9 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
   static void minus (const matrix_type& A,
                      const matrix_type& B, 
                      matrix_type& C) {
+
+    /** Result matrices should always have sufficient space */
+    C.Resize(A.Height(), A.Width());
 
     /** first copy the matrix over */
     elem::Copy (A, C);
@@ -80,6 +86,9 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
                         const matrix_type& B,
                         matrix_type& C) {
 
+    /** Result matrices should always have sufficient space */
+    C.Resize(A.Height(), B.Width());
+
     /** We have to do a Gemm */
     elem::Gemm (elem::NORMAL, elem::NORMAL, 1.0, A, B, 0.0, C);
   }
@@ -92,6 +101,11 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    */
   static void transpose (const matrix_type& A, 
                          matrix_type& B) {
+
+    /** Result matrices should always have sufficient space */
+    B.Resize(A.Width(), A.Height());
+
+    /** Compute transpose */
     elem::Transpose (A, B);
   }
 
@@ -103,6 +117,9 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    */
   static void negation (const matrix_type& A,
                         matrix_type& B) {
+
+    /** Result matrices should always have sufficient space */
+    B.Resize(A.Height(), A.Width());
 
     /** Copy over the matrix */
     elem::Copy (A, B);
@@ -200,6 +217,9 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
    */
   static void copy (matrix_type &A, const matrix_type &B) { 
 
+    /** Result matrices should always be of the right size */
+    A.Resize (B.Height(), B.Width());
+
     /** This one is pretty simple, but the order is different */
     elem::Copy (B, A);
   }
@@ -241,6 +261,10 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
   static void elementwiseProduct(const matrix_type& A,
                               const matrix_type& B,
                               matrix_type& C) {
+
+    /** Result matrices should always be of the right size */
+    C.Resize (A.Height(), A.Width());
+
     /* Get the matrix dimensions */
     const int m = A.Height();
     const int n = A.Width();

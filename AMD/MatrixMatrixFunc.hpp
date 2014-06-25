@@ -57,8 +57,8 @@ public:
   MatrixMatrixFunc* rightChild; /**< optional right child */
 
   /**
-   * @brief This is an empty constructor that initializes all values to defaults.
-   * Create a constant function.
+   * @brief This is an empty constructor that initializes all values to
+   * defaults.  Create a constant function.
    */ 
   MatrixMatrixFunc() : matrixPtr(), 
                        callBackFunc(NULL), 
@@ -207,19 +207,34 @@ public:
    * @param[in] rhs The right child node.
    */
   void binOpSet(boost::shared_ptr<MT> resultPtr,
-		            OpType _opNum,
+		            OpType operatorNum,
 		            CallBackFuncType cbf,
 		            const MatrixMatrixFunc<MT,ST> &lhs, 
 		            const MatrixMatrixFunc<MT,ST> &rhs) {
-    // Set the unary operation for its left child node.
-    unaryOpSet(resultPtr,_opNum,cbf,lhs);
-    rightChild = new MatrixMatrixFunc<MT,ST>;
-    rightChild->deepCopy(rhs);
+
+    matrixPtr = resultPtr;
+
+    opNum = operatorNum;
+
+    callBackFunc = cbf;
 
     isConst = lhs.isConst && rhs.isConst;
-    varNumRows = lhs.varNumRows | rhs.varNumRows;  // should be 0 or a size
-    varNumCols = lhs.varNumCols | rhs.varNumCols;
+
+    if (false==isConst) {
+      varNumRows = MatrixAdaptorType::getNumRows(*matrixPtr);
+      varNumCols = MatrixAdaptorType::getNumCols(*matrixPtr);
+    } else {
+      varNumRows = 0;
+      varNumCols = 0;
+    }
+
+    leftChild = new MatrixMatrixFunc<MT,ST>;
+    leftChild->deepCopy(lhs);
+
+    rightChild = new MatrixMatrixFunc<MT,ST>;
+    rightChild->deepCopy(rhs);
   }
+
   /**
    * @brief Set the unary operator for this node.
    *
@@ -242,12 +257,13 @@ public:
     leftChild = new MatrixMatrixFunc<MT,ST>;
     leftChild->deepCopy(lhs);
   }
+
   /**
    * @brief Print out the computational tree to log file.
    * @param[out] os Output stream to print to.
    */
   void print(std::ostream& os=std::cout) const {
-    matrixPtr->print(os);
+    MatrixAdaptorType::print(*matrixPtr, os);
 
     if (NULL==leftChild && NULL==rightChild) os << ":" << opName[opNum];
     else {
@@ -312,16 +328,6 @@ public:
 		               int transposeFlag, 
 		               bool identityInitialFlag,
 		               bool& zeroResultFlag ) const {
-
-    std::cout << std::endl << std::endl;
-    std::cout << "Initial use count " << initial.use_count() << std::endl;
-    std::cout << "Result  use count " << result.use_count() << std::endl;
-    std::cout << "isConst           " << isConst << std::endl;
-    std::cout << "First condition   " <<
-    MatrixAdaptorType::getNumRows(*result) << " == " << varNumRows << std::endl;
-    std::cout << "Second condition  " <<
-    MatrixAdaptorType::getNumCols(*result) << " == " << varNumCols << std::endl;
-    std::cout << std::endl << std::endl;
 
     /** Make these into individual asserts */
     assert(initial.use_count()>=1 && 

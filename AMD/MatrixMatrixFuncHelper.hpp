@@ -338,31 +338,32 @@ void timesOp( boost::shared_ptr<MT> result,
       // use A^T*B^T = (B*A)^T to reduce the numbder of trans
       // Why is this comment here? Peder?
       //(*left) = transpose(*current) * transpose(node->rightChild->val);
-      MT tmp0, tmp1, tmp2, tmp3;
-      MatrixAdaptorType::multiply(*(node->rightChild->matrixPtr), (*current), tmp0);
-
-      MatrixAdaptorType::copy((*left), tmp0);      
+      MatrixAdaptorType::multiply(*(node->rightChild->matrixPtr), 
+                                  *current, 
+                                  *left);
 
       // Why is this comment here? Peder?
       //(*right) = transpose(node->leftChild->val) * transpose(*current);
-      MatrixAdaptorType::multiply((*current), *(node->leftChild->matrixPtr), tmp1);
-      MatrixAdaptorType::copy((*right), tmp1);      
+      MatrixAdaptorType::multiply(*current, 
+                                  *(node->leftChild->matrixPtr), 
+                                  *right);
+
       transposeFlag = 3;
     } else {
-      MT tmp0, tmp1, tmp2, tmp3;
+      MT rcTrans, lcTrans;
       // left = current * right->matrix^T
-      MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), tmp0);
-      MatrixAdaptorType::multiply((*current), tmp0, tmp1);
-      MatrixAdaptorType::copy ((*left), tmp1);
+      MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), rcTrans);
+      MatrixAdaptorType::multiply(*current, rcTrans, *left);
+
       // right = left->matrix^T * current
-      MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), tmp2);
-      MatrixAdaptorType::multiply(tmp2, *current, tmp3);
-      MatrixAdaptorType::copy((*right), tmp3);
+      MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), lcTrans);
+      MatrixAdaptorType::multiply(lcTrans, *current, *right);
 
       transposeFlag = 0;
     }
   }
 }
+
 /**
  * @brief Operator * overloading. Create a new node with "*" operator 
  * in computational tree.
@@ -383,13 +384,14 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
 	        lhs.varNumCols==rhs.varNumCols));
   // New node in computational tree.
   MatrixMatrixFunc<MT,ST> result;
-  MT tmp;
-  MatrixAdaptorType::multiply(*(lhs.matrixPtr), *(rhs.matrixPtr), tmp);
-  boost::shared_ptr<MT> timesPtr(new MT((tmp)));
+  MT lhsTimesRhs;
+  MatrixAdaptorType::multiply(*(lhs.matrixPtr), *(rhs.matrixPtr), lhsTimesRhs);
+  boost::shared_ptr<MT> timesPtr(new MT((lhsTimesRhs)));
   // Initialize new node with time operator.
   result.binOpSet(timesPtr, TIMES, timesOp<MT,ST>, lhs, rhs);
   return(result);
 }
+
 // Functions to deal with opNum = ELEWISE
 // Callback function for differentiation involving elementwise product
 // The elementwiseOp deal with transpose in a opposite way of timesOp.
@@ -678,6 +680,7 @@ MatrixMatrixFunc<MT,ST> inv(const MatrixMatrixFunc<MT,ST> &lhs) {
   }
   return(result);
 }
+
 /**
  * @brief Create the root node for a Scalar-Matrix function trace.
  * Once creating this node, the calculation of derivatives through
