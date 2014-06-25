@@ -274,7 +274,11 @@ void testElementalMatrixMatrixFunc() {
   elemental_matrix_type D(ROW, COL);
   elemental_matrix_type E(ROW, COL);
   elemental_matrix_type F(ROW, COL);
-  elemental_matrix_type RESULT(ROW, COL);
+  elemental_matrix_type G(ROW, COL);
+  elemental_matrix_type H(ROW, COL);
+  elemental_matrix_type I(ROW, COL);
+  elemental_matrix_type J(ROW, COL);
+  elemental_matrix_type RESULT(ROW, COL); /**< Hand calculated matrix result. */
   elemental_matrix_type X(ROW, COL);
 
   elemental_matrix_type AT(ROW, COL);     /**< A transpose  */
@@ -307,7 +311,7 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::negation(X, XN);
   elemental_adaptor_type::inv(X, XI);
   elemental_adaptor_type::transpose(XI, XIT);
-
+  
   ElementalMMFunc fA(A, true);
   ElementalMMFunc fB(B, true);
   ElementalMMFunc fX(X, false);
@@ -336,32 +340,72 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::negation (E, RESULT);
   checkElementalMatrixEquality (func.derivativeVal, RESULT);
 
+  // For logdet test case we pick specific matrices as test cases
+  // because logdet variable must be positive.
+  // Here we pick X={2, 1, 2, 3}, A = {2, -1, 0, 1}, B = {3, -1, 1, 2}
+  //
+  // Reset matrix
+
+  A.Set(0, 0, 2.0);
+  A.Set(0, 1, -1.0);
+  A.Set(1, 0, 0);
+  A.Set(1, 1, 1.0);
+
+  B.Set(0, 0, 3.0);
+  B.Set(0, 1, -1.0);
+  B.Set(1, 0, 1);
+  B.Set(1, 1, 2.0);
+
+  X.Set(0, 0, 2.0);
+  X.Set(0, 1, 1.0);
+  X.Set(1, 0, 2.0);
+  X.Set(1, 1, 3.0);
+  // Reset transpose, negation, inv and inverse-transpose
+  elemental_adaptor_type::transpose(A, AT);
+  elemental_adaptor_type::negation(A, AN);
+  elemental_adaptor_type::inv(A, AI);
+  elemental_adaptor_type::transpose(AI, AIT);
+  elemental_adaptor_type::transpose(B, BT);
+  elemental_adaptor_type::negation(B, BN);
+  elemental_adaptor_type::inv(B, BI);
+  elemental_adaptor_type::transpose(BI, BIT);
+  elemental_adaptor_type::transpose(X, XT);
+  elemental_adaptor_type::negation(X, XN);
+  elemental_adaptor_type::inv(X, XI);
+  elemental_adaptor_type::transpose(XI, XIT);
+
+  ElementalMMFunc fA1(A, true);
+  ElementalMMFunc fB1(B, true);
+  ElementalMMFunc fX1(X, false);
 
   /** 4. d/dx(logdet(X)) == (X^-1)' */
-  elemental_matrix_type AA(2, 2);
-  elem::MakeGaussian (AA);
-  AA.Set(1, 0, AA.Get(0, 1));
-  AA.Set(0, 0, 2.0 + AA.Get(0, 0));
-  AA.Set(1, 1, 2.0 + AA.Get(1, 1));
-  std::cout << std::endl;
-  for (int i = 0; i < 2; i++) {
-    for (int j = 0; j < 2; j++) {
-      std::cout << AA.Get(i, j) << "  ";
-    }
-    std::cout << std::endl;
-  }
+  func = logdet(fX1);
+  checkElementalMatrixEquality(func.derivativeVal, XIT);
 
-//  std::cout << "  logdet " << logdet << std::endl;
-  ElementalMMFunc fAA (AA, false);
-  func = logdet(fAA);
-  
-  for (int i = 0; i < 2; i++) {
-    for (int j = 0; j < 2; j++) {
-      std::cout << func.derivativeVal.Get(i, j) << "  ";
-    }
-    std::cout << std::endl;
-  }
-  
+  /** 5. d/dx(logdet(AXB)) = A'((AXB)^-1)'B' */
+  func = logdet(fA1 * fX1 * fB1);
+  elemental_adaptor_type::multiply (A, X, C);
+  elemental_adaptor_type::multiply (C, B, D);
+  elemental_adaptor_type::inv (D, E);
+  elemental_adaptor_type::transpose (E, F);
+  elemental_adaptor_type::multiply (AT, F, G);
+  elemental_adaptor_type::multiply (G, BT, RESULT);
+  checkElementalMatrixEquality (func.derivativeVal, RESULT); 
+
+  /** 6. d/dx(X'AX) = AX(X'AX)^-1 + A'X((X'AX)^-1); */
+  func = logdet(transpose(fX1) * fA1 * fX1);
+  elemental_adaptor_type::multiply (XT, A, C);
+  elemental_adaptor_type::multiply (C, X, D);
+  elemental_adaptor_type::inv (D, E); // X'AX -1 
+  elemental_adaptor_type::transpose (E, F);   // (X'AX)-T
+  elemental_adaptor_type::multiply (A, X, G);
+  elemental_adaptor_type::multiply (G, E, H);
+  elemental_adaptor_type::multiply (AT, X, I);
+  elemental_adaptor_type::multiply (I, F, J);
+  elemental_adaptor_type::add (H, J, RESULT);
+  checkElementalMatrixEquality (func.derivativeVal, RESULT); 
+
+//  func = logdet(fAA);
   
 }
 
