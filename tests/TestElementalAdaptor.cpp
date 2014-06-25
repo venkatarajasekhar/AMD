@@ -13,7 +13,6 @@
 typedef elem::Matrix<double> matrix_type;
 typedef AMD::MatrixAdaptor_t<matrix_type> adaptor_type;
 typedef typename adaptor_type::value_type value_type;
-
 typedef AMD::MatrixMatrixFunc<matrix_type, value_type> MMFunc;
 typedef AMD::ScalarMatrixFunc<matrix_type, value_type> SMFunc;
 
@@ -224,9 +223,9 @@ void testMatrixMatrixFunc() {
   MMFunc fAfXfX = fAfX * fX;
   SMFunc func;
 
-  // 1. trace(AX). 
+#if 0
+  /** 1. d/dx(trace(AX)) = A'; */
   func = trace(fA * fX);
-  // derivatie == A';
   adaptor_type::copy(RESULT, AT);
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
@@ -234,10 +233,11 @@ void testMatrixMatrixFunc() {
     }
   }
 
-  // 2. trace(AXBX).
-  // TODO fix the bug here
+  std::cout << "DONE" << std::endl;
+#endif
+
+  /** 2. d/dx(trace(AXBX)) = A'X'B' + B'X'A' */
   func = trace(fAfXfX);
-  // derivative = A'X'B' + B'X'A'
   adaptor_type::multiply (AT, XT, C);
   adaptor_type::multiply (C, BT, E);
   adaptor_type::multiply (BT, XT, D);
@@ -246,13 +246,63 @@ void testMatrixMatrixFunc() {
   
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
-//     assert_close(func.derivativeVal.Get(i,j), RESULT.Get(i,j));
-        std::cout << func.derivativeVal.Get(i, j) << " " ;
+      // assert_close(func.derivativeVal.Get(i,j), RESULT.Get(i,j));
+      std::cout << func.derivativeVal.Get(i, j) << " " ;
     }
     std::cout << std::endl;
   }
-  
- 
+}
+
+
+/**
+ * @brief This function is written to serve as a shadow for numerical derivn
+ */
+void testMatrixMatrixFuncSymbolic() {
+  /** override the type definitions */
+  typedef AMD::SymbolicMatrixMatlab matrix_type;
+  typedef AMD::MatrixAdaptor_t<matrix_type> adaptor_type;
+  typedef adaptor_type::value_type value_type;
+  typedef AMD::MatrixMatrixFunc<matrix_type, value_type> MMFunc; 
+  typedef AMD::ScalarMatrixFunc<matrix_type, value_type> SMFunc; 
+
+  matrix_type A("A", 2, 2);
+  matrix_type B("B", 2, 2);
+  matrix_type C("C", 2, 2);
+  matrix_type D("D", 2, 2);
+  matrix_type E("E", 2, 2);
+  matrix_type F("F", 2, 2);
+  matrix_type RESULT("R", 2, 2);
+  matrix_type X("X", 2, 2);
+
+  matrix_type AT;   /**< A transpose  */
+  matrix_type AI;   /**< A inverse    */
+  matrix_type AN;   /**< A negation   */
+  matrix_type BT;   /**< A transpose  */
+  matrix_type BI;   /**< A inverse    */
+  matrix_type BN;   /**< A negation   */
+  matrix_type XT;   /**< A transpose  */
+  matrix_type XI;   /**< A inverse    */
+  matrix_type XN;   /**< A negation   */
+
+  adaptor_type::transpose(A, AT);
+  adaptor_type::negation(A, AN);
+  adaptor_type::inv(A, AI);
+  adaptor_type::transpose(B, BT);
+  adaptor_type::negation(B, BN);
+  adaptor_type::inv(B, BI);
+  adaptor_type::transpose(X, XT);
+  adaptor_type::negation(X, XN);
+  adaptor_type::inv(X, XI);
+
+  MMFunc fA(A, true);
+  MMFunc fB(B, true);
+  MMFunc fX(X, false);
+  MMFunc fAfX = fA * fX;
+  MMFunc fAfXfX = fAfX * fX;
+  SMFunc func;
+
+  /** 2. d/dx(trace(AXBX)) = A'X'B' + B'X'A' */
+  func = trace(fAfXfX);
 }
 
 int main(int argc, char** argv) {
@@ -277,6 +327,10 @@ int main(int argc, char** argv) {
 
   std::cout << "Testing trace() and logdet() .... ";
   testTraceLogdet();
+  std::cout << "DONE" << std::endl;
+
+  std::cout << "Testing MatrixMatrixFuncSymbolic() .... ";
+  testMatrixMatrixFuncSymbolic();
   std::cout << "DONE" << std::endl;
 
   std::cout << "Testing MatrixMatrixFunc() .... ";

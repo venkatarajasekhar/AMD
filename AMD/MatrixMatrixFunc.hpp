@@ -313,6 +313,16 @@ public:
 		               bool identityInitialFlag,
 		               bool& zeroResultFlag ) const {
 
+    std::cout << std::endl << std::endl;
+    std::cout << "Initial use count " << initial.use_count() << std::endl;
+    std::cout << "Result  use count " << result.use_count() << std::endl;
+    std::cout << "isConst           " << isConst << std::endl;
+    std::cout << "First condition   " <<
+    MatrixAdaptorType::getNumRows(*result) << " == " << varNumRows << std::endl;
+    std::cout << "Second condition  " <<
+    MatrixAdaptorType::getNumCols(*result) << " == " << varNumCols << std::endl;
+    std::cout << std::endl << std::endl;
+
     /** Make these into individual asserts */
     assert(initial.use_count()>=1 && 
 	         result.use_count()>=1  &&
