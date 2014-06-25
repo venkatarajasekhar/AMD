@@ -278,6 +278,7 @@ void testElementalMatrixMatrixFunc() {
   elemental_matrix_type H(ROW, COL);
   elemental_matrix_type I(ROW, COL);
   elemental_matrix_type J(ROW, COL);
+  elemental_matrix_type EYE = elemental_adaptor_type::eye(ROW); 
   elemental_matrix_type RESULT(ROW, COL); /**< Hand calculated matrix result. */
   elemental_matrix_type X(ROW, COL);
 
@@ -340,6 +341,13 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::negation (E, RESULT);
   checkElementalMatrixEquality (func.derivativeVal, RESULT);
 
+  /** 4. d/dx(trace(A.*X)) = A.*eye(N) */
+  ElementalMMFunc fAepX = elementwiseProduct (fA, fX);
+  func = trace(fAepX);
+  elemental_adaptor_type::elementwiseProduct (A, EYE, C);
+  checkElementalMatrixEquality (func.derivativeVal, C);
+
+
   // For logdet test case we pick specific matrices as test cases
   // because logdet variable must be positive.
   // Here we pick X={2, 1, 2, 3}, A = {2, -1, 0, 1}, B = {3, -1, 1, 2}
@@ -378,11 +386,11 @@ void testElementalMatrixMatrixFunc() {
   ElementalMMFunc fB1(B, true);
   ElementalMMFunc fX1(X, false);
 
-  /** 4. d/dx(logdet(X)) == (X^-1)' */
+  /** 5. d/dx(logdet(X)) == (X^-1)' */
   func = logdet(fX1);
   checkElementalMatrixEquality(func.derivativeVal, XIT);
 
-  /** 5. d/dx(logdet(AXB)) = A'((AXB)^-1)'B' */
+  /** 6. d/dx(logdet(AXB)) = A'((AXB)^-1)'B' */
   func = logdet(fA1 * fX1 * fB1);
   elemental_adaptor_type::multiply (A, X, C);
   elemental_adaptor_type::multiply (C, B, D);
@@ -392,7 +400,7 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::multiply (G, BT, RESULT);
   checkElementalMatrixEquality (func.derivativeVal, RESULT); 
 
-  /** 6. d/dx(X'AX) = AX(X'AX)^-1 + A'X((X'AX)^-1); */
+  /** 7. d/dx(X'AX) = AX(X'AX)^-1 + A'X((X'AX)^-1); */
   func = logdet(transpose(fX1) * fA1 * fX1);
   elemental_adaptor_type::multiply (XT, A, C);
   elemental_adaptor_type::multiply (C, X, D);
@@ -405,7 +413,15 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::add (H, J, RESULT);
   checkElementalMatrixEquality (func.derivativeVal, RESULT); 
 
-//  func = logdet(fAA);
+  /** 7. d/dx(logdet(A.*X)) = A.*(A.*X)^-T*/
+  ElementalMMFunc fAepX1 = elementwiseProduct (fA1, fX1);
+  func = logdet(fAepX1);
+  elemental_adaptor_type::elementwiseProduct (A, X, C);
+  elemental_adaptor_type::inv (C, D);
+  elemental_adaptor_type::transpose (D, E);
+  elemental_adaptor_type::elementwiseProduct (A, E, RESULT);
+  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+
   
 }
 
