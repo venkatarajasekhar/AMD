@@ -1,14 +1,53 @@
 #include <iostream>
 #include <string>
-#include <cstdio>
+#include <cmath>
+#include <elemental.hpp>
 #include <assert.h>
 #include <AMD/AMD.hpp>
 #include "boost/shared_ptr.hpp"
 
-typedef AMD::MatrixMatrixFunc<AMD::SymbolicMatrixMatlab,
-                      				AMD::SymbolicScalarMatlab> MMFunc;
-typedef AMD::ScalarMatrixFunc<AMD::SymbolicMatrixMatlab,
-                       				AMD::SymbolicScalarMatlab> SMFunc;
+#define ROW 2
+#define COL 2
+
+// Typedef for SymbolicMatrixMatlab and SymbolicScalarMatlab.
+typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
+typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
+typedef typename symbolic_adaptor_type::value_type symbolic_value_type;
+
+typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
+                      				symbolic_value_type> SymbolicMMFunc;
+typedef AMD::ScalarMatrixFunc<symbolic_matrix_type,
+                       				symbolic_value_type> SymbolicSMFunc;
+
+// Typedef for Elemental Matrices.
+typedef elem::Matrix<double> elemental_matrix_type;
+typedef AMD::MatrixAdaptor_t<elemental_matrix_type> elemental_adaptor_type;
+typedef typename elemental_adaptor_type::value_type elemental_value_type;
+
+typedef AMD::MatrixMatrixFunc<elemental_matrix_type,
+                      				elemental_value_type> ElementalMMFunc;
+typedef AMD::ScalarMatrixFunc<elemental_matrix_type,
+                       				elemental_value_type> ElementalSMFunc;
+
+void assert_close (double a, double b) {
+  double error =  a-b;
+  error = (0.0 > error) ? -error : error;
+  assert (error <= 1e-9);
+}
+
+void checkElementalMatrixEquality (const elemental_matrix_type& A, 
+                                   const elemental_matrix_type& B) {
+  assert((elemental_adaptor_type::getNumRows(A) ==
+          elemental_adaptor_type::getNumRows(B)) &&
+          (elemental_adaptor_type::getNumCols(A) == 
+          elemental_adaptor_type::getNumCols(B)));
+  
+  for (int i = 0; i < elemental_adaptor_type::getNumRows(A); i++) {
+    for (int j = 0; j < elemental_adaptor_type::getNumCols(A); j++) {
+      assert_close(A.Get(i,j), B.Get(i,j));
+    }
+  }
+}
 
 /** Complete writing out the descriptions */
 /** Also, change the name of the constant to be A, instead of Y */
@@ -16,18 +55,18 @@ void testMatrixMatrixFunc() {
   std::string ans;
 
   /** Create a variable X and an identity function */
-  AMD::SymbolicMatrixMatlab X("X",3,3);
-  MMFunc fx(X,false); 
+  symbolic_matrix_type X("X",3,3);
+  SymbolicMMFunc fx(X,false); 
 
   /** Create a constant A and an identity function */
-  AMD::SymbolicMatrixMatlab Y("Y",3,3);
-  MMFunc fy(Y,true); 
+  symbolic_matrix_type Y("Y",3,3);
+  SymbolicMMFunc fy(Y,true); 
 
   /** Create a scalar-matrix function placeholder */ 
-  SMFunc func;
+  SymbolicSMFunc func;
 
   /** test out the derivative of trace(AX) -- should be A' */
-  ans = "Y'";
+ ans = "Y'";
   func = trace(fx*fy);
   std::cout << func.functionVal.getString() << "  " \
   << func.derivativeVal.getString()  << std::endl;
@@ -99,30 +138,30 @@ void testMatrixMatrixFunc() {
 void testMatrixMatrixFunc3 () {
 
   std::string ans;
-  AMD::SymbolicMatrixMatlab X("X", 2, 2);
-  AMD::SymbolicMatrixMatlab A("A", 2, 2);
-  AMD::SymbolicMatrixMatlab B("B", 2, 2);
-  AMD::SymbolicMatrixMatlab C("C", 2, 2);
-  MMFunc fX(X, false);
-  MMFunc fA(A, true);
-  MMFunc fB(B, true);
-  MMFunc fC(C, true);
+  symbolic_matrix_type X("X", 2, 2);
+  symbolic_matrix_type A("A", 2, 2);
+  symbolic_matrix_type B("B", 2, 2);
+  symbolic_matrix_type C("C", 2, 2);
+  SymbolicMMFunc fX(X, false);
+  SymbolicMMFunc fA(A, true);
+  SymbolicMMFunc fB(B, true);
+  SymbolicMMFunc fC(C, true);
 
-  MMFunc fBX = fB * fX;
-  MMFunc fAX1 = fA * fX;
-  MMFunc fAXB = fAX1 * fB;
-  MMFunc fCX = fC * fX;
-  MMFunc fDX = fBX + fCX;
-  MMFunc fAXDX = fA * fDX;
+  SymbolicMMFunc fBX = fB * fX;
+  SymbolicMMFunc fAX1 = fA * fX;
+  SymbolicMMFunc fAXB = fAX1 * fB;
+  SymbolicMMFunc fCX = fC * fX;
+  SymbolicMMFunc fDX = fBX + fCX;
+  SymbolicMMFunc fAXDX = fA * fDX;
 
-  SMFunc func = trace(fBX);
+  SymbolicSMFunc func = trace(fBX);
 
   std::cout << "function" << std::endl;
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << "derivative" << std::endl;
   std::cout << func.derivativeVal.getString() << std::endl;
   std::cout << "---- logdet tests ---- " << std::endl;
-  SMFunc func4; 
+  SymbolicSMFunc func4; 
   func4 = logdet(fX);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
@@ -149,7 +188,7 @@ void testMatrixMatrixFunc3 () {
   // Element-wise Production test cases
   std::cout << "Now lets test some cases for element-wise product" << std::endl
    << std::endl;
-  MMFunc eTest0 = AMD::elementwiseProduct(fA, fX);
+  SymbolicMMFunc eTest0 = AMD::elementwiseProduct(fA, fX);
   func4 = trace (eTest0);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
@@ -158,12 +197,12 @@ void testMatrixMatrixFunc3 () {
 //  std::cout << func4.functionVal.getString() << std::endl;
 //  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
 
-  MMFunc eTest1 = AMD::elementwiseProduct(fX, fX);
+  SymbolicMMFunc eTest1 = AMD::elementwiseProduct(fX, fX);
   func4 = trace (eTest1);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
 
-  MMFunc eTest2 = AMD::elementwiseProduct(AMD::elementwiseProduct(fX, fX), fX);
+  SymbolicMMFunc eTest2 = AMD::elementwiseProduct(AMD::elementwiseProduct(fX, fX), fX);
   func4 = trace (eTest2);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
@@ -171,7 +210,7 @@ void testMatrixMatrixFunc3 () {
 //  func4 = trace(fX * fX);
 //  std::cout << func4.functionVal.getString() << std::endl;
 //  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  MMFunc eTest3 = AMD::elementwiseProduct(inv(fX), inv(fX));
+  SymbolicMMFunc eTest3 = AMD::elementwiseProduct(inv(fX), inv(fX));
   func4 = trace (eTest3);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
@@ -179,7 +218,7 @@ void testMatrixMatrixFunc3 () {
 //  std::cout << func4.functionVal.getString() << std::endl;
 //  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
 
-  MMFunc eTest4 = AMD::elementwiseProduct(fX, inv(fX));
+  SymbolicMMFunc eTest4 = AMD::elementwiseProduct(fX, inv(fX));
   func4 = trace (eTest4);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
@@ -188,7 +227,7 @@ void testMatrixMatrixFunc3 () {
 //  std::cout << func4.functionVal.getString() << std::endl;
 //  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
 
-  MMFunc eTest5 = AMD::elementwiseProduct(fA, fX);
+  SymbolicMMFunc eTest5 = AMD::elementwiseProduct(fA, fX);
   func4 = logdet (eTest5);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
@@ -197,7 +236,7 @@ void testMatrixMatrixFunc3 () {
 //  std::cout << func4.functionVal.getString() << std::endl;
 //  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
 
-  MMFunc eTest6 = AMD::elementwiseProduct(fA, transpose(fX));
+  SymbolicMMFunc eTest6 = AMD::elementwiseProduct(fA, transpose(fX));
   func4 = logdet (eTest6);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
@@ -206,7 +245,7 @@ void testMatrixMatrixFunc3 () {
 //  std::cout << func4.functionVal.getString() << std::endl;
 //  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
 
-  MMFunc eTest7 = AMD::elementwiseProduct(fX, fX);
+  SymbolicMMFunc eTest7 = AMD::elementwiseProduct(fX, fX);
   func4 = logdet (eTest7);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
@@ -214,7 +253,7 @@ void testMatrixMatrixFunc3 () {
 //  std::cout << func4.functionVal.getString() << std::endl;
 //  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
 
-  MMFunc eTest8 = AMD::elementwiseProduct(fX, transpose(fX));
+  SymbolicMMFunc eTest8 = AMD::elementwiseProduct(fX, transpose(fX));
   func4 = logdet (eTest8);
   std::cout << func4.functionVal.getString() << std::endl;
   std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
@@ -222,6 +261,121 @@ void testMatrixMatrixFunc3 () {
 //  func4 = logdet(fX * transpose(fX));
 //  std::cout << func4.functionVal.getString() << std::endl;
 //  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+}
+
+/**
+ * @brief Test numerical matrix derivatives.
+ */
+void testElementalMatrixMatrixFunc() {
+
+  elemental_matrix_type A(ROW, COL);
+  elemental_matrix_type B(ROW, COL);
+  elemental_matrix_type C(ROW, COL);
+  elemental_matrix_type D(ROW, COL);
+  elemental_matrix_type E(ROW, COL);
+  elemental_matrix_type F(ROW, COL);
+  elemental_matrix_type RESULT(ROW, COL);
+  elemental_matrix_type X(ROW, COL);
+
+  elemental_matrix_type AT(ROW, COL);     /**< A transpose  */
+  elemental_matrix_type AI(ROW, COL);     /**< A inverse    */
+  elemental_matrix_type AN(ROW, COL);     /**< A negation   */
+  elemental_matrix_type AIT(ROW, COL);    /**< A inverse-transpose   */
+  elemental_matrix_type BT(ROW, COL);     /**< B transpose  */
+  elemental_matrix_type BI(ROW, COL);     /**< B inverse    */
+  elemental_matrix_type BN(ROW, COL);     /**< B negation   */
+  elemental_matrix_type BIT(ROW, COL);    /**< B inverse-transpose   */
+  elemental_matrix_type XT(ROW, COL);     /**< X transpose  */
+  elemental_matrix_type XI(ROW, COL);     /**< X inverse    */
+  elemental_matrix_type XN(ROW, COL);     /**< X negation   */
+  elemental_matrix_type XIT(ROW, COL);    /**< X inverse-transpose   */
+
+
+  elem::MakeGaussian(A);
+  elem::MakeGaussian(B);
+  elem::MakeGaussian(X);
+
+  elemental_adaptor_type::transpose(A, AT);
+  elemental_adaptor_type::negation(A, AN);
+  elemental_adaptor_type::inv(A, AI);
+  elemental_adaptor_type::transpose(AI, AIT);
+  elemental_adaptor_type::transpose(B, BT);
+  elemental_adaptor_type::negation(B, BN);
+  elemental_adaptor_type::inv(B, BI);
+  elemental_adaptor_type::transpose(BI, BIT);
+  elemental_adaptor_type::transpose(X, XT);
+  elemental_adaptor_type::negation(X, XN);
+  elemental_adaptor_type::inv(X, XI);
+  elemental_adaptor_type::transpose(XI, XIT);
+
+  ElementalMMFunc fA(A, true);
+  ElementalMMFunc fB(B, true);
+  ElementalMMFunc fX(X, false);
+  ElementalSMFunc func;
+
+  /** 1. d/dx(trace(AX)) = A'; */
+  func = trace(fA * fX);
+  elemental_adaptor_type::copy(RESULT, AT);
+  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+
+
+  /** 2. d/dx(trace(AXBX)) = A'X'B' + B'X'A' */
+  func = trace(fA * fX * fB * fX);
+  elemental_adaptor_type::multiply (AT, XT, C);
+  elemental_adaptor_type::multiply (C, BT, E);
+  elemental_adaptor_type::multiply (BT, XT, D);
+  elemental_adaptor_type::multiply (D, AT, F);
+  elemental_adaptor_type::add (E, F, RESULT); 
+  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+
+  /** 3. d/dx(trace(AX'B)) = -(X^-1)'A'B'(X^-1)' */
+  func = trace(fA * inv(fX) * fB);
+  elemental_adaptor_type::multiply (XIT, AT, C);
+  elemental_adaptor_type::multiply (C, BT, D);
+  elemental_adaptor_type::multiply (D, XIT, E);
+  elemental_adaptor_type::negation (E, RESULT);
+  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+
+
+  /** 4. d/dx(logdet(X)) == (X^-1)' */
+  elemental_matrix_type AA(2, 2);
+  elem::MakeGaussian (AA);
+  AA.Set(1, 0, AA.Get(0, 1));
+  AA.Set(0, 0, 2.0 + AA.Get(0, 0));
+  AA.Set(1, 1, 2.0 + AA.Get(1, 1));
+  std::cout << std::endl;
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 2; j++) {
+      std::cout << AA.Get(i, j) << "  ";
+    }
+    std::cout << std::endl;
+  }
+
+  const double logdet = elemental_adaptor_type::logdet (AA);
+//  std::cout << "  logdet " << logdet << std::endl;
+}
+void testTraceLogdet () { 
+  /** Define two matrices */
+  elemental_matrix_type A(2,2);
+
+  /** Fill with random entries drawn from Uniform(0,1) */
+  elem::MakeGaussian(A);
+
+  /** Make symmetric, positive deifnitene */
+  A.Set(1, 0, A.Get(0,1));
+  A.Set(0, 0, 2.0 + A.Get(0, 0));
+  A.Set(1, 1, 2.0 + A.Get(1, 1));
+
+  /** Perform the operations */
+  const double trace = elemental_adaptor_type::trace (A);
+  const double logdet = elemental_adaptor_type::logdet (A);
+                                   
+  /** Do simple checks */
+  double trace_manual = A.Get(0,0) + A.Get(1,1);
+  double logdet_manual = log (A.Get(0,0)*A.Get(1,1) - A.Get(0,1)*A.Get(1,0));
+
+  assert_close (trace ,trace_manual);
+  assert_close (logdet ,logdet_manual);
 }
 
 int main() {
@@ -232,6 +386,11 @@ int main() {
 
   std::cout << "Testing advanced matrix-matrix functions .... ";
   testMatrixMatrixFunc3();
+  std::cout << "DONE" << std::endl;
+  std::cout << "Test trace " << std::endl; 
+  testTraceLogdet();
+  std::cout << "Testing elemetal matrix-matrix functions .... ";
+  testElementalMatrixMatrixFunc();
   std::cout << "DONE" << std::endl;
 
   std::cout << "All tests passed." << std::endl;

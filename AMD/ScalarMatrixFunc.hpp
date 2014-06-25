@@ -164,8 +164,11 @@ ScalarMatrixFunc<MT,ST> operator-( const ScalarMatrixFunc<MT,ST> &lhs ) {
     return( ScalarMatrixFunc<MT,ST>( -lhs.functionVal,
 				     lhs.derivativeVal ) );
   }*/
+  typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  MT lcTrans;
+  MatrixAdaptorType::negation(lhs.derivativeVal, lcTrans);
   return( ScalarMatrixFunc<MT,ST>( -lhs.functionVal,
-				   -lhs.derivativeVal ) );
+				   lcTrans ) );
 }
 
 /**

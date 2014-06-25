@@ -251,6 +251,24 @@ void testMatrixMatrixFunc() {
     }
     std::cout << std::endl;
   }
+  std::cout << "+++++++++++++" << std::endl;
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 2; j++) {
+      std::cout << X.Get(i, j) << " ";
+    }
+    std::cout << std::endl;
+  }
+  X.Set(1, 0, X.Get(0,1));
+  X.Set(0, 0, 2.0 + X.Get(0, 0));
+  X.Set(1, 1, 2.0 + X.Get(1, 1));
+  std::cout <<"------------" <<  std::endl;
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 2; j++) {
+      std::cout << X.Get(i, j) << " ";
+    }
+    std::cout << std::endl;
+  }
+  const double logdet = adaptor_type::logdet(X);
 }
 
 
@@ -302,7 +320,6 @@ void testMatrixMatrixFuncSymbolic() {
   SMFunc func;
 
   /** 2. d/dx(trace(AXBX)) = A'X'B' + B'X'A' */
-  func = trace(fAfXfX);
 }
 
 int main(int argc, char** argv) {
