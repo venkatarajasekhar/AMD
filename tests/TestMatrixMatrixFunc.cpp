@@ -351,35 +351,23 @@ void testElementalMatrixMatrixFunc() {
     std::cout << std::endl;
   }
 
-  const double logdet = elemental_adaptor_type::logdet (AA);
 //  std::cout << "  logdet " << logdet << std::endl;
-}
-void testTraceLogdet () { 
-  /** Define two matrices */
-  elemental_matrix_type A(2,2);
-
-  /** Fill with random entries drawn from Uniform(0,1) */
-  elem::MakeGaussian(A);
-
-  /** Make symmetric, positive deifnitene */
-  A.Set(1, 0, A.Get(0,1));
-  A.Set(0, 0, 2.0 + A.Get(0, 0));
-  A.Set(1, 1, 2.0 + A.Get(1, 1));
-
-  /** Perform the operations */
-  const double trace = elemental_adaptor_type::trace (A);
-  const double logdet = elemental_adaptor_type::logdet (A);
-                                   
-  /** Do simple checks */
-  double trace_manual = A.Get(0,0) + A.Get(1,1);
-  double logdet_manual = log (A.Get(0,0)*A.Get(1,1) - A.Get(0,1)*A.Get(1,0));
-
-  assert_close (trace ,trace_manual);
-  assert_close (logdet ,logdet_manual);
+  ElementalMMFunc fAA (AA, false);
+  func = logdet(fAA);
+  
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 2; j++) {
+      std::cout << func.derivativeVal.Get(i, j) << "  ";
+    }
+    std::cout << std::endl;
+  }
+  
+  
 }
 
-int main() {
+int main(int argc, char** argv) {
 
+  elem::Initialize(argc, argv); 
   std::cout << "Testing basic matrix-matrix functions .... ";
   testMatrixMatrixFunc();
   std::cout << "DONE" << std::endl;
@@ -387,13 +375,12 @@ int main() {
   std::cout << "Testing advanced matrix-matrix functions .... ";
   testMatrixMatrixFunc3();
   std::cout << "DONE" << std::endl;
-  std::cout << "Test trace " << std::endl; 
-  testTraceLogdet();
   std::cout << "Testing elemetal matrix-matrix functions .... ";
   testElementalMatrixMatrixFunc();
   std::cout << "DONE" << std::endl;
 
   std::cout << "All tests passed." << std::endl;
+  elem::Finalize();
 
   return(0);
 }

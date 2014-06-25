@@ -244,31 +244,6 @@ void testMatrixMatrixFunc() {
   adaptor_type::multiply (D, AT, F);
   adaptor_type::add (E, F, RESULT); 
   
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < N; j++) {
-      // assert_close(func.derivativeVal.Get(i,j), RESULT.Get(i,j));
-      std::cout << func.derivativeVal.Get(i, j) << " " ;
-    }
-    std::cout << std::endl;
-  }
-  std::cout << "+++++++++++++" << std::endl;
-  for (int i = 0; i < 2; i++) {
-    for (int j = 0; j < 2; j++) {
-      std::cout << X.Get(i, j) << " ";
-    }
-    std::cout << std::endl;
-  }
-  X.Set(1, 0, X.Get(0,1));
-  X.Set(0, 0, 2.0 + X.Get(0, 0));
-  X.Set(1, 1, 2.0 + X.Get(1, 1));
-  std::cout <<"------------" <<  std::endl;
-  for (int i = 0; i < 2; i++) {
-    for (int j = 0; j < 2; j++) {
-      std::cout << X.Get(i, j) << " ";
-    }
-    std::cout << std::endl;
-  }
-  const double logdet = adaptor_type::logdet(X);
 }
 
 
