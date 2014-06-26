@@ -6,6 +6,8 @@
 #include <AMD/AMD.hpp>
 #include "boost/shared_ptr.hpp"
 
+#include <AMD/config.h>
+
 #define ROW 2
 #define COL 2
 
@@ -19,7 +21,9 @@ typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
 typedef AMD::ScalarMatrixFunc<symbolic_matrix_type,
                        				symbolic_value_type> SymbolicSMFunc;
 
-// Typedef for Elemental Matrices.
+#if AMD_HAVE_ELEMENTAL
+
+/** Typedef for Elemental Matrices. */
 typedef elem::Matrix<double> elemental_matrix_type;
 typedef AMD::MatrixAdaptor_t<elemental_matrix_type> elemental_adaptor_type;
 typedef typename elemental_adaptor_type::value_type elemental_value_type;
@@ -47,220 +51,6 @@ void checkElementalMatrixEquality (const elemental_matrix_type& A,
       assert_close(A.Get(i,j), B.Get(i,j));
     }
   }
-}
-
-/** Complete writing out the descriptions */
-/** Also, change the name of the constant to be A, instead of Y */
-void testMatrixMatrixFunc() {
-  std::string ans;
-
-  /** Create a variable X and an identity function */
-  symbolic_matrix_type X("X",3,3);
-  SymbolicMMFunc fx(X,false); 
-
-  /** Create a constant A and an identity function */
-  symbolic_matrix_type Y("Y",3,3);
-  SymbolicMMFunc fy(Y,true); 
-
-  /** Create a scalar-matrix function placeholder */ 
-  SymbolicSMFunc func;
-
-  /** test out the derivative of trace(AX) -- should be A' */
- ans = "Y'";
-  func = trace(fx*fy);
-  std::cout << func.functionVal.getString() << "  " \
-  << func.derivativeVal.getString()  << std::endl;
-  assert(func.derivativeVal.getString()==ans);
-
-  // d/dX trace(X^T*Y^T)=Y^T
-  func = trace(transpose(fx)*transpose(fy));
-  assert(func.derivativeVal.getString()==ans);
-
-  // d/dX trace((X*Y)^T)=Y^T
-  func = trace(transpose(fx*fy));
-  assert(func.derivativeVal.getString()==ans);
-
-  ans = "Y";
-  // d/dX trace(X*Y^T) = Y
-  func = trace(fx*transpose(fy));
-  assert(func.derivativeVal.getString()==ans);
-
-  // d/dX trace(Y*X^T) = Y
-  func = trace(fy*transpose(fx));
-  assert(func.derivativeVal.getString()==ans);
-
-  ans = "eye(3)";
-  // d/dX trace(X) = I
-  func = trace(fx);
-  assert(func.derivativeVal.getString()==ans);
-
-  // d/dX trace(Y+X^T+Y) = I
-  func = trace(fy+transpose(fx)+fy);
-  assert(func.derivativeVal.getString()==ans);
-
-  func = trace(fy*inv(fx));
-//  ans = "(((-inv(X))*Y)*inv(X))'";
-  ans = "(-(inv(X)*(Y*inv(X))))'";
-  std::cout << func.derivativeVal.getString() << "  " <<  ans <<std::endl;
-  assert(func.derivativeVal.getString()==ans);
-
-  func = trace(fy-fx);
-  ans = "(-eye(3))";
-  std::cout << func.derivativeVal.getString() << "  " <<  ans << std::endl;
-  assert(func.derivativeVal.getString()==ans);
-
-  func = logdet(fx);
-  ans = "inv(X)'";
-  assert(func.derivativeVal.getString()==ans);
-
-  func = logdet(transpose(fx));
-  assert(func.derivativeVal.getString()==ans);
-
-  func = logdet(fy+fx);
-  ans = "inv(Y+X)'";
-  assert(func.derivativeVal.getString()==ans);
-
-  func = logdet(fy-fx);
-  ans = "(-inv(Y-X))'";
-  assert(func.derivativeVal.getString()==ans);
-
-  func = logdet(inv(transpose(fx)));
-  ans = "(-inv(X)')";
-  assert(func.derivativeVal.getString()==ans);
-
-  std::cout << "d/dX " << func.functionVal.getString() 
-  	    << " = " << func.derivativeVal.getString() << std::endl;
-
-}
-
-
-/** The function names need to be more descriptive; also add comments */
-void testMatrixMatrixFunc3 () {
-
-  std::string ans;
-  symbolic_matrix_type X("X", 2, 2);
-  symbolic_matrix_type A("A", 2, 2);
-  symbolic_matrix_type B("B", 2, 2);
-  symbolic_matrix_type C("C", 2, 2);
-  SymbolicMMFunc fX(X, false);
-  SymbolicMMFunc fA(A, true);
-  SymbolicMMFunc fB(B, true);
-  SymbolicMMFunc fC(C, true);
-
-  SymbolicMMFunc fBX = fB * fX;
-  SymbolicMMFunc fAX1 = fA * fX;
-  SymbolicMMFunc fAXB = fAX1 * fB;
-  SymbolicMMFunc fCX = fC * fX;
-  SymbolicMMFunc fDX = fBX + fCX;
-  SymbolicMMFunc fAXDX = fA * fDX;
-
-  SymbolicSMFunc func = trace(fBX);
-
-  std::cout << "function" << std::endl;
-  std::cout << func.functionVal.getString() << std::endl;
-  std::cout << "derivative" << std::endl;
-  std::cout << func.derivativeVal.getString() << std::endl;
-  std::cout << "---- logdet tests ---- " << std::endl;
-  SymbolicSMFunc func4; 
-  func4 = logdet(fX);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  func4 = logdet(fAXB);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  func4 = logdet(transpose(fX) * fA * fX);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  func4 = trace (fA*fX);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  func4 = trace (fA * fX * fB * fX);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  func4 = trace (fA * inv(fX) * fB);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  
-  func4 = trace (fA * fX * fX);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  // Element-wise Production test cases
-  std::cout << "Now lets test some cases for element-wise product" << std::endl
-   << std::endl;
-  SymbolicMMFunc eTest0 = AMD::elementwiseProduct(fA, fX);
-  func4 = trace (eTest0);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-//  func4 = trace(fA * fX);
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  SymbolicMMFunc eTest1 = AMD::elementwiseProduct(fX, fX);
-  func4 = trace (eTest1);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  SymbolicMMFunc eTest2 = AMD::elementwiseProduct(AMD::elementwiseProduct(fX, fX), fX);
-  func4 = trace (eTest2);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  
-//  func4 = trace(fX * fX);
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  SymbolicMMFunc eTest3 = AMD::elementwiseProduct(inv(fX), inv(fX));
-  func4 = trace (eTest3);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-//  func4 = trace(inv(fX) * inv(fX));
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  SymbolicMMFunc eTest4 = AMD::elementwiseProduct(fX, inv(fX));
-  func4 = trace (eTest4);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  
-//  func4 = trace(fX * inv(fX));
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  SymbolicMMFunc eTest5 = AMD::elementwiseProduct(fA, fX);
-  func4 = logdet (eTest5);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-//  func4 = logdet(fA * fX);
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  SymbolicMMFunc eTest6 = AMD::elementwiseProduct(fA, transpose(fX));
-  func4 = logdet (eTest6);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-//  func4 = logdet(fA * transpose(fX));
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  SymbolicMMFunc eTest7 = AMD::elementwiseProduct(fX, fX);
-  func4 = logdet (eTest7);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-//  func4 = logdet(fX * fX);
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  SymbolicMMFunc eTest8 = AMD::elementwiseProduct(fX, transpose(fX));
-  func4 = logdet (eTest8);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-//  func4 = logdet(fX * transpose(fX));
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
 }
 
 /**
@@ -423,8 +213,221 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::transpose (D, E);
   elemental_adaptor_type::elementwiseProduct (A, E, RESULT);
   checkElementalMatrixEquality (func.derivativeVal, RESULT);
+}
 
+#endif // AMD_HAVE_ELEMENTAL
+
+/** Complete writing out the descriptions */
+/** Also, change the name of the constant to be A, instead of Y */
+void testMatrixMatrixFunc() {
+  std::string ans;
+
+  /** Create a variable X and an identity function */
+  symbolic_matrix_type X("X",3,3);
+  SymbolicMMFunc fx(X,false); 
+
+  /** Create a constant A and an identity function */
+  symbolic_matrix_type Y("Y",3,3);
+  SymbolicMMFunc fy(Y,true); 
+
+  /** Create a scalar-matrix function placeholder */ 
+  SymbolicSMFunc func;
+
+  /** test out the derivative of trace(AX) -- should be A' */
+  ans = "Y'";
+  func = trace(fx*fy);
+  std::cout << func.functionVal.getString() << "  " \
+  << func.derivativeVal.getString()  << std::endl;
+  assert(func.derivativeVal.getString()==ans);
+
+  // d/dX trace(X^T*Y^T)=Y^T
+  func = trace(transpose(fx)*transpose(fy));
+  assert(func.derivativeVal.getString()==ans);
+
+  // d/dX trace((X*Y)^T)=Y^T
+  func = trace(transpose(fx*fy));
+  assert(func.derivativeVal.getString()==ans);
+
+  ans = "Y";
+  // d/dX trace(X*Y^T) = Y
+  func = trace(fx*transpose(fy));
+  assert(func.derivativeVal.getString()==ans);
+
+  // d/dX trace(Y*X^T) = Y
+  func = trace(fy*transpose(fx));
+  assert(func.derivativeVal.getString()==ans);
+
+  ans = "eye(3)";
+  // d/dX trace(X) = I
+  func = trace(fx);
+  assert(func.derivativeVal.getString()==ans);
+
+  // d/dX trace(Y+X^T+Y) = I
+  func = trace(fy+transpose(fx)+fy);
+  assert(func.derivativeVal.getString()==ans);
+
+  func = trace(fy*inv(fx));
+//  ans = "(((-inv(X))*Y)*inv(X))'";
+  ans = "(-(inv(X)*(Y*inv(X))))'";
+  std::cout << func.derivativeVal.getString() << "  " <<  ans <<std::endl;
+  assert(func.derivativeVal.getString()==ans);
+
+  func = trace(fy-fx);
+  ans = "(-eye(3))";
+  std::cout << func.derivativeVal.getString() << "  " <<  ans << std::endl;
+  assert(func.derivativeVal.getString()==ans);
+
+  func = logdet(fx);
+  ans = "inv(X)'";
+  assert(func.derivativeVal.getString()==ans);
+
+  func = logdet(transpose(fx));
+  assert(func.derivativeVal.getString()==ans);
+
+  func = logdet(fy+fx);
+  ans = "inv(Y+X)'";
+  assert(func.derivativeVal.getString()==ans);
+
+  func = logdet(fy-fx);
+  ans = "(-inv(Y-X))'";
+  assert(func.derivativeVal.getString()==ans);
+
+  func = logdet(inv(transpose(fx)));
+  ans = "(-inv(X)')";
+  assert(func.derivativeVal.getString()==ans);
+
+  std::cout << "d/dX " << func.functionVal.getString() 
+  	    << " = " << func.derivativeVal.getString() << std::endl;
+
+}
+
+/** The function names need to be more descriptive; also add comments */
+void testMatrixMatrixFunc3 () {
+
+  std::string ans;
+  symbolic_matrix_type X("X", 2, 2);
+  symbolic_matrix_type A("A", 2, 2);
+  symbolic_matrix_type B("B", 2, 2);
+  symbolic_matrix_type C("C", 2, 2);
+  SymbolicMMFunc fX(X, false);
+  SymbolicMMFunc fA(A, true);
+  SymbolicMMFunc fB(B, true);
+  SymbolicMMFunc fC(C, true);
+
+  SymbolicMMFunc fBX = fB * fX;
+  SymbolicMMFunc fAX1 = fA * fX;
+  SymbolicMMFunc fAXB = fAX1 * fB;
+  SymbolicMMFunc fCX = fC * fX;
+  SymbolicMMFunc fDX = fBX + fCX;
+  SymbolicMMFunc fAXDX = fA * fDX;
+
+  SymbolicSMFunc func = trace(fBX);
+
+  std::cout << "function" << std::endl;
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << "derivative" << std::endl;
+  std::cout << func.derivativeVal.getString() << std::endl;
+  std::cout << "---- logdet tests ---- " << std::endl;
+  SymbolicSMFunc func4; 
+  func4 = logdet(fX);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  func4 = logdet(fAXB);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  func4 = logdet(transpose(fX) * fA * fX);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+  func4 = trace (fA*fX);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  func4 = trace (fA * fX * fB * fX);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  func4 = trace (fA * inv(fX) * fB);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
   
+  func4 = trace (fA * fX * fX);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  // Element-wise Production test cases
+  std::cout << "Now lets test some cases for element-wise product" << std::endl
+   << std::endl;
+  SymbolicMMFunc eTest0 = AMD::elementwiseProduct(fA, fX);
+  func4 = trace (eTest0);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+//  func4 = trace(fA * fX);
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+  SymbolicMMFunc eTest1 = AMD::elementwiseProduct(fX, fX);
+  func4 = trace (eTest1);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+  SymbolicMMFunc eTest2 = AMD::elementwiseProduct(AMD::elementwiseProduct(fX, fX), fX);
+  func4 = trace (eTest2);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  
+//  func4 = trace(fX * fX);
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  SymbolicMMFunc eTest3 = AMD::elementwiseProduct(inv(fX), inv(fX));
+  func4 = trace (eTest3);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+//  func4 = trace(inv(fX) * inv(fX));
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+  SymbolicMMFunc eTest4 = AMD::elementwiseProduct(fX, inv(fX));
+  func4 = trace (eTest4);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  
+//  func4 = trace(fX * inv(fX));
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+  SymbolicMMFunc eTest5 = AMD::elementwiseProduct(fA, fX);
+  func4 = logdet (eTest5);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+//  func4 = logdet(fA * fX);
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+  SymbolicMMFunc eTest6 = AMD::elementwiseProduct(fA, transpose(fX));
+  func4 = logdet (eTest6);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+//  func4 = logdet(fA * transpose(fX));
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+  SymbolicMMFunc eTest7 = AMD::elementwiseProduct(fX, fX);
+  func4 = logdet (eTest7);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+//  func4 = logdet(fX * fX);
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+  SymbolicMMFunc eTest8 = AMD::elementwiseProduct(fX, transpose(fX));
+  func4 = logdet (eTest8);
+  std::cout << func4.functionVal.getString() << std::endl;
+  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+
+//  func4 = logdet(fX * transpose(fX));
+//  std::cout << func4.functionVal.getString() << std::endl;
+//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -437,9 +440,12 @@ int main(int argc, char** argv) {
   std::cout << "Testing advanced matrix-matrix functions .... ";
   testMatrixMatrixFunc3();
   std::cout << "DONE" << std::endl;
+
+#if AMD_HAVE_ELEMENTAL
   std::cout << "Testing elemetal matrix-matrix functions .... ";
   testElementalMatrixMatrixFunc();
   std::cout << "DONE" << std::endl;
+#endif
 
   std::cout << "All tests passed." << std::endl;
   elem::Finalize();
