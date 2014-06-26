@@ -329,6 +329,7 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::multiply (AT, XT, C);
   elemental_adaptor_type::multiply (C, BT, E);
   elemental_adaptor_type::multiply (BT, XT, D);
+  // F --> D
   elemental_adaptor_type::multiply (D, AT, F);
   elemental_adaptor_type::add (E, F, RESULT); 
   checkElementalMatrixEquality (func.derivativeVal, RESULT);
@@ -352,22 +353,23 @@ void testElementalMatrixMatrixFunc() {
   // because logdet variable must be positive.
   // Here we pick X={2, 1, 2, 3}, A = {2, -1, 0, 1}, B = {3, -1, 1, 2}
   //
-  // Reset matrix
-
-  A.Set(0, 0, 2.0);
-  A.Set(0, 1, -1.0);
-  A.Set(1, 0, 0);
-  A.Set(1, 1, 1.0);
-
-  B.Set(0, 0, 3.0);
-  B.Set(0, 1, -1.0);
-  B.Set(1, 0, 1);
-  B.Set(1, 1, 2.0);
-
-  X.Set(0, 0, 2.0);
-  X.Set(0, 1, 1.0);
-  X.Set(1, 0, 2.0);
-  X.Set(1, 1, 3.0);
+  // Reset matrix Matrix should be symmetric and positive.
+ 
+  elem::MakeGaussian (D); 
+  elemental_adaptor_type::elementwiseProduct (D, EYE, A);
+  for (int i = 0; i < ROW; i++) {
+    A.Set(i, i, A.Get(i, i) * A.Get(i, i));
+  }
+  elem::MakeGaussian (E); 
+  elemental_adaptor_type::elementwiseProduct (E, EYE, B);
+  for (int i = 0; i < ROW; i++) {
+    B.Set(i, i, B.Get(i, i) * B.Get(i, i));
+  }
+  elem::MakeGaussian (F); 
+  elemental_adaptor_type::elementwiseProduct (F, EYE, X);
+  for (int i = 0; i < ROW; i++) {
+    X.Set(i, i, X.Get(i, i) * X.Get(i, i));
+  }
   // Reset transpose, negation, inv and inverse-transpose
   elemental_adaptor_type::transpose(A, AT);
   elemental_adaptor_type::negation(A, AN);
