@@ -14,6 +14,12 @@
  * etc...
  */
 
+/** 
+ * This file is generated in the binary directory, but that directory is added
+ * to the list of include directories in CMake.
+ */ 
+#include "AMD/config.h"
+
 #include "ScalarMatrixFunc.hpp"
 
 #include "MatrixMatrixFunc.hpp"

@@ -4,8 +4,7 @@
 #include <elemental.hpp>
 #include <assert.h>
 #include "boost/shared_ptr.hpp"
-
-#include <AMD/config.h>
+#include <AMD/AMD.hpp>
 
 #define ROW 2
 #define COL 2
@@ -21,8 +20,6 @@ typedef AMD::ScalarMatrixFunc<symbolic_matrix_type,
                        				symbolic_value_type> SymbolicSMFunc;
 
 #if AMD_HAVE_ELEMENTAL
-
-#include <AMD/AMD.hpp>
 
 /** Typedef for Elemental Matrices. */
 typedef elem::Matrix<double> elemental_matrix_type;
