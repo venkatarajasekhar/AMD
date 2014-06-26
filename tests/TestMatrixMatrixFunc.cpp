@@ -3,7 +3,6 @@
 #include <cmath>
 #include <elemental.hpp>
 #include <assert.h>
-#include <AMD/AMD.hpp>
 #include "boost/shared_ptr.hpp"
 
 #include <AMD/config.h>
@@ -22,6 +21,8 @@ typedef AMD::ScalarMatrixFunc<symbolic_matrix_type,
                        				symbolic_value_type> SymbolicSMFunc;
 
 #if AMD_HAVE_ELEMENTAL
+
+#include <AMD/AMD.hpp>
 
 /** Typedef for Elemental Matrices. */
 typedef elem::Matrix<double> elemental_matrix_type;
