@@ -6,8 +6,10 @@
 #include "boost/shared_ptr.hpp"
 #include <AMD/AMD.hpp>
 
-#define ROW 2
-#define COL 2
+//#define DEBUG
+
+#define ROW 4
+#define COL 4
 
 // Typedef for SymbolicMatrixMatlab and SymbolicScalarMatlab.
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
@@ -36,9 +38,28 @@ void assert_close (double a, double b) {
   error = (0.0 > error) ? -error : error;
   assert (error <= 1e-9);
 }
-
-void checkElementalMatrixEquality (const elemental_matrix_type& A, 
+#define checkElementalMatrixEquality(x, y) CHECKElementalMatrixEquality(x, y)
+void CHECKElementalMatrixEquality (const elemental_matrix_type& A, 
                                    const elemental_matrix_type& B) {
+  #ifdef DEBUG
+  // Print matrix A and matrix B to screen
+  std::cout << "Matrix A " << std::endl;
+  for (int i = 0; i < elemental_adaptor_type::getNumRows(A); i++) {
+    for (int j = 0; j < elemental_adaptor_type::getNumCols(A); j++) {
+      std::cout << A.Get(i, j) << " ";
+    }
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+  std::cout << "Matrix B " << std::endl;
+  for (int i = 0; i < elemental_adaptor_type::getNumRows(B); i++) {
+    for (int j = 0; j < elemental_adaptor_type::getNumCols(B); j++) {
+      std::cout << B.Get(i, j) << " ";
+    }
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+  #endif
   assert((elemental_adaptor_type::getNumRows(A) ==
           elemental_adaptor_type::getNumRows(B)) &&
           (elemental_adaptor_type::getNumCols(A) == 
@@ -117,7 +138,6 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::multiply (AT, XT, C);
   elemental_adaptor_type::multiply (C, BT, E);
   elemental_adaptor_type::multiply (BT, XT, D);
-  // F --> D
   elemental_adaptor_type::multiply (D, AT, F);
   elemental_adaptor_type::add (E, F, RESULT); 
   checkElementalMatrixEquality (func.derivativeVal, RESULT);
@@ -203,11 +223,11 @@ void testElementalMatrixMatrixFunc() {
   ElementalMMFunc fB1(B, true);
   ElementalMMFunc fX1(X, false);
 
-  /** 5. d/dx(logdet(X)) == (X^-1)' */
+  /** 8. d/dx(logdet(X)) == (X^-1)' */
   func = logdet(fX1);
   checkElementalMatrixEquality(func.derivativeVal, XIT);
 
-  /** 6. d/dx(logdet(AXB)) = A'((AXB)^-1)'B' */
+  /** 9. d/dx(logdet(AXB)) = A'((AXB)^-1)'B' */
   func = logdet(fA1 * fX1 * fB1);
   elemental_adaptor_type::multiply (A, X, C);
   elemental_adaptor_type::multiply (C, B, D);
@@ -217,7 +237,7 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::multiply (G, BT, RESULT);
   checkElementalMatrixEquality (func.derivativeVal, RESULT); 
 
-  /** 7. d/dx(X'AX) = AX(X'AX)^-1 + A'X((X'AX)^-1); */
+  /** 10. d/dx(X'AX) = AX(X'AX)^-1 + A'X((X'AX)^-1); */
   func = logdet(transpose(fX1) * fA1 * fX1);
   elemental_adaptor_type::multiply (XT, A, C);
   elemental_adaptor_type::multiply (C, X, D);
@@ -230,7 +250,7 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::add (H, J, RESULT);
   checkElementalMatrixEquality (func.derivativeVal, RESULT); 
 
-  /** 7. d/dx(logdet(A.*X)) = A.*(A.*X)^-T*/
+  /** 11. d/dx(logdet(A.*X)) = A.*(A.*X)^-T*/
   func = logdet(elementwiseProduct (fA1, fX1));
   elemental_adaptor_type::elementwiseProduct (A, X, C);
   elemental_adaptor_type::inv (C, D);
@@ -238,14 +258,14 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::elementwiseProduct (A, E, RESULT);
   checkElementalMatrixEquality (func.derivativeVal, RESULT);
 
-  /** 8. d/dx(logdet(A.*X')) = A'.*(A.*X')^-1 */
+  /** 12. d/dx(logdet(A.*X')) = A'.*(A.*X')^-1 */
   func = logdet(elementwiseProduct(fA1, transpose(fX1)));
   elemental_adaptor_type::elementwiseProduct (A, XT, C);
   elemental_adaptor_type::inv (C, D);
   elemental_adaptor_type::elementwiseProduct (AT, D, RESULT);
   checkElementalMatrixEquality (func.derivativeVal, RESULT);
 
-  /** 9. d/dx(logdet(X.*X)) = 2 * X.*(X.*X)'^-1 */
+  /** 13. d/dx(logdet(X.*X)) = 2 * X.*(X.*X)'^-1 */
   func = logdet(elementwiseProduct (fX1, fX1));
   elemental_adaptor_type::elementwiseProduct (X, X, C);
   elemental_adaptor_type::inv (C, D);
@@ -254,7 +274,7 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::add(F, F, RESULT);
   checkElementalMatrixEquality (func.derivativeVal, RESULT);
 
-  /** 10. d/dx(logdet(X.*X')) =
+  /** 14. d/dx(logdet(X.*X')) =
           X'.*(X.*X')'^-1 + X'.* (X.*X')^-1 */
   func = logdet(elementwiseProduct (fX1, transpose(fX1)));
   elemental_adaptor_type::elementwiseProduct(X, XT, C);
@@ -271,90 +291,96 @@ void testElementalMatrixMatrixFunc() {
 
 /** Complete writing out the descriptions */
 /** Also, change the name of the constant to be A, instead of Y */
-void testMatrixMatrixFunc() {
-  std::string ans;
+void testBasicSymbolicMatrixMatrixFunc() {
+  std::string ans; /**< SymbolicMatrixMatrixFunc result. */
+  std::string row = std::to_string(ROW); /**< SymbolicMatrix row number. */ 
 
   /** Create a variable X and an identity function */
-  symbolic_matrix_type X("X",3,3);
-  SymbolicMMFunc fx(X,false); 
+  symbolic_matrix_type X("X",ROW,COL);
+  SymbolicMMFunc fX(X,false); 
 
   /** Create a constant A and an identity function */
-  symbolic_matrix_type Y("Y",3,3);
-  SymbolicMMFunc fy(Y,true); 
+  symbolic_matrix_type A("A",ROW,COL);
+  SymbolicMMFunc fA(A,true); 
 
   /** Create a scalar-matrix function placeholder */ 
   SymbolicSMFunc func;
 
-  /** test out the derivative of trace(AX) -- should be A' */
-  ans = "Y'";
-  func = trace(fx*fy);
-  std::cout << func.functionVal.getString() << "  " \
-  << func.derivativeVal.getString()  << std::endl;
+  /** 1. d/dx(trace(X*A)) = A' */
+  ans = "A'";
+  func = trace(fX*fA);
   assert(func.derivativeVal.getString()==ans);
 
-  // d/dX trace(X^T*Y^T)=Y^T
-  func = trace(transpose(fx)*transpose(fy));
+  /** 2. d/dx(trace(X' * A')) = A' */
+  ans = "A'";
+  func = trace(transpose(fX)*transpose(fA));
   assert(func.derivativeVal.getString()==ans);
 
-  // d/dX trace((X*Y)^T)=Y^T
-  func = trace(transpose(fx*fy));
+  /** 3. d/dx(trace((X*A)')) = A' */
+  ans = "A'";
+  func = trace(transpose(fX*fA));
   assert(func.derivativeVal.getString()==ans);
 
-  ans = "Y";
-  // d/dX trace(X*Y^T) = Y
-  func = trace(fx*transpose(fy));
+  /** 4. d/dx(trace(X*A')) = A */
+  ans = "A";
+  func = trace(fX*transpose(fA));
   assert(func.derivativeVal.getString()==ans);
 
-  // d/dX trace(Y*X^T) = Y
-  func = trace(fy*transpose(fx));
+  /** 5. d/dx(trace(A*X')) = A */
+  ans = "A";
+  func = trace(fA*transpose(fX));
   assert(func.derivativeVal.getString()==ans);
 
-  ans = "eye(3)";
-  // d/dX trace(X) = I
-  func = trace(fx);
+  /** 6. d/dx(trace(X)) = I */
+  ans = "eye(" + row + ")";
+  func = trace(fX);
   assert(func.derivativeVal.getString()==ans);
 
-  // d/dX trace(Y+X^T+Y) = I
-  func = trace(fy+transpose(fx)+fy);
+  /** 7. d/dx(trace(A+X'+A)) = I */
+  ans = "eye(" + row + ")";
+  func = trace(fA+transpose(fX)+fA);
   assert(func.derivativeVal.getString()==ans);
 
-  func = trace(fy*inv(fx));
-//  ans = "(((-inv(X))*Y)*inv(X))'";
-  ans = "(-(inv(X)*(Y*inv(X))))'";
+  /** 8. d/dx(trace(A*(X')^-1)) = -(X')^-1*A*X^-1 */
+  ans = "(-(inv(X)*(A*inv(X))))'";
+  func = trace(fA*inv(fX));
   std::cout << func.derivativeVal.getString() << "  " <<  ans <<std::endl;
   assert(func.derivativeVal.getString()==ans);
 
-  func = trace(fy-fx);
-  ans = "(-eye(3))";
+  /** 9. d/dx(trace(A-X)) = I */
+  ans = "(-eye(" + row + "))";
+  func = trace(fA-fX);
   std::cout << func.derivativeVal.getString() << "  " <<  ans << std::endl;
   assert(func.derivativeVal.getString()==ans);
 
-  func = logdet(fx);
+  /** 10. d/dx(logdet(X)) = X^-1 */
   ans = "inv(X)'";
+  func = logdet(fX);
+  assert(func.derivativeVal.getString()==ans);
+  
+  /** 11. d/dx(logdet(X')) = X^-1 */
+  ans = "inv(X)'";
+  func = logdet(transpose(fX));
   assert(func.derivativeVal.getString()==ans);
 
-  func = logdet(transpose(fx));
+  /** 12. d/dx(logdet(A+X)) = (A+X)^-1 */
+  ans = "inv(A+X)'";
+  func = logdet(fA+fX);
+  assert(func.derivativeVal.getString()==ans);
+  
+  /** 13. d/dx(logdet(A-X)) = -((A-X)')^-1 */
+  ans = "(-inv(A-X))'";
+  func = logdet(fA-fX);
   assert(func.derivativeVal.getString()==ans);
 
-  func = logdet(fy+fx);
-  ans = "inv(Y+X)'";
-  assert(func.derivativeVal.getString()==ans);
-
-  func = logdet(fy-fx);
-  ans = "(-inv(Y-X))'";
-  assert(func.derivativeVal.getString()==ans);
-
-  func = logdet(inv(transpose(fx)));
+  /** 14. d/dx(logdet(X'^-1)) = -X'^-1 */
   ans = "(-inv(X)')";
+  func = logdet(inv(transpose(fX)));
   assert(func.derivativeVal.getString()==ans);
-
-  std::cout << "d/dX " << func.functionVal.getString() 
-  	    << " = " << func.derivativeVal.getString() << std::endl;
-
 }
 
 /** The function names need to be more descriptive; also add comments */
-void testMatrixMatrixFunc3 () {
+void testAdvancedSymbolicMatrixMatrixFunc () {
 
   std::string ans;
   symbolic_matrix_type X("X", 2, 2);
@@ -486,12 +512,12 @@ int main(int argc, char** argv) {
 
   elem::Initialize(argc, argv); 
   std::cout << "Testing basic matrix-matrix functions .... ";
-  testMatrixMatrixFunc();
+  testBasicSymbolicMatrixMatrixFunc();
   std::cout << "DONE" << std::endl;
 
-//  std::cout << "Testing advanced matrix-matrix functions .... ";
-//  testMatrixMatrixFunc3();
-//  std::cout << "DONE" << std::endl;
+  std::cout << "Testing advanced matrix-matrix functions .... ";
+  testAdvancedSymbolicMatrixMatrixFunc();
+  std::cout << "DONE" << std::endl;
 
 #if AMD_HAVE_ELEMENTAL
   std::cout << "Testing elemetal matrix-matrix functions .... ";
