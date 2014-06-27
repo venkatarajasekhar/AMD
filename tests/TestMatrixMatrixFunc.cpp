@@ -131,10 +131,37 @@ void testElementalMatrixMatrixFunc() {
   checkElementalMatrixEquality (func.derivativeVal, RESULT);
 
   /** 4. d/dx(trace(A.*X)) = A.*eye(N) */
-  ElementalMMFunc fAepX = elementwiseProduct (fA, fX);
-  func = trace(fAepX);
-  elemental_adaptor_type::elementwiseProduct (A, EYE, C);
-  checkElementalMatrixEquality (func.derivativeVal, C);
+  func = trace(elementwiseProduct (fA, fX));
+  elemental_adaptor_type::elementwiseProduct (A, EYE, RESULT);
+  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+
+  /** 5. d/dx(trace (X.*X)) =  2 * A .* eye(N) */
+  func = trace (elementwiseProduct (fX, fX));
+  elemental_adaptor_type::elementwiseProduct(X, EYE, C);
+  elemental_adaptor_type::add(C, C, RESULT);
+  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+
+  /** 6. d/dx(trace(X^-1 .* X^-1)) = 
+         -2 * X^-T * X^-1 .* EYE * X ^ -T    */
+  func = trace (elementwiseProduct(inv(fX), inv(fX)));
+  elemental_adaptor_type::elementwiseProduct (XI, EYE, C);
+  elemental_adaptor_type::multiply (XIT, C, D);
+  elemental_adaptor_type::multiply (D, XIT, E);
+  elemental_adaptor_type::add (E, E, F);
+  elemental_adaptor_type::negation (F, RESULT);
+  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+
+  /** 7. d/dx(trace(X .* X^-1)) = 
+         X^-1 .* EYE - X^-T * X .* EYE * X^-T */
+  func = trace (elementwiseProduct (fX, inv(fX)));
+  elemental_adaptor_type::elementwiseProduct (XI, EYE, C);
+  elemental_adaptor_type::elementwiseProduct (X, EYE, D);
+  elemental_adaptor_type::multiply (XIT, D, E);
+  elemental_adaptor_type::multiply (E, XIT, F);
+  elemental_adaptor_type::minus (C, F, RESULT);
+  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+
+  
 
 
   // For logdet test case we pick specific matrices as test cases
@@ -204,12 +231,39 @@ void testElementalMatrixMatrixFunc() {
   checkElementalMatrixEquality (func.derivativeVal, RESULT); 
 
   /** 7. d/dx(logdet(A.*X)) = A.*(A.*X)^-T*/
-  ElementalMMFunc fAepX1 = elementwiseProduct (fA1, fX1);
-  func = logdet(fAepX1);
+  func = logdet(elementwiseProduct (fA1, fX1));
   elemental_adaptor_type::elementwiseProduct (A, X, C);
   elemental_adaptor_type::inv (C, D);
   elemental_adaptor_type::transpose (D, E);
   elemental_adaptor_type::elementwiseProduct (A, E, RESULT);
+  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+
+  /** 8. d/dx(logdet(A.*X')) = A'.*(A.*X')^-1 */
+  func = logdet(elementwiseProduct(fA1, transpose(fX1)));
+  elemental_adaptor_type::elementwiseProduct (A, XT, C);
+  elemental_adaptor_type::inv (C, D);
+  elemental_adaptor_type::elementwiseProduct (AT, D, RESULT);
+  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+
+  /** 9. d/dx(logdet(X.*X)) = 2 * X.*(X.*X)'^-1 */
+  func = logdet(elementwiseProduct (fX1, fX1));
+  elemental_adaptor_type::elementwiseProduct (X, X, C);
+  elemental_adaptor_type::inv (C, D);
+  elemental_adaptor_type::transpose (D, E);
+  elemental_adaptor_type::elementwiseProduct (X, E, F);
+  elemental_adaptor_type::add(F, F, RESULT);
+  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+
+  /** 10. d/dx(logdet(X.*X')) =
+          X'.*(X.*X')'^-1 + X'.* (X.*X')^-1 */
+  func = logdet(elementwiseProduct (fX1, transpose(fX1)));
+  elemental_adaptor_type::elementwiseProduct(X, XT, C);
+  elemental_adaptor_type::inv (C, D);
+  elemental_adaptor_type::transpose (D, E);
+  elemental_adaptor_type::elementwiseProduct (X, XT, F);
+  elemental_adaptor_type::inv (F, G);
+  elemental_adaptor_type::add (E, G, H);
+  elemental_adaptor_type::elementwiseProduct (XT, H, RESULT);
   checkElementalMatrixEquality (func.derivativeVal, RESULT);
 }
 
@@ -435,9 +489,9 @@ int main(int argc, char** argv) {
   testMatrixMatrixFunc();
   std::cout << "DONE" << std::endl;
 
-  std::cout << "Testing advanced matrix-matrix functions .... ";
-  testMatrixMatrixFunc3();
-  std::cout << "DONE" << std::endl;
+//  std::cout << "Testing advanced matrix-matrix functions .... ";
+//  testMatrixMatrixFunc3();
+//  std::cout << "DONE" << std::endl;
 
 #if AMD_HAVE_ELEMENTAL
   std::cout << "Testing elemetal matrix-matrix functions .... ";
