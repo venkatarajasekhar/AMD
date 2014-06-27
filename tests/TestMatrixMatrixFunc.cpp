@@ -33,50 +33,43 @@ typedef AMD::MatrixMatrixFunc<elemental_matrix_type,
 typedef AMD::ScalarMatrixFunc<elemental_matrix_type,
                        				elemental_value_type> ElementalSMFunc;
 
-void assert_close (double a, double b) {
+bool assert_close (double a, double b) {
   double error =  a-b;
   error = (0.0 > error) ? -error : error;
-  assert (error <= 1e-9);
+  return (error<=1e-9) ? true:false;
+//  assert (error <= 1e-9);
 }
-#define checkElementalMatrixEquality(x, y) CHECKElementalMatrixEquality(x, y)
-void CHECKElementalMatrixEquality (const elemental_matrix_type& A, 
-                                   const elemental_matrix_type& B) {
-  #ifdef DEBUG
-  // Print matrix A and matrix B to screen
-  std::cout << "Matrix A " << std::endl;
-  for (int i = 0; i < elemental_adaptor_type::getNumRows(A); i++) {
-    for (int j = 0; j < elemental_adaptor_type::getNumCols(A); j++) {
-      std::cout << A.Get(i, j) << " ";
-    }
-    std::cout << std::endl;
-  }
-  std::cout << std::endl;
-  std::cout << "Matrix B " << std::endl;
-  for (int i = 0; i < elemental_adaptor_type::getNumRows(B); i++) {
-    for (int j = 0; j < elemental_adaptor_type::getNumCols(B); j++) {
-      std::cout << B.Get(i, j) << " ";
-    }
-    std::cout << std::endl;
-  }
-  std::cout << std::endl;
-  #endif
-  assert((elemental_adaptor_type::getNumRows(A) ==
-          elemental_adaptor_type::getNumRows(B)) &&
-          (elemental_adaptor_type::getNumCols(A) == 
-          elemental_adaptor_type::getNumCols(B)));
-  
-  for (int i = 0; i < elemental_adaptor_type::getNumRows(A); i++) {
-    for (int j = 0; j < elemental_adaptor_type::getNumCols(A); j++) {
-      assert_close(A.Get(i,j), B.Get(i,j));
-    }
-  }
-}
+
+/** Check if the two matrices are numerically equal. */
+#define CHECK_ELEMENTAL_MATRIX(A, B) \
+        check_elemental_matrix(A, B, __LINE__);
+void check_elemental_matrix(const elemental_matrix_type& A, 
+                                  const elemental_matrix_type& B,
+                                  unsigned line) {                                                                           
+  assert((elemental_adaptor_type::getNumRows(A) ==                            
+          elemental_adaptor_type::getNumRows(B)) &&                           
+          (elemental_adaptor_type::getNumCols(A) ==                           
+          elemental_adaptor_type::getNumCols(B)));                            
+                                                                      
+  for (int i = 0; i < elemental_adaptor_type::getNumRows(A); i++) {           
+    for (int j = 0; j < elemental_adaptor_type::getNumCols(A); j++) {       
+      if(!assert_close(A.Get(i, j), B.Get(i,j))) {
+        std::cout << std::endl;
+        std::cout << "In file " << __FILE__ << std::endl;
+        std::cout << "Test failed at line: " << line << std::endl;
+        std::cout << "Program aborted" << std::endl;
+        exit(-1);
+      }
+    }                                                                         
+  }                                                                           
+}                                                                            
 
 /**
  * @brief Test numerical matrix derivatives.
  */
 void testElementalMatrixMatrixFunc() {
-
+  
+  /** Create constant matrices A, B, C, E etc */
   elemental_matrix_type A(ROW, COL);
   elemental_matrix_type B(ROW, COL);
   elemental_matrix_type C(ROW, COL);
@@ -87,10 +80,18 @@ void testElementalMatrixMatrixFunc() {
   elemental_matrix_type H(ROW, COL);
   elemental_matrix_type I(ROW, COL);
   elemental_matrix_type J(ROW, COL);
-  elemental_matrix_type EYE = elemental_adaptor_type::eye(ROW); 
-  elemental_matrix_type RESULT(ROW, COL); /**< Hand calculated matrix result. */
-  elemental_matrix_type X(ROW, COL);
 
+  /** Create identity matrix EYE */
+  elemental_matrix_type EYE = elemental_adaptor_type::eye(ROW); 
+  /** Create result matrix */
+  elemental_matrix_type RESULT(ROW, COL); /**< Hand calculated matrix result. */
+
+  /** Create variable matrices X */
+  elemental_matrix_type X(ROW, COL);
+ 
+  /** Create transpose, inverse, negation for existing
+   *  matrices to simplify programming 
+   **/
   elemental_matrix_type AT(ROW, COL);     /**< A transpose  */
   elemental_matrix_type AI(ROW, COL);     /**< A inverse    */
   elemental_matrix_type AN(ROW, COL);     /**< A negation   */
@@ -104,11 +105,14 @@ void testElementalMatrixMatrixFunc() {
   elemental_matrix_type XN(ROW, COL);     /**< X negation   */
   elemental_matrix_type XIT(ROW, COL);    /**< X inverse-transpose   */
 
-
+  /** Initialize matrices */
   elem::MakeGaussian(A);
   elem::MakeGaussian(B);
   elem::MakeGaussian(X);
-
+  
+  /** Initialize transpose, inverse and negation matrices
+   *  based on existing ones
+   **/
   elemental_adaptor_type::transpose(A, AT);
   elemental_adaptor_type::negation(A, AN);
   elemental_adaptor_type::inv(A, AI);
@@ -121,16 +125,19 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::negation(X, XN);
   elemental_adaptor_type::inv(X, XI);
   elemental_adaptor_type::transpose(XI, XIT);
-  
+
+  /** Create elementa matrix-matrix functions */ 
   ElementalMMFunc fA(A, true);
   ElementalMMFunc fB(B, true);
   ElementalMMFunc fX(X, false);
+
+  /** Create elemental scalar-matrix function */
   ElementalSMFunc func;
 
   /** 1. d/dx(trace(AX)) = A'; */
   func = trace(fA * fX);
   elemental_adaptor_type::copy(RESULT, AT);
-  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+  CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT);
 
 
   /** 2. d/dx(trace(AXBX)) = A'X'B' + B'X'A' */
@@ -140,7 +147,7 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::multiply (BT, XT, D);
   elemental_adaptor_type::multiply (D, AT, F);
   elemental_adaptor_type::add (E, F, RESULT); 
-  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+  CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT);
 
   /** 3. d/dx(trace(AX'B)) = -(X^-1)'A'B'(X^-1)' */
   func = trace(fA * inv(fX) * fB);
@@ -148,18 +155,18 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::multiply (C, BT, D);
   elemental_adaptor_type::multiply (D, XIT, E);
   elemental_adaptor_type::negation (E, RESULT);
-  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+  CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT);
 
   /** 4. d/dx(trace(A.*X)) = A.*eye(N) */
   func = trace(elementwiseProduct (fA, fX));
   elemental_adaptor_type::elementwiseProduct (A, EYE, RESULT);
-  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+  CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT);
 
   /** 5. d/dx(trace (X.*X)) =  2 * A .* eye(N) */
   func = trace (elementwiseProduct (fX, fX));
   elemental_adaptor_type::elementwiseProduct(X, EYE, C);
   elemental_adaptor_type::add(C, C, RESULT);
-  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+  CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT);
 
   /** 6. d/dx(trace(X^-1 .* X^-1)) = 
          -2 * X^-T * X^-1 .* EYE * X ^ -T    */
@@ -169,7 +176,7 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::multiply (D, XIT, E);
   elemental_adaptor_type::add (E, E, F);
   elemental_adaptor_type::negation (F, RESULT);
-  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+  CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT);
 
   /** 7. d/dx(trace(X .* X^-1)) = 
          X^-1 .* EYE - X^-T * X .* EYE * X^-T */
@@ -179,16 +186,11 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::multiply (XIT, D, E);
   elemental_adaptor_type::multiply (E, XIT, F);
   elemental_adaptor_type::minus (C, F, RESULT);
-  checkElementalMatrixEquality (func.derivativeVal, RESULT);
-
-  
-
+  CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT);
 
   // For logdet test case we pick specific matrices as test cases
-  // because logdet variable must be positive.
-  // Here we pick X={2, 1, 2, 3}, A = {2, -1, 0, 1}, B = {3, -1, 1, 2}
-  //
-  // Reset matrix Matrix should be symmetric and positive.
+  // Reset matrix Matrix to be diagonal matrices with positive 
+  // elements.
  
   elem::MakeGaussian (D); 
   elemental_adaptor_type::elementwiseProduct (D, EYE, A);
@@ -225,7 +227,7 @@ void testElementalMatrixMatrixFunc() {
 
   /** 8. d/dx(logdet(X)) == (X^-1)' */
   func = logdet(fX1);
-  checkElementalMatrixEquality(func.derivativeVal, XIT);
+  CHECK_ELEMENTAL_MATRIX(func.derivativeVal, XIT);
 
   /** 9. d/dx(logdet(AXB)) = A'((AXB)^-1)'B' */
   func = logdet(fA1 * fX1 * fB1);
@@ -235,7 +237,7 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::transpose (E, F);
   elemental_adaptor_type::multiply (AT, F, G);
   elemental_adaptor_type::multiply (G, BT, RESULT);
-  checkElementalMatrixEquality (func.derivativeVal, RESULT); 
+  CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT); 
 
   /** 10. d/dx(X'AX) = AX(X'AX)^-1 + A'X((X'AX)^-1); */
   func = logdet(transpose(fX1) * fA1 * fX1);
@@ -248,7 +250,7 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::multiply (AT, X, I);
   elemental_adaptor_type::multiply (I, F, J);
   elemental_adaptor_type::add (H, J, RESULT);
-  checkElementalMatrixEquality (func.derivativeVal, RESULT); 
+  CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT); 
 
   /** 11. d/dx(logdet(A.*X)) = A.*(A.*X)^-T*/
   func = logdet(elementwiseProduct (fA1, fX1));
@@ -256,14 +258,14 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::inv (C, D);
   elemental_adaptor_type::transpose (D, E);
   elemental_adaptor_type::elementwiseProduct (A, E, RESULT);
-  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+  CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT);
 
   /** 12. d/dx(logdet(A.*X')) = A'.*(A.*X')^-1 */
   func = logdet(elementwiseProduct(fA1, transpose(fX1)));
   elemental_adaptor_type::elementwiseProduct (A, XT, C);
   elemental_adaptor_type::inv (C, D);
   elemental_adaptor_type::elementwiseProduct (AT, D, RESULT);
-  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+  CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT);
 
   /** 13. d/dx(logdet(X.*X)) = 2 * X.*(X.*X)'^-1 */
   func = logdet(elementwiseProduct (fX1, fX1));
@@ -272,7 +274,7 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::transpose (D, E);
   elemental_adaptor_type::elementwiseProduct (X, E, F);
   elemental_adaptor_type::add(F, F, RESULT);
-  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+  CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT);
 
   /** 14. d/dx(logdet(X.*X')) =
           X'.*(X.*X')'^-1 + X'.* (X.*X')^-1 */
@@ -284,13 +286,11 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::inv (F, G);
   elemental_adaptor_type::add (E, G, H);
   elemental_adaptor_type::elementwiseProduct (XT, H, RESULT);
-  checkElementalMatrixEquality (func.derivativeVal, RESULT);
+  CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT);
 }
 
 #endif // AMD_HAVE_ELEMENTAL
 
-/** Complete writing out the descriptions */
-/** Also, change the name of the constant to be A, instead of Y */
 void testBasicSymbolicMatrixMatrixFunc() {
   std::string ans; /**< SymbolicMatrixMatrixFunc result. */
   std::string row = std::to_string(ROW); /**< SymbolicMatrix row number. */ 
@@ -344,13 +344,11 @@ void testBasicSymbolicMatrixMatrixFunc() {
   /** 8. d/dx(trace(A*(X')^-1)) = -(X')^-1*A*X^-1 */
   ans = "(-(inv(X)*(A*inv(X))))'";
   func = trace(fA*inv(fX));
-  std::cout << func.derivativeVal.getString() << "  " <<  ans <<std::endl;
   assert(func.derivativeVal.getString()==ans);
 
   /** 9. d/dx(trace(A-X)) = I */
   ans = "(-eye(" + row + "))";
   func = trace(fA-fX);
-  std::cout << func.derivativeVal.getString() << "  " <<  ans << std::endl;
   assert(func.derivativeVal.getString()==ans);
 
   /** 10. d/dx(logdet(X)) = X^-1 */
@@ -383,129 +381,104 @@ void testBasicSymbolicMatrixMatrixFunc() {
 void testAdvancedSymbolicMatrixMatrixFunc () {
 
   std::string ans;
-  symbolic_matrix_type X("X", 2, 2);
-  symbolic_matrix_type A("A", 2, 2);
-  symbolic_matrix_type B("B", 2, 2);
-  symbolic_matrix_type C("C", 2, 2);
+  std::string row = std::to_string(ROW);
+
+  /** Create a variable X and an identity function */
+  symbolic_matrix_type X("X", ROW, COL);
   SymbolicMMFunc fX(X, false);
+
+  /** Create constants A,B and C and identity functions */
+  symbolic_matrix_type A("A", ROW, COL);
+  symbolic_matrix_type B("B", ROW, COL);
+  symbolic_matrix_type C("C", ROW, COL);
   SymbolicMMFunc fA(A, true);
   SymbolicMMFunc fB(B, true);
   SymbolicMMFunc fC(C, true);
 
-  SymbolicMMFunc fBX = fB * fX;
-  SymbolicMMFunc fAX1 = fA * fX;
-  SymbolicMMFunc fAXB = fAX1 * fB;
-  SymbolicMMFunc fCX = fC * fX;
-  SymbolicMMFunc fDX = fBX + fCX;
-  SymbolicMMFunc fAXDX = fA * fDX;
+  /** Create a scalar-matrix function placeholder */
+  SymbolicSMFunc func; 
+  /** 1. d/dx(logdet(X))=X'^-1 */
+  ans = "inv(X)'";
+  func = logdet(fX);
+  assert(func.derivativeVal.getString() == ans);
 
-  SymbolicSMFunc func = trace(fBX);
+  /** 2. d/dx(logdet(AXB))=B*(AXB)^-1*A */
+  ans = "((B*inv((A*X)*B))*A)'";
+  func = logdet(fA*fX*fB);
+  assert(func.derivativeVal.getString() == ans);
 
-  std::cout << "function" << std::endl;
-  std::cout << func.functionVal.getString() << std::endl;
-  std::cout << "derivative" << std::endl;
-  std::cout << func.derivativeVal.getString() << std::endl;
-  std::cout << "---- logdet tests ---- " << std::endl;
-  SymbolicSMFunc func4; 
-  func4 = logdet(fX);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  func4 = logdet(fAXB);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  func4 = logdet(transpose(fX) * fA * fX);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  /** 3. d/dx(logdet(X'*A*X)) = A*X*(X'*A*X)^-1 + ((X'*A*X)^-1*X'*A)' */
+  ans = "((A*(X*inv((X'*A)*X)))+(inv((X'*A)*X)*(X'*A))')";
+  func = logdet(transpose(fX) * fA * fX);
+  assert(func.derivativeVal.getString() == ans);
 
-  func4 = trace (fA*fX);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  func4 = trace (fA * fX * fB * fX);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  func4 = trace (fA * inv(fX) * fB);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  /** 4. d/dx(trace(A*X)) = A' */
+  ans = "A'";
+  func = trace (fA*fX);
+  assert(func.derivativeVal.getString() == ans);
+
+  /** 5. d/dx(trace(A*X*B*X)) = (B*X*A)' + (A*X*B)' */
+  ans = "(((B*X)*A)'+((A*X)*B)')";
+  func = trace (fA * fX * fB * fX);
+  assert(func.derivativeVal.getString() == ans);
+
+  /** 6. d/dx(trace(A*X^-1*B)) = (-X^-1*B*A*X^-1)' */
+  ans = "(-(inv(X)*((B*A)*inv(X))))'";
+  func = trace (fA * inv(fX) * fB);
+  assert(func.derivativeVal.getString() == ans);
   
-  func4 = trace (fA * fX * fX);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  // Element-wise Production test cases
-  std::cout << "Now lets test some cases for element-wise product" << std::endl
-   << std::endl;
-  SymbolicMMFunc eTest0 = AMD::elementwiseProduct(fA, fX);
-  func4 = trace (eTest0);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  /** 7. d/dx(trace(A*X*X)) = (X*A)' + (A*X) */ 
+  ans = "((X*A)'+(A*X)')";
+  func = trace (fA * fX * fX);
+  assert(func.derivativeVal.getString() == ans);
 
-//  func4 = trace(fA * fX);
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  SymbolicMMFunc eTest1 = AMD::elementwiseProduct(fX, fX);
-  func4 = trace (eTest1);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  SymbolicMMFunc eTest2 = AMD::elementwiseProduct(AMD::elementwiseProduct(fX, fX), fX);
-  func4 = trace (eTest2);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  // Elemental matrices
   
-//  func4 = trace(fX * fX);
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-  SymbolicMMFunc eTest3 = AMD::elementwiseProduct(inv(fX), inv(fX));
-  func4 = trace (eTest3);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-//  func4 = trace(inv(fX) * inv(fX));
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  /** 8. d/dx(trace(A.*X)) = diag(A) */
+  ans = "(A.*eye("+row + "))";
+  func = trace (elementwiseProduct(fA, fX));
+  assert(func.derivativeVal.getString() == ans);
 
-  SymbolicMMFunc eTest4 = AMD::elementwiseProduct(fX, inv(fX));
-  func4 = trace (eTest4);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  /** 9. d/dx(trace(X.*X)) = 2diag(X) */
+  ans = "((X.*eye("+ row +"))+(X.*eye("+row+")))";
+  func = trace (elementwiseProduct(fX, fX));
+  assert(func.derivativeVal.getString() == ans);
+
+  /** 10. d/dx(trace(X^3)) = 3diag(X.*X) */
+  ans = "(((X.*(X.*eye("+row+")))+(X.*(X.*eye("+row + "))))+((X.*X).*eye("+ row +")))";
+  func = trace (elementwiseProduct(elementwiseProduct(fX, fX), fX));
+  assert(func.derivativeVal.getString() == ans);
+ 
+  /** 11. d/dx(trace(X^-1.*X^-1)) = -2X'^-1*diag(X^-1)*X'^-1 */ 
+  ans = "((-(inv(X)*((inv(X).*eye("+row+ \
+  "))'*inv(X))))'+(-(inv(X)*((inv(X).*eye("+row+"))'*inv(X))))')";
+  func = trace (elementwiseProduct(inv(fX), inv(fX)));
+  assert(func.derivativeVal.getString() == ans);
+
+  /** 12. d/dx(trace(X.*X^-1)) = diag(X^-1) - X'^-1*diag(X)*X'^-1 */
+  ans = "((inv(X).*eye("+row+"))+(-(inv(X)*((X.*eye("+row+"))'*inv(X))))')";
+  func = trace (elementwiseProduct(fX, inv(fX)));
+  assert(func.derivativeVal.getString() ==ans);
+ 
+  /** 13. d/dx(logdet(A.*X)) = A.*(A.*X)^-1 */ 
+  ans = "(A'.*inv(A.*X))'";
+  func = logdet (elementwiseProduct(fA, fX));
+  assert(func.derivativeVal.getString() == ans);
+
+  /** 14. d/dx(logdet(A * X')) = A'*(A.*X)^-1 */
+  ans = "(A'.*inv(A.*X'))";
+  func = logdet (elementwiseProduct(fA, transpose(fX)));
+  assert(func.derivativeVal.getString() == ans);
+
+  /** 15. d/dx(logdet(X.*X)) = 2*X.*(X.*X)'^-1 */
+  ans = "((X'.*inv(X.*X))'+(X'.*inv(X.*X))')";
+  func = logdet (elementwiseProduct(fX, fX));
+  assert(func.derivativeVal.getString() == ans);
   
-//  func4 = trace(fX * inv(fX));
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  SymbolicMMFunc eTest5 = AMD::elementwiseProduct(fA, fX);
-  func4 = logdet (eTest5);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-//  func4 = logdet(fA * fX);
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  SymbolicMMFunc eTest6 = AMD::elementwiseProduct(fA, transpose(fX));
-  func4 = logdet (eTest6);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-//  func4 = logdet(fA * transpose(fX));
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  SymbolicMMFunc eTest7 = AMD::elementwiseProduct(fX, fX);
-  func4 = logdet (eTest7);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-//  func4 = logdet(fX * fX);
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-  SymbolicMMFunc eTest8 = AMD::elementwiseProduct(fX, transpose(fX));
-  func4 = logdet (eTest8);
-  std::cout << func4.functionVal.getString() << std::endl;
-  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
-
-//  func4 = logdet(fX * transpose(fX));
-//  std::cout << func4.functionVal.getString() << std::endl;
-//  std::cout << func4.derivativeVal.getString() << std::endl << std::endl;
+  /** 16. d/dx(logdet(X.*X')) = X'.*((X.*X')'^-1 + (X.*X')^-1)*/
+  ans = "((X''.*inv(X.*X'))'+(X'.*inv(X.*X')))";
+  func = logdet (elementwiseProduct(fX, transpose(fX)));
+  assert(func.derivativeVal.getString() == ans);
 }
 
 int main(int argc, char** argv) {
