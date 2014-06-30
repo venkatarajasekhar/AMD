@@ -6,10 +6,10 @@
 #include "boost/shared_ptr.hpp"
 #include <AMD/AMD.hpp>
 
-//#define DEBUG
+#define DEBUG
 
-#define ROW 4
-#define COL 4
+#define ROW 160
+#define COL 160
 
 // Typedef for SymbolicMatrixMatlab and SymbolicScalarMatlab.
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
@@ -50,18 +50,25 @@ void check_elemental_matrix(const elemental_matrix_type& A,
           elemental_adaptor_type::getNumRows(B)) &&                           
           (elemental_adaptor_type::getNumCols(A) ==                           
           elemental_adaptor_type::getNumCols(B)));                            
-                                                                      
+  double normA = 0;
+  double normDiff = 0;                                                                     
   for (int i = 0; i < elemental_adaptor_type::getNumRows(A); i++) {           
-    for (int j = 0; j < elemental_adaptor_type::getNumCols(A); j++) {       
-      if(!assert_close(A.Get(i, j), B.Get(i,j))) {
-        std::cout << std::endl;
-        std::cout << "In file " << __FILE__ << std::endl;
-        std::cout << "Test failed at line: " << line << std::endl;
-        std::cout << "Program aborted" << std::endl;
-        exit(-1);
-      }
+    for (int j = 0; j < elemental_adaptor_type::getNumCols(A); j++) {      
+      double tmpA = A.Get(i,j);
+      double tmpB = B.Get(i,j);
+      normA += tmpA * tmpA;
+      normDiff += (tmpA-tmpB)*(tmpA-tmpB); 
     }                                                                         
-  }                                                                           
+  }
+  normA = sqrt(normA);
+  normDiff = sqrt(normDiff);
+  if (normDiff > 1.0e-9 * (normA+1.0e-15*normDiff)) {  
+    std::cout << std::endl;
+    std::cout << "In file " << __FILE__ << std::endl;
+    std::cout << "Test failed at line: " << line << std::endl;
+    std::cout << "Program aborted" << std::endl;
+    exit(-1);
+  }
 }                                                                            
 
 /**
@@ -310,6 +317,9 @@ void testBasicSymbolicMatrixMatrixFunc() {
   ans = "A'";
   func = trace(fX*fA);
   assert(func.derivativeVal.getString()==ans);
+
+  SymbolicSMFunc func2;
+
 
   /** 2. d/dx(trace(X' * A')) = A' */
   ans = "A'";
