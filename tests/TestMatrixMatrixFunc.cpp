@@ -8,8 +8,8 @@
 
 #define DEBUG
 
-#define ROW 160
-#define COL 160
+#define ROW 128 
+#define COL 128 
 
 // Typedef for SymbolicMatrixMatlab and SymbolicScalarMatlab.
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;

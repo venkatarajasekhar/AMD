@@ -135,9 +135,9 @@ void varOp(boost::shared_ptr<MT> result,
   } else {
     if (transposeFlag) {
       // FIXME Any way to avoid tmp?
-      MT tmp;
-      MatrixAdaptorType::transpose(*current, tmp);
-      MatrixAdaptorType::add(*result, tmp, *result);
+      MT cTrans;
+      MatrixAdaptorType::transpose(*current, cTrans);
+      MatrixAdaptorType::add(*result, cTrans, *result);
     } else {
       MatrixAdaptorType::add((*result), (*current), (*result));
     }
@@ -204,10 +204,10 @@ MatrixMatrixFunc<MT,ST> operator+ (const MatrixMatrixFunc<MT,ST> &lhs,
 	       lhs.varNumCols==rhs.varNumCols));
   // The new node of MatrixMatrixFunction.
   MatrixMatrixFunc<MT,ST> result;
-  MT tmp;
+  MT lhsPlusRhs;
   // Add the matrices of left node and right node.
-  MatrixAdaptorType::add((*lhs.matrixPtr),(*rhs.matrixPtr), tmp);
-  boost::shared_ptr<MT> sumPtr(new MT(tmp));
+  MatrixAdaptorType::add((*lhs.matrixPtr),(*rhs.matrixPtr), lhsPlusRhs);
+  boost::shared_ptr<MT> sumPtr(new MT(lhsPlusRhs));
   // Initialize the node in computational tree with the new matrix and PLUS 
   // operator.
   result.binOpSet( sumPtr, PLUS, plusOp<MT,ST>, lhs, rhs );
@@ -273,10 +273,10 @@ MatrixMatrixFunc<MT,ST> operator- (const MatrixMatrixFunc<MT,ST> &lhs,
 	       lhs.varNumCols==rhs.varNumCols));
   // The new node.
   MatrixMatrixFunc<MT,ST> result;
-  MT tmp;
-  MatrixAdaptorType::minus(*(lhs.matrixPtr), *(rhs.matrixPtr), tmp);
+  MT lhsMinusRhs;
+  MatrixAdaptorType::minus(*(lhs.matrixPtr), *(rhs.matrixPtr), lhsMinusRhs);
   boost::shared_ptr<MT> diffPtr
-   (new MT(tmp));
+   (new MT(lhsMinusRhs));
   // Initialize the new node with pointers and call back functions.
   result.binOpSet( diffPtr, MINUS, minusOp<MT,ST>, lhs, rhs );
   return(result);
@@ -532,9 +532,9 @@ MatrixMatrixFunc<MT,ST> transpose (const MatrixMatrixFunc<MT,ST> &lhs) {
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   MatrixMatrixFunc<MT,ST> result;
   if (TRANSPOSE!=lhs.opNum) {
-    MT tmp;
-    MatrixAdaptorType::transpose(*(lhs.matrixPtr), tmp);
-    boost::shared_ptr<MT> transposePtr(new MT(tmp)); 
+    MT lhsTrans;
+    MatrixAdaptorType::transpose(*(lhs.matrixPtr), lhsTrans);
+    boost::shared_ptr<MT> transposePtr(new MT(lhsTrans)); 
     result.unaryOpSet(transposePtr, TRANSPOSE, transposeOp<MT,ST>, lhs);
   } else {
     assert(NULL!=lhs.leftChild);
@@ -580,9 +580,9 @@ MatrixMatrixFunc<MT,ST> diag (const MatrixMatrixFunc<MT,ST>& lhs) {
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   MatrixMatrixFunc<MT,ST> result;
   if (DIAG != lhs.opNum) {
-    MT tmp;
-    MatrixAdaptorType::diag(*(lhs.matrixPtr), tmp);
-    boost::shared_ptr<MT> diagPtr(new MT(tmp));
+    MT lhsDiag;
+    MatrixAdaptorType::diag(*(lhs.matrixPtr), lhsDiag);
+    boost::shared_ptr<MT> diagPtr(new MT(lhsDiag));
     result.unaryOpSet(diagPtr, DIAG, diagOp<MT,ST>, lhs);
   } else {
     assert(NULL != lhs.leftChild);
@@ -627,28 +627,28 @@ void invOp( boost::shared_ptr<MT> result,
 	        INV == node->opNum &&
 	        current.use_count()>=1 && // current, left and right must be present 
 	        left.use_count()>=1 );
-  boost::shared_ptr<MT> tmp = node->matrixPtr;
+  boost::shared_ptr<MT> initMat= node->matrixPtr;
   if (!identityCurrentFlag) {
     if (transposeFlag) {
-      MT tmp0, tmp1, tmp2;
-      MatrixAdaptorType::multiply(*current, *tmp, tmp0);
-      MatrixAdaptorType::multiply(*tmp, tmp0, tmp1);
-      MatrixAdaptorType::negation(tmp1, tmp2);
-      MatrixAdaptorType::copy((*left), tmp2);      
+      MT lhsTimesRhs1, lhsTimesRhs2, cNeg;
+      MatrixAdaptorType::multiply(*current, *initMat, lhsTimesRhs1);
+      MatrixAdaptorType::multiply(*initMat, lhsTimesRhs1, lhsTimesRhs2);
+      MatrixAdaptorType::negation(lhsTimesRhs2, cNeg);
+      MatrixAdaptorType::copy((*left), cNeg);      
 
     } else {
-      MT tmp0, tmp1, tmp2, tmp3;
-      MatrixAdaptorType::transpose(*current, tmp0);
-      MatrixAdaptorType::multiply(tmp0, *tmp, tmp1);
-      MatrixAdaptorType::multiply(*tmp, tmp1, tmp2);
-      MatrixAdaptorType::negation(tmp2, tmp3);
-      MatrixAdaptorType::copy((*left), tmp3);
+      MT cTrans, lhsTimesRhs1, lhsTimesRhs2, cNeg;
+      MatrixAdaptorType::transpose(*current, cTrans);
+      MatrixAdaptorType::multiply(cTrans, *initMat, lhsTimesRhs1);
+      MatrixAdaptorType::multiply(*initMat, lhsTimesRhs1, lhsTimesRhs2);
+      MatrixAdaptorType::negation(lhsTimesRhs2, cNeg);
+      MatrixAdaptorType::copy((*left), cNeg);
     }
   } else {
-    MT tmp0, tmp1;
-    MatrixAdaptorType::multiply(*tmp, *tmp, tmp0);
-    MatrixAdaptorType::negation(tmp0, tmp1);
-    MatrixAdaptorType::copy((*left), tmp1);    
+    MT lhsTimesRhs, lcNeg;
+    MatrixAdaptorType::multiply(*initMat, *initMat, lhsTimesRhs);
+    MatrixAdaptorType::negation(lhsTimesRhs, lcNeg);
+    MatrixAdaptorType::copy((*left), lcNeg);    
   }
   transposeFlag = 3;
   identityCurrentFlag = false;
@@ -669,9 +669,9 @@ MatrixMatrixFunc<MT,ST> inv(const MatrixMatrixFunc<MT,ST> &lhs) {
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   MatrixMatrixFunc<MT,ST> result;
   if (INV!=lhs.opNum) {
-    MT tmp0;
-    MatrixAdaptorType::inv(*lhs.matrixPtr, tmp0);
-    boost::shared_ptr<MT> invPtr(new MT(tmp0));     
+    MT lhsInv;
+    MatrixAdaptorType::inv(*lhs.matrixPtr, lhsInv);
+    boost::shared_ptr<MT> invPtr(new MT(lhsInv));     
     // Initialize the node. 
     result.unaryOpSet( invPtr, INV, invOp<MT,ST>, lhs );
   } else {
@@ -743,7 +743,6 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
   const int n = MatrixAdaptorType::getNumRows(*(lhs.matrixPtr));
   boost::shared_ptr<MT> initPtr(new MT);
   boost::shared_ptr<MT> resPtr(new MT);
-  ST tmp2;
   *resPtr = MatrixAdaptorType::zeros(lhs.varNumRows, lhs.varNumCols);
   bool transposeFlag = true;
 
