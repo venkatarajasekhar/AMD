@@ -28,6 +28,8 @@ enum OpType { NONE,
               PLUS, 
               MINUS, 
               TIMES,
+              STIMESM, /**< Scalar times Matrix */
+              MTIMESS, /**< Matrix times Scalar */
               ELEWISE, 
               TRANSPOSE, 
               INV, 
@@ -391,6 +393,118 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
   result.binOpSet(timesPtr, TIMES, timesOp<MT,ST>, lhs, rhs);
   return(result);
 }
+//////////////////////////////////////////////////////////////////////
+/**
+ * @brief Functions to deal with opNum==MTIMESS
+ * Callback function for differentiation involving operator*
+ *
+ * @tparam MT Matrix type.
+ * @tparam ST Scalar type.
+ *
+ * @param result
+ * @param current
+ * @param left
+ * @param right
+ * @param node
+ * @param transposeFlag
+ * @param identityCurrentFlag
+ * @param zeroResultFlag
+*/
+template <class MT, class ST>
+void mtimessOp( boost::shared_ptr<MT> result, 
+	      boost::shared_ptr<MT> current, 
+	      boost::shared_ptr<MT> left, 
+	      boost::shared_ptr<MT> right,
+	      const MatrixMatrixFunc<MT,ST>* node, 
+	      int& transposeFlag,
+	      bool& identityCurrentFlag, 
+	      bool& zeroResultFlag) {
+  typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  assert( NULL != node && // check node type
+	  NULL != node->leftChild &&
+	  NULL != node->rightChild &&
+	  TIMES == node->opNum &&
+	  current.use_count()>=1 && // current, left and right must be present 
+	  left.use_count()>=1 && 
+	  right.use_count()>=1 );
+  if (identityCurrentFlag) { // avoid superfluous multiplication
+    transposeFlag = 0;
+    if (TRANSPOSE == node->rightChild->opNum) {
+      // if right is R^T then get R from it's left child
+      (*left) = *(node->rightChild->leftChild->matrixPtr);
+    } else {
+      (*left) = *(node->rightChild->matrixPtr);
+      transposeFlag |= 1; // set left transpose on
+    }
+    if (TRANSPOSE==node->leftChild->opNum) {
+      // if right is R^T then get R from it's left child
+      (*right) = *(node->leftChild->leftChild->matrixPtr);
+    } else {
+      (*right) = *(node->leftChild->matrixPtr);
+      transposeFlag |= 2; // set right transpose on
+    }
+    identityCurrentFlag = false;
+  } else {
+    if (transposeFlag) {
+      // use A^T*B^T = (B*A)^T to reduce the numbder of trans
+      // Why is this comment here? Peder?
+      //(*left) = transpose(*current) * transpose(node->rightChild->val);
+      MatrixAdaptorType::multiply(*(node->rightChild->matrixPtr), 
+                                  *current, 
+                                  *left);
+
+      // Why is this comment here? Peder?
+      //(*right) = transpose(node->leftChild->val) * transpose(*current);
+      MatrixAdaptorType::multiply(*current, 
+                                  *(node->leftChild->matrixPtr), 
+                                  *right);
+
+      transposeFlag = 3;
+    } else {
+      MT rcTrans, lcTrans;
+      // left = current * right->matrix^T
+      MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), rcTrans);
+      MatrixAdaptorType::multiply(*current, rcTrans, *left);
+
+      // right = left->matrix^T * current
+      MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), lcTrans);
+      MatrixAdaptorType::multiply(lcTrans, *current, *right);
+
+      transposeFlag = 0;
+    }
+  }
+}
+
+/**
+ * @brief Operator * overloading. Create a new node with "*" operator 
+ * in computational tree.
+ *
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ * @param lhs
+ * @param rhs
+ */
+template <class MT, class ST>
+MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs, 
+			                        	   const ScalarMatrixFunc<MT,ST> &rhs) {
+  typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  /* TODO: Rows == Cols or Rows == Rows?
+  assert( lhs.isConst || 
+          rhs.isConst || 
+	        (lhs.varNumRows==rhs.varNumRows && 
+	        lhs.varNumCols==rhs.varNumCols));
+  */
+  // New node in computational tree.
+  MatrixMatrixFunc<MT,ST> result;
+  MT lhsTimesRhs;
+  MatrixAdaptorType::multiply(*(lhs.matrixPtr), *(rhs.functionVal), lhsTimesRhs);
+  boost::shared_ptr<MT> timesPtr(new MT((lhsTimesRhs)));
+  // Initialize new node with time operator.
+  result.binOpSet(timesPtr, MTIMESS, mtimessOp<MT,ST>, lhs, rhs);
+  return(result);
+}
+//////////////////////////////////////////////////////////////////////////////
 
 // Functions to deal with opNum = ELEWISE
 // Callback function for differentiation involving elementwise product
