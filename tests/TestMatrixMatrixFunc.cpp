@@ -489,6 +489,13 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   ans = "((X''.*inv(X.*X'))'+(X'.*inv(X.*X')))";
   func = logdet (elementwiseProduct(fX, transpose(fX)));
   assert(func.derivativeVal.getString() == ans);
+
+  /** 17. d/dx(trace(X) * trace(X)) */
+  func = logdet(fX)* trace(fX);
+  std::cout << std::endl;
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << func.derivativeVal.getString() << std::endl;
+
 }
 
 int main(int argc, char** argv) {

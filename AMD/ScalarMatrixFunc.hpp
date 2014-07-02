@@ -192,12 +192,12 @@ ScalarMatrixFunc<MT,ST> operator*( const ScalarMatrixFunc<MT,ST> &lhs,
   const MT& df = lhs.derivativeVal;
   const MT& dg = rhs.derivativeVal;
   if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
-    return(ScalarMatrixFunc<MT,ST>(f+g, f*dg));
+    return(ScalarMatrixFunc<MT,ST>(f*g, f*dg));
   } 
   if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
-    return(ScalarMatrixFunc<MT,ST>(f+g, df*g));
+    return(ScalarMatrixFunc<MT,ST>(f*g, df*g));
   } 
-  return(ScalarMatrixFunc<MT,ST>(f+g, f*dg+df*g));
+  return(ScalarMatrixFunc<MT,ST>(f*g, f*dg+df*g));
 }
 
 /**
