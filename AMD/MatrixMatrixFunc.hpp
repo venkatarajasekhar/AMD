@@ -55,7 +55,7 @@ public:
   int varNumCols; /**< number of cols in matrix variable */
   MatrixMatrixFunc* leftChild; /**< optional left child */
   MatrixMatrixFunc* rightChild; /**< optional right child */
-
+  // TODO think about an extra scalar value here
   /**
    * @brief This is an empty constructor that initializes all values to
    * defaults.  Create a constant function.
