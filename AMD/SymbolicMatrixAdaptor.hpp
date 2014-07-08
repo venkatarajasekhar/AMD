@@ -200,11 +200,11 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
    * @param[in] B The matrix
    * @param[out] C C is overwritten with (A*B)
    */
-  static void multiply (const value_type& A,
-                        const matrix_type& B,
-                        matrix_type& C) {
-    copy(C, A*B);
-  }
+//  static void multiply (const matrix_type& A,
+//                        const value_type& B,
+//                        matrix_type& C) {
+//    copy(C, A*B);
+//  }
 
   /** 
    * 18. 

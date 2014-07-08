@@ -25,6 +25,8 @@
 
 namespace AMD {
 
+// forward declaration
+template <class MT, class ST> class ScalarMatrixFunc;
 /**
  * @brief MatrixMatrixFunc class. The computational tree consists of 
  * nodes of MatrixMatrixFunc type. In reverse mode differentiation, 
@@ -32,7 +34,6 @@ namespace AMD {
  * nodes of the tree and the derivate is the sum of matrices of all
  * leaf nodes.
  */
-
 template <class MT, class ST>
 class MatrixMatrixFunc {
 
@@ -55,6 +56,7 @@ public:
   int varNumCols; /**< number of cols in matrix variable */
   MatrixMatrixFunc* leftChild; /**< optional left child */
   MatrixMatrixFunc* rightChild; /**< optional right child */
+  ScalarMatrixFunc<MT, ST>* scalarChild; /**< scalar func * matrix func. */
   // TODO think about an extra scalar value here
   /**
    * @brief This is an empty constructor that initializes all values to

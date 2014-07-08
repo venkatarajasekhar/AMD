@@ -49,6 +49,7 @@ std::string opName[] = { "none",
 
 // forward declaration
 template <class MT, class ST> class MatrixMatrixFunc;
+template <class MT, class ST> class ScalarMatrixFunc;
 
 /** 
  * @brief Callback function for differentiation involving constant matrices
@@ -424,57 +425,25 @@ void mtimessOp( boost::shared_ptr<MT> result,
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   assert( NULL != node && // check node type
 	  NULL != node->leftChild &&
-	  NULL != node->rightChild &&
-	  TIMES == node->opNum &&
-	  current.use_count()>=1 && // current, left and right must be present 
-	  left.use_count()>=1 && 
-	  right.use_count()>=1 );
-  if (identityCurrentFlag) { // avoid superfluous multiplication
-    transposeFlag = 0;
-    if (TRANSPOSE == node->rightChild->opNum) {
-      // if right is R^T then get R from it's left child
-      (*left) = *(node->rightChild->leftChild->matrixPtr);
-    } else {
-      (*left) = *(node->rightChild->matrixPtr);
-      transposeFlag |= 1; // set left transpose on
-    }
-    if (TRANSPOSE==node->leftChild->opNum) {
-      // if right is R^T then get R from it's left child
-      (*right) = *(node->leftChild->leftChild->matrixPtr);
-    } else {
-      (*right) = *(node->leftChild->matrixPtr);
-      transposeFlag |= 2; // set right transpose on
-    }
-    identityCurrentFlag = false;
-  } else {
-    if (transposeFlag) {
-      // use A^T*B^T = (B*A)^T to reduce the numbder of trans
-      // Why is this comment here? Peder?
-      //(*left) = transpose(*current) * transpose(node->rightChild->val);
-      MatrixAdaptorType::multiply(*(node->rightChild->matrixPtr), 
-                                  *current, 
-                                  *left);
+	  MTIMESS == node->opNum &&
+	  current.use_count()>=1 && // current, left must be present 
+	  left.use_count()>=1);
 
-      // Why is this comment here? Peder?
-      //(*right) = transpose(node->leftChild->val) * transpose(*current);
-      MatrixAdaptorType::multiply(*current, 
-                                  *(node->leftChild->matrixPtr), 
-                                  *right);
+  // derivative update: 
+  MT lhsTimesRhs1, lhsTimesRhs2, rcTrans;
+  MatrixAdaptorType::multiply (*(node->leftChild->matrixPtr), *current, lhsTimesRhs1); 
+  MatrixMatrixFunc<MT, ST> mmfunc (lhsTimesRhs1, false);
+  ScalarMatrixFunc<MT, ST> scalarFunc = trace(mmfunc);
+  MatrixAdaptorType::transpose(node->scalarChild->derivativeVal, rcTrans); 
+  MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal
+  ,lhsTimesRhs2);
+  MatrixAdaptorType::add (*result, lhsTimesRhs2, *result);
+  
+  //     
+  // g(X) * Y
+  MatrixAdaptorType::multiply (*current, node->scalarChild->functionVal, *left);
+ // TODO: add scalar * matrix to  matrix adaptor;
 
-      transposeFlag = 3;
-    } else {
-      MT rcTrans, lcTrans;
-      // left = current * right->matrix^T
-      MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), rcTrans);
-      MatrixAdaptorType::multiply(*current, rcTrans, *left);
-
-      // right = left->matrix^T * current
-      MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), lcTrans);
-      MatrixAdaptorType::multiply(lcTrans, *current, *right);
-
-      transposeFlag = 0;
-    }
-  }
 }
 
 /**
@@ -489,7 +458,7 @@ void mtimessOp( boost::shared_ptr<MT> result,
  */
 template <class MT, class ST>
 MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs, 
-			                        	   const ScalarMatrixFunc<MT,ST> &rhs) {
+			                        	   ScalarMatrixFunc<MT,ST> &rhs) { /**< TODO: add const*/
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   /* TODO: Rows == Cols or Rows == Rows?
   assert( lhs.isConst || 
@@ -500,10 +469,16 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
   // New node in computational tree.
   MatrixMatrixFunc<MT,ST> result;
   MT lhsTimesRhs;
-  MatrixAdaptorType::multiply(*(lhs.matrixPtr), *(rhs.functionVal), lhsTimesRhs);
-  boost::shared_ptr<MT> timesPtr(new MT((lhsTimesRhs)));
-  // Initialize new node with time operator.
-  result.binOpSet(timesPtr, MTIMESS, mtimessOp<MT,ST>, lhs, rhs);
+
+  // matrix times scalar
+  MatrixAdaptorType::multiply(*(lhs.matrixPtr), (rhs.functionVal), lhsTimesRhs);
+  boost::shared_ptr<MT> mtimessPtr(new MT((lhsTimesRhs)));
+  // Initialize new node with mtimess operator.
+  // This is a unary op
+  result.unaryOpSet(mtimessPtr, MTIMESS, mtimessOp<MT, ST>, lhs);
+
+  // the pointer points to scalar function.
+  result.scalarChild = &rhs;
   return(result);
 }
 //////////////////////////////////////////////////////////////////////////////

@@ -495,6 +495,13 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   std::cout << std::endl;
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << func.derivativeVal.getString() << std::endl;
+  
+  /** 18. d/dx(X * trace(X)) */
+  SymbolicSMFunc func2 = trace(fX);
+  func = trace(fX * func2);
+  std::cout << "Test trace(x * trace(x)) " << std::endl;
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << func.derivativeVal.getString()  << std::endl;
 
 }
 
@@ -511,7 +518,7 @@ int main(int argc, char** argv) {
 
 #if AMD_HAVE_ELEMENTAL
   std::cout << "Testing elemetal matrix-matrix functions .... ";
-  testElementalMatrixMatrixFunc();
+//  testElementalMatrixMatrixFunc();
   std::cout << "DONE" << std::endl;
 #endif
 
