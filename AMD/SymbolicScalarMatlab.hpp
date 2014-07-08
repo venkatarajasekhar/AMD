@@ -70,6 +70,7 @@ struct SymbolicScalarMatlab {
    */
   SymbolicScalarMatlab& operator=(const SymbolicScalarMatlab& rhs) {
     symbol = rhs.symbol;
+
     return(*this);
   }
 
@@ -105,7 +106,6 @@ struct SymbolicScalarMatlab {
                                         const SymbolicScalarMatlab& b);
   friend SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a, 
                                         const SymbolicScalarMatlab& b);
-
   private:
   std::string symbol; /**< This is the internal string variable */
 };

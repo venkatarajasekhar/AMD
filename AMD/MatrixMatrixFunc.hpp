@@ -69,7 +69,8 @@ public:
                        varNumRows(0), 
                        varNumCols(0), 
 			                 leftChild(NULL), 
-                       rightChild(NULL) {}
+                       rightChild(NULL),
+                       scalarChild(NULL) {}
 
   /**
    * @brief Makes an expensive copy of matrix -- avoid this constructor
@@ -82,7 +83,8 @@ public:
                                                    varNumRows(0), 
                                                    varNumCols(0), 
                                                    leftChild(NULL), 
-                                                   rightChild(NULL) {
+                                                   rightChild(NULL),
+                                                   scalarChild(NULL) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     // Makes an deep-copy of the matrix.
     boost::shared_ptr<MT> copy (new MT(matrix));
@@ -103,7 +105,8 @@ public:
                                         varNumRows(0), 
                                         varNumCols(0), 
                                         leftChild(NULL), 
-                                        rightChild(NULL) {
+                                        rightChild(NULL),
+                                        scalarChild(NULL) {
     setVariableType (isConst);
   }
 
@@ -150,6 +153,7 @@ public:
     // Reset its left & right child recursively.
     if (NULL!=leftChild) delete leftChild;
     if (NULL!=rightChild) delete rightChild;
+    if (NULL != scalarChild) delete scalarChild;
   }
 
   /**
@@ -172,6 +176,7 @@ public:
     varNumCols = other.varNumCols;
     leftChild = NULL;
     rightChild = NULL;
+    scalarChild = NULL;
   }
 
   /**
@@ -197,6 +202,10 @@ public:
     if (NULL != other.rightChild) {
       rightChild = new MatrixMatrixFunc<MT,ST>;
       rightChild->deepCopy(*(other.rightChild));
+    }
+    if (NULL != other.scalarChild) {
+      scalarChild = new ScalarMatrixFunc<MT,ST>;
+      *scalarChild = *other.scalarChild;
     }
   }
   /**

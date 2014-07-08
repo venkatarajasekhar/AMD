@@ -458,7 +458,7 @@ void mtimessOp( boost::shared_ptr<MT> result,
  */
 template <class MT, class ST>
 MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs, 
-			                        	   ScalarMatrixFunc<MT,ST> &rhs) { /**< TODO: add const*/
+			                        	   const ScalarMatrixFunc<MT,ST> &rhs) { /**< TODO: add const*/
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   /* TODO: Rows == Cols or Rows == Rows?
   assert( lhs.isConst || 
@@ -478,7 +478,8 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
   result.unaryOpSet(mtimessPtr, MTIMESS, mtimessOp<MT, ST>, lhs);
 
   // the pointer points to scalar function.
-  result.scalarChild = &rhs;
+  result.scalarChild = new ScalarMatrixFunc<MT,ST>;
+  * result.scalarChild = rhs;
   return(result);
 }
 //////////////////////////////////////////////////////////////////////////////

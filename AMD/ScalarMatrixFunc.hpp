@@ -77,6 +77,7 @@ public:
     functionVal = x.functionVal;
     derivativeVal = x.derivativeVal;
     isConst = x.isConst;
+    
     return(*this);
   }
 
