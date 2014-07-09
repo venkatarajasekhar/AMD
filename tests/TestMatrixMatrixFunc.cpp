@@ -297,6 +297,9 @@ void testElementalMatrixMatrixFunc() {
 
   /** 15. d/dx(trace(x * trace(x))) */
   func = trace(fX * trace(fX));
+
+  /** 16. d/dx(trace(trace(x) * x))*/
+  func = trace(trace(fX) * fX);
 }
 
 #endif // AMD_HAVE_ELEMENTAL
@@ -504,6 +507,15 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   std::cout << std::endl;
   std::cout << "********   Test trace(x * trace(x)) " << std::endl;
   func = trace(fX * func2);
+  std::cout << std::endl;
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << func.derivativeVal.getString()  << std::endl;
+  
+  /** 18. d/dx(X * trace(X)) */
+  func2 = trace(fX);
+  std::cout << std::endl;
+  std::cout << "********   Test trace(trace(x)*x) " << std::endl;
+  func = trace(func2 * fX);
   std::cout << std::endl;
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << func.derivativeVal.getString()  << std::endl;
