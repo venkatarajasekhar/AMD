@@ -430,16 +430,37 @@ void mtimessOp( boost::shared_ptr<MT> result,
 	  left.use_count()>=1);
 
   // derivative update: 
+  //
   MT lhsTimesRhs1, lhsTimesRhs2, rcTrans;
   MatrixAdaptorType::multiply (*(node->leftChild->matrixPtr), *current, lhsTimesRhs1); 
   MatrixMatrixFunc<MT, ST> mmfunc (lhsTimesRhs1, false);
   ScalarMatrixFunc<MT, ST> scalarFunc = trace(mmfunc);
-  MatrixAdaptorType::transpose(node->scalarChild->derivativeVal, rcTrans); 
-  MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal
-  ,lhsTimesRhs2);
-  MatrixAdaptorType::add (*result, lhsTimesRhs2, *result);
   
-  //     
+  if (zeroResultFlag) {
+    zeroResultFlag = false;
+    
+    if (transposeFlag) {
+      MatrixAdaptorType::transpose(node->scalarChild->derivativeVal, rcTrans); 
+      MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal, lhsTimesRhs2);
+      MatrixAdaptorType::transpose(lhsTimesRhs2, *result);
+    } else {
+      MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal, scalarFunc.functionVal, lhsTimesRhs2);
+      (*result) = (lhsTimesRhs2);
+    }
+  } else { 
+    if (transposeFlag) {
+      MatrixAdaptorType::transpose(node->scalarChild->derivativeVal, rcTrans); 
+      MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal, lhsTimesRhs2);
+      MatrixAdaptorType::add(*result, lhsTimesRhs2, *result);
+
+    } else {
+      MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal, scalarFunc.functionVal
+      ,lhsTimesRhs2);
+      MatrixAdaptorType::add (*result, lhsTimesRhs2, *result);
+    }
+  }
+  
+
   // g(X) * Y
   MatrixAdaptorType::multiply (*current, node->scalarChild->functionVal, *left);
  // TODO: add scalar * matrix to  matrix adaptor;

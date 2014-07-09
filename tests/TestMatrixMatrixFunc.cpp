@@ -492,45 +492,39 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
 
   /** 17. d/dx(trace(X) * trace(X)) */
   func = logdet(fX)* trace(fX);
-  std::cout << std::endl;
-  std::cout << func.functionVal.getString() << std::endl;
-  std::cout << func.derivativeVal.getString() << std::endl;
+//  std::cout << std::endl;
+//  std::cout << func.functionVal.getString() << std::endl;
+//  std::cout << func.derivativeVal.getString() << std::endl;
   
   /** 18. d/dx(X * trace(X)) */
   SymbolicSMFunc func2 = trace(fX);
+  std::cout << std::endl;
+  std::cout << "********   Test trace(x * trace(x)) " << std::endl;
   func = trace(fX * func2);
   std::cout << std::endl;
-  std::cout << "Test trace(x * trace(x)) " << std::endl;
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << func.derivativeVal.getString()  << std::endl;
 
   /** 19. d/dx(X * trace(X)) */
   func2 = trace(fX);
   SymbolicMMFunc func3 = fX * func2;
+  std::cout << std::endl;
+  std::cout << "********   Test trace(x+x* trace(x)) " << std::endl;
   func = trace( fX + func3);
   std::cout << std::endl;
-  std::cout << "Test trace(x+x* trace(x)) " << std::endl;
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << func.derivativeVal.getString()  << std::endl;
+
   /** 19. d/dx(X * trace(X)) */
   func2 = trace(fX);
+  std::cout << std::endl;
+  std::cout << "*********   Test trace(x*x* trace(x)) " << std::endl;
   func = trace( fX * fX * func2);
   std::cout << std::endl;
-  std::cout << "Test trace(x*x* trace(x)) " << std::endl;
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << func.derivativeVal.getString()  << std::endl;
 }
-/*
-void tempTest() {
-  symbolic_matrix_type X("X", ROW, COL);
-  SymbolicMMfunc fX (X, false);
-  SymbolicSMFunc func = trace(fX);
-  SymbolicMMfunc fXtrace = fX * func; 
-  SymbolicSMFunc func2 = trace(fX + fXtrace); 
-  std::cout << func2.functionVal.getString() << std::endl;
-  std::cout << func2.derivativeVal.getString()  << std::endl;
-}
-*/
+
 int main(int argc, char** argv) {
 
   elem::Initialize(argc, argv); 
@@ -544,7 +538,7 @@ int main(int argc, char** argv) {
 
 #if AMD_HAVE_ELEMENTAL
   std::cout << "Testing elemetal matrix-matrix functions .... ";
-//  testElementalMatrixMatrixFunc();
+  testElementalMatrixMatrixFunc();
   std::cout << "DONE" << std::endl;
 #endif
 
