@@ -398,7 +398,8 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
 }
 //////////////////////////////////////////////////////////////////////
 /**
- * @brief Functions to deal with opNum==MTIMESS
+ * @brief Functions to deal with opNum==MTIMESS 
+ * MatrixMatrixFunc times ScalarMatrixFunc.
  * Callback function for differentiation involving operator*
  *
  * @tparam MT Matrix type.
@@ -432,30 +433,33 @@ void mtimessOp( boost::shared_ptr<MT> result,
   // derivative update: 
   //
   MT lhsTimesRhs1, lhsTimesRhs2, rcTrans;
-  MatrixAdaptorType::multiply (*(node->leftChild->matrixPtr), *current, lhsTimesRhs1); 
+  MatrixAdaptorType::multiply (*(node->leftChild->matrixPtr), *current,
+  lhsTimesRhs1); 
   MatrixMatrixFunc<MT, ST> mmfunc (lhsTimesRhs1, false);
   ScalarMatrixFunc<MT, ST> scalarFunc = trace(mmfunc);
   
   if (zeroResultFlag) {
     zeroResultFlag = false;
-    
     if (transposeFlag) {
       MatrixAdaptorType::transpose(node->scalarChild->derivativeVal, rcTrans); 
-      MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal, lhsTimesRhs2);
+      MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal,
+      lhsTimesRhs2);
       MatrixAdaptorType::transpose(lhsTimesRhs2, *result);
     } else {
-      MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal, scalarFunc.functionVal, lhsTimesRhs2);
+      MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal,
+      scalarFunc.functionVal, lhsTimesRhs2);
       (*result) = (lhsTimesRhs2);
     }
   } else { 
     if (transposeFlag) {
       MatrixAdaptorType::transpose(node->scalarChild->derivativeVal, rcTrans); 
-      MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal, lhsTimesRhs2);
+      MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal,
+      lhsTimesRhs2);
       MatrixAdaptorType::add(*result, lhsTimesRhs2, *result);
 
     } else {
-      MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal, scalarFunc.functionVal
-      ,lhsTimesRhs2);
+      MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal, 
+      scalarFunc.functionVal ,lhsTimesRhs2);
       MatrixAdaptorType::add (*result, lhsTimesRhs2, *result);
     }
   }
@@ -464,7 +468,16 @@ void mtimessOp( boost::shared_ptr<MT> result,
   // g(X) * Y
   MatrixAdaptorType::multiply (*current, node->scalarChild->functionVal, *left);
  // TODO: add scalar * matrix to  matrix adaptor;
-
+ 
+ if (transpose) {
+   MatrixAdaptorType::multiply(*current, node->scalarChild->functionVal, 
+   *left);
+ } else {
+   MT cTrans;
+   MatrixAdaptorType::transpose(*current, cTrans);
+   MatrixAdaptorType::multiply(cTrans, node->scalarChild->functionVal,
+   *left);
+ }
 }
 
 /**
