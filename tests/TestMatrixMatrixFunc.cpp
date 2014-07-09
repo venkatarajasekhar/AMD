@@ -294,6 +294,9 @@ void testElementalMatrixMatrixFunc() {
   elemental_adaptor_type::add (E, G, H);
   elemental_adaptor_type::elementwiseProduct (XT, H, RESULT);
   CHECK_ELEMENTAL_MATRIX (func.derivativeVal, RESULT);
+
+  /** 15. d/dx(trace(x * trace(x))) */
+  func = trace(fX * trace(fX));
 }
 
 #endif // AMD_HAVE_ELEMENTAL
