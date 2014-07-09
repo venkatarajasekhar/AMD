@@ -426,6 +426,7 @@ void mtimessOp( boost::shared_ptr<MT> result,
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   assert( NULL != node && // check node type
 	  NULL != node->leftChild &&
+    NULL == node->rightChild &&
 	  MTIMESS == node->opNum &&
 	  current.use_count()>=1 && // current, left must be present 
 	  left.use_count()>=1);
@@ -492,28 +493,27 @@ void mtimessOp( boost::shared_ptr<MT> result,
  */
 template <class MT, class ST>
 MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs, 
-			                        	   const ScalarMatrixFunc<MT,ST> &rhs) { /**< TODO: add const*/
+			                        	   const ScalarMatrixFunc<MT,ST> &rhs) { 
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
-  /* TODO: Rows == Cols or Rows == Rows?
-  assert( lhs.isConst || 
-          rhs.isConst || 
-	        (lhs.varNumRows==rhs.varNumRows && 
-	        lhs.varNumCols==rhs.varNumCols));
-  */
   // New node in computational tree.
-  MatrixMatrixFunc<MT,ST> result;
-  MT lhsTimesRhs;
+  MatrixMatrixFunc<MT,ST> result; 
+  if (MTIMESS != lhs.opNum) {
+    MT lhsTimesRhs;
+    // matrix times scalar
+    MatrixAdaptorType::multiply(*(lhs.matrixPtr), (rhs.functionVal), 
+    lhsTimesRhs);
+    boost::shared_ptr<MT> mtimessPtr(new MT((lhsTimesRhs)));
+    // Initialize new node with mtimess operator.
+    // This is a unary op
+    result.unaryOpSet(mtimessPtr, MTIMESS, mtimessOp<MT, ST>, lhs);
 
-  // matrix times scalar
-  MatrixAdaptorType::multiply(*(lhs.matrixPtr), (rhs.functionVal), lhsTimesRhs);
-  boost::shared_ptr<MT> mtimessPtr(new MT((lhsTimesRhs)));
-  // Initialize new node with mtimess operator.
-  // This is a unary op
-  result.unaryOpSet(mtimessPtr, MTIMESS, mtimessOp<MT, ST>, lhs);
-
-  // the pointer points to scalar function.
-  result.scalarChild = new ScalarMatrixFunc<MT,ST>;
-  * result.scalarChild = rhs;
+    // the pointer points to scalar function.
+    result.scalarChild = new ScalarMatrixFunc<MT,ST>;
+    *result.scalarChild = rhs;
+  } else {
+    assert(NULL != lhs.leftChild);
+    result.deepCopy(*lhs.leftChild);
+  }
   return(result);
 }
 //////////////////////////////////////////////////////////////////////////////
