@@ -196,9 +196,9 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
   /** 
    * 17. 
    * @brief Multiply one scalar with matrix.
-   * @param[in] A The scalar
+   * @param[in] a The scalar
    * @param[in] B The matrix
-   * @param[out] C C is overwritten with (A*B)
+   * @param[out] C C is overwritten with (a*B)
    */
   static void multiply (const value_type& a,
                         const matrix_type& B,
@@ -209,8 +209,8 @@ struct MatrixAdaptor_t<SymbolicMatrixMatlab> {
    * 18. 
    * @brief Multiply one matrix with scalar.
    * @param[in] A The matrix 
-   * @param[in] B The scalar 
-   * @param[out] C C is overwritten with (A*B)
+   * @param[in] b The scalar 
+   * @param[out] C C is overwritten with (A*b)
    */
   static void multiply (const matrix_type& A,
                         const value_type& b,

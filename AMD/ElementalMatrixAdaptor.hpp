@@ -274,6 +274,51 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
       for (int j=0; j<n; ++j) 
         C.Set(i, j, (A.Get(i,j)*B.Get(i,j)));
   }
+
+  /**
+   * 17.
+   * @brief Multiply one scalar with matrix.
+   * @param[in] a The scalar.
+   * @param[in] B The matrix.
+   * @param[out] C C is overwritten with (A*B).
+   */
+  static void multiply(const value_type& a,
+                       const matrix_type& B,
+                       matrix_type& C) {
+    /** Result matrices should always be of the right size */
+    C.Resize(B.Height(), B.Width());
+
+    /** Get the matrix dimensions. */
+    const int m = B.Height();
+    const int n = B.Width();
+   
+    /** Simple scalar-matrix product. */ 
+    for (int i=0; i<m; ++i)
+      for (int j=0; j<n; ++j)
+        C.Set(i, j, (a*B.Get(i, j)));
+  }
+  /**
+   * 18.
+   * @brief Multiply one scalar with matrix.
+   * @param[in] A The matrix.
+   * @param[in] b The scalar.
+   * @param[out] C C is overwritten with (A*B).
+   */
+  static void multiply(const matrix_type& A,
+                       const value_type& b,
+                       matrix_type& C) {
+    /** Result matrices should always be of the right size */
+    C.Resize(A.Height(), A.Width());
+
+    /** Get the matrix dimensions. */
+    const int m = A.Height();
+    const int n = A.Width();
+   
+    /** Simple scalar-matrix product. */ 
+    for (int i=0; i<m; ++i)
+      for (int j=0; j<n; ++j)
+        C.Set(i, j, (b*A.Get(i, j)));
+  }
 };
 
 } 
