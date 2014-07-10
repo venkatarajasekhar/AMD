@@ -562,6 +562,42 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   std::cout << func.derivativeVal.getString()  << std::endl;
 }
 
+void testTaylorExp() {
+
+  std::string ans;
+  std::string row = std::to_string(ROW);
+
+  /** Create a variable X and an identity function */
+  symbolic_matrix_type X("X", ROW, COL);
+  symbolic_matrix_type X0("X0", ROW, COL);
+  symbolic_matrix_type Delta("(X-X0)", ROW, COL);
+  SymbolicMMFunc fX(X, false);
+  SymbolicMMFunc fX0(X0, false);
+  SymbolicMMFunc fDelta(Delta, true);
+
+  SymbolicSMFunc f0 =  logdet(fX0);
+  SymbolicMMFunc f0Der = transpose(inv(fX0));
+  SymbolicSMFunc f1 = trace(fDelta * transpose(f0Der));
+  SymbolicMMFunc f1Der = transpose((inv(fX0)*(fDelta*inv(fX0)))); // TODO need unary minus for MMFuncHelpler;
+  SymbolicSMFunc f2 = trace(fDelta * f1Der);
+//  SymbolicSMFunc f3 = trace(fDelta * f2.derivativeVal);
+  std::cout << "f0 func" << std::endl;
+  std::cout << f0.functionVal.getString() << std::endl;
+  std::cout << "f0 deriv" << std::endl;
+  std::cout << f0.derivativeVal.getString() << std::endl;
+  std::cout << "f1 functionVal" << std::endl;
+  std::cout << f1.functionVal.getString() << std::endl;
+  std::cout << "f1 derivativeVal" << std::endl;
+  std::cout << f1.derivativeVal.getString() << std::endl;
+  std::cout << "f2 functionVal" << std::endl;
+  std::cout << f2.functionVal.getString() << std::endl;
+  std::cout << "f2 derivativeVal" << std::endl;
+  std::cout << f2.derivativeVal.getString() << std::endl;
+//  std::cout << f2.functionVal.getString() << std::endl;
+//  std::cout << f3.functionVal.getString() << std::endl;
+
+}
+
 int main(int argc, char** argv) {
 
   elem::Initialize(argc, argv); 
@@ -579,6 +615,9 @@ int main(int argc, char** argv) {
   std::cout << "DONE" << std::endl;
 #endif
 
+  std::cout << "++++++++ Test Taylor" << std::endl;
+  testTaylorExp();
+  std::cout << "End Taylor" << std::endl;
   std::cout << "All tests passed." << std::endl;
   elem::Finalize();
 
