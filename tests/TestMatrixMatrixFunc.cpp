@@ -521,11 +521,17 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   std::cout << func.derivativeVal.getString()  << std::endl;
 
   /** 19. d/dx(X * trace(X)) */
-  func2 = trace(fX);
-  SymbolicMMFunc func3 = fX * func2;
   std::cout << std::endl;
   std::cout << "********   Test trace(x+x* trace(x)) " << std::endl;
-  func = trace( fX + func3);
+  func = trace( fX + fX * trace(fX));
+  std::cout << std::endl;
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << func.derivativeVal.getString()  << std::endl;
+
+  /** 19. d/dx(X * trace(X)) */
+  std::cout << std::endl;
+  std::cout << "********   Test trace(x* trace(x) + x) " << std::endl;
+  func = trace( fX*trace(fX) + fX);
   std::cout << std::endl;
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << func.derivativeVal.getString()  << std::endl;
@@ -535,6 +541,22 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   std::cout << std::endl;
   std::cout << "*********   Test trace(x*x* trace(x)) " << std::endl;
   func = trace( fX * fX * func2);
+  std::cout << std::endl;
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << func.derivativeVal.getString()  << std::endl;
+  /** 19. d/dx(X * trace(X)) */
+  func2 = trace(fX);
+  std::cout << std::endl;
+  std::cout << "*********   Test trace(trace(x)*x*x) " << std::endl;
+  func = trace( func2 * fX * fX);
+  std::cout << std::endl;
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << func.derivativeVal.getString()  << std::endl;
+  /** 19. d/dx(X * trace(X)) */
+  func2 = trace(fX);
+  std::cout << std::endl;
+  std::cout << "*********   Test trace(x*trace(x)*x) " << std::endl;
+  func = trace( fX * func2 * fX);
   std::cout << std::endl;
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << func.derivativeVal.getString()  << std::endl;
