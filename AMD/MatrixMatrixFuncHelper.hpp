@@ -27,6 +27,7 @@ enum OpType { NONE,
               VAR, 
               PLUS, 
               MINUS, 
+              NEGATION,
               TIMES,
               STIMESM, /**< Scalar times Matrix */
               MTIMESS, /**< Matrix times Scalar */
@@ -39,6 +40,7 @@ std::string opName[] = { "none",
                          "var", 
                          "+", 
                          "-", 
+                         "-",
                          "*",
                          "*",
                          "*", 
@@ -287,6 +289,66 @@ MatrixMatrixFunc<MT,ST> operator- (const MatrixMatrixFunc<MT,ST> &lhs,
   return(result);
 }
 
+/** 
+ * @brief Functions to deal with opNum==TRANSPOSE
+ * Callback function for differentiation involving the matrix transpose
+ *
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ * @param result
+ * @param current
+ * @param left 
+ * @param right
+ */
+template <class MT, class ST>
+void negationOp( boost::shared_ptr<MT> result, 
+		  boost::shared_ptr<MT> current, 
+		  boost::shared_ptr<MT> left, 
+		  boost::shared_ptr<MT> right,
+		  const MatrixMatrixFunc<MT,ST>* node, 
+		  int& transposeFlag,
+		  bool& identityCurrentFlag, 
+		  bool& zeroResultFlag) {
+  typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+
+  assert( NULL != node && // check node type
+	  NULL != node->leftChild &&
+	  NULL == node->rightChild &&
+	  NEGATION== node->opNum &&
+	  current.use_count()>=1 && // current, left and right must be present 
+	  left.use_count()>=1 );
+  // *left = *current;
+  MatrixAdaptorType::negation ((*current), (*left));
+  if (transposeFlag) {
+    transposeFlag = 3;  // both left and right should inherit transpose.
+  }
+}
+
+/**
+ * @brief Create a new node with operator Transpose in computational 
+ * tree.
+ *
+ * @tparam MT Matrix type
+ * @tparam ST Scalar type
+ *
+ * @param lhs
+ */
+template <class MT, class ST>
+MatrixMatrixFunc<MT,ST> operator-(const MatrixMatrixFunc<MT,ST> &lhs) {
+  typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  MatrixMatrixFunc<MT,ST> result;
+  if (NEGATION!=lhs.opNum) {
+    MT lhsNegation;
+    MatrixAdaptorType::negation(*(lhs.matrixPtr), lhsNegation);
+    boost::shared_ptr<MT> negationPtr(new MT(lhsNegation)); 
+    result.unaryOpSet(negationPtr, NEGATION, negationOp<MT,ST>, lhs);
+  } else {
+    assert(NULL!=lhs.leftChild);
+    result.deepCopy(*lhs.leftChild);
+  }
+  return(result);
+}
 
 /**
  * @brief Functions to deal with opNum==TIMES

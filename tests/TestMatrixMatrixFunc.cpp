@@ -560,6 +560,13 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   std::cout << std::endl;
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << func.derivativeVal.getString()  << std::endl;
+
+  /** 20. test unary negation. */
+  func = trace(-fX);
+  std::cout << "********    Test unary negation. " << std::endl;
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << func.derivativeVal.getString() << std::endl;
+  
 }
 
 void testTaylorExp() {
