@@ -135,11 +135,9 @@ void varOp(boost::shared_ptr<MT> result,
     zeroResultFlag = false;
     if (transposeFlag) {
       MatrixAdaptorType::transpose(*current, *result);  
-      std::cout << "  RESULT 1: " << result->getString() << std::endl;
 
     } else {
       (*result) = (*current);
-      std::cout << "  RESULT 2: " << result->getString() << std::endl;
     }
   } else {
     if (transposeFlag) {
@@ -147,11 +145,8 @@ void varOp(boost::shared_ptr<MT> result,
       MT cTrans;
       MatrixAdaptorType::transpose(*current, cTrans);
       MatrixAdaptorType::add(*result, cTrans, *result);
-      std::cout << "  CURRENT:  " << current->getString() << std::endl;
-      std::cout << "  RESULT 3: " << result->getString() << std::endl;
     } else {
       MatrixAdaptorType::add((*result), (*current), (*result));
-      std::cout << "  RESULT 4: " << result->getString() << std::endl;
     }
   }
 }
@@ -390,7 +385,6 @@ void timesOp( boost::shared_ptr<MT> result,
 	  right.use_count()>=1 );
   if (identityCurrentFlag) { // avoid superfluous multiplication
     transposeFlag = 0;
-    std::cout << "+++++++++++++++++++++++++++++" << std::endl;
     if (TRANSPOSE == node->rightChild->opNum) {
       // if right is R^T then get R from it's left child
       (*left) = *(node->rightChild->leftChild->matrixPtr);
@@ -509,45 +503,28 @@ void mtimessOp( boost::shared_ptr<MT> result,
   
   if (zeroResultFlag) {
     
-//    MatrixMatrixFunc<MT, ST> mmfunc (*(node->leftChild->matrixPtr), false);
-//    ScalarMatrixFunc<MT, ST> scalarFunc = trace(*node->leftChild);
-    std::cout << "---------------" << std::endl;
-    std::cout << "scalarChild FunctionVal " <<  scalarFunc.functionVal.getString() << std::endl;
-    std::cout << "scalarChild DerivativeVal " << scalarFunc.derivativeVal.getString() << std::endl;
     zeroResultFlag = false;
     if (transposeFlag) {
-      std::cout << "      TransposeFlag" << std::endl;
-      std::cout << "  *current " << current->getString() << std::endl;
       MatrixAdaptorType::transpose(node->scalarChild->derivativeVal, rcTrans); 
       MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal,
       lhsTimesRhs2);
       MatrixAdaptorType::transpose(lhsTimesRhs2, *result);
-      std::cout << "  RESULT 5: " << result->getString() << std::endl;
     } else {
-      std::cout << "      Not TransposeFlag" << std::endl;
-      std::cout << "  *current " << current->getString() << std::endl; 
       MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal,
       scalarFunc.functionVal, lhsTimesRhs2);
       (*result) = (lhsTimesRhs2);
-      std::cout << "  RESULT 6: " << result->getString() << std::endl;
     }
   } else { 
-    std::cout << "now test current " << std::endl;
-    std::cout << current->getString() << std::endl;
-//    MatrixMatrixFunc<MT, ST> mmfunc (lhsTimesRhs1, false);
-//    ScalarMatrixFunc<MT, ST> scalarFunc = trace(mmfunc);
     if (transposeFlag) {
       MatrixAdaptorType::transpose(node->scalarChild->derivativeVal, rcTrans); 
       MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal,
       lhsTimesRhs2);
       MatrixAdaptorType::add(*result, lhsTimesRhs2, *result);
-      std::cout << "  RESULT 7: " << result->getString() << std::endl;
 
     } else {
       MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal, 
       scalarFunc.functionVal ,lhsTimesRhs2);
       MatrixAdaptorType::add (*result, lhsTimesRhs2, *result);
-      std::cout << "  RESULT 8: " << result->getString() << std::endl;
     }
   }
   
@@ -559,20 +536,12 @@ void mtimessOp( boost::shared_ptr<MT> result,
  if (transpose) {
    MatrixAdaptorType::multiply(*current, node->scalarChild->functionVal, 
    *left);
-   std::cout << "<<<<<<<" << std::endl;
-   std::cout << "current: " << current->getString() << std::endl;
-   std::cout << "node->sf:  " << node->scalarChild->functionVal.getString() << std::endl;
-   std::cout << "left:  " << left->getString() << std::endl;
    transposeFlag = 3;
  } else {
    MT cTrans;
-   std::cout << ">>>>>>" << std::endl;
-   std::cout << "current: " << current->getString() << std::endl;
-   std::cout << "node->sf:  " << node->scalarChild->functionVal.getString() << std::endl;
    MatrixAdaptorType::transpose(*current, cTrans);
    MatrixAdaptorType::multiply(cTrans, node->scalarChild->functionVal,
    *left);
-   std::cout << "left:  " << left->getString() << std::endl;
    transposeFlag = 0;
  }
  identityCurrentFlag = false;
@@ -659,46 +628,29 @@ void stimesmOp( boost::shared_ptr<MT> result,
   ScalarMatrixFunc<MT, ST> scalarFunc = trace(mmfunc);
   
   if (zeroResultFlag) {
-    std::cout << "------------------" << std::endl;
-    std::cout << "scalarChild FunctionVal  " << scalarFunc.functionVal.getString() << std::endl;
-    std::cout << "scalarChild DerivativeVal " << scalarFunc.derivativeVal.getString() << std::endl;
     zeroResultFlag = false;
     if (transposeFlag) {
-      std::cout << "      TransposeFlag" << std::endl;
-      std::cout << "  *current " << current->getString() << std::endl;
       MatrixAdaptorType::transpose(node->scalarChild->derivativeVal, rcTrans); 
       MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal,
       lhsTimesRhs2);
       MatrixAdaptorType::transpose(lhsTimesRhs2, *result);
-      std::cout << "  RESULT 9: " << result->getString() << std::endl;
     } else {
-      std::cout << "      Not TransposeFlag" << std::endl;
-      std::cout << "  *current " << current->getString() << std::endl;
       MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal,
       scalarFunc.functionVal, lhsTimesRhs2);
       (*result) = (lhsTimesRhs2);
-      std::cout << "  RESULT 10: " << result->getString() << std::endl;
     }
   } else { 
-//    MatrixAdaptorType::multiply (*(node->leftChild->matrixPtr), *current,
-//    lhsTimesRhs1); 
-    std::cout << "now test current" << std::endl;
-    std::cout << current->getString() << std::endl; 
-//    MatrixMatrixFunc<MT, ST> mmfunc (lhsTimesRhs1, false);
-//    ScalarMatrixFunc<MT, ST> scalarFunc = trace(mmfunc);
 
     if (transposeFlag) {
       MatrixAdaptorType::transpose(node->scalarChild->derivativeVal, rcTrans); 
       MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal,
       lhsTimesRhs2);
       MatrixAdaptorType::add(*result, lhsTimesRhs2, *result);
-      std::cout << "  RESULT 11: " << result->getString()  << std::endl;
 
     } else {
       MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal, 
       scalarFunc.functionVal ,lhsTimesRhs2);
       MatrixAdaptorType::add (*result, lhsTimesRhs2, *result);
-      std::cout << "  RESULT 1 122: " << result->getString() << std::endl;
     }
   }
   
@@ -710,20 +662,12 @@ void stimesmOp( boost::shared_ptr<MT> result,
  if (transpose) {
    MatrixAdaptorType::multiply(*current, node->scalarChild->functionVal, 
    *left);
-   std::cout << "<<<<<<<" << std::endl;
-   std::cout << "current: " << current->getString() << std::endl;
-   std::cout << "node->sf:  " << node->scalarChild->functionVal.getString() << std::endl;
-   std::cout << "left:  " << left->getString() << std::endl;
    transposeFlag = 3;
  } else {
    MT cTrans;
    MatrixAdaptorType::transpose(*current, cTrans);
    MatrixAdaptorType::multiply(cTrans, node->scalarChild->functionVal,
    *left);
-   std::cout << ">>>>>>>" << std::endl;
-   std::cout << "current: " << current->getString() << std::endl;
-   std::cout << "node->sf:  " << node->scalarChild->functionVal.getString() << std::endl;
-   std::cout << "left:  " << left->getString() << std::endl;
    transposeFlag = 0;
  }
  identityCurrentFlag = false;

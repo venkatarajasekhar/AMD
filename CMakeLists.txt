@@ -67,9 +67,6 @@ else (CMAKE_BUILD_TYPE MATCHES "Release" OR CMAKE_BUILD_TYPE MATCHES "None")
        "Options are: None, Debug, Release, RelWithDebInfo."
        FORCE)
 endif (CMAKE_BUILD_TYPE MATCHES "Release" OR CMAKE_BUILD_TYPE MATCHES "None")
-# TODO remove this line
-set(CXX11_COMPILER_FLAGS "-std=c++11")
-set (CMAKE_CXX_FLAGS "${CXX11_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS}")
 ###############################################################################
 
 # 2. Find Boost with the relevant packages --- Use dynamic linking in boost!
