@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#if AMD_HAVE_ELEMENTAL
 #include <elemental.hpp>
+#endif
 #include <assert.h>
 #include "boost/shared_ptr.hpp"
 #include <AMD/AMD.hpp>
@@ -512,18 +514,20 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   std::cout << func.derivativeVal.getString()  << std::endl;
   
   /** 18. d/dx(X * trace(X)) */
+  
   func2 = trace(fX);
   std::cout << std::endl;
   std::cout << "********   Test trace(trace(x)*x) " << std::endl;
-  func = trace(func2 * fX);
+  func = trace(trace(fX) * fX);
   std::cout << std::endl;
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << func.derivativeVal.getString()  << std::endl;
-
+  
   /** 19. d/dx(X * trace(X)) */
+  
   std::cout << std::endl;
-  std::cout << "********   Test trace(x+x* trace(x)) " << std::endl;
-  func = trace( fX + fX * trace(fX));
+  std::cout << "********   Test trace(x* trace(x)) " << std::endl;
+  func = trace(fX * trace(fX));
   std::cout << std::endl;
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << func.derivativeVal.getString()  << std::endl;
@@ -540,7 +544,7 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   func2 = trace(fX);
   std::cout << std::endl;
   std::cout << "*********   Test trace(x*x* trace(x)) " << std::endl;
-  func = trace( fX * fX * func2);
+  func = trace( fX * fX * trace(fX));
   std::cout << std::endl;
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << func.derivativeVal.getString()  << std::endl;
@@ -561,12 +565,73 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << func.derivativeVal.getString()  << std::endl;
 
+  SymbolicMMFunc ffunc = fX * fX;
+  std::cout << " x*x" << std::endl;
+  
+  std::cout << ffunc.matrixPtr->getString() << std::endl;
+  
+
   /** 20. test unary negation. */
-  func = trace(-fX);
-  std::cout << "********    Test unary negation. " << std::endl;
+//  func = trace(-fX);
+//  std::cout << "********    Test unary negation. " << std::endl;
+//  std::cout << func.functionVal.getString() << std::endl;
+//  std::cout << func.derivativeVal.getString() << std::endl;
+  
+}
+
+void testFXgX() {
+  std::string ans;
+  std::string row = std::to_string(ROW);
+
+  /** Create a variable X and an identity function */
+  symbolic_matrix_type X("X", ROW, COL);
+  SymbolicMMFunc fX(X, false);
+  SymbolicMMFunc fXX(X * X, false);
+  SymbolicSMFunc fxxtmp = trace(fXX);
+
+  std::cout << "0000000" << std::endl;
+  std::cout << fxxtmp.functionVal.getString() << std::endl;
+  std::cout << fxxtmp.derivativeVal.getString() << std::endl;
+  std::cout << "1111111" << std::endl;
+
+  /** Create constants A,B and C and identity functions */
+  symbolic_matrix_type A("A", ROW, COL);
+  symbolic_matrix_type B("B", ROW, COL);
+  symbolic_matrix_type C("C", ROW, COL);
+  SymbolicMMFunc fA(A, true);
+  SymbolicMMFunc fB(B, true);
+  SymbolicMMFunc fC(C, true);
+
+  /** Create a scalar-matrix function placeholder */
+  SymbolicSMFunc func; 
+  std::cout << std::endl;
+  std::cout << "*********   Test trace(x*trace(x)) " << std::endl;
+  func = trace(fX * trace(fX));
   std::cout << func.functionVal.getString() << std::endl;
   std::cout << func.derivativeVal.getString() << std::endl;
-  
+  std::cout << "*********   Test trace(trace(x)*x) " << std::endl;
+  func = trace(trace(fX) * fX);
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << func.derivativeVal.getString() << std::endl;
+  std::cout << "*********   Test trace(x*x* trace(x)) " << std::endl;
+  func = trace( fX * fX* trace(fX));
+  std::cout << std::endl;
+  std::cout << "functionVal " << func.functionVal.getString() << std::endl;
+  std::cout << "derivativeVal " << func.derivativeVal.getString()  << std::endl;
+  /** 19. d/dx(X * trace(X)) */
+  std::cout << std::endl;
+  std::cout << "*********   Test trace(trace(x)*x*x) " << std::endl;
+  func = trace( trace(fX) * fX * fX);
+  std::cout << std::endl;
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << func.derivativeVal.getString()  << std::endl;
+  /** 19. d/dx(X * trace(X)) */
+  std::cout << std::endl;
+  std::cout << "*********   Test trace(x*trace(x)*x) " << std::endl;
+  func = trace( fX * trace(fX)* fX);
+  std::cout << std::endl;
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << func.derivativeVal.getString()  << std::endl;
 }
 
 void testTaylorExp() {
@@ -607,13 +672,15 @@ void testTaylorExp() {
 
 int main(int argc, char** argv) {
 
+#if AMD_HAVE_ELEMENTAL
   elem::Initialize(argc, argv); 
+#endif
   std::cout << "Testing basic matrix-matrix functions .... ";
   testBasicSymbolicMatrixMatrixFunc();
   std::cout << "DONE" << std::endl;
 
   std::cout << "Testing advanced matrix-matrix functions .... ";
-  testAdvancedSymbolicMatrixMatrixFunc();
+//  testAdvancedSymbolicMatrixMatrixFunc();
   std::cout << "DONE" << std::endl;
 
 #if AMD_HAVE_ELEMENTAL
@@ -621,12 +688,15 @@ int main(int argc, char** argv) {
   testElementalMatrixMatrixFunc();
   std::cout << "DONE" << std::endl;
 #endif
+  testFXgX() ;
 
-  std::cout << "++++++++ Test Taylor" << std::endl;
-  testTaylorExp();
-  std::cout << "End Taylor" << std::endl;
-  std::cout << "All tests passed." << std::endl;
+//  std::cout << "++++++++ Test Taylor" << std::endl;
+//  testTaylorExp();
+//  std::cout << "End Taylor" << std::endl;
+//  std::cout << "All tests passed." << std::endl;
+#if AMD_HAVE_ELEMENTAL
   elem::Finalize();
+#endif
 
   return(0);
 }
