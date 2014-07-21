@@ -586,9 +586,9 @@ int main(int argc, char** argv) {
 #endif
 //  testFXgX() ;
 
-//  std::cout << "Test Taylor" << std::endl;
-//  testTaylorExp();
-//  std::cout << "End Taylor" << std::endl;
+  std::cout << "Test Taylor Expansion ...." << std::endl;
+  testTaylorExp();
+  std::cout << "DONE" << std::endl;
   std::cout << "All tests passed." << std::endl;
 #if AMD_HAVE_ELEMENTAL
   elem::Finalize();
