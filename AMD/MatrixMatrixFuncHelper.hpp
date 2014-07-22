@@ -184,6 +184,12 @@ void plusOp( boost::shared_ptr<MT> result,
 	  current.use_count()>=1 && // current, left and right must be present 
 	  left.use_count()>=1 && 
 	  right.use_count()>=1 );
+  /*
+  node->leftChild->derivativeMMFunc = new MatrixMatrixFunc<MT, ST>;
+  node->rightChild->derivativeMMFunc = new MatrixMatrixFunc<MT, ST>;
+  node->leftChild->derivativeMMFunc->deepCopy(*node->derivativeMMFunc);
+  node->rightChild->derivativeMMFunc->deepCopy(*node->derivativeMMFunc);
+  */
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   MatrixAdaptorType::copy(*left, *current);
   MatrixAdaptorType::copy(*right, *current);
@@ -1020,12 +1026,15 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
   boost::shared_ptr<MT> resPtr(new MT);
   *initPtr = MatrixAdaptorType::eye(n);
   *resPtr = MatrixAdaptorType::zeros(lhs.varNumRows, lhs.varNumCols); 
+//  MatrixMatrixFunc<MT, ST> initMat(*initPtr, false);
+//  lhs.derivativeMMFunc->deepCopy(initMat);
   bool zeroFlag = true;
 
   // TODO any need to deal with gradientVec? Not at this moment
   // Trigger gradientVec to calculate the derivative along the computational
   // tree reversely.
-  lhs.gradientVec(initPtr, resPtr, false, true, zeroFlag);
+  // TODO dummy ptr here. replace with MMFT(I);
+  lhs.gradientVec(initPtr, resPtr,NULL,NULL, false, true, zeroFlag);
   
   if (zeroFlag) {
     ScalarMatrixFunc<MT, ST> result( 
@@ -1075,7 +1084,8 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
   // The starting point for logdet is a inverse matrix.
   MatrixAdaptorType::inv(*lhs.matrixPtr, *initPtr);
   bool zeroFlag = true;
-  lhs.gradientVec(initPtr, resPtr, transposeFlag, false, zeroFlag);
+  // TODO dummy ptr here, replace with zeros. 
+  lhs.gradientVec(initPtr, resPtr, NULL, NULL, transposeFlag, false, zeroFlag);
   if (zeroFlag) { 
     return ScalarMatrixFunc<MT,ST> (MatrixAdaptorType::logdet(*lhs.matrixPtr),
                                     lhs.varNumRows, 

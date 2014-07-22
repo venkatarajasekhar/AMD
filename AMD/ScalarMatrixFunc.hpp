@@ -16,7 +16,7 @@
 #include <cstdio>
 #include "MatrixAdaptor.hpp"
 #include <assert.h>
-
+#include "MatrixMatrixFunc.hpp"
 namespace AMD {
 /**
  * @brief A Scalar-Matrix Function class. This class is a mapping 
@@ -32,15 +32,18 @@ public:
   typedef MT MatrixType;
   typedef ST ScalarType;
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  typedef MatrixMatrixFunc<MT, ST> MatrixMatrixFuncType;
+  typedef MatrixMatrixFuncType MMFT;
 
   ST functionVal;
   MT derivativeVal;
+  MatrixMatrixFuncType derivativeFuncVal;
   bool isConst;
 /**
  * @brief Constructor for a ScalarMatrixFunc object. The default 
  * setting is a variable.
  */ 
-  ScalarMatrixFunc() : functionVal(), derivativeVal(), isConst(false) { }
+  ScalarMatrixFunc() : functionVal(), derivativeVal(), derivativeFuncVal(), isConst(false) { }
 
   ~ScalarMatrixFunc() { }
 
@@ -52,7 +55,7 @@ public:
    * @param[in] dVal MatrixType function variable.
    */ 
   ScalarMatrixFunc(ST fVal, MT dVal ) 
-    : functionVal(fVal), derivativeVal(dVal), isConst(false) { }
+    : functionVal(fVal), derivativeVal(dVal), derivativeFuncVal(dVal, false), isConst(false) { }
 
   /// Constructor for constant functions
   /// give m, n to indicate the size of the derivative matrix.
@@ -64,7 +67,8 @@ public:
    * @param[in] n     Number of columns.
    */ 
   ScalarMatrixFunc(ST fVal, int m, int n ) 
-    : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m,n)), isConst(true) { }
+    : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m,n)), 
+      derivativeFuncVal(MatrixAdaptorType::zeros(m, n)), isConst(true) { }
 
   /**
    * @brief Operator overloading for "=". rhs and lhs are 
@@ -76,6 +80,7 @@ public:
   ScalarMatrixFunc& operator= ( const ScalarMatrixFunc &x) {
     functionVal = x.functionVal;
     derivativeVal = x.derivativeVal;
+    derivativeFuncVal = x.derivativeFuncVal;
     isConst = x.isConst;
     
     return(*this);

@@ -316,7 +316,9 @@ void testBasicSymbolicMatrixMatrixFunc() {
 
   /** Create a constant A and an identity function */
   symbolic_matrix_type A("A",ROW,COL);
+  symbolic_matrix_type Z = symbolic_adaptor_type::zeros(ROW, COL);
   SymbolicMMFunc fA(A,true); 
+  SymbolicMMFunc fZ(Z, true);
 
   /** Create a scalar-matrix function placeholder */ 
   SymbolicSMFunc func;
@@ -393,6 +395,34 @@ void testBasicSymbolicMatrixMatrixFunc() {
   ans = "(-inv(X)')";
   func = logdet(inv(transpose(fX)));
   assert(func.derivativeVal.getString()==ans);
+
+  std::cout<< "test zero constant op variable" << std::endl;
+  func = trace(fZ + fX) ;
+  std::cout << func.functionVal.getString()  << std::endl;
+  std::cout << func.derivativeVal.getString()  << std::endl;
+}
+void testDerivativeSymbolicMatrixMatrixFunc() {
+  std::string ans; /**< SymbolicMatrixMatrixFunc result. */
+  std::string row = std::to_string(ROW); /**< SymbolicMatrix row number. */ 
+
+  /** Create a variable X and an identity function */
+  symbolic_matrix_type X("X",ROW,COL);
+  SymbolicMMFunc fX(X,false); 
+
+  /** Create a constant A and an identity function */
+  symbolic_matrix_type A("A",ROW,COL);
+  symbolic_matrix_type Z = symbolic_adaptor_type::zeros(ROW, COL);
+  SymbolicMMFunc fA(A,true); 
+  SymbolicMMFunc fZ(Z, true);
+
+  /** Create a scalar-matrix function placeholder */ 
+  SymbolicSMFunc func;
+
+
+  std::cout<< "test X+X constant op variable" << std::endl;
+  func = trace(fX + fX) ;
+  std::cout << func.functionVal.getString()  << std::endl;
+  std::cout << func.derivativeVal.getString()  << std::endl;
 }
 
 /** The function names need to be more descriptive; also add comments */
@@ -527,6 +557,11 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   ans = "(((trace((X*X)*eye(128)).*eye(128))+(X*(trace(X).*eye(128)))')+((trace(X).*eye(128))*X)')";
   func = trace( fX * fX * trace(fX));
   assert(func.derivativeVal.getString() == ans); 
+
+  func = trace(fX * fX );
+  std::cout << "-------" << std::endl;
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << func.derivativeVal.getString() << std::endl;
 }
 
 
@@ -590,6 +625,7 @@ int main(int argc, char** argv) {
   testTaylorExp();
   std::cout << "DONE" << std::endl;
   std::cout << "All tests passed." << std::endl;
+  testDerivativeSymbolicMatrixMatrixFunc();
 #if AMD_HAVE_ELEMENTAL
   elem::Finalize();
 #endif
