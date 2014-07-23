@@ -45,6 +45,10 @@ public:
 				                           boost::shared_ptr<MT>,
 				                           boost::shared_ptr<MT>, 
 				                           boost::shared_ptr<MT>,
+                                   boost::shared_ptr<MMFT>,   /**< current MMFT. */
+                                   boost::shared_ptr<MMFT>,   /**< left MMFT. */
+                                   boost::shared_ptr<MMFT>,   /**< right MMFT. */
+                                   boost::shared_ptr<MMFT>,   /**< result MMFT. */
 				                           const MatrixMatrixFunc<MT,ST>*,
 				                           int&, bool&, bool&);
 
@@ -76,7 +80,8 @@ public:
 			                 leftChild(NULL), 
                        rightChild(NULL),
                        scalarChild(NULL),
-                       matrixVal() {}
+                       derivativeMMFunc(NULL),
+                       matrixVal() { }
 
   /**
    * @brief Makes an expensive copy of matrix -- avoid this constructor
@@ -91,11 +96,11 @@ public:
                                                    leftChild(NULL), 
                                                    rightChild(NULL),
                                                    scalarChild(NULL),
+                                                   derivativeMMFunc(NULL),
                                                    matrixVal() {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     // Makes an deep-copy of the matrix.
     boost::shared_ptr<MT> copy (new MT(matrix));
-//    derivativeMMFunc = new MatrixMatrixFunc<MT, ST>;
     matrixVal = matrix;
     matrixPtr = copy;
     setVariableType (isConst);
@@ -116,10 +121,10 @@ public:
                                         leftChild(NULL), 
                                         rightChild(NULL),
                                         scalarChild(NULL),
+                                        derivativeMMFunc(NULL),
                                         matrixVal() {
     matrixVal = *matrixPtr;
     setVariableType (isConst);
-//    derivativeMMFunc = new MatrixMatrixFunc<MT, ST>;
   }
 
   /**
@@ -191,6 +196,7 @@ public:
     leftChild = NULL;
     rightChild = NULL;
     scalarChild = NULL;
+    derivativeMMFunc = NULL;
   }
 
   /**
@@ -220,6 +226,10 @@ public:
     if (NULL != other.scalarChild) {
       scalarChild = new ScalarMatrixFunc<MT,ST>;
       *scalarChild = *other.scalarChild;
+    }
+    if (NULL != other.derivativeMMFunc) {
+      derivativeMMFunc = new MatrixMatrixFunc<MT, ST>;
+      *derivativeMMFunc = *other.derivativeMMFunc;
     }
   }
   /**
@@ -375,6 +385,10 @@ public:
                    initial, 
                    leftPtr, 
                    rightPtr, 
+                   derivativeMMFT,
+                   NULL,
+                   NULL,
+                   resultMMFT,
                    this,
 		               transposeFlag,
                    identityInitialFlag, 
