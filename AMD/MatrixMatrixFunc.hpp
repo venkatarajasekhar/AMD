@@ -171,7 +171,7 @@ public:
     if (NULL!=leftChild) delete leftChild;
     if (NULL!=rightChild) delete rightChild;
     if (NULL != scalarChild) delete scalarChild;
-//    if (NULL != derivativeMMFunc) delete derivativeMMFunc;
+    if (NULL != derivativeMMFunc) delete derivativeMMFunc;
   }
 
   /**
@@ -379,6 +379,8 @@ public:
       if (NULL != leftChild) *leftPtr  = *(leftChild->matrixPtr);
       boost::shared_ptr<MT> rightPtr(new MT);
       if (NULL != rightChild) *rightPtr  = *(rightChild->matrixPtr);
+      boost::shared_ptr<MMFT> leftMMFT(new MMFT);
+      boost::shared_ptr<MMFT> rightMMFT(new MMFT);
     // Replace matrices of its children according to different type
     // of callBackFunctions.
       callBackFunc(result, 
@@ -386,24 +388,28 @@ public:
                    leftPtr, 
                    rightPtr, 
                    derivativeMMFT,
-                   NULL,
-                   NULL,
+                   leftMMFT,
+                   rightMMFT,
                    resultMMFT,
                    this,
 		               transposeFlag,
                    identityInitialFlag, 
                    zeroResultFlag);
+      std::cout << "----------------" << std::endl;
+      std::cout << leftMMFT->matrixPtr->getString() << std::endl;
+      std::cout << rightMMFT->matrixPtr->getString() << std::endl;
+      std::cout << "++++++++++++++++++" << std::endl;
       // Update the matrices recursively towards the leaf nodes.
       if (NULL!=leftChild) {
 	      int leftFlag = transposeFlag & 1;
 	      leftChild->gradientVec(leftPtr, 
 				                       result, 
-                               NULL, /**< TODO: dummy ptr. replace with left derivativeMMFT. */
+                               leftMMFT, /**< TODO: dummy ptr. replace with left derivativeMMFT. */
                                resultMMFT,  
 				                       leftFlag, 
 				                       identityInitialFlag,
 				                       zeroResultFlag);
-        *(leftPtr) = leftChild->matrixVal; /**< restor previous matrix value 
+        *(leftPtr) = leftChild->matrixVal; /**< restore previous matrix value 
         for this node.*/
       }
 
@@ -411,12 +417,12 @@ public:
 	      int rightFlag = transposeFlag & 2;
 	      rightChild->gradientVec(rightPtr, 
 				                        result,
-                                NULL,  /**< TODO: dummy ptr. replace with right derivativeMMFT. */
+                                leftMMFT,  /**< TODO: dummy ptr. replace with right derivativeMMFT. */
                                 resultMMFT,
 				                        rightFlag, 
 				                        identityInitialFlag,
 				                        zeroResultFlag);
-        *(rightPtr) = rightChild->matrixVal;
+        *(rightPtr) = rightChild->matrixVal; /**< restore previous matrix value. */
       }
     } // end if (!isConst) 
   }

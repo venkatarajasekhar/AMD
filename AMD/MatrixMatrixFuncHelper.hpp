@@ -143,9 +143,10 @@ void varOp(boost::shared_ptr<MT> result,
     zeroResultFlag = false;
     if (transposeFlag) {
       MatrixAdaptorType::transpose(*current, *result);  
-
+      (*resultMMFT) = transpose(*currentMMFT);
     } else {
       (*result) = (*current);
+      (*resultMMFT) = (*currentMMFT);
     }
   } else {
     if (transposeFlag) {
@@ -153,8 +154,17 @@ void varOp(boost::shared_ptr<MT> result,
       MT cTrans;
       MatrixAdaptorType::transpose(*current, cTrans);
       MatrixAdaptorType::add(*result, cTrans, *result);
+      (*resultMMFT) = (*resultMMFT) + transpose(*currentMMFT);
     } else {
       MatrixAdaptorType::add((*result), (*current), (*result));
+      if (currentMMFT == NULL || resultMMFT == NULL) 
+        std::cout << "NULL PTR" << std::endl;
+        else { 
+          std::cout << currentMMFT << std::endl;
+          std::cout << resultMMFT << std::endl;
+        
+      (*resultMMFT) = (*resultMMFT) + (*currentMMFT);
+        }
     }
   }
 }
@@ -197,6 +207,14 @@ void plusOp( boost::shared_ptr<MT> result,
 	  left.use_count()>=1 && 
 	  right.use_count()>=1 );
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  if (currentMMFT) {
+    rightMMFT->deepCopy(*currentMMFT);
+    leftMMFT->deepCopy(*currentMMFT);
+    std::cout << "********************" << std::endl;
+    std::cout << rightMMFT->matrixPtr->getString()  << std::endl;
+    std::cout << leftMMFT->matrixPtr->getString() << std::endl;
+    std::cout << "&&&&&&&&&&&&&&&&&&&&&" << std::endl;
+  }
   MatrixAdaptorType::copy(*left, *current);
   MatrixAdaptorType::copy(*right, *current);
   if (transposeFlag) {
@@ -226,6 +244,9 @@ MatrixMatrixFunc<MT,ST> operator+ (const MatrixMatrixFunc<MT,ST> &lhs,
   MT lhsPlusRhs;
   // Add the matrices of left node and right node.
   MatrixAdaptorType::add((*lhs.matrixPtr),(*rhs.matrixPtr), lhsPlusRhs);
+  std::cout << "string" << std::endl;
+  std::cout << (*lhs.matrixPtr).getString()<< std::endl;
+  std::cout << (*lhs.matrixPtr).getString() << std::endl;
   boost::shared_ptr<MT> sumPtr(new MT(lhsPlusRhs));
   // Initialize the node in computational tree with the new matrix and PLUS 
   // operator.
@@ -1069,14 +1090,19 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
   *initPtr = MatrixAdaptorType::eye(n);
   *resPtr = MatrixAdaptorType::zeros(lhs.varNumRows, lhs.varNumCols); 
   MatrixMatrixFunc<MT, ST> initMat(*initPtr, false);
-//  lhs.derivativeMMFunc->deepCopy(initMat);
+  MatrixMatrixFunc<MT, ST> resultMat(*resPtr, false);
+  boost::shared_ptr<MatrixMatrixFunc<MT, ST> > initMMFT (new MatrixMatrixFunc<MT, ST>);
+  boost::shared_ptr<MatrixMatrixFunc<MT, ST> > resultMMFT(new MatrixMatrixFunc<MT, ST>);
+  initMMFT->deepCopy(initMat);
+  resultMMFT->deepCopy(resultMat);
+  
   bool zeroFlag = true;
 
   // TODO any need to deal with gradientVec? Not at this moment
   // Trigger gradientVec to calculate the derivative along the computational
   // tree reversely.
   // TODO dummy ptr here. replace with MatrixMatrixFunc<MT, ST> (I);
-  lhs.gradientVec(initPtr, resPtr,NULL,NULL, false, true, zeroFlag);
+  lhs.gradientVec(initPtr, resPtr,initMMFT,resultMMFT, false, true, zeroFlag);
   
   if (zeroFlag) {
     ScalarMatrixFunc<MT, ST> result( 
