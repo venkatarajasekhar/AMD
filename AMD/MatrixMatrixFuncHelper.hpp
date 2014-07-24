@@ -139,6 +139,11 @@ void varOp(boost::shared_ptr<MT> result,
 	  result.use_count() >= 1 && // result and current must be valid
 	  current.use_count() >= 1 );
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+    std::cout << std::endl;
+    std::cout << "current MMFT " << currentMMFT->matrixPtr->getString() << std::endl;
+    std::cout << "before varOp result MMFT " << resultMMFT->matrixPtr->getString() << std::endl; 
+    std::cout << "before varOp result " << result->getString() << std::endl; 
+    
   if (zeroResultFlag) {
     zeroResultFlag = false;
     if (transposeFlag) {
@@ -161,6 +166,8 @@ void varOp(boost::shared_ptr<MT> result,
       (*resultMMFT).deepCopy((*resultMMFT) + (*currentMMFT));
     }
   }
+  std::cout << "after varOp result MMFT " << resultMMFT->matrixPtr->getString() << std::endl; 
+  std::cout << "after varOp result " << result->getString() << std::endl; 
 }
 
 /** 
