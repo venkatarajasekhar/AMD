@@ -37,13 +37,14 @@ public:
 
   ST functionVal;
   MT derivativeVal;
-  MatrixMatrixFuncType derivativeFuncVal;
+  MT seed; /**< seed matrix for trace and logdet. for trace is I, logdet is inv */
+  boost::shared_ptr<MatrixMatrixFunc<MT, ST> > derivativeFuncVal;
   bool isConst;
 /**
  * @brief Constructor for a ScalarMatrixFunc object. The default 
  * setting is a variable.
  */ 
-  ScalarMatrixFunc() : functionVal(), derivativeVal(), derivativeFuncVal(), isConst(false) { }
+  ScalarMatrixFunc() : functionVal(), derivativeVal(), isConst(false), derivativeFuncVal(new MMFT) { }
 
   ~ScalarMatrixFunc() { }
 
@@ -55,7 +56,7 @@ public:
    * @param[in] dVal MatrixType function variable.
    */ 
   ScalarMatrixFunc(ST fVal, MT dVal ) 
-    : functionVal(fVal), derivativeVal(dVal), derivativeFuncVal(dVal, false), isConst(false) { }
+    : functionVal(fVal), derivativeVal(dVal), isConst(false), derivativeFuncVal(new MMFT) { }
 
   /// Constructor for constant functions
   /// give m, n to indicate the size of the derivative matrix.
@@ -68,7 +69,7 @@ public:
    */ 
   ScalarMatrixFunc(ST fVal, int m, int n ) 
     : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m,n)), 
-      derivativeFuncVal(MatrixAdaptorType::zeros(m, n)), isConst(true) { }
+      isConst(true), derivativeFuncVal(new MMFT) { }
 
   /**
    * @brief Operator overloading for "=". rhs and lhs are 
@@ -77,6 +78,18 @@ public:
    *
    * @param[in] x ScalarmatrixFunc rhs.
    */
+  void initWithVariable(ST fVal, MT dVal) {
+    functionVal = fVal;
+    derivativeVal = dVal;
+    isConst = false;
+  }
+
+  void initWithConst(ST fVal, int m, int n) {
+    functionVal = fVal;
+    derivativeVal = MatrixAdaptorType::zeros(m, n);
+    isConst = true;
+  }
+
   ScalarMatrixFunc& operator= ( const ScalarMatrixFunc &x) {
     functionVal = x.functionVal;
     derivativeVal = x.derivativeVal;

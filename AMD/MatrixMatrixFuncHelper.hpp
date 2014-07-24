@@ -139,14 +139,19 @@ void varOp(boost::shared_ptr<MT> result,
 	  result.use_count() >= 1 && // result and current must be valid
 	  current.use_count() >= 1 );
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+    std::cout << "INSIDE VAROP" << std::endl;
   if (zeroResultFlag) {
+    std::cout << "ZERO" << std::endl;
     zeroResultFlag = false;
     if (transposeFlag) {
       MatrixAdaptorType::transpose(*current, *result);  
-      (*resultMMFT) = transpose(*currentMMFT);
+//      (*resultMMFT) = transpose(*currentMMFT);
     } else {
       (*result) = (*current);
-      (*resultMMFT) = (*currentMMFT);
+//      std::cout << "PRINT RESULTMMFT->MATRIX" << std::endl;
+//      std::cout << resultMMFT->matrixPtr->getString() << std::endl;
+//      std::cout << currentMMFT->matrixPtr->getString() << std::endl;
+//      resultMMFT->deepCopy(*currentMMFT);
     }
   } else {
     if (transposeFlag) {
@@ -154,7 +159,7 @@ void varOp(boost::shared_ptr<MT> result,
       MT cTrans;
       MatrixAdaptorType::transpose(*current, cTrans);
       MatrixAdaptorType::add(*result, cTrans, *result);
-      (*resultMMFT) = (*resultMMFT) + transpose(*currentMMFT);
+//      (*resultMMFT) = (*resultMMFT) + transpose(*currentMMFT);
     } else {
       MatrixAdaptorType::add((*result), (*current), (*result));
       if (currentMMFT == NULL || resultMMFT == NULL) 
@@ -163,7 +168,7 @@ void varOp(boost::shared_ptr<MT> result,
           std::cout << currentMMFT << std::endl;
           std::cout << resultMMFT << std::endl;
         
-      (*resultMMFT) = (*resultMMFT) + (*currentMMFT);
+//      (*resultMMFT) = (*resultMMFT) + (*currentMMFT);
         }
     }
   }
@@ -208,15 +213,21 @@ void plusOp( boost::shared_ptr<MT> result,
 	  right.use_count()>=1 );
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   if (currentMMFT) {
-    rightMMFT->deepCopy(*currentMMFT);
-    leftMMFT->deepCopy(*currentMMFT);
-    std::cout << "********************" << std::endl;
-    std::cout << rightMMFT->matrixPtr->getString()  << std::endl;
-    std::cout << leftMMFT->matrixPtr->getString() << std::endl;
-    std::cout << "&&&&&&&&&&&&&&&&&&&&&" << std::endl;
+//    rightMMFT->deepCopy(*currentMMFT);
+ //   leftMMFT->deepCopy(*currentMMFT);
+//    std::cout << "********************" << std::endl;
+//    std::cout << rightMMFT->matrixPtr->getString()  << std::endl;
+//    std::cout << leftMMFT->matrixPtr->getString() << std::endl;
+ //   std::cout << "&&&&&&&&&&&&&&&&&&&&&" << std::endl;
   }
   MatrixAdaptorType::copy(*left, *current);
   MatrixAdaptorType::copy(*right, *current);
+  std::cout << "????????????????" << std::endl;
+  std::cout << left->getString() << std::endl;
+  std::cout << left << std::endl;
+  std::cout << right->getString() << std::endl;
+  std::cout << right << std::endl;
+  std::cout << "<><><><><><><><>" << std::endl;
   if (transposeFlag) {
     transposeFlag=3; // both left and right should inherit transpose
   }
@@ -251,6 +262,14 @@ MatrixMatrixFunc<MT,ST> operator+ (const MatrixMatrixFunc<MT,ST> &lhs,
   // Initialize the node in computational tree with the new matrix and PLUS 
   // operator.
   result.binOpSet( sumPtr, PLUS, plusOp<MT,ST>, lhs, rhs );
+  std::cout << "<<<<<<<<<<<<<<<<<" << std::endl;
+  std::cout << lhs.matrixPtr << std::endl;
+  std::cout << rhs.matrixPtr << std::endl;
+  std::cout << result.leftChild->matrixPtr << std::endl;
+  std::cout << result.rightChild->matrixPtr << std::endl;
+  std::cout << result.leftChild->matrixPtr->getString() << std::endl;
+  std::cout << result.rightChild->matrixPtr->getString() << std::endl;
+  std::cout << ">>>>>>>>>>>>>>>>>" << std::endl;
   return(result);
 }
 
@@ -1087,6 +1106,7 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
   const int n = MatrixAdaptorType::getNumRows(*lhs.matrixPtr);  
   boost::shared_ptr<MT> initPtr(new MT);
   boost::shared_ptr<MT> resPtr(new MT);
+  ScalarMatrixFunc<MT, ST> result;
   *initPtr = MatrixAdaptorType::eye(n);
   *resPtr = MatrixAdaptorType::zeros(lhs.varNumRows, lhs.varNumCols); 
   MatrixMatrixFunc<MT, ST> initMat(*initPtr, false);
@@ -1103,16 +1123,26 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
   // tree reversely.
   // TODO dummy ptr here. replace with MatrixMatrixFunc<MT, ST> (I);
   lhs.gradientVec(initPtr, resPtr,initMMFT,resultMMFT, false, true, zeroFlag);
-  
+  std::cout << "AAAAAAAAAAAAAAAAA" << std::endl; 
   if (zeroFlag) {
+    /*
     ScalarMatrixFunc<MT, ST> result( 
               MatrixAdaptorType::trace(*lhs.matrixPtr),
               lhs.varNumRows,
               lhs.varNumCols);
+    */
+    result.initWithConst(MatrixAdaptorType::trace(*lhs.matrixPtr), lhs.varNumCols, lhs.varNumCols);
+    std::cout << "BBBBBBBBBBBBBB" << std::endl;
+    result.derivativeFuncVal->deepCopy(*resultMMFT); 
     return(result);
   } else {
+    /*
     ScalarMatrixFunc<MT, ST> result(MatrixAdaptorType::trace(*lhs.matrixPtr), 
-                                    *resPtr);				    
+                                    *resPtr);		
+    */
+    result.initWithVariable(MatrixAdaptorType::trace(*lhs.matrixPtr), *resPtr);
+    std::cout << "CCCCCCCCCCCCCCCC" << std::endl;		  
+    result.derivativeFuncVal->deepCopy(*resultMMFT); 
     return(result);
   }
 }

@@ -420,9 +420,14 @@ void testDerivativeSymbolicMatrixMatrixFunc() {
 
 
   std::cout<< "test X+X constant op variable" << std::endl;
-  func = trace(fX + fX) ;
+  func = trace(fX +fX ) ;
+  std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+  std::cout << fX.matrixPtr->getString() << std::endl;
+  std::cout << fX.matrixPtr << std::endl;
+  std::cout << "---------------------------------------------------" << std::endl;
   std::cout << func.functionVal.getString()  << std::endl;
   std::cout << func.derivativeVal.getString()  << std::endl;
+  std::cout <<"EEEEEEEEEEEEEEEEEEEEEE " << std::endl;
 }
 
 /** The function names need to be more descriptive; also add comments */
