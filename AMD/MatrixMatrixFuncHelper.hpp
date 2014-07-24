@@ -1105,15 +1105,13 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
 //  result.seedFuncVal->deepCopy(initMat);
   boost::shared_ptr<MatrixMatrixFunc<MT, ST> > initMMFT (new MatrixMatrixFunc<MT, ST>);
   boost::shared_ptr<MatrixMatrixFunc<MT, ST> > resultMMFT(new MatrixMatrixFunc<MT, ST>);
-  boost::shared_ptr<MatrixMatrixFunc<MT, ST> > initMMFT2 (new MatrixMatrixFunc<MT, ST>);
-  boost::shared_ptr<MatrixMatrixFunc<MT, ST> > resultMMFT2(new MatrixMatrixFunc<MT, ST>);
 
   initMMFT->deepCopy(initMat);
   resultMMFT->deepCopy(resultMat);
   // smart pointer points.
   result.seed = initPtr;
-  result.seedFuncVal = initMMFT2;
-  result.derivativeFuncVal = resultMMFT2;
+  result.seedFuncVal = initMMFT;
+  result.derivativeFuncVal = resultMMFT;
   
   bool zeroFlag = true;
 
@@ -1130,7 +1128,6 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
               lhs.varNumCols);
     */
     result.initWithConst(MatrixAdaptorType::trace(*lhs.matrixPtr), lhs.varNumCols, lhs.varNumCols);
-    result.derivativeFuncVal->deepCopy(*resultMMFT); 
     return(result);
   } else {
     /*
@@ -1138,7 +1135,6 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
                                     *resPtr);		
     */
     result.initWithVariable(MatrixAdaptorType::trace(*lhs.matrixPtr), *resPtr);
-    result.derivativeFuncVal->deepCopy(*resultMMFT); 
     return(result);
   }
 }
@@ -1161,11 +1157,14 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
   assert(MatrixAdaptorType::getNumRows(*(lhs.matrixPtr)) ==
          MatrixAdaptorType::getNumCols(*(lhs.matrixPtr))); 
 
+  ScalarMatrixFunc<MT, ST> result;
   const int n = MatrixAdaptorType::getNumRows(*(lhs.matrixPtr));
   boost::shared_ptr<MT> initPtr(new MT);
   boost::shared_ptr<MT> resPtr(new MT);
   *resPtr = MatrixAdaptorType::zeros(lhs.varNumRows, lhs.varNumCols);
   bool transposeFlag = true;
+  boost::shared_ptr<MatrixMatrixFunc<MT, ST> > initMMFT (new MatrixMatrixFunc<MT, ST>);
+  boost::shared_ptr<MatrixMatrixFunc<MT, ST> > resultMMFT(new MatrixMatrixFunc<MT, ST>);
 
   if (TRANSPOSE==lhs.opNum) { // logdet(X^T) == logdet(X)
     // logdet for MMF
@@ -1177,16 +1176,31 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
   }
   // The starting point for logdet is a inverse matrix.
   MatrixAdaptorType::inv(*lhs.matrixPtr, *initPtr);
+  MatrixMatrixFunc<MT, ST> initMat = inv(lhs);
+  MatrixMatrixFunc<MT, ST> resultMat(*resPtr, false);
+  initMMFT->deepCopy(initMat);
+  resultMMFT->deepCopy(resultMat);
+  result.seed = initPtr;
+  result.seedFuncVal = initMMFT;
+  result.derivativeFuncVal = resultMMFT;
   bool zeroFlag = true;
   // TODO dummy ptr here, replace with zeros. 
-  lhs.gradientVec(initPtr, resPtr, NULL, NULL, transposeFlag, false, zeroFlag);
+  lhs.gradientVec(initPtr, resPtr, initMMFT, resultMMFT, transposeFlag, false, zeroFlag);
   if (zeroFlag) { 
+    /*
     return ScalarMatrixFunc<MT,ST> (MatrixAdaptorType::logdet(*lhs.matrixPtr),
                                     lhs.varNumRows, 
                                     lhs.varNumCols);
+    */
+    result.initWithConst(MatrixAdaptorType::trace(*lhs.matrixPtr), lhs.varNumCols, lhs.varNumCols);
+    return(result);
   } else {
+    /*
     return ScalarMatrixFunc<MT,ST> (MatrixAdaptorType::logdet(*lhs.matrixPtr), 
 				                           *resPtr);
+    */
+    result.initWithVariable(MatrixAdaptorType::trace(*lhs.matrixPtr), *resPtr);
+    return(result);
   }
 }
 

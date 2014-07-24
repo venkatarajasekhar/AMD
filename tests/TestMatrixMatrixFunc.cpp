@@ -420,7 +420,7 @@ void testDerivativeSymbolicMatrixMatrixFunc() {
   SymbolicSMFunc func2;
   
 
-  func = trace(elementwiseProduct(fX,inv(fX)) * fX); 
+  func = logdet(elementwiseProduct(fX, fX)); 
   func2 = trace((*func.derivativeFuncVal));
   std::cout << "test func matrix matrix func" << std::endl;
   std::cout << func.derivativeVal.getString() << std::endl;
