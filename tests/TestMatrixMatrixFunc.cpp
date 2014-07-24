@@ -420,10 +420,14 @@ void testDerivativeSymbolicMatrixMatrixFunc() {
   SymbolicSMFunc func2;
   
 
-  func = trace(fX*(fX+fX)); 
+  func = trace(elementwiseProduct(fX,inv(fX)) * fX); 
+  func2 = trace((*func.derivativeFuncVal));
   std::cout << "test func matrix matrix func" << std::endl;
   std::cout << func.derivativeVal.getString() << std::endl;
   std::cout << func.derivativeFuncVal->matrixPtr->getString() << std::endl;
+  std::cout << "test if trace(trace.derivativeFuncVal) works" << std::endl;
+  std::cout << func2.derivativeVal.getString() << std::endl;
+  std::cout << func2.derivativeFuncVal->matrixPtr->getString() << std::endl;
 }
 
 /** The function names need to be more descriptive; also add comments */

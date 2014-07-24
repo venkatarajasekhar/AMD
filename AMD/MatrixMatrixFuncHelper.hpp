@@ -139,10 +139,6 @@ void varOp(boost::shared_ptr<MT> result,
 	  result.use_count() >= 1 && // result and current must be valid
 	  current.use_count() >= 1 );
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
-    std::cout << std::endl;
-    std::cout << "current MMFT " << currentMMFT->matrixPtr->getString() << std::endl;
-    std::cout << "before varOp result MMFT " << resultMMFT->matrixPtr->getString() << std::endl; 
-    std::cout << "before varOp result " << result->getString() << std::endl; 
     
   if (zeroResultFlag) {
     zeroResultFlag = false;
@@ -166,8 +162,6 @@ void varOp(boost::shared_ptr<MT> result,
       (*resultMMFT).deepCopy((*resultMMFT) + (*currentMMFT));
     }
   }
-  std::cout << "after varOp result MMFT " << resultMMFT->matrixPtr->getString() << std::endl; 
-  std::cout << "after varOp result " << result->getString() << std::endl; 
 }
 
 /** 
@@ -286,7 +280,9 @@ void minusOp( boost::shared_ptr<MT> result,
 	        left.use_count()>=1 && 
 	        right.use_count()>=1 );
   MatrixAdaptorType::copy(*left, *current);
+  leftMMFT->deepCopy(*currentMMFT);
   MatrixAdaptorType::negation((*current), (*right));
+  rightMMFT->deepCopy(-(*currentMMFT));
   if (transposeFlag) {
     transposeFlag=3; // both left and right should inherit transpose
   }
@@ -355,6 +351,7 @@ void negationOp( boost::shared_ptr<MT> result,
 	  left.use_count()>=1 );
   // *left = *current;
   MatrixAdaptorType::negation ((*current), (*left));
+  leftMMFT->deepCopy(-(*currentMMFT));
   if (transposeFlag) {
     transposeFlag = 3;  // both left and right should inherit transpose.
   }
@@ -796,20 +793,25 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
                                           leftChild->matrixPtr),
                                          *(current),
                                          *left);
+      leftMMFT->deepCopy((*(node->rightChild->leftChild)) * (*currentMMFT));
+      
     } else {
       MatrixAdaptorType::elementwiseProduct(*(node->rightChild->matrixPtr),
                                          *current, 
                                          *left);
+      leftMMFT->deepCopy((*(node->rightChild)) * (*currentMMFT));
     }
     if (TRANSPOSE == node->leftChild->opNum) {
       MatrixAdaptorType::elementwiseProduct(*(node->leftChild-> \
                                          leftChild->matrixPtr),
                                          *current,
                                          *right);
+      rightMMFT->deepCopy(elementwiseProduct((*(node->leftChild->leftChild)),(*currentMMFT)));
     } else {
       MatrixAdaptorType::elementwiseProduct(*(node->leftChild->matrixPtr),
                                          *current,
                                          *right);
+      rightMMFT->deepCopy(elementwiseProduct((*(node->leftChild)) , (*currentMMFT)));
     }
     identityCurrentFlag = 0;
   } else {
@@ -817,16 +819,20 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
     MT lcTrans, rcTrans;
     MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), lcTrans);
     MatrixAdaptorType::elementwiseProduct(lcTrans, *(current), *right);
+    rightMMFT->deepCopy(elementwiseProduct(transpose(*(node->leftChild)), *currentMMFT));
     MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), rcTrans);
     MatrixAdaptorType::elementwiseProduct(rcTrans, *(current), *left);
+    leftMMFT->deepCopy(elementwiseProduct(transpose(*(node->rightChild)), *currentMMFT));
     transposeFlag = 3;
   } else {
     MatrixAdaptorType::elementwiseProduct(*(node->leftChild->matrixPtr), 
                                        *(current), 
                                        *right);
+    rightMMFT->deepCopy(elementwiseProduct((*(node->leftChild)), *currentMMFT));
     MatrixAdaptorType::elementwiseProduct(*(node->rightChild->matrixPtr), 
                                        *(current), 
                                        *left);
+    leftMMFT->deepCopy(elementwiseProduct((*(node->rightChild)), *currentMMFT));
     transposeFlag = 0;
   }
   }
@@ -886,6 +892,7 @@ void transposeOp( boost::shared_ptr<MT> result,
 	  left.use_count()>=1 );
   // *left = *current;
   MatrixAdaptorType::copy ((*left), (*current));
+  leftMMFT->deepCopy(*currentMMFT);
   if (!identityCurrentFlag) {
     if (transposeFlag) {
       transposeFlag = 0;
@@ -950,6 +957,7 @@ void diagOp ( boost::shared_ptr<MT>   result,
           current.use_count() >= 1 &&
           left.use_count() >= 1 );
   MatrixAdaptorType::diag((*current), (*left));
+  leftMMFT->deepCopy(*currentMMFT);
 }
 
 /**
@@ -1020,6 +1028,7 @@ void invOp( boost::shared_ptr<MT> result,
       MatrixAdaptorType::multiply(*initMat, lhsTimesRhs1, lhsTimesRhs2);
       MatrixAdaptorType::negation(lhsTimesRhs2, cNeg);
       MatrixAdaptorType::copy((*left), cNeg);      
+      leftMMFT->deepCopy(-((*node)*(*currentMMFT) * (*node)));
 
     } else {
       MT cTrans, lhsTimesRhs1, lhsTimesRhs2, cNeg;
@@ -1028,12 +1037,14 @@ void invOp( boost::shared_ptr<MT> result,
       MatrixAdaptorType::multiply(*initMat, lhsTimesRhs1, lhsTimesRhs2);
       MatrixAdaptorType::negation(lhsTimesRhs2, cNeg);
       MatrixAdaptorType::copy((*left), cNeg);
+      leftMMFT->deepCopy(-((*node)*transpose(*currentMMFT) * (*node)));
     }
   } else {
     MT lhsTimesRhs, lcNeg;
     MatrixAdaptorType::multiply(*initMat, *initMat, lhsTimesRhs);
     MatrixAdaptorType::negation(lhsTimesRhs, lcNeg);
-    MatrixAdaptorType::copy((*left), lcNeg);    
+    MatrixAdaptorType::copy((*left), lcNeg);
+    leftMMFT->deepCopy(-((*node)*(*node)));
   }
   transposeFlag = 3;
   identityCurrentFlag = false;
