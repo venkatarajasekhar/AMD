@@ -33,18 +33,20 @@ public:
   typedef ST ScalarType;
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   typedef MatrixMatrixFunc<MT, ST> MatrixMatrixFuncType;
-  typedef MatrixMatrixFuncType MMFT;
+  typedef MatrixMatrixFuncType MMF;
 
   ST functionVal;
   MT derivativeVal;
-  MT seed; /**< seed matrix for trace and logdet. for trace is I, logdet is inv */
+//  MT seed; /**< seed matrix for trace and logdet. for trace is I, logdet is inv */
   boost::shared_ptr<MatrixMatrixFunc<MT, ST> > derivativeFuncVal;
+  boost::shared_ptr<MT> seed;
+  boost::shared_ptr<MMF> seedFuncVal;
   bool isConst;
 /**
  * @brief Constructor for a ScalarMatrixFunc object. The default 
  * setting is a variable.
  */ 
-  ScalarMatrixFunc() : functionVal(), derivativeVal(), isConst(false), derivativeFuncVal(new MMFT) { }
+  ScalarMatrixFunc() : functionVal(), derivativeVal(), isConst(false), derivativeFuncVal(NULL), seed(NULL), seedFuncVal(NULL) { }
 
   ~ScalarMatrixFunc() { }
 
@@ -56,7 +58,7 @@ public:
    * @param[in] dVal MatrixType function variable.
    */ 
   ScalarMatrixFunc(ST fVal, MT dVal ) 
-    : functionVal(fVal), derivativeVal(dVal), isConst(false), derivativeFuncVal(new MMFT) { }
+    : functionVal(fVal), derivativeVal(dVal), isConst(false), derivativeFuncVal(NULL), seed(NULL), seedFuncVal(NULL) { }
 
   /// Constructor for constant functions
   /// give m, n to indicate the size of the derivative matrix.
@@ -69,7 +71,7 @@ public:
    */ 
   ScalarMatrixFunc(ST fVal, int m, int n ) 
     : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m,n)), 
-      isConst(true), derivativeFuncVal(new MMFT) { }
+      isConst(true), derivativeFuncVal(NULL), seed(NULL), seedFuncVal(NULL) { }
 
   /**
    * @brief Operator overloading for "=". rhs and lhs are 
@@ -93,8 +95,12 @@ public:
   ScalarMatrixFunc& operator= ( const ScalarMatrixFunc &x) {
     functionVal = x.functionVal;
     derivativeVal = x.derivativeVal;
-    derivativeFuncVal = x.derivativeFuncVal;
+    derivativeFuncVal=x.derivativeFuncVal;
+    seed = x.seed;
+    seedFuncVal = x.seedFuncVal;
     isConst = x.isConst;
+    // seed = x.seed;
+    // seed.ma
     
     return(*this);
   }

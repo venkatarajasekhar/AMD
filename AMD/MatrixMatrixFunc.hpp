@@ -210,7 +210,6 @@ public:
     
     /* do a shallow copy first */
     shallowCopy(other);
-
     /* if there are left or right children, recursively copy them as well */
     if (NULL != other.leftChild) {
       leftChild = new MatrixMatrixFunc<MT,ST>;
@@ -256,7 +255,6 @@ public:
       varNumRows = 0;
       varNumCols = 0;
     }
-
     leftChild = new MatrixMatrixFunc<MT,ST>;
     leftChild->deepCopy(lhs);
     rightChild = new MatrixMatrixFunc<MT,ST>;
@@ -372,14 +370,10 @@ public:
       MT zero= MatrixAdaptorType::zeros(varNumRows, varNumCols);
       MatrixMatrixFunc<MT, ST> zeroMat(zero, false);
       boost::shared_ptr<MT> leftPtr(new MT);
-      std::cout << "leftChild address" << std::endl;
-//      std::cout << leftChild->matrixPtr << std::endl;
 //      if (NULL != leftChild) *leftPtr  = *(leftChild->matrixPtr);
-      std::cout << leftPtr << std::endl;
       boost::shared_ptr<MT> rightPtr(new MT);
 //      if (NULL != rightChild) *rightPtr  = *(rightChild->matrixPtr);
       boost::shared_ptr<MMFT> leftMMFT(new MMFT);
- 
       boost::shared_ptr<MMFT> rightMMFT(new MMFT);
     // Replace matrices of its children according to different type
     // of callBackFunctions.
@@ -395,23 +389,12 @@ public:
 		               transposeFlag,
                    identityInitialFlag, 
                    zeroResultFlag);
-      std::cout << "----------------" << std::endl;
       /*
       if (leftMMFT.use_count() >= 1 )
-        std::cout << leftMMFT->matrixPtr->getString() << std::endl;
       if (rightMMFT.use_count() >= 1)
-        std::cout << rightMMFT->matrixPtr->getString() << std::endl;
         */
-      std::cout << "++++++++++++++++++" << std::endl;
-      std::cout << "RESULT MMFUNC" << std::endl;
-      if (resultMMFT.use_count() >= 1)
-        std::cout << resultMMFT->matrixPtr->getString() << std::endl;
-      std::cout << "END RESULT" << std::endl;
       // Update the matrices recursively towards the leaf nodes.
       if (NULL!=leftChild) {
-        std::cout << "FFFFFFFFFFFFFFFFFFFFFF" << std::endl;
-        std::cout << leftPtr->getString() << std::endl;
-        std::cout << leftChild->matrixPtr->getString() << std::endl;
 	      int leftFlag = transposeFlag & 1;
 	      leftChild->gradientVec(leftPtr, 
 				                       result, 
@@ -423,12 +406,11 @@ public:
 //        *(leftPtr) = leftChild->matrixVal; /**< restore previous matrix value 
 //        for this node.*/
       }
-
       if (NULL!=rightChild) {
 	      int rightFlag = transposeFlag & 2;
 	      rightChild->gradientVec(rightPtr, 
 				                        result,
-                                leftMMFT,  /**< TODO: dummy ptr. replace with right derivativeMMFT. */
+                                rightMMFT,  /**< TODO: dummy ptr. replace with right derivativeMMFT. */
                                 resultMMFT,
 				                        rightFlag, 
 				                        identityInitialFlag,

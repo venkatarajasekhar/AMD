@@ -417,17 +417,13 @@ void testDerivativeSymbolicMatrixMatrixFunc() {
 
   /** Create a scalar-matrix function placeholder */ 
   SymbolicSMFunc func;
+  SymbolicSMFunc func2;
+  
 
-
-  std::cout<< "test X+X constant op variable" << std::endl;
-  func = trace(fX +fX ) ;
-  std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
-  std::cout << fX.matrixPtr->getString() << std::endl;
-  std::cout << fX.matrixPtr << std::endl;
-  std::cout << "---------------------------------------------------" << std::endl;
-  std::cout << func.functionVal.getString()  << std::endl;
-  std::cout << func.derivativeVal.getString()  << std::endl;
-  std::cout <<"EEEEEEEEEEEEEEEEEEEEEE " << std::endl;
+  func = trace(fX*(fX+fX)); 
+  std::cout << "test func matrix matrix func" << std::endl;
+  std::cout << func.derivativeVal.getString() << std::endl;
+  std::cout << func.derivativeFuncVal->matrixPtr->getString() << std::endl;
 }
 
 /** The function names need to be more descriptive; also add comments */
