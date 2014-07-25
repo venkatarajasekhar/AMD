@@ -553,10 +553,12 @@ void mtimessOp( boost::shared_ptr<MT> result,
       MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal,
       lhsTimesRhs2);
       MatrixAdaptorType::transpose(lhsTimesRhs2, *result);
+      resultMMFT->deepCopy(transpose(transpose(*node->scalarChild->derivativeFuncVal) * scalarFunc));
     } else {
       MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal,
       scalarFunc.functionVal, lhsTimesRhs2);
       (*result) = (lhsTimesRhs2);
+      resultMMFT->deepCopy((*node->scalarChild->derivativeFuncVal) * scalarFunc);
     }
   } else { 
     if (transposeFlag) {
@@ -564,11 +566,15 @@ void mtimessOp( boost::shared_ptr<MT> result,
       MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal,
       lhsTimesRhs2);
       MatrixAdaptorType::add(*result, lhsTimesRhs2, *result);
+      resultMMFT->deepCopy((*resultMMFT) + 
+                           transpose(*node->scalarChild->derivativeFuncVal) * scalarFunc);
 
     } else {
       MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal, 
       scalarFunc.functionVal ,lhsTimesRhs2);
       MatrixAdaptorType::add (*result, lhsTimesRhs2, *result);
+      resultMMFT->deepCopy((*resultMMFT) +
+                           (*node->scalarChild->derivativeFuncVal) * scalarFunc);
     }
   }
   
@@ -580,12 +586,14 @@ void mtimessOp( boost::shared_ptr<MT> result,
  if (transpose) {
    MatrixAdaptorType::multiply(*current, node->scalarChild->functionVal, 
    *left);
+   leftMMFT->deepCopy((*currentMMFT) * (*node->scalarChild));
    transposeFlag = 3;
  } else {
    MT cTrans;
    MatrixAdaptorType::transpose(*current, cTrans);
    MatrixAdaptorType::multiply(cTrans, node->scalarChild->functionVal,
    *left);
+   leftMMFT->deepCopy(transpose(*currentMMFT) * (*node->scalarChild));
    transposeFlag = 0;
  }
  identityCurrentFlag = false;
@@ -682,10 +690,12 @@ void stimesmOp( boost::shared_ptr<MT> result,
       MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal,
       lhsTimesRhs2);
       MatrixAdaptorType::transpose(lhsTimesRhs2, *result);
+      resultMMFT->deepCopy(transpose(transpose(*node->scalarChild->derivativeFuncVal) * scalarFunc));
     } else {
       MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal,
       scalarFunc.functionVal, lhsTimesRhs2);
       (*result) = (lhsTimesRhs2);
+      resultMMFT->deepCopy((*node->scalarChild->derivativeFuncVal) * scalarFunc);
     }
   } else { 
 
@@ -694,11 +704,15 @@ void stimesmOp( boost::shared_ptr<MT> result,
       MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal,
       lhsTimesRhs2);
       MatrixAdaptorType::add(*result, lhsTimesRhs2, *result);
+      resultMMFT->deepCopy((*resultMMFT) + 
+                           transpose(*node->scalarChild->derivativeFuncVal) * scalarFunc);
 
     } else {
       MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal, 
       scalarFunc.functionVal ,lhsTimesRhs2);
       MatrixAdaptorType::add (*result, lhsTimesRhs2, *result);
+      resultMMFT->deepCopy((*resultMMFT) +
+                           (*node->scalarChild->derivativeFuncVal) * scalarFunc);
     }
   }
   
@@ -710,12 +724,14 @@ void stimesmOp( boost::shared_ptr<MT> result,
  if (transpose) {
    MatrixAdaptorType::multiply(*current, node->scalarChild->functionVal, 
    *left);
+   leftMMFT->deepCopy((*currentMMFT) * (*node->scalarChild));
    transposeFlag = 3;
  } else {
    MT cTrans;
    MatrixAdaptorType::transpose(*current, cTrans);
    MatrixAdaptorType::multiply(cTrans, node->scalarChild->functionVal,
    *left);
+   leftMMFT->deepCopy(transpose(*currentMMFT) * (*node->scalarChild));
    transposeFlag = 0;
  }
  identityCurrentFlag = false;
