@@ -299,7 +299,6 @@ void testElementalMatrixMatrixFunc() {
 
   /** 15. d/dx(trace(x * trace(x))) */
   func = trace(fX * trace(fX));
-
   /** 16. d/dx(trace(trace(x) * x))*/
   func = trace(trace(fX) * fX);
 }
@@ -532,12 +531,11 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   ans = "((X''.*inv(X.*X'))'+(X'.*inv(X.*X')))";
   func = logdet (elementwiseProduct(fX, transpose(fX)));
   assert(func.derivativeVal.getString() == ans);
-  
+
   /** 17. d/dx(trace(X * trace(X) + X)) = 2trace(X).*I + I. */
   ans = "(((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')+eye(128))";
   func = trace(fX * trace(fX) + fX);
   assert(func.derivativeVal.getString() == ans);
-
   /** 18. d/dx(trace(X * trace(X))) = 2trace(X).*I. */
   ans = "((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')";
   func = trace(fX * trace(fX));

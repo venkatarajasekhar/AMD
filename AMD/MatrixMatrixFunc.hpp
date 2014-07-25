@@ -45,16 +45,15 @@ public:
 				                           boost::shared_ptr<MT>,
 				                           boost::shared_ptr<MT>, 
 				                           boost::shared_ptr<MT>,
-                                   boost::shared_ptr<MMFT>,   /**< current MMFT. */
-                                   boost::shared_ptr<MMFT>,   /**< left MMFT. */
-                                   boost::shared_ptr<MMFT>,   /**< right MMFT. */
-                                   boost::shared_ptr<MMFT>,   /**< result MMFT. */
+                                   boost::shared_ptr<MMFT>,/**< current MMFT.*/
+                                   boost::shared_ptr<MMFT>,/**< left MMFT. */
+                                   boost::shared_ptr<MMFT>,/**< right MMFT. */
+                                   boost::shared_ptr<MMFT>,/**< result MMFT. */
 				                           const MatrixMatrixFunc<MT,ST>*,
 				                           int&, bool&, bool&);
 
   boost::shared_ptr<MT> matrixPtr; /**< Once recorded the matrix should never 
                                         be changed - so a pointer is safe */
-//  MT matrixVal;    /**< The matrix result for this node. It should not be changed. */
   CallBackFuncType callBackFunc; /**< Used to compute derivative after 
                                       evaluation tree is recorded */
   OpType opNum; /**< enum for the operator used at this node in the tree */
@@ -351,7 +350,7 @@ public:
    */
   void gradientVec(boost::shared_ptr<MT> initial, 
 		               boost::shared_ptr<MT> result, 
-                   boost::shared_ptr<MMFT> derivativeMMFT, /**< TODO this points to a newly create derivativeMMFT. */
+                   boost::shared_ptr<MMFT> derivativeMMFT, 
                    boost::shared_ptr<MMFT> resultMMFT,
 		               int transposeFlag, 
 		               bool identityInitialFlag,
@@ -364,8 +363,6 @@ public:
            (MatrixAdaptorType::getNumRows(*(result)) == varNumRows &&
 			      MatrixAdaptorType::getNumCols(*(result)) == varNumCols));
 
-    // If the function is constant then the derivative is zero -- so
-    // we don't need to do any computation
     if (!isConst) { 
       MT zero= MatrixAdaptorType::zeros(varNumRows, varNumCols);
       MatrixMatrixFunc<MT, ST> zeroMat(zero, false);
@@ -375,8 +372,6 @@ public:
 //      if (NULL != rightChild) *rightPtr  = *(rightChild->matrixPtr);
       boost::shared_ptr<MMFT> leftMMFT(new MMFT);
       boost::shared_ptr<MMFT> rightMMFT(new MMFT);
-    // Replace matrices of its children according to different type
-    // of callBackFunctions.
       callBackFunc(result, 
                    initial, 
                    leftPtr, 
@@ -389,33 +384,25 @@ public:
 		               transposeFlag,
                    identityInitialFlag, 
                    zeroResultFlag);
-      /*
-      if (leftMMFT.use_count() >= 1 )
-      if (rightMMFT.use_count() >= 1)
-        */
-      // Update the matrices recursively towards the leaf nodes.
       if (NULL!=leftChild) {
 	      int leftFlag = transposeFlag & 1;
 	      leftChild->gradientVec(leftPtr, 
 				                       result, 
-                               leftMMFT, /**< TODO: dummy ptr. replace with left derivativeMMFT. */
+                               leftMMFT, 
                                resultMMFT,  
 				                       leftFlag, 
 				                       identityInitialFlag,
 				                       zeroResultFlag);
-//        *(leftPtr) = leftChild->matrixVal; /**< restore previous matrix value 
-//        for this node.*/
       }
       if (NULL!=rightChild) {
 	      int rightFlag = transposeFlag & 2;
 	      rightChild->gradientVec(rightPtr, 
 				                        result,
-                                rightMMFT,  /**< TODO: dummy ptr. replace with right derivativeMMFT. */
+                                rightMMFT,  
                                 resultMMFT,
 				                        rightFlag, 
 				                        identityInitialFlag,
 				                        zeroResultFlag);
-//        *(rightPtr) = rightChild->matrixVal; /**< restore previous matrix value. */
       }
     } // end if (!isConst) 
   }
