@@ -583,9 +583,9 @@ void testTaylorExp() {
 
   SymbolicSMFunc f0 =  logdet(fX0);
   SymbolicMMFunc f0Der = transpose(inv(fX0));
-  SymbolicSMFunc f1 = trace(fDelta * transpose(f0Der));
+  SymbolicSMFunc f1 = trace(fDelta * (*f0.derivativeFuncVal));
   SymbolicMMFunc f1Der = transpose((inv(fX0)*(fDelta*inv(fX0)))); // TODO need unary minus for MMFuncHelpler;
-  SymbolicSMFunc f2 = trace(fDelta * f1Der);
+  SymbolicSMFunc f2 = trace(fDelta * (*f1.derivativeFuncVal));
 //  SymbolicSMFunc f3 = trace(fDelta * f2.derivativeVal);
   std::cout << "f0 func" << std::endl;
   std::cout << f0.functionVal.getString() << std::endl;
@@ -625,7 +625,7 @@ int main(int argc, char** argv) {
 //  testFXgX() ;
 
   std::cout << "Test Taylor Expansion ...." << std::endl;
-//  testTaylorExp();
+  testTaylorExp();
   std::cout << "DONE" << std::endl;
   std::cout << "All tests passed." << std::endl;
   testDerivativeSymbolicMatrixMatrixFunc();
