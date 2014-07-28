@@ -1202,7 +1202,6 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
   resultMMFT->deepCopy(resultMat);
   result.derivativeFuncVal = resultMMFT;
   bool zeroFlag = true;
-  // TODO dummy ptr here, replace with zeros. 
   lhs.gradientVec(initPtr, resPtr, initMMFT, resultMMFT, 
                   transposeFlag, false, zeroFlag);
   if (zeroFlag) { 
@@ -1211,7 +1210,7 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
                                     lhs.varNumRows, 
                                     lhs.varNumCols);
     */
-    result.initWithConst(MatrixAdaptorType::trace(*lhs.matrixPtr),
+    result.initWithConst(MatrixAdaptorType::logdet(*lhs.matrixPtr),
                          lhs.varNumCols, lhs.varNumCols);
     return(result);
   } else {
@@ -1219,7 +1218,7 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
     return ScalarMatrixFunc<MT,ST> (MatrixAdaptorType::logdet(*lhs.matrixPtr), 
 				                           *resPtr);
     */
-    result.initWithVariable(MatrixAdaptorType::trace(*lhs.matrixPtr), *resPtr);
+    result.initWithVariable(MatrixAdaptorType::logdet(*lhs.matrixPtr), *resPtr);
     return(result);
   }
 }

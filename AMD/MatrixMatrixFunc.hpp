@@ -206,7 +206,6 @@ public:
   void deepCopy(const MatrixMatrixFunc &other) { 
     /* reset the current object */
     reset();
-    
     /* do a shallow copy first */
     shallowCopy(other);
     /* if there are left or right children, recursively copy them as well */
@@ -278,7 +277,6 @@ public:
     opNum = _opNum;
     isConst = lhs.isConst;
     callBackFunc = cbf;
-
     leftChild = new MatrixMatrixFunc<MT,ST>;
     leftChild->deepCopy(lhs);
   }

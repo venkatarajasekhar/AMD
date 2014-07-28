@@ -60,8 +60,13 @@ public:
       derivativeFuncVal(NULL) { }
 
   ScalarMatrixFunc(ST fVal, MT dVal, MMF dFuncVal)
-    : functionVal(fVal), derivativeVal(dVal), isConst (false)
-      { derivativeFuncVal->deepCopy(dFuncVal); }
+    : functionVal(fVal), derivativeVal(dVal), isConst (false) 
+    {
+         boost::shared_ptr<MatrixMatrixFunc<MT, ST> > 
+         copy(new MatrixMatrixFunc<MT, ST>);
+         derivativeFuncVal = copy; 
+         derivativeFuncVal->deepCopy(dFuncVal);
+    }
 
   /// Constructor for constant functions
   /// give m, n to indicate the size of the derivative matrix.
