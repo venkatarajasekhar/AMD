@@ -7,6 +7,7 @@
 #include <assert.h>
 #include "boost/shared_ptr.hpp"
 #include <AMD/AMD.hpp>
+#include <stack>
 
 #define DEBUG
 
@@ -525,7 +526,28 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   ans = "((X''.*inv(X.*X'))'+(X'.*inv(X.*X')))";
   func = logdet (elementwiseProduct(fX, transpose(fX)));
   assert(func.derivativeVal.getString() == ans);
-
+  func = logdet(fX+fX);
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << func.derivativeVal.getString() << std::endl;
+  std::stack<SymbolicMMFunc> stack;
+  stack.push(fX);
+  stack.push(fX);
+  SymbolicMMFunc f1;
+  f1.deepCopy(stack.top());
+  stack.pop();
+  SymbolicMMFunc f2;
+  f2.deepCopy(stack.top());
+  stack.pop();
+  SymbolicMMFunc f3;
+  f3.deepCopy(f1 *f2);
+  std::cout << "++++++++++++++" << std::endl;
+  stack.push(f3);
+  std::cout << "------------" << std::endl;
+  
+//  SymbolicMMFunc f4 = stack.top(); 
+//  func = trace(f3);
+  std::cout << func.derivativeVal.getString() << std::endl;
+  
   /** 17. d/dx(trace(X * trace(X) + X)) = 2trace(X).*I + I. */
   /*
   ans = "(((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')+eye(128))";
@@ -562,6 +584,7 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   func = trace( fX * fX * trace(fX));
   assert(func.derivativeVal.getString() == ans); 
   */
+  std::cout << "000000000" << std::endl;
 }
 
 
@@ -622,7 +645,7 @@ int main(int argc, char** argv) {
 //  testFXgX() ;
 
   std::cout << "Test Taylor Expansion ...." << std::endl;
-//  testTaylorExp();
+  testTaylorExp();
   std::cout << "DONE" << std::endl;
   std::cout << "All tests passed." << std::endl;
 //  testDerivativeSymbolicMatrixMatrixFunc();
