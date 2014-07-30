@@ -308,8 +308,11 @@ void testElementalMatrixMatrixFunc() {
 
 void testBasicSymbolicMatrixMatrixFunc() {
   std::string ans; /**< SymbolicMatrixMatrixFunc result. */
-  std::string row = std::to_string(ROW); /**< SymbolicMatrix row number. */ 
-
+//  std::string row = std::to_string(ROW); /**< SymbolicMatrix row number. */ 
+  char rowChar[5];
+  int rowTmp = ROW;
+  sprintf(rowChar, "%d", rowTmp);
+  std::string row = rowChar;
   /** Create a variable X and an identity function */
   symbolic_matrix_type X("X",ROW,COL);
   SymbolicMMFunc fX(X,false); 
@@ -397,7 +400,11 @@ void testBasicSymbolicMatrixMatrixFunc() {
 }
 void testDerivativeSymbolicMatrixMatrixFunc() {
   std::string ans; /**< SymbolicMatrixMatrixFunc result. */
-  std::string row = std::to_string(ROW); /**< SymbolicMatrix row number. */ 
+//  std::string row = std::to_string(ROW); /**< SymbolicMatrix row number. */ 
+  char rowChar[5];
+  int rowTmp = ROW;
+  sprintf(rowChar, "%d", rowTmp);
+  std::string row = rowChar;
 
   /** Create a variable X and an identity function */
   symbolic_matrix_type X("X",ROW,COL);
@@ -428,7 +435,11 @@ void testDerivativeSymbolicMatrixMatrixFunc() {
 void testAdvancedSymbolicMatrixMatrixFunc () {
 
   std::string ans;
-  std::string row = std::to_string(ROW);
+//  std::string row = std::to_string(ROW);
+  char rowChar[5];
+  int rowTmp = ROW;
+  sprintf(rowChar, "%d", rowTmp);
+  std::string row = rowChar;
 
   /** Create a variable X and an identity function */
   symbolic_matrix_type X("X", ROW, COL);
@@ -526,27 +537,10 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   ans = "((X''.*inv(X.*X'))'+(X'.*inv(X.*X')))";
   func = logdet (elementwiseProduct(fX, transpose(fX)));
   assert(func.derivativeVal.getString() == ans);
-  func = logdet(fX+fX);
-  std::cout << func.functionVal.getString() << std::endl;
-  std::cout << func.derivativeVal.getString() << std::endl;
-  std::stack<SymbolicMMFunc> stack;
-  stack.push(fX);
-  stack.push(fX);
-  SymbolicMMFunc f1;
-  f1.deepCopy(stack.top());
-  stack.pop();
-  SymbolicMMFunc f2;
-  f2.deepCopy(stack.top());
-  stack.pop();
-  SymbolicMMFunc f3;
-  f3.deepCopy(f1 *f2);
-  std::cout << "++++++++++++++" << std::endl;
-  stack.push(f3);
-  std::cout << "------------" << std::endl;
   
 //  SymbolicMMFunc f4 = stack.top(); 
 //  func = trace(f3);
-  std::cout << func.derivativeVal.getString() << std::endl;
+//  std::cout << func.derivativeVal.getString() << std::endl;
   
   /** 17. d/dx(trace(X * trace(X) + X)) = 2trace(X).*I + I. */
   /*
@@ -591,7 +585,11 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
 void testTaylorExp() {
 
   std::string ans;
-  std::string row = std::to_string(ROW);
+//  std::string row = std::to_string(ROW);
+  char rowChar[5];
+  int rowTmp = ROW;
+  sprintf(rowChar, "%d", rowTmp);
+  std::string row = rowChar;
 
   /** Create a variable X and an identity function */
   symbolic_matrix_type X("X", ROW, COL);
