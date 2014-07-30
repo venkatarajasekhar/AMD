@@ -7,16 +7,18 @@ check_include_file_cxx ("sys/time.h" AMD_HAVE_SYS_TIME_H CACHE BOOLEAN ON)
 # Get the operating system that is in use
 if (CMAKE_SYSTEM MATCHES "Linux")
   set (AMD_LINUX 1)
-elseif (CMAKE_SYSTEM MATCHES "Windows")
-  message (STATUS "We only support 32-bit Windows as of now")
-  set (AMD_WINDOWS 1)
-elseif (CMAKE_SYSTEM MATCHES "Darwin")
-  set (AMD_DARWIN 1)
-elseif (CMAKE_SYSTEM MATCHES "AIX")
-  set (AMD_AIX 1)
+#elseif (CMAKE_SYSTEM MATCHES "Windows")
+#  message (STATUS "We only support 32-bit Windows as of now")
+#  set (AMD_WINDOWS 1)
+#elseif (CMAKE_SYSTEM MATCHES "Darwin")
+#  set (AMD_DARWIN 1)
+#elseif (CMAKE_SYSTEM MATCHES "AIX")
+#  set (AMD_AIX 1)
+#else (CMAKE_SYSTEM MATCHES "Linux")
+#  message (FATAL_ERROR "PFunc is currently only supported on Linux, Windows,
+#  AIX and Darwin")
 else (CMAKE_SYSTEM MATCHES "Linux")
-  message (FATAL_ERROR "PFunc is currently only supported on Linux, Windows,
-  AIX and Darwin")
+  set (AMD_WINDOWS 1)
 endif (CMAKE_SYSTEM MATCHES "Linux")
 
 # Set AMD_HAVE_ELEMENTAL 
