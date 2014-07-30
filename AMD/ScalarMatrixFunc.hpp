@@ -44,7 +44,7 @@ public:
  * setting is a variable.
  */ 
   ScalarMatrixFunc() : functionVal(), derivativeVal(), isConst(false),
-                       derivativeFuncVal(NULL) { }
+                       derivativeFuncVal() { }
 
   ~ScalarMatrixFunc() { }
 
@@ -57,7 +57,7 @@ public:
    */ 
   ScalarMatrixFunc(ST fVal, MT dVal ) 
     : functionVal(fVal), derivativeVal(dVal), isConst(false), 
-      derivativeFuncVal(NULL) { }
+      derivativeFuncVal() { }
 
   ScalarMatrixFunc(ST fVal, MT dVal, MMF dFuncVal)
     : functionVal(fVal), derivativeVal(dVal), isConst (false) 
@@ -79,7 +79,7 @@ public:
    */ 
   ScalarMatrixFunc(ST fVal, int m, int n ) 
     : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m,n)), 
-      isConst(true), derivativeFuncVal(NULL) { }
+      isConst(true), derivativeFuncVal() { }
 
   /**
    * @brief Operator overloading for "=". rhs and lhs are 

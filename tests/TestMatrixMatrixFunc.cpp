@@ -17,7 +17,7 @@
 // Typedef for SymbolicMatrixMatlab and SymbolicScalarMatlab.
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
 typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
-typedef typename symbolic_adaptor_type::value_type symbolic_value_type;
+typedef symbolic_adaptor_type::value_type symbolic_value_type;
 
 typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
                       				symbolic_value_type> SymbolicMMFunc;
