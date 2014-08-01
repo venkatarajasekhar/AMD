@@ -320,9 +320,7 @@ void testBasicSymbolicMatrixMatrixFunc() {
 
   /** Create a scalar-matrix function placeholder */ 
   SymbolicSMFunc func;
-  func = trace(fX * inv(fX));
-
-
+  func = trace(fA * fX * inv(fX));
   std::cout << "Function: " 
   << func.functionVal.getString() << std::endl; 
   std::cout << "Gradient: "
