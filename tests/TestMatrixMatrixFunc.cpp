@@ -312,14 +312,21 @@ void testBasicSymbolicMatrixMatrixFunc() {
 
   /** Create a variable X and an identity function */
   symbolic_matrix_type X("X",ROW,COL);
-  SymbolicMMFunc fX(X,false); 
+  SymbolicMMFunc fX(X,false);  /**< X is variable. */
 
   /** Create a constant A and an identity function */
   symbolic_matrix_type A("A",ROW,COL);
-  SymbolicMMFunc fA(A,true); 
+  SymbolicMMFunc fA(A,true);  /**< A is constant. */
 
   /** Create a scalar-matrix function placeholder */ 
   SymbolicSMFunc func;
+  func = trace(fX * inv(fX));
+
+
+  std::cout << "Function: " 
+  << func.functionVal.getString() << std::endl; 
+  std::cout << "Gradient: "
+  << func.derivativeVal.getString() << std::endl;
 
   /** 1. d/dx(trace(X*A)) = A' */
   ans = "A'";
@@ -567,22 +574,23 @@ void testTaylorExp() {
 }
 
 int main(int argc, char** argv) {
-
+std::cout << std::endl;
 #if AMD_HAVE_ELEMENTAL
   elem::Initialize(argc, argv); 
 #endif
-  std::cout << "Testing basic matrix-matrix functions .... ";
+//  std::cout << "Testing basic matrix-matrix functions .... ";
   testBasicSymbolicMatrixMatrixFunc();
-  std::cout << "DONE" << std::endl;
+//  std::cout << "DONE" << std::endl;
 
-  std::cout << "Testing advanced matrix-matrix functions .... ";
-  testAdvancedSymbolicMatrixMatrixFunc();
-  std::cout << "DONE" << std::endl;
+ // std::cout << "Testing advanced matrix-matrix functions .... ";
+//  testAdvancedSymbolicMatrixMatrixFunc();
+//  std::cout << "DONE" << std::endl;
 
 #if AMD_HAVE_ELEMENTAL
-  std::cout << "Testing elemetal matrix-matrix functions .... ";
+//  std::cout << "Testing elemetal matrix-matrix functions .... ";
   testElementalMatrixMatrixFunc();
-  std::cout << "DONE" << std::endl;
+//  std::cout << "DONE" << std::endl;
+   std::cout << std::endl;
 #endif
 //  testFXgX() ;
 

@@ -626,6 +626,36 @@ Reverse mode differentiation
 % highlighted. Note that the number of sections determines the size of the top 
 % bar, and hence the university name and logo. If you do not add any sections 
 % they will not be visible.
-\section{Introduction}
+\section{Automatic Matrix Differentiation Library}
+\begin{frame}
+\frametitle{Our Automatic Matrix Differentiation Library}
+\begin{itemize}
+\item Compute both Symbolic and Numerical differentiation.
+\item Support operation +, -, *, elementwise. 
+\item Two ways to compute symbolic differentiation: 
+      compute in program and compute in command line.
+\end{itemize}
+\end{frame}
+\begin{frame}
+\frametitle{Compute in program}
+Define a Scalar-Matrix function $\color{m1} trace(X * X^{-1})$
+\begin{figure}[p]
+\includegraphics[width=0.8\textwidth]{function.png}
+\end{figure}
+
+The result should be:
+\begin{figure}[p]
+\includegraphics[width=0.8\textwidth]{gradient.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Compute in command line}
+Show an example of symbolic calculator.
+\end{frame}
+
+
+\section{Taylor Expansion}
+
 
 \end{document}
