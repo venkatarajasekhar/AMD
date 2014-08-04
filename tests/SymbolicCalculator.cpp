@@ -210,13 +210,19 @@ void compDerivative(std::string str, int SMFtype) {
 }
 
 
-int main() {
-  std::string str;
+int main(int argc, char** argv) {
+  std::string str = "";
   std::string rpn;
-  std::cout << "X inverse: inv(X)" << std::endl;
-  std::cout << "X transpose: trans(X)" << std::endl;
-  std::cout << "Input expression: " << std::endl;
-  std::getline(std::cin, str);
+  int i; 
+  str = argv[1];
+  std::string str2 = "(";
+  std::string str3 = argv[2];
+  std::string str4 = ")";
+  str = str + str2 + str3 + str4;
+//  std::cout << "X inverse: inv(X)" << std::endl;
+//  std::cout << "X transpose: trans(X)" << std::endl;
+//  std::cout << "Input expression: " << std::endl;
+//  std::getline(std::cin, str);
   std::string expNoSpace = "";
   int type = 0;
   // Remove the spaces.
