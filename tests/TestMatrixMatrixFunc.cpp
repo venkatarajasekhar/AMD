@@ -582,7 +582,6 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   func = trace( fX * fX * trace(fX));
   assert(func.derivativeVal.getString() == ans); 
   */
-  std::cout << "000000000" << std::endl;
 }
 
 
@@ -602,27 +601,29 @@ void testTaylorExp() {
   SymbolicMMFunc fX(X, false);
   SymbolicMMFunc fX0(X0, false);
   SymbolicMMFunc fDelta(Delta, true);
-
+  
+  /* Compute n-order differentiation iteratively. */
   SymbolicSMFunc f0 =  logdet(fX0);
-  SymbolicMMFunc f0Der = transpose(inv(fX0));
   SymbolicSMFunc f1 = trace(fDelta * (*f0.derivativeFuncVal));
-  SymbolicMMFunc f1Der = transpose((inv(fX0)*(fDelta*inv(fX0)))); // TODO need unary minus for MMFuncHelpler;
   SymbolicSMFunc f2 = trace(fDelta * (*f1.derivativeFuncVal));
-//  SymbolicSMFunc f3 = trace(fDelta * f2.derivativeVal);
-  std::cout << "f0 func" << std::endl;
+  SymbolicSMFunc f3 = trace(fDelta * (*f2.derivativeFuncVal));
+
+  std::cout << "f0 functionVal    :   ";
   std::cout << f0.functionVal.getString() << std::endl;
-  std::cout << "f0 deriv" << std::endl;
+  std::cout << "f0 derivativeVal  :   ";
   std::cout << f0.derivativeVal.getString() << std::endl;
-  std::cout << "f1 functionVal" << std::endl;
+  std::cout << "f1 functionVal    :";
   std::cout << f1.functionVal.getString() << std::endl;
-  std::cout << "f1 derivativeVal" << std::endl;
+  std::cout << "f1 derivativeVal  :";
   std::cout << f1.derivativeVal.getString() << std::endl;
-  std::cout << "f2 functionVal" << std::endl;
+  std::cout << "f2 functionVal    :";
   std::cout << f2.functionVal.getString() << std::endl;
-  std::cout << "f2 derivativeVal" << std::endl;
+  std::cout << "f2 derivativeVal  :";
   std::cout << f2.derivativeVal.getString() << std::endl;
-//  std::cout << f2.functionVal.getString() << std::endl;
-//  std::cout << f3.functionVal.getString() << std::endl;
+  std::cout << "f3 functionVal    :";
+  std::cout << f3.functionVal.getString() << std::endl;
+  std::cout << "f3 derivativeVal  :";
+  std::cout << f3.derivativeVal.getString() << std::endl;
 
 }
 
@@ -631,18 +632,18 @@ int main(int argc, char** argv) {
 #if AMD_HAVE_ELEMENTAL
   elem::Initialize(argc, argv); 
 #endif
-  std::cout << "Testing basic matrix-matrix functions .... ";
-  testBasicSymbolicMatrixMatrixFunc();
-  std::cout << "DONE" << std::endl;
+//  std::cout << "Testing basic matrix-matrix functions .... ";
+//  testBasicSymbolicMatrixMatrixFunc();
+//  std::cout << "DONE" << std::endl;
 
-  std::cout << "Testing advanced matrix-matrix functions .... ";
-  testAdvancedSymbolicMatrixMatrixFunc();
-  std::cout << "DONE" << std::endl;
+//  std::cout << "Testing advanced matrix-matrix functions .... ";
+//  testAdvancedSymbolicMatrixMatrixFunc();
+//  std::cout << "DONE" << std::endl;
 
 #if AMD_HAVE_ELEMENTAL
-  std::cout << "Testing elemetal matrix-matrix functions .... ";
-  testElementalMatrixMatrixFunc();
-  std::cout << "DONE" << std::endl;
+//  std::cout << "Testing elemetal matrix-matrix functions .... ";
+//  testElementalMatrixMatrixFunc();
+//  std::cout << "DONE" << std::endl;
 #endif
 //  testFXgX() ;
 
