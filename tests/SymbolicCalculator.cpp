@@ -115,20 +115,26 @@ std::string infix2rpn(std::string& str) {
   return result;
 }
 /* Compute derivate of rpn. */
-void compDerivative(std::string str, int SMFtype) {
+void compDerivative(std::string str, int SMFtype, int Row, int Col) {
   int i; 
   Stack<SymbolicMMFunc> MMFStack;
   int size = str.size();
-  symbolic_matrix_type X("X", ROW, COL);
+  symbolic_matrix_type X("X", Row, Col);
   SymbolicMMFunc fX(X, false);
-  symbolic_matrix_type A("A", ROW, COL);
+  symbolic_matrix_type A("A", Row, Col);
   SymbolicMMFunc fA(A, true);
-  symbolic_matrix_type B("B", ROW, COL);
+  symbolic_matrix_type B("B", Row, Col);
   SymbolicMMFunc fB(B, true);
   SymbolicSMFunc func;
+
+  symbolic_matrix_type EYE =  symbolic_adaptor_type::eye(Row);
+  SymbolicMMFunc fI(EYE, true);
+
+  symbolic_matrix_type ZERO =  symbolic_adaptor_type::zeros(Row, Col);
+  SymbolicMMFunc fZ(ZERO, true);
  
   for (i = 0; i < size; i++) {
-    if (str[i] == 'X') {
+    if (str[i] == 'X' || str[i]=='x') {
       SymbolicMMFunc fXX;
       fXX.deepCopy(fX);
       MMFStack.push(fXX);
@@ -142,6 +148,16 @@ void compDerivative(std::string str, int SMFtype) {
       SymbolicMMFunc fBB;
       fBB.deepCopy(fB);
       MMFStack.push(fBB);
+    } else 
+    if (str[i] == 'I') { 
+      SymbolicMMFunc fII;
+      fII.deepCopy(fI);
+      MMFStack.push(fII);
+    } else 
+    if (str[i] == 'Z') {
+      SymbolicMMFunc fZZ;
+      fZZ.deepCopy(fZ);
+      MMFStack.push(fZZ);  
     } else 
     if (str[i] == '+') {
       SymbolicMMFunc f1;
@@ -191,6 +207,9 @@ void compDerivative(std::string str, int SMFtype) {
       SymbolicMMFunc f2;
       f2.deepCopy(transpose(f1));
       MMFStack.push(f2);
+    } else {
+      std::cout << "Incorrect Input" << std::endl;
+      exit;
     }
   }
   if (SMFtype == 1) {
@@ -211,18 +230,32 @@ void compDerivative(std::string str, int SMFtype) {
 
 
 int main(int argc, char** argv) {
-  std::string str = "";
+  std::string str ;
+  std::string rowStr;
+  std::string colStr;
   std::string rpn;
+  int row;
+  int col;
   int i; 
+  if ( argc <=1) {
+    std::cout << "./SymbolicCalculator 'express' row=? col=?" << std::endl;
+    return -1;
+  }
+  if (argc != 4) {
+    std::cout << "./SymbolicCalculator 'express' row=? col=?" << std::endl;
+    return -1;
+  }
   str = argv[1];
-  std::string str2 = "(";
-  std::string str3 = argv[2];
-  std::string str4 = ")";
-  str = str + str2 + str3 + str4;
-//  std::cout << "X inverse: inv(X)" << std::endl;
-//  std::cout << "X transpose: trans(X)" << std::endl;
-//  std::cout << "Input expression: " << std::endl;
-//  std::getline(std::cin, str);
+  rowStr = argv[2];
+  colStr = argv[3];
+  std::string rowStrSub(rowStr.begin() + 4, rowStr.end());
+  std::string colStrSub(colStr.begin() + 4, colStr.end());
+  row = stoi(rowStrSub);
+  col = stoi(colStrSub);
+  if (row <=0 || col <=0) {
+    std::cerr << "Row and Col must be positive" << std::endl;
+    return -1;
+  }
   std::string expNoSpace = "";
   int type = 0;
   // Remove the spaces.
@@ -243,7 +276,7 @@ int main(int argc, char** argv) {
   }
   // infix to reverse polish notation
   rpn = infix2rpn(expNoSpace);
-  compDerivative(rpn, type);
+  compDerivative(rpn, type, row , col);
   return 0;
 }
 
