@@ -123,7 +123,7 @@
 %  - first a short version which is visible at the bottom of each slide;
 %  - second the full title shown on the title slide;
 \title[AMD]{
-  Automatic Matrix Differentiation \LaTeX}
+  Automatic Matrix Differentiation Library}
 
 % Optional: a subtitle to be dispalyed on the title slide
 \subtitle{IBM T.J Waston}
@@ -139,14 +139,14 @@
 %  - to start the name of the university as displayed on the top of each slide
 %    this can be adjusted such that you can also create a Dutch version
 %  - next the institute information as displayed on the title slide
-\institute[IBM]{IBM}
+\institute[IBM]{IBM T.J. Watson Research Center}
 
 % Add a date and possibly the name of the event to the slides
 %  - again first a short version to be shown at the bottom of each slide
 %  - second the full date and event name for the title slide
-\date[slides Example 2010]{
-  the 1st example presentation 2010 \\
-  7th October 2010}
+\date[August 8 2014]{
+  group meeting \\
+  3th August 2014}
 
 \begin{document}
 
@@ -160,7 +160,7 @@
   \tableofcontents
 \end{frame}
 
-\section{Introduction}
+%\section{Introduction}
 \section{Matrix Differentiation}
 
 \begin{frame}
@@ -640,16 +640,18 @@ Reverse mode differentiation
 \frametitle{Compute in program}
 Define a Scalar-Matrix function $\color{m1} trace(X * X^{-1})$
 \begin{figure}[p]
-\includegraphics[width=0.6\textwidth]{function1.png}
+\includegraphics[width=0.8\textwidth]{function1.png}
 \end{figure}
-
-The result should be:
+\onslide<2> {
+The derivative of the scalar-matrix function is:
 \begin{figure}[p]
-\includegraphics[width=0.6\textwidth]{result1.png}
+\includegraphics[width=0.8\textwidth]{result1.png}
 \end{figure}
 
 The result is in Matlab syntax thus can be used as input for Matlab directly.
+}
 \end{frame}
+
 
 \begin{frame}
 \frametitle{Compute in command line}
@@ -657,7 +659,7 @@ This is an Symbolic Matrix Differentiation Calculator which takes the expression
 input in commond line and then output the derivative. The examples are $\color{m1}trace(A\times X' \times X)$ 
 and $\color{m1}logdet(X \times X^{-1})$. 
 \begin{figure}[p]
-\includegraphics[width=1.0\textwidth]{calculator.png}
+\includegraphics[width=1.2\textwidth]{calculator.png}
 \end{figure}
 \end{frame}
 
@@ -697,7 +699,16 @@ this computes the individual terms of the Taylor expansion efficiently.
 
 \begin{frame}
 \frametitle{Example of symbolic taylor expansion} 
-...
+Here is the code to compute nth order derivative iteratively.
+\begin{figure}[p]
+\includegraphics[width=0.8\textwidth]{taylorCode.png}
+\end{figure}
+\onslide<2> {
+This figure is the output for nth order derivative.
+\begin{figure}[p]
+\includegraphics[width=1.0\textwidth]{taylorResult.png}
+\end{figure}
+}
 \end{frame}
 
 
