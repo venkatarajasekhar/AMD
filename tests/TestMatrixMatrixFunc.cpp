@@ -397,6 +397,10 @@ void testBasicSymbolicMatrixMatrixFunc() {
   ans = "(-inv(X)')";
   func = logdet(inv(transpose(fX)));
   assert(func.derivativeVal.getString()==ans);
+
+  func = func * func;
+  std::cout << func.functionVal.getString() << std::endl;
+  std::cout << func.derivativeVal.getString() << std::endl;
 }
 void testDerivativeSymbolicMatrixMatrixFunc() {
   std::string ans; /**< SymbolicMatrixMatrixFunc result. */
@@ -633,7 +637,7 @@ int main(int argc, char** argv) {
   elem::Initialize(argc, argv); 
 #endif
 //  std::cout << "Testing basic matrix-matrix functions .... ";
-//  testBasicSymbolicMatrixMatrixFunc();
+  testBasicSymbolicMatrixMatrixFunc();
 //  std::cout << "DONE" << std::endl;
 
 //  std::cout << "Testing advanced matrix-matrix functions .... ";

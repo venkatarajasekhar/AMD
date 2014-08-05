@@ -68,6 +68,84 @@ int priority(char c) {
   return 0; 
 }
 
+std::vector<std::string> stringParser(std::string& str) {
+  std::vector<std::string> result;
+  int size = str.size();
+  int i;
+  for (i = 0; i < size; i++) {
+    if (str[i] == '+') {
+      result.push_back("+");
+    } else 
+    if (str[i] == '-') {
+      result.push_back("-");
+    } else 
+    if (str[i] == '*') {
+      result.push_back("*");
+    } else 
+    if (str[i] == '(') {
+      result.push_back("(");
+    } else 
+    if (str[i] == ')') {
+      result.push_back(")");
+    } else 
+    if (str[i] == 'i') {
+      result.push_back("inv");
+      i += 2;
+    } else 
+    if (str[i] == 't' && str[i+3] == 'n') {
+      result.push_back("transpose");
+      i += 4;
+    } else 
+    if (str[i] == 't' && str[i+3] == 'c') {
+      while (str[i] != '(') {
+        i++;
+      }
+      i++; 
+      int cnt = 1;
+      std::string traceStr = "trace(";
+      while (cnt != 0) {
+        if (str[i] == '(') {
+          cnt++;
+        } 
+        if (str[i] == ')'){
+          cnt--;
+        }
+        traceStr = traceStr + str[i];
+        i++;
+      }
+      result.push_back(traceStr);
+    } else 
+    if (str[i] == 'l' && str[i+1] == 'o') {
+      while (str[i] != '(') {
+        i++;
+      }
+      i++; 
+      int cnt = 1;
+      std::string traceStr = "logdet(";
+      while (cnt != 0) {
+        if (str[i] == '(') {
+          cnt++;
+        } 
+        if (str[i] == ')'){
+          cnt--;
+        }
+        traceStr = traceStr + str[i];
+        i++;
+      }
+      result.push_back(traceStr);
+    } else {
+      std::string varStr = "";
+      while (!isOp(str[i]) && i != size) {
+        varStr = varStr + str[i];
+        i++;
+      }
+      i--;
+      result.push_back(varStr);
+    }
+  }
+  return result;
+}
+
 /* infix (input expression) to reverse polish notation. */
 std::string infix2rpn(std::string& str) {
   std::stack<char> opStack;
@@ -115,7 +193,7 @@ std::string infix2rpn(std::string& str) {
   return result;
 }
 /* Compute derivate of rpn. */
-void compDerivative(std::string str, int SMFtype, int Row, int Col) {
+SymbolicSMFunc compDerivative(std::string str, int SMFtype, int Row, int Col) {
   int i; 
   Stack<SymbolicMMFunc> MMFStack;
   int size = str.size();
@@ -218,7 +296,8 @@ void compDerivative(std::string str, int SMFtype, int Row, int Col) {
   if (SMFtype == 2) {
     func = logdet(MMFStack.top());
   } else {
-    return;
+    std::cerr << "ERROR INCORRECT INPUT" << std::endl;
+    exit;
   }
   std::cout << "Function Exp:     " << 
   func.functionVal.getString()  << std::endl;
@@ -226,6 +305,7 @@ void compDerivative(std::string str, int SMFtype, int Row, int Col) {
   std::cout << "Derivative Exp:   " <<
   func.derivativeVal.getString() << std::endl; 
   std::cout << std::endl;
+  return func;
 }
 
 
@@ -263,6 +343,10 @@ int main(int argc, char** argv) {
     if (*it != ' ') 
       expNoSpace += *it;
   }
+  std::vector<std::string> vec = stringParser(expNoSpace);
+  for (i  = 0; i < vec.size(); i++) {
+    std::cout << vec[i] << std::endl;
+  }
   if (expNoSpace[0] == 't') {
     expNoSpace = expNoSpace.substr(5, expNoSpace.size() - 5);
     type = 1;
@@ -275,8 +359,8 @@ int main(int argc, char** argv) {
     return -1;
   }
   // infix to reverse polish notation
-  rpn = infix2rpn(expNoSpace);
-  compDerivative(rpn, type, row , col);
+//  rpn = infix2rpn(expNoSpace);
+//  compDerivative(rpn, type, row , col);
   return 0;
 }
 
