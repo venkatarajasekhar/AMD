@@ -113,6 +113,7 @@ std::vector<std::string> stringParser(std::string& str) {
         traceStr = traceStr + str[i];
         i++;
       }
+      i--;
       result.push_back(traceStr);
     } else 
     if (str[i] == 'l' && str[i+1] == 'o') {
@@ -132,6 +133,7 @@ std::vector<std::string> stringParser(std::string& str) {
         traceStr = traceStr + str[i];
         i++;
       }
+      i--;
       result.push_back(traceStr);
     } else {
       std::string varStr = "";
