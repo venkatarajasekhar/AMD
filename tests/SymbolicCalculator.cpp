@@ -34,6 +34,28 @@ class Stack {
     int head;
 };
 
+template<typename T> 
+class Stack2 {
+  public:
+    Stack2() {head = 0;}
+    void push(T& element) {
+      array[head] = (element);
+      head++;
+    }
+    // return the reference;
+    T& top() {
+      return array[head-1];
+    }
+    void pop() {
+      head--;
+    }
+    int size() {
+      return head;
+    }
+  private:
+    T array[100];
+    int head;
+};
 // Typedef for SymbolicMatrixMatlab and SymbolicScalarMatlab.
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
 typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
@@ -55,6 +77,16 @@ bool isOp(char c) {
   else 
     return false;
 }
+
+bool isOpStr(std::string& str) {
+  if ( str == "+"   || str == "-"         ||
+       str == "*"   || str == "/"         ||
+       str == "inv" || str == "transpose" ||
+       str == "("   || str == ")")
+    return true;
+  else 
+    return false;  
+}
 /* return the priority of operator. */
 int priority(char c) {
   if (c == '+' || c == '-') 
@@ -68,6 +100,17 @@ int priority(char c) {
   return 0; 
 }
 
+int priorityStr(std::string& str) {
+  if (str == "+" || str == "-") 
+    return 1;
+  else if (str == "*" || str == "/") 
+    return 2;
+  else if (str == "inv" || str == "transpose") /**< i is inv. t is transpose. */
+    return 3;
+  else if (str == "(" || str == ")")
+    return 4;
+  return 0; 
+}
 std::vector<std::string> stringParser(std::string& str) {
   std::vector<std::string> result;
   int size = str.size();
@@ -149,53 +192,48 @@ std::vector<std::string> stringParser(std::string& str) {
 }
 
 /* infix (input expression) to reverse polish notation. */
-std::string infix2rpn(std::string& str) {
-  std::stack<char> opStack;
-  std::string result = "";
-  int size = str.length();
+std::vector<std::string> infix2rpn(std::vector<std::string>& inflix) {
+  std::vector<std::string> result;
+  std::stack<std::string> opStack;
+  int size = inflix.size();
   int i;
   for (i = 0; i < size; i++) {
-    if (!isOp(str[i])) {
-      result += str[i];
+    if (!isOpStr(inflix[i])) {
+      result.push_back(inflix[i]);
       continue;
     } else {
-      if (str[i] == 'i') {
-        i+=2;
-        str[i] = 'i';
-      } 
-      if (str[i] == 't') {
-        i+=4;
-        str[i] = 't';
-      }
-      if (str[i] == ')') {
-        while (!opStack.empty() && opStack.top() != '(') {
-        result += opStack.top();
+      if (inflix[i] == ")") {
+        while (!opStack.empty() && opStack.top() != "(") {
+        result.push_back(opStack.top());
         opStack.pop();
         }
         opStack.pop();
       } else
       if (opStack.empty()       || 
-          opStack.top() == '('  ||
-          priority(str[i]) > priority(opStack.top())) {
-        opStack.push(str[i]);
+          opStack.top() == "("  ||
+          priorityStr(inflix[i]) > priorityStr(opStack.top())) {
+        opStack.push(inflix[i]);
       } else {
-        while (!opStack.empty() && opStack.top() != '(' &&
-               priority(str[i]) <= priority(opStack.top())) {
-          result += opStack.top();
+        while (!opStack.empty() && opStack.top() != "(" &&
+               priorityStr(inflix[i]) <= priorityStr(opStack.top())) {
+          result.push_back(opStack.top());
           opStack.pop();
         }
-        opStack.push(str[i]);
+        opStack.push(inflix[i]);
       }
     }
   }
   while (!opStack.empty()) {
-    result += opStack.top();
+    result.push_back(opStack.top());
     opStack.pop();
   }
   return result;
 }
-/* Compute derivate of rpn. */
-SymbolicSMFunc compDerivative(std::string str, int SMFtype, int Row, int Col) {
+/* Compute SymbolicMatrixMatrix Stack. */
+SymbolicSMFunc compDerivative(std::vector<std::string> str,
+                              int SMFtype, 
+                              int Row, 
+                              int Col) {
   int i; 
   Stack<SymbolicMMFunc> MMFStack;
   int size = str.size();
@@ -214,32 +252,32 @@ SymbolicSMFunc compDerivative(std::string str, int SMFtype, int Row, int Col) {
   SymbolicMMFunc fZ(ZERO, true);
  
   for (i = 0; i < size; i++) {
-    if (str[i] == 'X' || str[i]=='x') {
+    if (str[i] == "X" || str[i]=="x") {
       SymbolicMMFunc fXX;
       fXX.deepCopy(fX);
       MMFStack.push(fXX);
     } else 
-    if (str[i] == 'A') {
+    if (str[i] == "A") {
       SymbolicMMFunc fAA;
       fAA.deepCopy(fA);
       MMFStack.push(fAA);
     } else 
-    if (str[i] == 'B') {
+    if (str[i] == "B") {
       SymbolicMMFunc fBB;
       fBB.deepCopy(fB);
       MMFStack.push(fBB);
     } else 
-    if (str[i] == 'I') { 
+    if (str[i] == "I") { 
       SymbolicMMFunc fII;
       fII.deepCopy(fI);
       MMFStack.push(fII);
     } else 
-    if (str[i] == 'Z') {
+    if (str[i] == "Z") {
       SymbolicMMFunc fZZ;
       fZZ.deepCopy(fZ);
       MMFStack.push(fZZ);  
     } else 
-    if (str[i] == '+') {
+    if (str[i] == "+") {
       SymbolicMMFunc f1;
       f1.deepCopy(MMFStack.top());
       MMFStack.pop();
@@ -250,7 +288,7 @@ SymbolicSMFunc compDerivative(std::string str, int SMFtype, int Row, int Col) {
       f3.deepCopy(f2+f1);
       MMFStack.push(f3);
     } else 
-    if (str[i] == '-') {
+    if (str[i] == "-") {
       SymbolicMMFunc f1;
       f1.deepCopy(MMFStack.top());
       MMFStack.pop();
@@ -261,7 +299,7 @@ SymbolicSMFunc compDerivative(std::string str, int SMFtype, int Row, int Col) {
       f3.deepCopy(f2-f1);
       MMFStack.push(f3);
     } else 
-    if (str[i] == '*') {
+    if (str[i] == "*") {
       SymbolicMMFunc f1;
       f1.deepCopy( MMFStack.top());
       MMFStack.pop();
@@ -272,7 +310,7 @@ SymbolicSMFunc compDerivative(std::string str, int SMFtype, int Row, int Col) {
       f3.deepCopy(f2*f1);
       MMFStack.push(f3);
     } else 
-    if (str[i] == 'i') {
+    if (str[i] == "inv") {
       SymbolicMMFunc f1;
       f1.deepCopy(MMFStack.top());
       MMFStack.pop();
@@ -280,7 +318,7 @@ SymbolicSMFunc compDerivative(std::string str, int SMFtype, int Row, int Col) {
       f2.deepCopy(inv(f1));
       MMFStack.push(f2);
     } else 
-    if (str[i] == 't') {
+    if (str[i] == "transpose") {
       SymbolicMMFunc f1;
       f1.deepCopy(MMFStack.top());
       MMFStack.pop();
@@ -301,21 +339,75 @@ SymbolicSMFunc compDerivative(std::string str, int SMFtype, int Row, int Col) {
     std::cerr << "ERROR INCORRECT INPUT" << std::endl;
     exit;
   }
-  std::cout << "Function Exp:     " << 
-  func.functionVal.getString()  << std::endl;
-
-  std::cout << "Derivative Exp:   " <<
-  func.derivativeVal.getString() << std::endl; 
-  std::cout << std::endl;
   return func;
 }
-
+/* Compute SymbolicScalarMatrix Stack. */
+SymbolicSMFunc compSMDerivative(std::vector<std::string> str, 
+                                int Row, 
+                                int Col) {
+  int i; 
+  Stack2<SymbolicSMFunc> SMFStack;
+  int size = str.size();
+  SymbolicSMFunc func;
+ 
+  for (i = 0; i < size; i++) {
+    if (str[i] == "+") {
+      SymbolicSMFunc f1;
+      f1 = SMFStack.top();
+      SMFStack.pop();
+      SymbolicSMFunc f2;
+      f2 = SMFStack.top();
+      SMFStack.pop();
+      SymbolicSMFunc f3 = f2 + f1;
+      SMFStack.push(f3);
+    } else 
+    if (str[i] == "-") {
+      SymbolicSMFunc f1;
+      f1 = (SMFStack.top());
+      SMFStack.pop();
+      SymbolicSMFunc f2;
+      f2 = (SMFStack.top());
+      SMFStack.pop();
+      SymbolicSMFunc f3 = f2 - f1;
+      SMFStack.push(f3);
+    } else 
+    if (str[i] == "*") {
+      SymbolicSMFunc f1;
+      f1 = ( SMFStack.top());
+      SMFStack.pop();
+      SymbolicSMFunc f2;
+      f2=(SMFStack.top());
+      SMFStack.pop();
+      SymbolicSMFunc f3 = f2 * f1;
+      SMFStack.push(f3);
+    } else 
+    if (str[i][0] == 't') {
+      std::string exp = str[i].substr(5, str[i].size() -5);
+      int type = 1;
+      std::vector<std::string> par = stringParser(exp);
+      std::vector<std::string> rpn = infix2rpn(par);
+      SymbolicSMFunc funcResult = (compDerivative(rpn, type, Row , Col));
+      SMFStack.push(funcResult);
+    } else
+    if (str[i][0] == 'l') {
+      std::string exp = str[i].substr(6, str[i].size() -6);
+      int type = 2;
+      std::vector<std::string> par = stringParser(exp);
+      std::vector<std::string> rpn = infix2rpn(par);
+      
+      SymbolicSMFunc funcResult = (compDerivative(rpn, type, Row , Col));
+      SMFStack.push(funcResult);
+    } 
+  }
+  func = SMFStack.top();
+  return func;
+}
 
 int main(int argc, char** argv) {
   std::string str ;
   std::string rowStr;
   std::string colStr;
-  std::string rpn;
+//  std::string rpn;
   int row;
   int col;
   int i; 
@@ -346,23 +438,10 @@ int main(int argc, char** argv) {
       expNoSpace += *it;
   }
   std::vector<std::string> vec = stringParser(expNoSpace);
-  for (i  = 0; i < vec.size(); i++) {
-    std::cout << vec[i] << std::endl;
-  }
-  if (expNoSpace[0] == 't') {
-    expNoSpace = expNoSpace.substr(5, expNoSpace.size() - 5);
-    type = 1;
-  } else 
-  if (expNoSpace[0] == 'l') {
-    expNoSpace = expNoSpace.substr(6, expNoSpace.size() - 6);
-    type = 2;
-  } else {
-    std::cout << "invalid input" << std::endl;
-    return -1;
-  }
-  // infix to reverse polish notation
-//  rpn = infix2rpn(expNoSpace);
-//  compDerivative(rpn, type, row , col);
+  std::vector<std::string> result = infix2rpn(vec);
+  SymbolicSMFunc func = compSMDerivative(result, row , col);
+  std::cout << "Function:   " << func.functionVal.getString() << std::endl;
+  std::cout << "Derivative: " << func.derivativeVal.getString() <<std::endl;
   return 0;
 }
 
