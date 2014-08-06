@@ -452,10 +452,8 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   /** Create constants A,B and C and identity functions */
   symbolic_matrix_type A("A", ROW, COL);
   symbolic_matrix_type B("B", ROW, COL);
-  symbolic_matrix_type C("C", ROW, COL);
   SymbolicMMFunc fA(A, true);
   SymbolicMMFunc fB(B, true);
-  SymbolicMMFunc fC(C, true);
 
   /** Create a scalar-matrix function placeholder */
   SymbolicSMFunc func; 
@@ -465,6 +463,9 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   std::cout << "Derivative: " << func.derivativeVal.getString() << std::endl;
  
   std::cout << std::endl;
+  symbolic_matrix_type C("C", ROW, COL);
+  SymbolicMMFunc fC(C, true);
+
   /** 1. d/dx(logdet(X))=X'^-1 */
   ans = "inv(X)'";
   func = logdet(fX);
