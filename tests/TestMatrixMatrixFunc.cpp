@@ -619,8 +619,8 @@ void testTaylorExp() {
   SymbolicSMFunc f2 = trace(fDelta * transpose(*f1.derivativeFuncVal));
   SymbolicSMFunc f3 = trace(fDelta * transpose(*f2.derivativeFuncVal));
 
-  SymbolicSMFunc func = f0 - f1 + r1*f2 - r2*f3;
-  std::cout << "logdet(X)'s Taylor expansion is: " << std::endl;
+  SymbolicSMFunc func = f0 + f1 + r1*f2 + r2*f3;
+  std::cout << "logdet(X)'s first 3 Taylor series is: " << std::endl;
   std::cout << func.functionVal.getString() << std::endl;
 /*
   std::cout << "f0 functionVal    :   ";
