@@ -122,17 +122,17 @@
 % The title of the presentation:
 %  - first a short version which is visible at the bottom of each slide;
 %  - second the full title shown on the title slide;
-\title[AMD]{
-  Automatic Matrix Differentiation Library}
+\title[An Automatic Matrix Differentiation Library]{
+  An Automatic Matrix Differentiation Library}
 
 % Optional: a subtitle to be dispalyed on the title slide
-\subtitle{IBM T.J Waston}
+%\subtitle{IBM T.J. Watson Research Center}
 
 % The author(s) of the presentation:
 %  - again first a short version to be displayed at the bottom;
 %  - next the full list of authors, which may include contact information;
-\author[Suyang, Peder and Anju]{
-  Suyang Zhu, Peder and Anju \\\medskip
+\author[Suyang Zhu, Peder Olsen and Prabhanjan Kambadur]{
+  Suyang Zhu, Peder Olsen and Prabhanjan Kambadur \\\medskip
   }
 
 % The institute:
@@ -145,8 +145,7 @@
 %  - again first a short version to be shown at the bottom of each slide
 %  - second the full date and event name for the title slide
 \date[August 8 2014]{
-  group meeting \\
-  3th August 2014}
+  August 8th, 2014}
 
 \begin{document}
 
@@ -631,14 +630,14 @@ Reverse mode differentiation
 \frametitle{Our Automatic Matrix Differentiation Library}
 \begin{itemize}
 \item Compute both Symbolic and Numerical differentiation.
-\item Support operation +, -, *, .*, transpose, inverse. 
+\item Support operation +, -, *, .*, transpose, inverse, trace and log determinant. 
 \item Two ways to compute symbolic differentiation: 
       compute in program and compute in command line.
 \end{itemize}
 \end{frame}
 \begin{frame}
 \frametitle{Compute in program}
-Define a Scalar-Matrix function $\color{m1} trace(X * X^{-1})$
+Define a Scalar-Matrix function $\color{m1} trace(A\times X \times B \times X)$
 \begin{figure}[p]
 \includegraphics[width=0.8\textwidth]{example1.png}
 \end{figure}
@@ -648,7 +647,7 @@ The derivative of the scalar-matrix function is:
 \includegraphics[width=0.8\textwidth]{result1.png}
 \end{figure}
 
-The result is in Matlab syntax thus can be used as input for Matlab directly.
+The result is in Matlab syntax. 
 }
 \end{frame}
 
@@ -656,10 +655,10 @@ The result is in Matlab syntax thus can be used as input for Matlab directly.
 \begin{frame}
 \frametitle{Compute in command line}
 This is an Symbolic Matrix Differentiation Calculator which takes the expression 
-input in commond line and then output the derivative. The examples are $\color{m1}trace(A\times X' \times X)$ 
-and $\color{m1}logdet(X \times X^{-1})$. 
+input in commond line and then output the derivative. The examples are $\color{m1}trace(A\times X) + trace(B \times X^{-1})$ 
+and $\color{m1}logdet(A\times X \times A)$. 
 \begin{figure}[p]
-\includegraphics[width=1.2\textwidth]{example2.png}
+\includegraphics[width=1.0\textwidth]{example2.png}
 \end{figure}
 \end{frame}
 
