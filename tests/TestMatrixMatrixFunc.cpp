@@ -444,7 +444,7 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   int rowTmp = ROW;
   sprintf(rowChar, "%d", rowTmp);
   std::string row = rowChar;
-
+  std::cout << std::endl;
   /** Create a variable X and an identity function */
   symbolic_matrix_type X("X", ROW, COL);
   SymbolicMMFunc fX(X, false);
@@ -459,6 +459,12 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
 
   /** Create a scalar-matrix function placeholder */
   SymbolicSMFunc func; 
+
+  func = trace(fA*fX*fB*fX);
+  std::cout << "Function:   " << func.functionVal.getString() << std::endl;
+  std::cout << "Derivative: " << func.derivativeVal.getString() << std::endl;
+ 
+  std::cout << std::endl;
   /** 1. d/dx(logdet(X))=X'^-1 */
   ans = "inv(X)'";
   func = logdet(fX);
@@ -542,9 +548,8 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   func = logdet (elementwiseProduct(fX, transpose(fX)));
   assert(func.derivativeVal.getString() == ans);
 
-  func = logdet (fA + fB*fX*fC);
-  std::cout << "+++++++++++++++++" << std::endl;
-  std::cout << func.derivativeVal.getString() << std::endl;
+//  func = logdet (fA + fB*fX*fC);
+//  std::cout << func.derivativeVal.getString() << std::endl;
   
 //  SymbolicMMFunc f4 = stack.top(); 
 //  func = trace(f3);
@@ -599,6 +604,7 @@ void testTaylorExp() {
   std::string row = rowChar;
 
   /** Create a variable X and an identity function */
+  std::string r0 = "1", r1="1/2!", r2= "1/3!";
   symbolic_matrix_type X("X", ROW, COL);
   symbolic_matrix_type X0("X0", ROW, COL);
   symbolic_matrix_type Delta("(X-X0)", ROW, COL);
@@ -612,6 +618,10 @@ void testTaylorExp() {
   SymbolicSMFunc f2 = trace(fDelta * (*f1.derivativeFuncVal));
   SymbolicSMFunc f3 = trace(fDelta * (*f2.derivativeFuncVal));
 
+  SymbolicSMFunc func = f0 - f1 + r1*f2 - r2*f3;
+  std::cout << "logdet(X)'s Taylor expansion is: " << std::endl;
+  std::cout << func.functionVal.getString() << std::endl;
+/*
   std::cout << "f0 functionVal    :   ";
   std::cout << f0.functionVal.getString() << std::endl;
   std::cout << "f0 derivativeVal  :   ";
@@ -628,7 +638,7 @@ void testTaylorExp() {
   std::cout << f3.functionVal.getString() << std::endl;
   std::cout << "f3 derivativeVal  :";
   std::cout << f3.derivativeVal.getString() << std::endl;
-
+*/
 }
 
 int main(int argc, char** argv) {
@@ -637,7 +647,7 @@ int main(int argc, char** argv) {
   elem::Initialize(argc, argv); 
 #endif
 //  std::cout << "Testing basic matrix-matrix functions .... ";
-  testBasicSymbolicMatrixMatrixFunc();
+//  testBasicSymbolicMatrixMatrixFunc();
 //  std::cout << "DONE" << std::endl;
 
 //  std::cout << "Testing advanced matrix-matrix functions .... ";
@@ -651,10 +661,10 @@ int main(int argc, char** argv) {
 #endif
 //  testFXgX() ;
 
-  std::cout << "Test Taylor Expansion ...." << std::endl;
+//  std::cout << "Test Taylor Expansion ...." << std::endl;
   testTaylorExp();
-  std::cout << "DONE" << std::endl;
-  std::cout << "All tests passed." << std::endl;
+//  std::cout << "DONE" << std::endl;
+//  std::cout << "All tests passed." << std::endl;
 //  testDerivativeSymbolicMatrixMatrixFunc();
 #if AMD_HAVE_ELEMENTAL
   elem::Finalize();
