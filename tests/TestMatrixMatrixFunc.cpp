@@ -615,9 +615,9 @@ void testTaylorExp() {
   
   /* Compute n-order differentiation iteratively. */
   SymbolicSMFunc f0 =  logdet(fX0);
-  SymbolicSMFunc f1 = trace(fDelta * (*f0.derivativeFuncVal));
-  SymbolicSMFunc f2 = trace(fDelta * (*f1.derivativeFuncVal));
-  SymbolicSMFunc f3 = trace(fDelta * (*f2.derivativeFuncVal));
+  SymbolicSMFunc f1 = trace(fDelta * transpose(*f0.derivativeFuncVal));
+  SymbolicSMFunc f2 = trace(fDelta * transpose(*f1.derivativeFuncVal));
+  SymbolicSMFunc f3 = trace(fDelta * transpose(*f2.derivativeFuncVal));
 
   SymbolicSMFunc func = f0 - f1 + r1*f2 - r2*f3;
   std::cout << "logdet(X)'s Taylor expansion is: " << std::endl;
