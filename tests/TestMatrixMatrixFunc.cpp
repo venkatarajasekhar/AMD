@@ -610,10 +610,10 @@ void testTaylorExp() {
   symbolic_matrix_type X0("X0", ROW, COL);
   symbolic_matrix_type Delta("(X-X0)", ROW, COL);
   
-  SymbolicScalarMatlab a1;
-  SymbolicScalarMatlab a2;
-  SymbolicSMFunc r1(a1);
-  SymbolicSMFunc r2(a2);
+  AMD::SymbolicScalarMatlab a1("1/2!");
+  AMD::SymbolicScalarMatlab a2("1/3!"); 
+  SymbolicSMFunc r1(a1,ROW,COL);
+  SymbolicSMFunc r2(a2,ROW, COL);
   SymbolicMMFunc fX(X, false);
   SymbolicMMFunc fX0(X0, false);
   SymbolicMMFunc fDelta(Delta, true);
