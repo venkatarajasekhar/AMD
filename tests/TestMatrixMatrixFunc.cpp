@@ -605,10 +605,15 @@ void testTaylorExp() {
   std::string row = rowChar;
 
   /** Create a variable X and an identity function */
-  std::string r0 = "1", r1="1/2!", r2= "1/3!";
+//  std::string r0 = "1", r1="1/2!", r2= "1/3!";
   symbolic_matrix_type X("X", ROW, COL);
   symbolic_matrix_type X0("X0", ROW, COL);
   symbolic_matrix_type Delta("(X-X0)", ROW, COL);
+  
+  SymbolicScalarMatlab a1;
+  SymbolicScalarMatlab a2;
+  SymbolicSMFunc r1(a1);
+  SymbolicSMFunc r2(a2);
   SymbolicMMFunc fX(X, false);
   SymbolicMMFunc fX0(X0, false);
   SymbolicMMFunc fDelta(Delta, true);
