@@ -605,15 +605,15 @@ void testTaylorExp() {
   std::string row = rowChar;
 
   /** Create a variable X and an identity function */
-//  std::string r0 = "1", r1="1/2!", r2= "1/3!";
+  std::string r0 = "1", r1="1/2!", r2= "1/3!";
   symbolic_matrix_type X("X", ROW, COL);
   symbolic_matrix_type X0("X0", ROW, COL);
   symbolic_matrix_type Delta("(X-X0)", ROW, COL);
   
-  AMD::SymbolicScalarMatlab a1("1/2!");
-  AMD::SymbolicScalarMatlab a2("1/3!"); 
-  SymbolicSMFunc r1(a1,ROW,COL);
-  SymbolicSMFunc r2(a2,ROW, COL);
+//  AMD::SymbolicScalarMatlab a1("1/2!");
+//  AMD::SymbolicScalarMatlab a2("1/3!"); 
+//  SymbolicSMFunc r1(a1,ROW,COL);
+//  SymbolicSMFunc r2(a2,ROW, COL);
   SymbolicMMFunc fX(X, false);
   SymbolicMMFunc fX0(X0, false);
   SymbolicMMFunc fDelta(Delta, true);
@@ -646,6 +646,35 @@ void testTaylorExp() {
   std::cout << "f3 derivativeVal  :";
   std::cout << f3.derivativeVal.getString() << std::endl;
 */
+}
+
+
+void testBugs() {
+
+  std::string ans;
+//  std::string row = std::to_string(ROW);
+  char rowChar[5];
+  int rowTmp = ROW;
+  sprintf(rowChar, "%d", rowTmp);
+  std::string row = rowChar;
+
+  /** Create a variable X and an identity function */
+  std::string r0 = "1", r1="1/2!", r2= "1/3!";
+  symbolic_matrix_type X("X", ROW, COL);
+  symbolic_matrix_type X0("X0", ROW, COL);
+  symbolic_matrix_type A("A", ROW, COL);
+  
+//  AMD::SymbolicScalarMatlab a1("1/2!");
+//  AMD::SymbolicScalarMatlab a2("1/3!"); 
+//  SymbolicSMFunc r1(a1,ROW,COL);
+//  SymbolicSMFunc r2(a2,ROW, COL);
+  SymbolicMMFunc fX(X, false);
+  SymbolicMMFunc fX0(X0, false);
+  SymbolicMMFunc fA(A, true);
+  
+  /* Compute n-order differentiation iteratively. */
+  SymbolicSMFunc f1 = trace(fX * trace(fX));
+
 }
 
 int main(int argc, char** argv) {
