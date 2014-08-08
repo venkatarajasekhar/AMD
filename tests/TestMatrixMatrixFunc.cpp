@@ -557,43 +557,35 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
 //  std::cout << func.derivativeVal.getString() << std::endl;
   
   /** 17. d/dx(trace(X * trace(X) + X)) = 2trace(X).*I + I. */
-  /*
   ans = "(((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')+eye(128))";
   func = trace(fX * trace(fX) + fX);
   assert(func.derivativeVal.getString() == ans);
-  */
   /** 18. d/dx(trace(X * trace(X))) = 2trace(X).*I. */
-  /*
   ans = "((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')";
   func = trace(fX * trace(fX));
+  std::cout << "------------------------------------" << std::endl;
+  std::cout << func.derivativeVal.getString() << std::endl;
+  SymbolicSMFunc func2 = trace(*func.derivativeFuncVal);
+  std::cout << func2.derivativeVal.getString() << std::endl;
+  std::cout << "+++++++++++++++++++++++++++++++++++++" << std::endl; 
   assert(func.derivativeVal.getString() == ans);
-  */
   /** 19. d/dx(trace(trace(X) * X)) = 2trace(X).*I. */
-  /*
   ans = "((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')";
   func = trace(trace(fX) * fX);
   assert(func.derivativeVal.getString() == ans);
-  */
   /** 20. d/dx(trace(trace(X) * X * X)) = trace(X*X).*I + 2trace(X).*X'. */
-  /*
   ans = "(((trace(X*X).*eye(128)')'+(trace(X).*X)')+(trace(X).*X)')";
   func = trace(trace(fX) * fX * fX);
   assert(func.derivativeVal.getString() == ans);
-  */
   /** 21. d/dx(trace(X * trace(X) * X)) = trace(X*X).*I + 2trace(X).*X'. */
-  /*
   ans = "(((trace(X*X).*eye(128)')'+(trace(X).*X)')+(trace(X).*X)')";
   func = trace( fX * trace(fX) * fX);
   assert(func.derivativeVal.getString() == ans);
-  */
   /** 22. d/dx(trace(X * X * trace(X))) = trace(X*X).*I + 2trace(X).*X'. */
-  /*
   ans = "(((trace((X*X)*eye(128)).*eye(128))+(X*(trace(X).*eye(128)))')+((trace(X).*eye(128))*X)')";
   func = trace( fX * fX * trace(fX));
   assert(func.derivativeVal.getString() == ans); 
-  */
 }
-
 
 void testTaylorExp() {
 
@@ -604,8 +596,7 @@ void testTaylorExp() {
   sprintf(rowChar, "%d", rowTmp);
   std::string row = rowChar;
 
-  /** Create a variable X and an identity function */
-  std::string r0 = "1", r1="1/2!", r2= "1/3!";
+//  std::string r0 = "1", r1="1/2!", r2= "1/3!";
   symbolic_matrix_type X("X", ROW, COL);
   symbolic_matrix_type X0("X0", ROW, COL);
   symbolic_matrix_type Delta("(X-X0)", ROW, COL);
@@ -618,16 +609,13 @@ void testTaylorExp() {
   SymbolicMMFunc fX0(X0, false);
   SymbolicMMFunc fDelta(Delta, true);
   
-  /* Compute n-order differentiation iteratively. */
   SymbolicSMFunc f0 =  logdet(fX0);
   SymbolicSMFunc f1 = trace(fDelta * transpose(*f0.derivativeFuncVal));
   SymbolicSMFunc f2 = trace(fDelta * transpose(*f1.derivativeFuncVal));
   SymbolicSMFunc f3 = trace(fDelta * transpose(*f2.derivativeFuncVal));
 
 //  SymbolicSMFunc func = f0 + f1 + r1*f2 + r2*f3;
-  SymbolicSMFunc func = f0*f1;
-  std::cout << "logdet(X)'s first 3 Taylor series is: " << std::endl;
-  std::cout << func.functionVal.getString() << std::endl;
+ // SymbolicSMFunc func = f0*f1;
 /*
   std::cout << "f0 functionVal    :   ";
   std::cout << f0.functionVal.getString() << std::endl;
@@ -682,24 +670,24 @@ int main(int argc, char** argv) {
 #if AMD_HAVE_ELEMENTAL
   elem::Initialize(argc, argv); 
 #endif
-//  std::cout << "Testing basic matrix-matrix functions .... ";
-//  testBasicSymbolicMatrixMatrixFunc();
-//  std::cout << "DONE" << std::endl;
+  std::cout << "Testing basic matrix-matrix functions .... ";
+  testBasicSymbolicMatrixMatrixFunc();
+  std::cout << "DONE" << std::endl;
 
-//  std::cout << "Testing advanced matrix-matrix functions .... ";
-//  testAdvancedSymbolicMatrixMatrixFunc();
-//  std::cout << "DONE" << std::endl;
+  std::cout << "Testing advanced matrix-matrix functions .... ";
+  testAdvancedSymbolicMatrixMatrixFunc();
+  std::cout << "DONE" << std::endl;
 
 #if AMD_HAVE_ELEMENTAL
-//  std::cout << "Testing elemetal matrix-matrix functions .... ";
-//  testElementalMatrixMatrixFunc();
-//  std::cout << "DONE" << std::endl;
+  std::cout << "Testing elemetal matrix-matrix functions .... ";
+  testElementalMatrixMatrixFunc();
+  std::cout << "DONE" << std::endl;
 #endif
 //  testFXgX() ;
 
-//  std::cout << "Test Taylor Expansion ...." << std::endl;
-  testTaylorExp();
-//  std::cout << "DONE" << std::endl;
+  std::cout << "Test Bugs" << std::endl;
+  testBugs();
+  std::cout << "DONE" << std::endl;
 //  std::cout << "All tests passed." << std::endl;
 //  testDerivativeSymbolicMatrixMatrixFunc();
 #if AMD_HAVE_ELEMENTAL
