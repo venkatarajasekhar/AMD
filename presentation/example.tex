@@ -257,7 +257,7 @@ $$
 \end{frame}
 \begin{frame}
 \frametitle{The Matrix-Matrix Derivative}
-For $\color{m1}f:\R^{m\times n}\rightarrow\R^{k\times l}$ the matrix--matrix derivative is defined
+For $\color{m1}F:\R^{m\times n}\rightarrow\R^{k\times l}$ the matrix--matrix derivative is defined
 to be: 
 $$\color{m1}
 \frac{\partial \mF}{\partial \mX} \stackrel{\mathrm{def}}{=} 
@@ -327,7 +327,8 @@ Then the chain rule for more general expressions:
 \left(\frac{\partial\mG}{\partial\mX}\right)^\top\myvec(\mI)
 \end{eqnarray*}}
 
-$\color{m1} \frac{\partial \mG}{\partial \mX}$ can be written as $\color{m1}\sum_{i} \mA_{i} \otimes \mB_{i}$. Thus $\color{m1} \frac{\partial \mG}{\partial \mX}vec(\mY)$ can be compute efficiently.
+ $\color{m1} \frac{\partial \mG}{\partial \mX}vec(\mY)$ can always be compute 
+ efficiently because this large matrix has a lot of structure.
 \end{frame}
 
 
@@ -470,6 +471,20 @@ edge [arrow] (t1);
 \end{center}
 \end{frame}
 
+\begin{frame}
+\frametitle{Forward Mode Differentiation vs Reverse Mode Differentiation} 
+Forward mode differentiation
+\begin{itemize}
+\item Requires large intermediate matrices.
+\item Only the last step reduces the size.
+\end{itemize}
+
+Reverse mode differentiation
+\begin{itemize}
+\item Evaluate the derivative from top to bottom.
+\item Small scalar-matrix derivatives are propagated down the tree.
+\end{itemize}
+\end{frame}
 
 \begin{frame}
 \frametitle{Reverse Mode Differentiation}
@@ -602,20 +617,6 @@ edge [arrow] (t1);
 \end{center}
 \end{frame}
 
-\begin{frame}
-\frametitle{Forward Mode Differentiation vs Reverse Mode Differentiation} 
-Forward mode differentiation
-\begin{itemize}
-\item Requires large intermediate matrices.
-\item Only the last step reduces the size.
-\end{itemize}
-
-Reverse mode differentiation
-\begin{itemize}
-\item Evaluate the derivative from top to bottom.
-\item Small scalar-matrix derivatives are propagated down the tree.
-\end{itemize}
-\end{frame}
 % Section titles are shown in at the top of the slides with the current section 
 % highlighted. Note that the number of sections determines the size of the top 
 % bar, and hence the university name and logo. If you do not add any sections 
@@ -650,10 +651,10 @@ The result is in Matlab syntax.
 \begin{frame}
 \frametitle{Compute in command line}
 This is an Symbolic Matrix Differentiation Calculator which takes the expression 
-input in commond line and then output the derivative. The examples are $\color{m1}trace(AX) + trace(BX^{-1})$
+input in command line and then output the derivative. The examples are $\color{m1}trace(AX) + trace(BX^{-1})$
 and $\color{m1}logdet(AXBX)$. 
 \begin{figure}[p]
-\includegraphics[width=1.0\textwidth]{example2.png}
+\includegraphics[width=1.1\textwidth]{example2.png}
 \end{figure}
 \end{frame}
 
@@ -677,23 +678,27 @@ scalar-matrix functions it's even messier.
 
 \begin{frame}
 \frametitle{Taylor expansion for scalar-matrix functions}
-For a matrix-matrix function like $\color{m1} F(\mX)=(\mX+\mI)^{-1}$ with $\mX_0=0$
+For a matrix-matrix function like $\color{m1} F(\mX)=(\mI-\mX)^{-1}$ around $\mX_0=0$
 we can pretend $\color{m1}\mX$ is a scalar and get
 $$\color{m1}
-(\mX+\mI)^{-1}= \mI+\mX-\mX^2+\mX^3+\cdot
+(\mI-\mX)^{-1}= \mI+\mX+\mX^2+\mX^3+\cdot
 $$
-Thus for a scalar-matrix function like $\color{m1}f(\mX)=\trace((\mX+\mI)^{-1})$ we can
+Thus for a scalar-matrix function like $\color{m1}f(\mX)=\trace((\mI-\mX)^{-1})$ we can
 write the Taylor expansion as
 $$\color{m1}
-\trace((\mX+\mI)^{-1})= \trace(\mI)+\trace(\mX)-\trace(\mX^2)+\trace(\mX^3)+\cdot,
+\trace((\mI-\mX)^{-1})= \trace(\mI)+\trace(\mX)+\trace(\mX^2)+\trace(\mX^3)+\cdot,
 $$
 although we do not explicitly compute $\color{m1}f'(\mX), f''(\mX), f'''(\mX),\ldots$
 we compute individual terms of the Taylor expansion efficiently.
+
+But we can compute $\color{m1}f''(\mX)vec(\mX)$ efficiently using our code.  This allows 
+us to automate the entire process of building the Taylor expansion.
 \end{frame}
 
 \begin{frame}
 \frametitle{Taylor expansion for logdet(X)}
-We use these matrix differentition rules to compute the Taylor expansion around the point $\color{m1}\mX_0$
+We use these matrix differentiation rules to compute the Taylor expansion around the point $\color{m1}\mX_0$.  
+Our code gives the following Taylor expansion for $\color{m1}\logdet(\mX)$ as seen in the code on the next two slides.
 \begin{equation}
 \begin{split}
 \color{m1} \logdet(\mX) &= \color{m1}\logdet(\mX_0) + \trace((\mX-\mX_0)\mX_0^{-1}) \\
@@ -705,28 +710,29 @@ We use these matrix differentition rules to compute the Taylor expansion around 
 
 \begin{frame}
 \frametitle{Taylor expansion for logdet(X) continue}
-We notice that we can compute each part of the Taylor series iteratively:
+If we define $\mDelta=(\mX-\mX_0)$ to be a constant function (with respect to $\mX_0$)
+we can compute the Taylor series iteratively as follows:
 \begin{equation}
-\color{m1}f_0(\vx) = \logdet(\mX_0) 
+\color{m1}f_0(\mX_0) = \logdet(\mX_0) 
 \end{equation}
 \begin{equation}
-\color{m1}f_1(\vx) = \trace((\mX-\mX_0)(f_0'(\vx))^{T})
+\color{m1}f_1(\mX_0) = \trace(\mDelta(f_0'(\mX_0))^{T})
 \end{equation}
 \begin{equation}
-\color{m1}f_2(\vx) = \trace((\mX-\mX_0)(f_1'(\vx))^{T})
+\color{m1}f_2(\mX_0) = \trace(\mDelta(f_1'(\mX_0))^{T})
 \end{equation}
 \begin{equation}
-\color{m1}f_3(\vx) = \trace((\mX-\mX_0)(f_2'(\vx))^{T})
+\color{m1}f_3(\mX_0) = \trace(\mDelta(f_2'(\mX_0))^{T})
 \end{equation}
 The previous equation $\color{m1}(1)$ can be computed as:
 $$
-\color{m1} \logdet(\mX) = f_0(\vx) + f_1(\vx) + \frac{1}{2!}f_2(\vx) + \frac{1}{3!}f_3(\vx) \cdots
+\color{m1} \logdet(\mX) = f_0(\mX_0) + f_1(\mX_0) + \frac{1}{2!}f_2(\mX_0) + \frac{1}{3!}f_3(\mX_0) \cdots
 $$
 \end{frame}
 
 \begin{frame}
 \frametitle{Taylor expansion for logdet(X) continue} 
-Here is the code to compute nth order derivative iteratively.
+Here is the code to compute the Taylor expansion iteratively.
 \begin{figure}[p]
 \includegraphics[width=0.8\textwidth]{taylorCode.png}
 \end{figure}
@@ -766,6 +772,7 @@ This figure is the output for nth order derivative.
 \item If you are interested in collaborating:
 
   \begin{itemize}
+  \item Suyang --- suyangzhu@gmail.com
   \item Peder --- pederao@gmail.com
   \item Anju  --- prabhanjankambadur@gmail.com
   \end{itemize}
