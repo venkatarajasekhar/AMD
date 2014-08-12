@@ -455,7 +455,6 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   SymbolicSMFunc func; 
 
   symbolic_matrix_type C("C", ROW, COL);
-  SymbolicMMFunc fC(C, true);
 
   /** 1. d/dx(logdet(X))=X'^-1 */
   ans = "inv(X)'";

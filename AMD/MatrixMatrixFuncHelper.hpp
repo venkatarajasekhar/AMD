@@ -12,7 +12,7 @@
 
 #include <string>
 #include <cstdio>
-#include <assert.h>
+#include <cassert>
 #include "boost/shared_ptr.hpp"
 #include "utility.hpp"
 #include "ScalarMatrixFunc.hpp"
