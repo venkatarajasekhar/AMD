@@ -1,0 +1,8 @@
+Taylor_Expansion branch:
+- Add a MatrixMatrixFunc type of derivative for elementwise product.
+- FIXME: even though the row and colume number do not meet the 
+  the requirement, e.g trace(mat(3*4)) the symbolic calculator also 
+  has an output.
+- Exception handlings.(violation of linear algebra rules. Invalid input etc).
+- Operator * for ScalarMatrixFunc class. 
+  e.g. (f*g' + f'g) SalarMatrixFunc * MatrixMatrixFun.
