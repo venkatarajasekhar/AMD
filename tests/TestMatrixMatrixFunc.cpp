@@ -645,8 +645,8 @@ int main(int argc, char** argv) {
 #endif
 //  testFXgX() ;
 
-  std::cout << "Test Bugs" << std::endl;
-  testBugs();
+//  std::cout << "Test Bugs" << std::endl;
+//  testBugs();
   std::cout << "DONE" << std::endl;
   std::cout << "All tests passed." << std::endl;
 //  testDerivativeSymbolicMatrixMatrixFunc();
