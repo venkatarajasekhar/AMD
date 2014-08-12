@@ -398,9 +398,6 @@ void testBasicSymbolicMatrixMatrixFunc() {
   func = logdet(inv(transpose(fX)));
   assert(func.derivativeVal.getString()==ans);
 
-  func = func * func;
-  std::cout << func.functionVal.getString() << std::endl;
-  std::cout << func.derivativeVal.getString() << std::endl;
 }
 void testDerivativeSymbolicMatrixMatrixFunc() {
   std::string ans; /**< SymbolicMatrixMatrixFunc result. */
@@ -444,7 +441,6 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   int rowTmp = ROW;
   sprintf(rowChar, "%d", rowTmp);
   std::string row = rowChar;
-  std::cout << std::endl;
   /** Create a variable X and an identity function */
   symbolic_matrix_type X("X", ROW, COL);
   SymbolicMMFunc fX(X, false);
@@ -458,11 +454,6 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   /** Create a scalar-matrix function placeholder */
   SymbolicSMFunc func; 
 
-  func = trace(fA*fX*fB*fX);
-  std::cout << "Function:   " << func.functionVal.getString() << std::endl;
-  std::cout << "Derivative: " << func.derivativeVal.getString() << std::endl;
- 
-  std::cout << std::endl;
   symbolic_matrix_type C("C", ROW, COL);
   SymbolicMMFunc fC(C, true);
 
@@ -549,12 +540,6 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   func = logdet (elementwiseProduct(fX, transpose(fX)));
   assert(func.derivativeVal.getString() == ans);
 
-//  func = logdet (fA + fB*fX*fC);
-//  std::cout << func.derivativeVal.getString() << std::endl;
-  
-//  SymbolicMMFunc f4 = stack.top(); 
-//  func = trace(f3);
-//  std::cout << func.derivativeVal.getString() << std::endl;
   
   /** 17. d/dx(trace(X * trace(X) + X)) = 2trace(X).*I + I. */
   ans = "(((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')+eye(128))";
@@ -563,11 +548,6 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   /** 18. d/dx(trace(X * trace(X))) = 2trace(X).*I. */
   ans = "((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')";
   func = trace(fX * trace(fX));
-  std::cout << "------------------------------------" << std::endl;
-  std::cout << func.derivativeVal.getString() << std::endl;
-  SymbolicSMFunc func2 = trace(*func.derivativeFuncVal);
-  std::cout << func2.derivativeVal.getString() << std::endl;
-  std::cout << "+++++++++++++++++++++++++++++++++++++" << std::endl; 
   assert(func.derivativeVal.getString() == ans);
   /** 19. d/dx(trace(trace(X) * X)) = 2trace(X).*I. */
   ans = "((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')";
@@ -614,26 +594,6 @@ void testTaylorExp() {
   SymbolicSMFunc f2 = trace(fDelta * transpose(*f1.derivativeFuncVal));
   SymbolicSMFunc f3 = trace(fDelta * transpose(*f2.derivativeFuncVal));
 
-//  SymbolicSMFunc func = f0 + f1 + r1*f2 + r2*f3;
- // SymbolicSMFunc func = f0*f1;
-/*
-  std::cout << "f0 functionVal    :   ";
-  std::cout << f0.functionVal.getString() << std::endl;
-  std::cout << "f0 derivativeVal  :   ";
-  std::cout << f0.derivativeVal.getString() << std::endl;
-  std::cout << "f1 functionVal    :";
-  std::cout << f1.functionVal.getString() << std::endl;
-  std::cout << "f1 derivativeVal  :";
-  std::cout << f1.derivativeVal.getString() << std::endl;
-  std::cout << "f2 functionVal    :";
-  std::cout << f2.functionVal.getString() << std::endl;
-  std::cout << "f2 derivativeVal  :";
-  std::cout << f2.derivativeVal.getString() << std::endl;
-  std::cout << "f3 functionVal    :";
-  std::cout << f3.functionVal.getString() << std::endl;
-  std::cout << "f3 derivativeVal  :";
-  std::cout << f3.derivativeVal.getString() << std::endl;
-*/
 }
 
 
@@ -688,7 +648,7 @@ int main(int argc, char** argv) {
   std::cout << "Test Bugs" << std::endl;
   testBugs();
   std::cout << "DONE" << std::endl;
-//  std::cout << "All tests passed." << std::endl;
+  std::cout << "All tests passed." << std::endl;
 //  testDerivativeSymbolicMatrixMatrixFunc();
 #if AMD_HAVE_ELEMENTAL
   elem::Finalize();
