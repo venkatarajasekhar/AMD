@@ -498,7 +498,6 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
   result.binOpSet(timesPtr, TIMES, timesOp<MT,ST>, lhs, rhs);
   return(result);
 }
-//////////////////////////////////////////////////////////////////////
 /**
  * @brief Functions to deal with opNum==MTIMESS 
  * MatrixMatrixFunc - ScalarMatrixFunc product.
@@ -553,12 +552,13 @@ void mtimessOp( boost::shared_ptr<MT> result,
       MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal,
       lhsTimesRhs2);
       MatrixAdaptorType::transpose(lhsTimesRhs2, *result);
-      resultMMFT->deepCopy(transpose(transpose(*node->scalarChild->derivativeFuncVal) * scalarFunc));
+      resultMMFT->deepCopy          \
+      (transpose(transpose(*node->scalarChild->derivativeFuncVal)*scalarFunc));
     } else {
       MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal,
       scalarFunc.functionVal, lhsTimesRhs2);
       (*result) = (lhsTimesRhs2);
-      resultMMFT->deepCopy((*node->scalarChild->derivativeFuncVal) * scalarFunc);
+      resultMMFT->deepCopy((*node->scalarChild->derivativeFuncVal)*scalarFunc);
     }
   } else { 
     if (transposeFlag) {
@@ -567,21 +567,18 @@ void mtimessOp( boost::shared_ptr<MT> result,
       lhsTimesRhs2);
       MatrixAdaptorType::add(*result, lhsTimesRhs2, *result);
       resultMMFT->deepCopy((*resultMMFT) + 
-                           transpose(*node->scalarChild->derivativeFuncVal) * scalarFunc);
+                  transpose(*node->scalarChild->derivativeFuncVal)*scalarFunc);
 
     } else {
       MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal, 
       scalarFunc.functionVal ,lhsTimesRhs2);
       MatrixAdaptorType::add (*result, lhsTimesRhs2, *result);
       resultMMFT->deepCopy((*resultMMFT) +
-                           (*node->scalarChild->derivativeFuncVal) * scalarFunc);
+                  (*node->scalarChild->derivativeFuncVal)*scalarFunc);
     }
   }
   
 
-  // g(X) * Y
-//  MatrixAdaptorType::multiply (*current, node->scalarChild->functionVal, *left);
- // TODO: add scalar * matrix to  matrix adaptor;
  
  if (transpose) {
    MatrixAdaptorType::multiply(*current, node->scalarChild->functionVal, 
@@ -634,9 +631,6 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
   }
   return(result);
 }
-//////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////
 /**
  * @brief Functions to deal with opNum==STIMESM
  * MatrixMatrixFunc - ScalarMatrixFunc product.
@@ -690,12 +684,13 @@ void stimesmOp( boost::shared_ptr<MT> result,
       MatrixAdaptorType::multiply ( rcTrans, scalarFunc.functionVal,
       lhsTimesRhs2);
       MatrixAdaptorType::transpose(lhsTimesRhs2, *result);
-      resultMMFT->deepCopy(transpose(transpose(*node->scalarChild->derivativeFuncVal) * scalarFunc));
+      resultMMFT->deepCopy
+      (transpose(transpose(*node->scalarChild->derivativeFuncVal)*scalarFunc));
     } else {
       MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal,
       scalarFunc.functionVal, lhsTimesRhs2);
       (*result) = (lhsTimesRhs2);
-      resultMMFT->deepCopy((*node->scalarChild->derivativeFuncVal) * scalarFunc);
+      resultMMFT->deepCopy((*node->scalarChild->derivativeFuncVal)*scalarFunc);
     }
   } else { 
 
@@ -705,21 +700,16 @@ void stimesmOp( boost::shared_ptr<MT> result,
       lhsTimesRhs2);
       MatrixAdaptorType::add(*result, lhsTimesRhs2, *result);
       resultMMFT->deepCopy((*resultMMFT) + 
-                           transpose(*node->scalarChild->derivativeFuncVal) * scalarFunc);
+                  transpose(*node->scalarChild->derivativeFuncVal)*scalarFunc);
 
     } else {
       MatrixAdaptorType::multiply ( node->scalarChild->derivativeVal, 
       scalarFunc.functionVal ,lhsTimesRhs2);
       MatrixAdaptorType::add (*result, lhsTimesRhs2, *result);
       resultMMFT->deepCopy((*resultMMFT) +
-                           (*node->scalarChild->derivativeFuncVal) * scalarFunc);
+                  (*node->scalarChild->derivativeFuncVal)*scalarFunc);
     }
   }
-  
-
-  // g(X) * Y
-//  MatrixAdaptorType::multiply (*current, node->scalarChild->functionVal, *left);
- // TODO: add scalar * matrix to  matrix adaptor;
  
  if (transpose) {
    MatrixAdaptorType::multiply(*current, node->scalarChild->functionVal, 
@@ -772,11 +762,11 @@ MatrixMatrixFunc<MT,ST> operator* (const ScalarMatrixFunc<MT,ST> &lhs,
   }
   return(result);
 }
-//////////////////////////////////////////////////////////////////////////////
 
 // Functions to deal with opNum = ELEWISE
 // Callback function for differentiation involving elementwise product
 // The elementwiseOp deal with transpose in a opposite way of timesOp.
+// TODO add resultMMFT to elementwiseOp
 template<class MT, class ST> 
 void elementwiseOp ( boost::shared_ptr<MT>   result,
                      boost::shared_ptr<MT>   current,
@@ -1132,26 +1122,14 @@ ScalarMatrixFunc<MT,ST> trace(const MatrixMatrixFunc<MT,ST> &lhs) {
   
   bool zeroFlag = true;
 
-  // TODO any need to deal with gradientVec? Not at this moment
   // Trigger gradientVec to calculate the derivative along the computational
   // tree reversely.
-  // TODO dummy ptr here. replace with MatrixMatrixFunc<MT, ST> (I);
   lhs.gradientVec(initPtr, resPtr,initMMFT,resultMMFT, false, true, zeroFlag);
   if (zeroFlag) {
-    /*
-    ScalarMatrixFunc<MT, ST> result( 
-              MatrixAdaptorType::trace(*lhs.matrixPtr),
-              lhs.varNumRows,
-              lhs.varNumCols);
-    */
     result.initWithConst(MatrixAdaptorType::trace(*lhs.matrixPtr), 
                          lhs.varNumCols, lhs.varNumCols);
     return(result);
   } else {
-    /*
-    ScalarMatrixFunc<MT, ST> result(MatrixAdaptorType::trace(*lhs.matrixPtr), 
-                                    *resPtr);		
-    */
     result.initWithVariable(MatrixAdaptorType::trace(*lhs.matrixPtr), *resPtr);
     return(result);
   }
@@ -1205,19 +1183,10 @@ ScalarMatrixFunc<MT,ST> logdet(const MatrixMatrixFunc<MT,ST> &lhs) {
   lhs.gradientVec(initPtr, resPtr, initMMFT, resultMMFT, 
                   transposeFlag, false, zeroFlag);
   if (zeroFlag) { 
-    /*
-    return ScalarMatrixFunc<MT,ST> (MatrixAdaptorType::logdet(*lhs.matrixPtr),
-                                    lhs.varNumRows, 
-                                    lhs.varNumCols);
-    */
     result.initWithConst(MatrixAdaptorType::logdet(*lhs.matrixPtr),
                          lhs.varNumCols, lhs.varNumCols);
     return(result);
   } else {
-    /*
-    return ScalarMatrixFunc<MT,ST> (MatrixAdaptorType::logdet(*lhs.matrixPtr), 
-				                           *resPtr);
-    */
     result.initWithVariable(MatrixAdaptorType::logdet(*lhs.matrixPtr), *resPtr);
     return(result);
   }
