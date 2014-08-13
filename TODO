@@ -4,6 +4,7 @@ Taylor_Expansion branch:
   the requirement, e.g trace(mat(3*4)) the symbolic calculator also 
   has an output. ( -DCMAKE_BUILD_TYPE=Debug )
 - Exception handlings.(violation of linear algebra rules. Invalid input etc).
-- Operator * for ScalarMatrixFunc class. 
+- (DONE)Operator * for ScalarMatrixFunc class. 
   e.g. (f*g' + f'g) SalarMatrixFunc * MatrixMatrixFunc.
+- Operator / for ScalarMatrixFunc class? There is no "/" between SMF and MMF. 
 - Add samples showing how to use the program.
