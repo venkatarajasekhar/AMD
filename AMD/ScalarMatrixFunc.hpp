@@ -16,7 +16,7 @@
 #include <cstdio>
 #include "MatrixAdaptor.hpp"
 #include <assert.h>
-
+#include "MatrixMatrixFunc.hpp"
 namespace AMD {
 /**
  * @brief A Scalar-Matrix Function class. This class is a mapping 
@@ -32,15 +32,19 @@ public:
   typedef MT MatrixType;
   typedef ST ScalarType;
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+  typedef MatrixMatrixFunc<MT, ST> MatrixMatrixFuncType;
+  typedef MatrixMatrixFuncType MMF;
 
   ST functionVal;
   MT derivativeVal;
+  boost::shared_ptr<MatrixMatrixFunc<MT, ST> > derivativeFuncVal;
   bool isConst;
 /**
  * @brief Constructor for a ScalarMatrixFunc object. The default 
  * setting is a variable.
  */ 
-  ScalarMatrixFunc() : functionVal(), derivativeVal(), isConst(false) { }
+  ScalarMatrixFunc() : functionVal(), derivativeVal(), isConst(false),
+                       derivativeFuncVal() { }
 
   ~ScalarMatrixFunc() { }
 
@@ -52,7 +56,17 @@ public:
    * @param[in] dVal MatrixType function variable.
    */ 
   ScalarMatrixFunc(ST fVal, MT dVal ) 
-    : functionVal(fVal), derivativeVal(dVal), isConst(false) { }
+    : functionVal(fVal), derivativeVal(dVal), isConst(false), 
+      derivativeFuncVal() { }
+
+  ScalarMatrixFunc(ST fVal, MT dVal, MMF dFuncVal)
+    : functionVal(fVal), derivativeVal(dVal), isConst (false) 
+    {
+         boost::shared_ptr<MatrixMatrixFunc<MT, ST> > 
+         copy(new MatrixMatrixFunc<MT, ST>);
+         derivativeFuncVal = copy; 
+         derivativeFuncVal->deepCopy(dFuncVal);
+    }
 
   /// Constructor for constant functions
   /// give m, n to indicate the size of the derivative matrix.
@@ -64,7 +78,8 @@ public:
    * @param[in] n     Number of columns.
    */ 
   ScalarMatrixFunc(ST fVal, int m, int n ) 
-    : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m,n)), isConst(true) { }
+    : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m,n)), 
+      isConst(true), derivativeFuncVal() { }
 
   /**
    * @brief Operator overloading for "=". rhs and lhs are 
@@ -73,11 +88,23 @@ public:
    *
    * @param[in] x ScalarmatrixFunc rhs.
    */
+  void initWithVariable(ST fVal, MT dVal) {
+    functionVal = fVal;
+    derivativeVal = dVal;
+    isConst = false;
+  }
+
+  void initWithConst(ST fVal, int m, int n) {
+    functionVal = fVal;
+    derivativeVal = MatrixAdaptorType::zeros(m, n);
+    isConst = true;
+  }
+
   ScalarMatrixFunc& operator= ( const ScalarMatrixFunc &x) {
     functionVal = x.functionVal;
     derivativeVal = x.derivativeVal;
+    derivativeFuncVal=x.derivativeFuncVal;
     isConst = x.isConst;
-    
     return(*this);
   }
 
@@ -105,15 +132,16 @@ ScalarMatrixFunc<MT,ST> operator+( const ScalarMatrixFunc<MT,ST> &lhs,
 	  lhs.derivativeVal.getNumCols() == rhs.derivativeVal.getNumCols() );
   if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
     return( ScalarMatrixFunc<MT,ST>( lhs.functionVal+rhs.functionVal,
-				     rhs.derivativeVal ) );
+				     rhs.derivativeVal, *rhs.derivativeFuncVal) );
   }
   if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
     return( ScalarMatrixFunc<MT,ST>( lhs.functionVal+rhs.functionVal,
-				     lhs.derivativeVal ) );
+				     lhs.derivativeVal, *lhs.derivativeFuncVal) );
   }
     
   return( ScalarMatrixFunc<MT,ST>( lhs.functionVal+rhs.functionVal,
-				   lhs.derivativeVal+rhs.derivativeVal ) );
+				   lhs.derivativeVal+rhs.derivativeVal, 
+           *lhs.derivativeFuncVal + *rhs.derivativeFuncVal));
 }
 
 /**
@@ -136,15 +164,16 @@ ScalarMatrixFunc<MT,ST> operator-( const ScalarMatrixFunc<MT,ST> &lhs,
 	  lhs.derivativeVal.getNumCols() == rhs.derivativeVal.getNumCols() );
   if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
     return( ScalarMatrixFunc<MT,ST>( lhs.functionVal-rhs.functionVal,
-				     -rhs.derivativeVal ) );
+				     -rhs.derivativeVal, -(*rhs.derivativeFuncVal)));
   }
   if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
     return( ScalarMatrixFunc<MT,ST>( lhs.functionVal-rhs.functionVal,
-				     lhs.derivativeVal ) );
+				     lhs.derivativeVal, *lhs.derivativeFuncVal) );
   }
     
   return( ScalarMatrixFunc<MT,ST>( lhs.functionVal-rhs.functionVal,
-				   lhs.derivativeVal-rhs.derivativeVal ) );
+				   lhs.derivativeVal-rhs.derivativeVal,
+           *lhs.derivativeFuncVal - *rhs.derivativeFuncVal));
 }
 
   // unary minus
@@ -169,7 +198,7 @@ ScalarMatrixFunc<MT,ST> operator-( const ScalarMatrixFunc<MT,ST> &lhs ) {
   MT lcTrans;
   MatrixAdaptorType::negation(lhs.derivativeVal, lcTrans);
   return( ScalarMatrixFunc<MT,ST>( -lhs.functionVal,
-				   lcTrans ) );
+				   lcTrans, -(*lhs.derivativeFuncVal) ) );
 }
 
 /**
@@ -183,6 +212,7 @@ ScalarMatrixFunc<MT,ST> operator-( const ScalarMatrixFunc<MT,ST> &lhs ) {
  * 
  * @return lhs * rhs
  */
+// TODO  add derivativeFunc
 template <class MT, class ST> 
 ScalarMatrixFunc<MT,ST> operator*( const ScalarMatrixFunc<MT,ST> &lhs,
 				   const ScalarMatrixFunc<MT,ST> &rhs ) {
@@ -193,12 +223,13 @@ ScalarMatrixFunc<MT,ST> operator*( const ScalarMatrixFunc<MT,ST> &lhs,
   const MT& df = lhs.derivativeVal;
   const MT& dg = rhs.derivativeVal;
   if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
-    return(ScalarMatrixFunc<MT,ST>(f*g, f*dg));
+    return(ScalarMatrixFunc<MT,ST>(f*g, f*dg, lhs*(*rhs.derivativeFuncVal)));
   } 
   if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
-    return(ScalarMatrixFunc<MT,ST>(f*g, df*g));
+    return(ScalarMatrixFunc<MT,ST>(f*g, df*g, (*lhs.derivativeFuncVal)*rhs));
   } 
-  return(ScalarMatrixFunc<MT,ST>(f*g, f*dg+df*g));
+  return(ScalarMatrixFunc<MT,ST>(f*g, f*dg+df*g, 
+         lhs * (*rhs.derivativeFuncVal) + (*lhs.derivativeFuncVal)*rhs));
 }
 
 /**

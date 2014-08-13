@@ -89,7 +89,11 @@ struct SymbolicScalarMatlab {
    * @return The value of the internal string representation.
    */
   std::string getString() const { return symbol; }
-
+  /*
+  void reset(std::string str) {
+    symbol = str;
+  }
+*/
   friend SymbolicScalarMatlab sqrt(const SymbolicScalarMatlab& a);
   friend SymbolicScalarMatlab operator+(const SymbolicScalarMatlab& a, 
                                         const SymbolicScalarMatlab& b);

@@ -7,6 +7,7 @@
 #include <assert.h>
 #include "boost/shared_ptr.hpp"
 #include <AMD/AMD.hpp>
+#include <stack>
 
 #define DEBUG
 
@@ -16,7 +17,7 @@
 // Typedef for SymbolicMatrixMatlab and SymbolicScalarMatlab.
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
 typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
-typedef typename symbolic_adaptor_type::value_type symbolic_value_type;
+typedef symbolic_adaptor_type::value_type symbolic_value_type;
 
 typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
                       				symbolic_value_type> SymbolicMMFunc;
@@ -299,7 +300,6 @@ void testElementalMatrixMatrixFunc() {
 
   /** 15. d/dx(trace(x * trace(x))) */
   func = trace(fX * trace(fX));
-
   /** 16. d/dx(trace(trace(x) * x))*/
   func = trace(trace(fX) * fX);
 }
@@ -308,8 +308,11 @@ void testElementalMatrixMatrixFunc() {
 
 void testBasicSymbolicMatrixMatrixFunc() {
   std::string ans; /**< SymbolicMatrixMatrixFunc result. */
-  std::string row = std::to_string(ROW); /**< SymbolicMatrix row number. */ 
-
+//  std::string row = std::to_string(ROW); /**< SymbolicMatrix row number. */ 
+  char rowChar[5];
+  int rowTmp = ROW;
+  sprintf(rowChar, "%d", rowTmp);
+  std::string row = rowChar;
   /** Create a variable X and an identity function */
   symbolic_matrix_type X("X",ROW,COL);
   SymbolicMMFunc fX(X,false);  /**< X is variable. */
@@ -378,7 +381,7 @@ void testBasicSymbolicMatrixMatrixFunc() {
   ans = "inv(X)'";
   func = logdet(fX);
   assert(func.derivativeVal.getString()==ans);
-  
+
   /** 11. d/dx(logdet(X')) = X^-1 */
   ans = "inv(X)'";
   func = logdet(transpose(fX));
@@ -388,7 +391,6 @@ void testBasicSymbolicMatrixMatrixFunc() {
   ans = "inv(A+X)'";
   func = logdet(fA+fX);
   assert(func.derivativeVal.getString()==ans);
-  
   /** 13. d/dx(logdet(A-X)) = -((A-X)')^-1 */
   ans = "(-inv(A-X))'";
   func = logdet(fA-fX);
@@ -398,14 +400,50 @@ void testBasicSymbolicMatrixMatrixFunc() {
   ans = "(-inv(X)')";
   func = logdet(inv(transpose(fX)));
   assert(func.derivativeVal.getString()==ans);
+
+}
+void testDerivativeSymbolicMatrixMatrixFunc() {
+  std::string ans; /**< SymbolicMatrixMatrixFunc result. */
+//  std::string row = std::to_string(ROW); /**< SymbolicMatrix row number. */ 
+  char rowChar[5];
+  int rowTmp = ROW;
+  sprintf(rowChar, "%d", rowTmp);
+  std::string row = rowChar;
+
+  /** Create a variable X and an identity function */
+  symbolic_matrix_type X("X",ROW,COL);
+  SymbolicMMFunc fX(X,false); 
+
+  /** Create a constant A and an identity function */
+  symbolic_matrix_type A("A",ROW,COL);
+  symbolic_matrix_type Z = symbolic_adaptor_type::zeros(ROW, COL);
+  SymbolicMMFunc fA(A,true); 
+  SymbolicMMFunc fZ(Z, true);
+
+  /** Create a scalar-matrix function placeholder */ 
+  SymbolicSMFunc func;
+  SymbolicSMFunc func2;
+  
+
+  func = logdet(elementwiseProduct(fX, fX)); 
+  func2 = trace((*func.derivativeFuncVal));
+  std::cout << "test func matrix matrix func" << std::endl;
+  std::cout << func.derivativeVal.getString() << std::endl;
+  std::cout << func.derivativeFuncVal->matrixPtr->getString() << std::endl;
+  std::cout << "test if trace(trace.derivativeFuncVal) works" << std::endl;
+  std::cout << func2.derivativeVal.getString() << std::endl;
+  std::cout << func2.derivativeFuncVal->matrixPtr->getString() << std::endl;
 }
 
 /** The function names need to be more descriptive; also add comments */
 void testAdvancedSymbolicMatrixMatrixFunc () {
 
   std::string ans;
-  std::string row = std::to_string(ROW);
-
+//  std::string row = std::to_string(ROW);
+  char rowChar[5];
+  int rowTmp = ROW;
+  sprintf(rowChar, "%d", rowTmp);
+  std::string row = rowChar;
   /** Create a variable X and an identity function */
   symbolic_matrix_type X("X", ROW, COL);
   SymbolicMMFunc fX(X, false);
@@ -413,13 +451,14 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   /** Create constants A,B and C and identity functions */
   symbolic_matrix_type A("A", ROW, COL);
   symbolic_matrix_type B("B", ROW, COL);
-  symbolic_matrix_type C("C", ROW, COL);
   SymbolicMMFunc fA(A, true);
   SymbolicMMFunc fB(B, true);
-  SymbolicMMFunc fC(C, true);
 
   /** Create a scalar-matrix function placeholder */
   SymbolicSMFunc func; 
+
+  symbolic_matrix_type C("C", ROW, COL);
+
   /** 1. d/dx(logdet(X))=X'^-1 */
   ans = "inv(X)'";
   func = logdet(fX);
@@ -502,72 +541,89 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
   ans = "((X''.*inv(X.*X'))'+(X'.*inv(X.*X')))";
   func = logdet (elementwiseProduct(fX, transpose(fX)));
   assert(func.derivativeVal.getString() == ans);
+
   
   /** 17. d/dx(trace(X * trace(X) + X)) = 2trace(X).*I + I. */
   ans = "(((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')+eye(128))";
   func = trace(fX * trace(fX) + fX);
   assert(func.derivativeVal.getString() == ans);
-
   /** 18. d/dx(trace(X * trace(X))) = 2trace(X).*I. */
   ans = "((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')";
   func = trace(fX * trace(fX));
   assert(func.derivativeVal.getString() == ans);
-  
   /** 19. d/dx(trace(trace(X) * X)) = 2trace(X).*I. */
   ans = "((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')";
   func = trace(trace(fX) * fX);
   assert(func.derivativeVal.getString() == ans);
-  
   /** 20. d/dx(trace(trace(X) * X * X)) = trace(X*X).*I + 2trace(X).*X'. */
   ans = "(((trace(X*X).*eye(128)')'+(trace(X).*X)')+(trace(X).*X)')";
   func = trace(trace(fX) * fX * fX);
   assert(func.derivativeVal.getString() == ans);
-
   /** 21. d/dx(trace(X * trace(X) * X)) = trace(X*X).*I + 2trace(X).*X'. */
   ans = "(((trace(X*X).*eye(128)')'+(trace(X).*X)')+(trace(X).*X)')";
   func = trace( fX * trace(fX) * fX);
   assert(func.derivativeVal.getString() == ans);
-
   /** 22. d/dx(trace(X * X * trace(X))) = trace(X*X).*I + 2trace(X).*X'. */
   ans = "(((trace((X*X)*eye(128)).*eye(128))+(X*(trace(X).*eye(128)))')+((trace(X).*eye(128))*X)')";
   func = trace( fX * fX * trace(fX));
   assert(func.derivativeVal.getString() == ans); 
 }
 
-
 void testTaylorExp() {
 
   std::string ans;
-  std::string row = std::to_string(ROW);
+//  std::string row = std::to_string(ROW);
+  char rowChar[5];
+  int rowTmp = ROW;
+  sprintf(rowChar, "%d", rowTmp);
+  std::string row = rowChar;
 
-  /** Create a variable X and an identity function */
+//  std::string r0 = "1", r1="1/2!", r2= "1/3!";
   symbolic_matrix_type X("X", ROW, COL);
   symbolic_matrix_type X0("X0", ROW, COL);
   symbolic_matrix_type Delta("(X-X0)", ROW, COL);
+  
+//  AMD::SymbolicScalarMatlab a1("1/2!");
+//  AMD::SymbolicScalarMatlab a2("1/3!"); 
+//  SymbolicSMFunc r1(a1,ROW,COL);
+//  SymbolicSMFunc r2(a2,ROW, COL);
   SymbolicMMFunc fX(X, false);
   SymbolicMMFunc fX0(X0, false);
   SymbolicMMFunc fDelta(Delta, true);
-
+  
   SymbolicSMFunc f0 =  logdet(fX0);
-  SymbolicMMFunc f0Der = transpose(inv(fX0));
-  SymbolicSMFunc f1 = trace(fDelta * transpose(f0Der));
-  SymbolicMMFunc f1Der = transpose((inv(fX0)*(fDelta*inv(fX0)))); // TODO need unary minus for MMFuncHelpler;
-  SymbolicSMFunc f2 = trace(fDelta * f1Der);
-//  SymbolicSMFunc f3 = trace(fDelta * f2.derivativeVal);
-  std::cout << "f0 func" << std::endl;
-  std::cout << f0.functionVal.getString() << std::endl;
-  std::cout << "f0 deriv" << std::endl;
-  std::cout << f0.derivativeVal.getString() << std::endl;
-  std::cout << "f1 functionVal" << std::endl;
-  std::cout << f1.functionVal.getString() << std::endl;
-  std::cout << "f1 derivativeVal" << std::endl;
-  std::cout << f1.derivativeVal.getString() << std::endl;
-  std::cout << "f2 functionVal" << std::endl;
-  std::cout << f2.functionVal.getString() << std::endl;
-  std::cout << "f2 derivativeVal" << std::endl;
-  std::cout << f2.derivativeVal.getString() << std::endl;
-//  std::cout << f2.functionVal.getString() << std::endl;
-//  std::cout << f3.functionVal.getString() << std::endl;
+  SymbolicSMFunc f1 = trace(fDelta * transpose(*f0.derivativeFuncVal));
+  SymbolicSMFunc f2 = trace(fDelta * transpose(*f1.derivativeFuncVal));
+  SymbolicSMFunc f3 = trace(fDelta * transpose(*f2.derivativeFuncVal));
+
+}
+
+
+void testBugs() {
+
+  std::string ans;
+//  std::string row = std::to_string(ROW);
+  char rowChar[5];
+  int rowTmp = ROW;
+  sprintf(rowChar, "%d", rowTmp);
+  std::string row = rowChar;
+
+  /** Create a variable X and an identity function */
+  std::string r0 = "1", r1="1/2!", r2= "1/3!";
+  symbolic_matrix_type X("X", ROW, COL);
+  symbolic_matrix_type X0("X0", ROW, COL);
+  symbolic_matrix_type A("A", ROW, COL);
+  
+//  AMD::SymbolicScalarMatlab a1("1/2!");
+//  AMD::SymbolicScalarMatlab a2("1/3!"); 
+//  SymbolicSMFunc r1(a1,ROW,COL);
+//  SymbolicSMFunc r2(a2,ROW, COL);
+  SymbolicMMFunc fX(X, false);
+  SymbolicMMFunc fX0(X0, false);
+  SymbolicMMFunc fA(A, true);
+  
+  /* Compute n-order differentiation iteratively. */
+  SymbolicSMFunc f1 = trace(fX * trace(fX));
 
 }
 
@@ -592,10 +648,11 @@ std::cout << std::endl;
 #endif
 //  testFXgX() ;
 
-//  std::cout << "Test Taylor" << std::endl;
-//  testTaylorExp();
-//  std::cout << "End Taylor" << std::endl;
+//  std::cout << "Test Bugs" << std::endl;
+//  testBugs();
+  std::cout << "DONE" << std::endl;
   std::cout << "All tests passed." << std::endl;
+//  testDerivativeSymbolicMatrixMatrixFunc();
 #if AMD_HAVE_ELEMENTAL
   elem::Finalize();
 #endif
