@@ -67,7 +67,7 @@ add the relevant Personal Package Archives (PPA). 
 
 -   Add the PPA to your local system using the following commands:
 
-\
+
 
 `# sudo apt-get install python-software-properties`
 
@@ -77,11 +77,11 @@ add the relevant Personal Package Archives (PPA). 
 
 -   Install GCC 4.8 and make gcc-4.8 the default gcc:
 
-`# sudo apt-get install gcc-4.8 gfortran-4.8 g++-4.8`\
+`# sudo apt-get install gcc-4.8 gfortran-4.8 g++-4.8`
 
 `# sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50`
 
-\
+
 
 Alternately, you can compile GCC from its sources in the following
 manner:
@@ -104,11 +104,11 @@ manner:
 
 -   Build and install GCC
 
-`# cd gcc-4.8.2 # mkdir build`\
+`# cd gcc-4.8.2 # mkdir build`
 
 `# cd build`
 
-`# ../configure --prefix=<installation path>`\
+`# ../configure --prefix=<installation path>`
 
 `# make `` # make install`
 
@@ -119,10 +119,10 @@ If Elemental support is desired, we need MPI. We recommend installing
 compliant software should be sufficient. You can install MPI following
 the instructions:
 
-\
 
-`# sudo apt-get install -y libcr-dev`\
- `# sudo apt-get install -y mpich2 libmpich2-dev mpich2-doc`\
+
+`# sudo apt-get install -y libcr-dev`
+ `# sudo apt-get install -y mpich2 libmpich2-dev mpich2-doc`
 
 ### Python
 
@@ -135,16 +135,16 @@ installing [ipython](http://ipython.org). Make sure that you have
 installed MPI on your system before installing mpi4py. You can install
 all these requirements by running the following commands:
 
-\
 
-`# sudo apt-get install -y python-dev`\
 
-`# sudo apt-get install -y python-setuptools``# sudo apt-get install -y python-numpy python-scipy python-numpy-doc`\
+`# sudo apt-get install -y python-dev`
 
-`# sudo apt-get install -y swig swig-doc swig-examples``# sudo apt-get install -y python-mpi4py`\
+`# sudo apt-get install -y python-setuptools``# sudo apt-get install -y python-numpy python-scipy python-numpy-doc`
+
+`# sudo apt-get install -y swig swig-doc swig-examples``# sudo apt-get install -y python-mpi4py`
  `# sudo apt-get install -y ipython`
 
-\
+
 
 Note that MPI also needs to be installed for mpi4py to function.
 
@@ -155,16 +155,16 @@ system that is routinely used in many open source software. We (and
 Elemental) need CMake 2.8 or higher. For example, you can install CMake
 2.8.11.2 following the instructions:
 
-`# wget http://www.cmake.org/files/v2.8/cmake-2.8.11.2.tar.gz`\
- `# tar -xvfz cmake-2.8.11.2.tar.gz`\
- `# cd cmake-2.8.11.2`\
- \#  `mkdir build`\
- `# cd build`\
- `# ../bootstrap --prefix=<installation path>`\
- `# make`\
+`# wget http://www.cmake.org/files/v2.8/cmake-2.8.11.2.tar.gz`
+ `# tar -xvfz cmake-2.8.11.2.tar.gz`
+ `# cd cmake-2.8.11.2`
+ `# mkdir build`
+ `# cd build`
+ `# ../bootstrap --prefix=<installation path>`
+ `# make`
  `# make install`
 
-\
+
 
 Please make sure that the installation path is in your PATH environment
 variable.
@@ -179,15 +179,15 @@ python bindings are needed, then boost::python is also needed. Note that
 AMD requires Boost version 1.55.0 or higher. You can install boost
 following the instructions:
 
-`# wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz`\
- `# tar xvfz boost_1_55_0.tar.gz`\
- `# cd boost_1_55_0`\
+`# wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz`
+ `# tar xvfz boost_1_55_0.tar.gz`
+ `# cd boost_1_55_0`
 
-`# ./bootstrap.sh --with-libraries=program_options,mpi,python,random --prefix=<installation path> # ``echo "using mpi ;" >> project-config.jam`\
+`# ./bootstrap.sh --with-libraries=program_options,mpi,python,random --prefix=<installation path> # ``echo "using mpi ;" >> project-config.jam`
 
 `# ./b2 link=static,shared``# ./b2 install`` --prefix=<installation path>`
 
-\
+
 
 Note that in the instructions above, we have left out boost::shared\_ptr
 because it is a header-only library.
@@ -199,9 +199,9 @@ because it is a header-only library.
 routines. There are several free and non-free software that implement
 the  BLAS and LAPACK API. For simplicity, we recommend installing the
 default version which comes free with most distributions using the
-following commands:\
+following commands:
 
-\
+
 
 `# sudo apt-get install -y libatlas3gf-base `
 
@@ -209,7 +209,7 @@ following commands:\
 
 `# sudo apt-get install -y liblapack-dev`
 
-\
+
 
 If you are really after performance, consider installing something like
 Intel's MKL or IBM's ESSL.
@@ -218,17 +218,17 @@ Intel's MKL or IBM's ESSL.
 
 [Elemental](http://libelemental.org/) is an open-source library for
 distributed-memory dense linear algebra that wraps around BLAS and
-LAPACK. We recommend installing version 0.83 or greater:\
+LAPACK. We recommend installing version 0.83 or greater:
 
-`# wget http://libelemental.org/pub/releases/elemental-0.83.tgz`\
- `# tar xvfz elemental-0.83.tgz`\
- `# cd elemental-0.83`\
- `# mkdir build`\
- `# cd build`\
- `# cmake ../ -DUSE_SWIG=on -DCMAKE_INSTALL_PREFIX=<installation path>`\
- `# make `\
- `# make install`\
- `# cp *.py ${HOME}/.local/lib/python2.7/dist-packages/`\
+`# wget http://libelemental.org/pub/releases/elemental-0.83.tgz`
+ `# tar xvfz elemental-0.83.tgz`
+ `# cd elemental-0.83`
+ `# mkdir build`
+ `# cd build`
+ `# cmake ../ -DUSE_SWIG=on -DCMAKE_INSTALL_PREFIX=<installation path>`
+ `# make `
+ `# make install`
+ `# cp *.py ${HOME}/.local/lib/python2.7/dist-packages/`
  `# cp _*.so ${HOME}/.local/lib/python2.7/dist-packages/`
 
 ### Doxygen
@@ -237,7 +237,7 @@ If you want to build documentation for AMD, then it is required to
 install doxygen. Doxygen can be installed using the following
 instruction:
 
-\
+
 
 `# sudo apt-get install doxygen`
 
@@ -246,10 +246,10 @@ instruction:
 If you want to build documentation for AMD, then we need some latex
 tools that can be installed using texlive-latex packages
 
-\
 
-`# sudo apt-get install texlive-latex-base`\
- `# sudo apt-get install texlive-latex-recommended`\
+
+`# sudo apt-get install texlive-latex-base`
+ `# sudo apt-get install texlive-latex-recommended`
  `# sudo apt-get install texlive-latex-extra`
 
 Downloading and building AMD
@@ -270,14 +270,14 @@ AMD is under active development and there is no release candidate as
 yet. You can download and build the AMD software using the following
 instructions:
 
-`# git clone https://github.com/pkambadu/AMD`\
- `# cd AMD`\
- `# mkdir build`\
- `# cd build`\
- `# cmake ../ -DBUILD_TESTS=on`\
+`# git clone https://github.com/pkambadu/AMD`
+ `# cd AMD`
+ `# mkdir build`
+ `# cd build`
+ `# cmake ../ -DBUILD_TESTS=on`
  `# make`
 
-\
+
 
 If Elemental has been installed in a non-default location, please set
 the environment variable ELEMENTAL\_ROOT to point to the installation.
@@ -285,14 +285,14 @@ Similarly, if Boost has been installed in a non-standard location,
 please set the environment variable BOOST\_ROOT before running cmake.
 For example,
 
-\
+
 
 `# cmake ../ -DELEMENTAL_ROOT=<install-prefix> -DBOOST_ROOT=<install-prefix> <other-options> ../`
 
 ### Testing the installation
 
 There is one test case `UnitTest` in `AMD/build/tests/`. Please run the
-test case to see if there are any error messages.\
+test case to see if there are any error messages.
 
 
 
