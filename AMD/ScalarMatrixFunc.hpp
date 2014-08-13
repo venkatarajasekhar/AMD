@@ -230,18 +230,7 @@ ScalarMatrixFunc<MT,ST> operator*( const ScalarMatrixFunc<MT,ST> &lhs,
   } 
   return(ScalarMatrixFunc<MT,ST>(f*g, f*dg+df*g));
 }
-/*
-template <class MT, class ST> 
-ScalarMatrixFunc<MT,ST> operator*( const std::string& str,
-				   const ScalarMatrixFunc<MT,ST> &rhs ) {
-//  ScalarMatrixFunc<MT, ST> func(rhs);
 
-  std::string funcStr = str + "*" +rhs.functionVal.getString();
-  ScalarMatrixFunc<MT, ST> func(rhs);
-  func.functionVal.reset(funcStr);
-  return func;
-}
-*/
 /**
  * @brief Operator overloading for "/".
  *
