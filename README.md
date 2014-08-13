@@ -111,6 +111,7 @@ manner:
 `# ../configure --prefix=<installation path>`
 
 `# make `
+
 `# make install`
 
 ### MPI
@@ -123,6 +124,7 @@ the instructions:
 
 
 `# sudo apt-get install -y libcr-dev`
+
 `# sudo apt-get install -y mpich2 libmpich2-dev mpich2-doc`
 
 ### Python
@@ -141,10 +143,13 @@ all these requirements by running the following commands:
 `# sudo apt-get install -y python-dev`
 
 `# sudo apt-get install -y python-setuptools`
+
 `# sudo apt-get install -y python-numpy python-scipy python-numpy-doc`
 
 `# sudo apt-get install -y swig swig-doc swig-examples`
+
 `# sudo apt-get install -y python-mpi4py`
+
 `# sudo apt-get install -y ipython`
 
 
@@ -159,12 +164,19 @@ Elemental) need CMake 2.8 or higher. For example, you can install CMake
 2.8.11.2 following the instructions:
 
 `# wget http://www.cmake.org/files/v2.8/cmake-2.8.11.2.tar.gz`
+
 `# tar -xvfz cmake-2.8.11.2.tar.gz`
+
 `# cd cmake-2.8.11.2`
+
 `# mkdir build`
+
 `# cd build`
+
 `# ../bootstrap --prefix=<installation path>`
+
 `# make`
+
 `# make install`
 
 
@@ -183,7 +195,9 @@ AMD requires Boost version 1.55.0 or higher. You can install boost
 following the instructions:
 
 `# wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz`
+
 `# tar xvfz boost_1_55_0.tar.gz`
+
 `# cd boost_1_55_0`
 
 `# ./bootstrap.sh --with-libraries=program_options,mpi,python,random --prefix=<installation path> `
@@ -191,6 +205,7 @@ following the instructions:
 `#echo "using mpi ;" >> project-config.jam`
 
 `# ./b2 link=static,shared`
+
 `# ./b2 install --prefix=<installation path>`
 
 
@@ -227,14 +242,23 @@ distributed-memory dense linear algebra that wraps around BLAS and
 LAPACK. We recommend installing version 0.83 or greater:
 
 `# wget http://libelemental.org/pub/releases/elemental-0.83.tgz`
+
 `# tar xvfz elemental-0.83.tgz`
+
 `# cd elemental-0.83`
+
 `# mkdir build`
+
 `# cd build`
+
 `# cmake ../ -DUSE_SWIG=on -DCMAKE_INSTALL_PREFIX=<installation path>`
+
 `# make `
+
 `# make install`
+
 `# cp *.py ${HOME}/.local/lib/python2.7/dist-packages/`
+
 `# cp _*.so ${HOME}/.local/lib/python2.7/dist-packages/`
 
 ### Doxygen
@@ -255,7 +279,9 @@ tools that can be installed using texlive-latex packages
 
 
 `# sudo apt-get install texlive-latex-base`
+
 `# sudo apt-get install texlive-latex-recommended`
+
 `# sudo apt-get install texlive-latex-extra`
 
 Downloading and building AMD
@@ -277,10 +303,15 @@ yet. You can download and build the AMD software using the following
 instructions:
 
 `# git clone https://github.com/pkambadu/AMD`
+
 `# cd AMD`
+
 `# mkdir build`
+
 `# cd build`
+
 `# cmake ../ -DBUILD_TESTS=on`
+
 `# make`
 
 
