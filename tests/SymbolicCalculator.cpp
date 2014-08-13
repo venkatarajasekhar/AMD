@@ -5,6 +5,7 @@
 #include "boost/shared_ptr.hpp"
 #include <AMD/AMD.hpp>
 #include <stack>
+#include <vector>
 
 #define DEBUG
 
@@ -424,8 +425,8 @@ int main(int argc, char** argv) {
   colStr = argv[3];
   std::string rowStrSub(rowStr.begin() + 4, rowStr.end());
   std::string colStrSub(colStr.begin() + 4, colStr.end());
-  row = stoi(rowStrSub);
-  col = stoi(colStrSub);
+  row = atoi(rowStrSub.c_str());
+  col = atoi(colStrSub.c_str());
   if (row <=0 || col <=0) {
     std::cerr << "Row and Col must be positive" << std::endl;
     return -1;

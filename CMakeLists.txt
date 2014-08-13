@@ -105,7 +105,7 @@ if (Boost_FOUND)
   include_directories (${Boost_INCLUDE_DIRS})
   link_directories (${Boost_LIBRARY_DIRS})
 endif (Boost_FOUND)
-set (CMAKE_CXX_FLAGS "${CXX11_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS} -std=c++11 -ggdb")
+#set (CMAKE_CXX_FLAGS "${CXX11_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS} -std=c++11 -ggdb")
 ###############################################################################
 # 3. Optionally, the user can build AMD with Elemental support
 option (USE_ELEMENTAL "Build with Elemental Matrix support" OFF)
