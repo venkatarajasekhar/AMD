@@ -16,7 +16,7 @@ bare bones version uses symbolic matrices and has three dependencies:
 
 C/C++ compiler.
 
-CMake (version 2.8 or higher).
+CMake .
 
 Boost (version 1.55 or higher).
 
@@ -25,6 +25,7 @@ Boost (version 1.55 or higher).
 The second option is to build AMD with support for real matrix
 (Elemental matrices) support. For this, the additional requirements are:
 
+-   CMake (version 2.8 or higher)
 -   C++ compiler with C++-11 support (eg., GCC version 4.8 or higher) 
 -   MPI (strong preference for MPICH2)
 -   BLAS and LAPACK
@@ -332,11 +333,25 @@ There is three test cases and one Symbolic Calculator in
 in `AMD/build/tests/`. Please run the
 test cases to see if there are any error messages.
 
+
+
 The Symbolic Calculator can be used as 
 `./SymbolicCalculator 'expression' row=? col=?`
 
+The default matrix size is 4. You can also set 
+the size of matrices. 
+
+In the calculator, the inverse of a matrix `X` is written as `inv(X)`
+while the transpose of a matrix `X` is written as `trans(X)`.
+
+Currently the calcluator supports variable matrix `X`, constant matix
+`A`, `B`, `C`, `I` for identity matrix. Construct the expression using
+these symbols only. You can also define new symbols in the source code.
+
 For example:
 `./SymbolicCalculator 'trace(A*trans(X))' row=4 col=4`
+
+`./SymbolicCalcluator '(2*trace(A*inv(X))+5) * logdet(A*X)'`
 
 
 
