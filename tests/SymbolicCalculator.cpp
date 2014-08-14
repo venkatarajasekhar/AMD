@@ -1,3 +1,10 @@
+/**
+ * @file This file defines a symbolic calculator taking an 
+ *       SymbolicSMFunc expression 
+ *       as input and compute the derivative value of the 
+ *       expression.
+ */
+
 #include <iostream>
 #include <string>
 #include <cmath>
@@ -18,6 +25,7 @@
  *        storage of object. The maximum size 
  *        is 100.
  */
+namespace AMD{
 template<typename T> 
 class Stack {
   public:
@@ -113,7 +121,7 @@ class Stack2 {
     /* Top cursor. */
     int head;
 };
-// Typedef for SymbolicMatrixMatlab and SymbolicScalarMatlab.
+/* Typedef for SymbolicMatrixMatlab and SymbolicScalarMatlab. */
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
 typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
 typedef symbolic_adaptor_type::value_type symbolic_value_type;
@@ -121,11 +129,114 @@ typedef symbolic_adaptor_type::value_type symbolic_value_type;
 typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
                       				symbolic_value_type> SymbolicMMFunc;
 typedef AMD::ScalarMatrixFunc<symbolic_matrix_type,
-                       				symbolic_value_type> SymbolicSMFunc;
+                       				symbolic_value_type> SymbolicSMFunc;  
+class Calculator {
+  public:
+    /* Default constructor. */
+    Calculator(){};
+    /* Default destructor. */
+    ~Calculator(){};
+    /**
+     * @brief Construction the Calculator with an SMF
+     *        expression. Compute the derivative value
+     *        and function value of the expression.
+     * @param expr the SMF expression.
+     * @param row  matrix row.
+     * @param col  matrix col.
+     */
+    Calculator(std::string expr, int row=4, int col=4) :
+              expr(expr), row(row), col(col) {
 
+      std::string exprNoSpace = "";
+      for (std::string::iterator it = expr.begin(); it != expr.end(); it++) {
+        if (*it != ' ') 
+          exprNoSpace += *it;
+      }
+      if (exprNoSpace.size() == 0) {
+        std::cerr << "Empty Input" << std::endl;
+        exit;
+      }
+      /* Get the infix notation. */
+      infix = stringParser(exprNoSpace);
+      /* Get the reverse Polish notation. */
+      rpn = infix2rpn(infix);
+      /* Create the ScalarMatrxiFunc. */
+      func = computeSMF(rpn, row, col);               
+    }
 
+    /**
+     * @brief     An infix notation parser.
+     * @param str The input infix notation.
+     * @return    A vector<string> contains the operands and 
+     *            operators in a infix-order.
+     */
+    std::vector<std::string> stringParser(std::string& str);
+    /**
+     * @brief     Translate infix to reverse polish notation.
+     * @param infix The infix notation.
+     * @return    A vector<string> contains the operands and
+     *            operators in a reverse polish order.
+     */
+    std::vector<std::string> infix2rpn(std::vector<std::string>& infix);
+    /**
+     * @brief     Compute the function value and derivative value
+     *            for a single ScalarMatrixFunction.
+     * @param str The reverse polish notation of the the 
+     *            Matrix Matrix Function within the parentheses of
+     *            the Scalar-Matrix Function.
+     * @param SMFtype The type of the SMF. trace or logdet.
+     * @param Row Row number of the matrices.
+     * @param Col Colume number of the matrices.
+     * @return The Symbolic ScalarMatrixFunction object.
+     */
+    SymbolicSMFunc computeSingleSMF (std::vector<std::string>& str,
+                                   int SMFtype,
+                                   int Row,
+                                   int Col);
+    /**
+     * @brief     Compute the function value and derivative value 
+     *            for the SMF expression.
+     * @param str The RPN of the operands and operators.
+     * @param Row The row number of the matrices.
+     * @param Col The colume number of the matrices.
+     * @return The sum of the SMF expression. 
+     */
+    SymbolicSMFunc computeSMF (std::vector<std::string>& str,
+                                     int Row,
+                                     int Col);
+    /**
+     * @brief     Return the function value.
+     * @return    string-type function value. 
+     */
+    std::string functionStr() {
+      return func.functionVal.getString();
+    }
+    /**
+     * @brief     Return the derivative value.
+     * @return    string-type derivative value. 
+     */
+    std::string derivativeStr() {
+      return func.derivativeVal.getString();
+    }
+   
+  private:
+    int row;  /**< row number of matrices. */
+    int col;  /**< colume number of matrices. */ 
+    std::string expr; /**< SMF expression. */
+    std::vector<std::string> infix; /**< expression infix order.*/
+    std::vector<std::string> rpn;   /**< expression Reverse Polish Order.*/
+    SymbolicSMFunc func;  /**< result of the expression. */
+    /* Decide if c is an operator. */
+    bool isOp(char c);    
+    /* Decide if str is an operator. */
+    bool isOpStr(std::string& str); 
+    /* Return the priority of operator. */
+    int priority(char c);
+    /* Return the priority of operator. */
+    int priorityStr(std::string& str);
+};
 /* return if c is operator. */
-bool isOp(char c) {
+bool Calculator::isOp(char c) {
   if (c == '+' || c == '-' ||
       c == '*' || c == '/' ||
       c == 'i' || c == 't' ||
@@ -135,7 +246,7 @@ bool isOp(char c) {
     return false;
 }
 
-bool isOpStr(std::string& str) {
+bool Calculator::isOpStr(std::string& str) {
   if ( str == "+"   || str == "-"         ||
        str == "*"   || str == "/"         ||
        str == "inv" || str == "transpose" ||
@@ -145,7 +256,7 @@ bool isOpStr(std::string& str) {
     return false;  
 }
 /* return the priority of operator. */
-int priority(char c) {
+int Calculator::priority(char c) {
   if (c == '+' || c == '-') 
     return 1;
   else if (c == '*' || c == '/') 
@@ -157,7 +268,7 @@ int priority(char c) {
   return 0; 
 }
 
-int priorityStr(std::string& str) {
+int Calculator::priorityStr(std::string& str) {
   if (str == "+" || str == "-") 
     return 1;
   else if (str == "*" || str == "/") 
@@ -170,12 +281,12 @@ int priorityStr(std::string& str) {
 }
 
 /*
- * @brief   parse the inflix expression and put each part 
+ * @brief   parse the infix expression and put each part 
  *          seperately in a vector. 
- * @param   str input inflix string 
+ * @param   str input infix string 
  * @return  The vector that contains each parts of the expression.  
  */ 
-std::vector<std::string> stringParser(std::string& str) {
+std::vector<std::string> Calculator::stringParser(std::string& str) {
   std::vector<std::string> result;
   int size = str.size();
   int i;
@@ -256,17 +367,17 @@ std::vector<std::string> stringParser(std::string& str) {
 }
 
 /* infix (input expression) to reverse polish notation. */
-std::vector<std::string> infix2rpn(std::vector<std::string>& inflix) {
+std::vector<std::string> Calculator::infix2rpn(std::vector<std::string>& infix) {
   std::vector<std::string> result;
   std::stack<std::string> opStack;
-  int size = inflix.size();
+  int size = infix.size();
   int i;
   for (i = 0; i < size; i++) {
-    if (!isOpStr(inflix[i])) {
-      result.push_back(inflix[i]);
+    if (!isOpStr(infix[i])) {
+      result.push_back(infix[i]);
       continue;
     } else {
-      if (inflix[i] == ")") {
+      if (infix[i] == ")") {
         while (!opStack.empty() && opStack.top() != "(") {
         result.push_back(opStack.top());
         opStack.pop();
@@ -275,15 +386,15 @@ std::vector<std::string> infix2rpn(std::vector<std::string>& inflix) {
       } else
       if (opStack.empty()       || 
           opStack.top() == "("  ||
-          priorityStr(inflix[i]) > priorityStr(opStack.top())) {
-        opStack.push(inflix[i]);
+          priorityStr(infix[i]) > priorityStr(opStack.top())) {
+        opStack.push(infix[i]);
       } else {
         while (!opStack.empty() && opStack.top() != "(" &&
-               priorityStr(inflix[i]) <= priorityStr(opStack.top())) {
+               priorityStr(infix[i]) <= priorityStr(opStack.top())) {
           result.push_back(opStack.top());
           opStack.pop();
         }
-        opStack.push(inflix[i]);
+        opStack.push(infix[i]);
       }
     }
   }
@@ -294,7 +405,7 @@ std::vector<std::string> infix2rpn(std::vector<std::string>& inflix) {
   return result;
 }
 /* Compute SymbolicMatrixMatrix Stack. */
-SymbolicSMFunc compDerivative(std::vector<std::string> str,
+SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
                               int SMFtype, 
                               int Row, 
                               int Col) {
@@ -406,7 +517,7 @@ SymbolicSMFunc compDerivative(std::vector<std::string> str,
   return func;
 }
 /* Compute SymbolicScalarMatrix Stack. */
-SymbolicSMFunc compSMDerivative(std::vector<std::string> str, 
+SymbolicSMFunc Calculator::computeSMF(std::vector<std::string>& str, 
                                 int Row, 
                                 int Col) {
   int i; 
@@ -450,7 +561,7 @@ SymbolicSMFunc compSMDerivative(std::vector<std::string> str,
       int type = 1;
       std::vector<std::string> par = stringParser(exp);
       std::vector<std::string> rpn = infix2rpn(par);
-      SymbolicSMFunc funcResult = (compDerivative(rpn, type, Row , Col));
+      SymbolicSMFunc funcResult = (computeSingleSMF(rpn, type, Row , Col));
       SMFStack.push(funcResult);
     } else
     if (str[i][0] == 'l') {
@@ -459,7 +570,7 @@ SymbolicSMFunc compSMDerivative(std::vector<std::string> str,
       std::vector<std::string> par = stringParser(exp);
       std::vector<std::string> rpn = infix2rpn(par);
       
-      SymbolicSMFunc funcResult = (compDerivative(rpn, type, Row , Col));
+      SymbolicSMFunc funcResult = (computeSingleSMF(rpn, type, Row , Col));
       SMFStack.push(funcResult);
     } else {
       AMD::SymbolicScalarMatlab num(str[i]);
@@ -470,12 +581,12 @@ SymbolicSMFunc compSMDerivative(std::vector<std::string> str,
   func = SMFStack.top();
   return func;
 }
+}
 
 int main(int argc, char** argv) {
   std::string str ;
   std::string rowStr;
   std::string colStr;
-//  std::string rpn;
   int row;
   int col;
   int i; 
@@ -504,18 +615,14 @@ int main(int argc, char** argv) {
     std::cerr << "Row and Col must be positive" << std::endl;
     return -1;
   }
-  std::string expNoSpace = "";
-  int type = 0;
-  // Remove the spaces.
-  for (std::string::iterator it = str.begin(); it != str.end(); it++) {
-    if (*it != ' ') 
-      expNoSpace += *it;
+  if (str.size() == 0) {
+    std::cerr << "Empty Expression" << std::endl;
+    return -1;
   }
-  std::vector<std::string> vec = stringParser(expNoSpace); 
-  std::vector<std::string> result = infix2rpn(vec);
-  SymbolicSMFunc func = compSMDerivative(result, row , col);
-  std::cout << "Function:   " << func.functionVal.getString() << std::endl;
-  std::cout << "Derivative: " << func.derivativeVal.getString() <<std::endl;
+  
+  AMD::Calculator cal(str, row, col);
+  std::cout << "Function:   " << cal.functionStr() << std::endl;
+  std::cout << "Derivative: " << cal.derivativeStr() << std::endl;
   return 0;
 }
 
