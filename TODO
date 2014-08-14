@@ -7,4 +7,10 @@ Taylor_Expansion branch:
 - (DONE)Operator * for ScalarMatrixFunc class. 
   e.g. (f*g' + f'g) SalarMatrixFunc * MatrixMatrixFunc.
 - Operator / for ScalarMatrixFunc class? There is no "/" between SMF and MMF. 
-- Add samples showing how to use the program.
+//  08/14/2014
+- Add samples showing how to use the program. (1 Taylor, 1 Derivative, 1 Elemental.)
+- Add "int" * SMF in calculator 
+- Add more details about calculator in README.md  and mention that elemental
+  does not run on Windows. If you do not need to use elemental you only need to
+  install boost and cmake and a git which can download the source from github.
+

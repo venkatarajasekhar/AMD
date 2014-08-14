@@ -325,8 +325,10 @@ void testBasicSymbolicMatrixMatrixFunc() {
   SymbolicSMFunc func;
 
   /** 1. d/dx(trace(X*A)) = A' */
+//  AMD::SymbolicScalarMatlab s("2");
+//  SymbolicSMFunc func3(s, ROW, COL);
   ans = "A'";
-  func = trace(fX*fA);
+  func = trace(fA*fX);
   assert(func.derivativeVal.getString()==ans);
 
   SymbolicSMFunc func2;

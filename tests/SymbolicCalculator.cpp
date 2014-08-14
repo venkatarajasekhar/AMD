@@ -11,50 +11,106 @@
 
 #define ROW 128 
 #define COL 128 
-
+/**
+ * @brief A useer-defined stack container only for
+ *        MatrixMatrixFunc class.(because of deepCopy) 
+ *        The stack uses a array for internal 
+ *        storage of object. The maximum size 
+ *        is 100.
+ */
 template<typename T> 
 class Stack {
   public:
+    /**
+     * A constructor
+     * The constructor set the top-curser at the
+     * bottom of the stack.  
+     */
     Stack() {head = 0;}
+    /**
+     *  @brief Push an object into stack. 
+     *  @param element The reference to the object. 
+     */
     void push(T& element) {
       array[head].deepCopy(element);
       head++;
     }
-    // return the reference;
+    /**
+     *  @brief Return the top object in stack. 
+     *  @return The reference to the top object in stack. 
+     */
     T& top() {
       return array[head-1];
     }
+    /**
+     * @brief Pop the stack.
+     */
     void pop() {
       head--;
     }
+    /**
+     * @brief Return the stack size.
+     * @return Stack size.
+     */
     int size() {
       return head;
     }
   private:
+    /* Internal storage data structure. The max size is 100. */
     T array[100];
+    /* Top cursor. */
     int head;
 };
 
+/**
+ * @brief A useer-defined stack container.
+ *        The stack uses a array for internal 
+ *        storage of object. The maximum size 
+ *        is 100.
+ */
 template<typename T> 
 class Stack2 {
   public:
+
+    /**
+     * A constructor
+     * The constructor set the top-curser at the
+     * bottom of the stack.  
+     */
     Stack2() {head = 0;}
+
+    /**
+     *  @brief Push an object into stack. 
+     *  @param element The reference to the object. 
+     */
     void push(T& element) {
       array[head] = (element);
       head++;
     }
-    // return the reference;
+    /**
+     *  @brief Return the top object in stack. 
+     *  @return The reference to the top object in stack. 
+     */
     T& top() {
       return array[head-1];
     }
+    /**
+     * @brief Pop the stack.
+     */
     void pop() {
       head--;
     }
+    /**
+     * @brief Return the stack size.
+     * @return Stack size.
+     */
     int size() {
       return head;
     }
   private:
+    /* Internal storage data structure. The max size is 100. */
     T array[100];
+    /* Top cursor. */
     int head;
 };
 // Typedef for SymbolicMatrixMatlab and SymbolicScalarMatlab.
@@ -112,6 +168,13 @@ int priorityStr(std::string& str) {
     return 4;
   return 0; 
 }
+
+/*
+ * @brief   parse the inflix expression and put each part 
+ *          seperately in a vector. 
+ * @param   str input inflix string 
+ * @return  The vector that contains each parts of the expression.  
+ */ 
 std::vector<std::string> stringParser(std::string& str) {
   std::vector<std::string> result;
   int size = str.size();
@@ -398,7 +461,11 @@ SymbolicSMFunc compSMDerivative(std::vector<std::string> str,
       
       SymbolicSMFunc funcResult = (compDerivative(rpn, type, Row , Col));
       SMFStack.push(funcResult);
-    } 
+    } else {
+      AMD::SymbolicScalarMatlab num(str[i]);
+      SymbolicSMFunc constantSMFunc(num, Row, Row);
+      SMFStack.push(constantSMFunc);
+    }
   }
   func = SMFStack.top();
   return func;
@@ -416,17 +483,23 @@ int main(int argc, char** argv) {
     std::cout << "./SymbolicCalculator 'express' row=? col=?" << std::endl;
     return -1;
   }
-  if (argc != 4) {
+  if (argc == 2) {
+    str = argv[1];
+    row = 4;
+    col = 4;
+  } else 
+  if (argc == 4) {
+    str = argv[1];
+    rowStr = argv[2];
+    colStr = argv[3];
+    std::string rowStrSub(rowStr.begin() + 4, rowStr.end());
+    std::string colStrSub(colStr.begin() + 4, colStr.end());
+    row = atoi(rowStrSub.c_str());
+    col = atoi(colStrSub.c_str());
+  } else {
     std::cout << "./SymbolicCalculator 'express' row=? col=?" << std::endl;
     return -1;
   }
-  str = argv[1];
-  rowStr = argv[2];
-  colStr = argv[3];
-  std::string rowStrSub(rowStr.begin() + 4, rowStr.end());
-  std::string colStrSub(colStr.begin() + 4, colStr.end());
-  row = atoi(rowStrSub.c_str());
-  col = atoi(colStrSub.c_str());
   if (row <=0 || col <=0) {
     std::cerr << "Row and Col must be positive" << std::endl;
     return -1;
@@ -438,7 +511,7 @@ int main(int argc, char** argv) {
     if (*it != ' ') 
       expNoSpace += *it;
   }
-  std::vector<std::string> vec = stringParser(expNoSpace);
+  std::vector<std::string> vec = stringParser(expNoSpace); 
   std::vector<std::string> result = infix2rpn(vec);
   SymbolicSMFunc func = compSMDerivative(result, row , col);
   std::cout << "Function:   " << func.functionVal.getString() << std::endl;

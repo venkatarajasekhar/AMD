@@ -233,6 +233,43 @@ ScalarMatrixFunc<MT,ST> operator*( const ScalarMatrixFunc<MT,ST> &lhs,
 }
 
 /**
+ * @brief Operator overloading for "*".
+ *
+ * @tparam MT Matrix Type.
+ * @tparam ST Scalar Type.
+ *
+ * @param[in] lhs
+ * @param[in] rhs
+ * 
+ * @return lhs * rhs
+ */
+// TODO  add derivativeFunc
+template <class MT, class ST> 
+ScalarMatrixFunc<MT,ST> operator*( const ST &lhs,
+				   const ScalarMatrixFunc<MT,ST> &rhs ) {
+  ScalarMatrixFunc<MT,ST> f(lhs,rhs.derivativeVal.getNumRows(),rhs.derivativeVal.getNumRows());
+  return(f*rhs);
+}
+
+/**
+ * @brief Operator overloading for "*".
+ *
+ * @tparam MT Matrix Type.
+ * @tparam ST Scalar Type.
+ *
+ * @param[in] lhs
+ * @param[in] rhs
+ * 
+ * @return lhs * rhs
+ */
+// TODO  add derivativeFunc
+template <class MT, class ST> 
+ScalarMatrixFunc<MT,ST> operator*( const ScalarMatrixFunc<MT,ST> &lhs,
+           const ST &rhs) {
+  ScalarMatrixFunc<MT,ST> f(rhs,lhs.derivativeVal.getNumCols(),lhs.derivativeVal.getNumCols());
+  return(lhs*f);
+}
+/**
  * @brief Operator overloading for "/".
  *
  * @tparam MT Matrix Type.
