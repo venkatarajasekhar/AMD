@@ -17,18 +17,29 @@ add_dependencies (cxx_tests TestMatrixMatrixFunc)
 add_executable (SymbolicCalculator SymbolicCalculator.cpp)
 add_dependencies (cxx_tests SymbolicCalculator)
 
+add_executable (SymbolicSample SymbolicSample.cpp)
+add_dependencies (cxx_tests SymbolicSample)
+
+add_executable (TaylorSample TaylorSample.cpp)
+add_dependencies (cxx_tests TaylorSample)
 ##############################################################################
 # This is the right way to create an executable with Elemental
 if (USE_ELEMENTAL)
   add_executable (TestElementalAdaptor TestElementalAdaptor.cpp)
   add_dependencies (cxx_tests TestElementalAdaptor)
+  add_executable (ElementalSample ElementalSample.cpp)
+  add_dependencies (cxx_tests ElementalSample)
 
   # You have to add link to Elemental_LIBRARIES for all executables!  
   target_link_libraries (TestElementalAdaptor "-lm")
   target_link_libraries (TestElementalAdaptor ${Elemental_LIBRARIES})
+  target_link_libraries (ElementalSample "-lm")
+  target_link_libraries (ElementalSample ${Elemental_LIBRARIES})
   target_link_libraries (TestMatrixMatrixFunc ${Elemental_LIBRARIES})
   target_link_libraries (SymbolicCalculator   ${Elemental_LIBRARIES})
   target_link_libraries (TestSymbolicMatrices ${Elemental_LIBRARIES})
+  target_link_libraries (SymbolicSample ${Elemental_LIBRARIES})
+  target_link_libraries (TaylorSample ${Elemental_LIBRARIES})
 
   # Use MPI to compile TestElementalAdaptor
   if (MPI_COMPILE_FLAGS)
