@@ -82,10 +82,10 @@ void constOp(boost::shared_ptr<MT> result,
              boost::shared_ptr<MT> current, 
 	           boost::shared_ptr<MT> currentLeft, 
              boost::shared_ptr<MT> currentRight,
-             boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF,
-             boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  leftMMF,
-             boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  rightMMF,
              boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF,
+             boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF,
+             boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF,
+             boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF,
 	           const MatrixMatrixFunc<MT,ST>* node, 
 	           int& transposeFlag,
 	           bool& identityCurrentFlag, 
@@ -121,10 +121,10 @@ void varOp(boost::shared_ptr<MT> result,
 	   boost::shared_ptr<MT> current, 
 	   boost::shared_ptr<MT> currentLeft, 
 	   boost::shared_ptr<MT> currentRight,
-     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
-     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  rightMMF ,
-     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  leftMMF ,
      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF ,
+     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
+     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF ,
+     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF ,
 	   const MatrixMatrixFunc<MT,ST>* node, 
 	   int& transposeFlag,
 	   bool& identityCurrentFlag, 
@@ -186,10 +186,10 @@ void plusOp( boost::shared_ptr<MT> result,
 	     boost::shared_ptr<MT> current, 
 	     boost::shared_ptr<MT> currentLeft, 
 	     boost::shared_ptr<MT> currentRight,
-       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
-       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  rightMMF ,
-       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  leftMMF ,
        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF ,
+       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
+       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF ,
+       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF ,
 	     const MatrixMatrixFunc<MT,ST>* node, 
 	     int& transposeFlag,
 	     bool& identityCurrentFlag, 
@@ -203,8 +203,8 @@ void plusOp( boost::shared_ptr<MT> result,
 	  currentRight.use_count()>=1 );
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   if (currentMMF) {
-    rightMMF->deepCopy(*currentMMF);
-    leftMMF->deepCopy(*currentMMF);
+    currentRightMMF->deepCopy(*currentMMF);
+    currentLeftMMF->deepCopy(*currentMMF);
   }
   MatrixAdaptorType::copy(*currentLeft, *current);
   MatrixAdaptorType::copy(*currentRight, *current);
@@ -263,10 +263,10 @@ void minusOp( boost::shared_ptr<MT> result,
 	      boost::shared_ptr<MT> current, 
 	      boost::shared_ptr<MT> currentLeft, 
 	      boost::shared_ptr<MT> currentRight,
-        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
-        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  rightMMF ,
-        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  leftMMF ,
         boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF ,
+        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
+        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF ,
+        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF ,
 	      const MatrixMatrixFunc<MT,ST>* node, 
 	      int& transposeFlag,
 	      bool& identityCurrentFlag, 
@@ -280,9 +280,9 @@ void minusOp( boost::shared_ptr<MT> result,
 	        currentLeft.use_count()>=1 && 
 	        currentRight.use_count()>=1 );
   MatrixAdaptorType::copy(*currentLeft, *current);
-  leftMMF->deepCopy(*currentMMF);
+  currentLeftMMF->deepCopy(*currentMMF);
   MatrixAdaptorType::negation((*current), (*currentRight));
-  rightMMF->deepCopy(-(*currentMMF));
+  currentRightMMF->deepCopy(-(*currentMMF));
   if (transposeFlag) {
     transposeFlag=3; // both currentLeft and currentRight should inherit transpose
   }
@@ -333,10 +333,10 @@ void negationOp( boost::shared_ptr<MT> result,
 		  boost::shared_ptr<MT> current, 
 		  boost::shared_ptr<MT> currentLeft, 
 		  boost::shared_ptr<MT> currentRight,
-      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
-      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  rightMMF ,
-      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  leftMMF ,
       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF ,
+      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
+      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF ,
+      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF ,
 		  const MatrixMatrixFunc<MT,ST>* node, 
 		  int& transposeFlag,
 		  bool& identityCurrentFlag, 
@@ -351,7 +351,7 @@ void negationOp( boost::shared_ptr<MT> result,
 	  currentLeft.use_count()>=1 );
   // *currentLeft = *current;
   MatrixAdaptorType::negation ((*current), (*currentLeft));
-  leftMMF->deepCopy(-(*currentMMF));
+  currentLeftMMF->deepCopy(-(*currentMMF));
   if (transposeFlag) {
     transposeFlag = 3;  // both currentLeft and currentRight should inherit transpose.
   }
@@ -403,10 +403,10 @@ void timesOp( boost::shared_ptr<MT> result,
 	      boost::shared_ptr<MT> current, 
 	      boost::shared_ptr<MT> currentLeft, 
 	      boost::shared_ptr<MT> currentRight,
-        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
-        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  rightMMF ,
-        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  leftMMF ,
         boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF ,
+        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
+        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF ,
+        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF ,
 	      const MatrixMatrixFunc<MT,ST>* node, 
 	      int& transposeFlag,
 	      bool& identityCurrentFlag, 
@@ -424,19 +424,19 @@ void timesOp( boost::shared_ptr<MT> result,
     if (TRANSPOSE == node->rightChild->opNum) {
       // if currentRight is R^T then get R from it's currentLeft child
       (*currentLeft) = *(node->rightChild->leftChild->matrixPtr);
-      leftMMF->deepCopy(*(node->rightChild->leftChild));
+      currentLeftMMF->deepCopy(*(node->rightChild->leftChild));
     } else {
       (*currentLeft) = *(node->rightChild->matrixPtr);
-      leftMMF->deepCopy(*(node->rightChild));
+      currentLeftMMF->deepCopy(*(node->rightChild));
       transposeFlag |= 1; // set currentLeft transpose on
     }
     if (TRANSPOSE==node->leftChild->opNum) {
       // if currentRight is R^T then get R from it's currentLeft child
       (*currentRight) = *(node->leftChild->leftChild->matrixPtr);
-      rightMMF->deepCopy(*(node->leftChild->leftChild));
+      currentRightMMF->deepCopy(*(node->leftChild->leftChild));
     } else {
       (*currentRight) = *(node->leftChild->matrixPtr);
-      rightMMF->deepCopy(*(node->leftChild));
+      currentRightMMF->deepCopy(*(node->leftChild));
       transposeFlag |= 2; // set currentRight transpose on
     }
     identityCurrentFlag = false;
@@ -448,24 +448,24 @@ void timesOp( boost::shared_ptr<MT> result,
       MatrixAdaptorType::multiply(*(node->rightChild->matrixPtr), 
                                   *current, 
                                   *currentLeft);
-      leftMMF->deepCopy((*(node->rightChild))* (*currentMMF));
+      currentLeftMMF->deepCopy((*(node->rightChild))* (*currentMMF));
       // Why is this comment here? Peder?
       //(*currentRight) = transpose(node->leftChild->val) * transpose(*current);
       MatrixAdaptorType::multiply(*current, 
                                   *(node->leftChild->matrixPtr), 
                                   *currentRight);
-      rightMMF->deepCopy((*currentMMF) * (*(node->leftChild)));
+      currentRightMMF->deepCopy((*currentMMF) * (*(node->leftChild)));
       transposeFlag = 3;
     } else {
       MT rcTrans, lcTrans;
       // currentLeft = current * currentRight->matrix^T
       MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), rcTrans);
       MatrixAdaptorType::multiply(*current, rcTrans, *currentLeft);
-      leftMMF->deepCopy((*currentMMF) * transpose(*(node->rightChild)));
+      currentLeftMMF->deepCopy((*currentMMF) * transpose(*(node->rightChild)));
       // currentRight = currentLeft->matrix^T * current
       MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), lcTrans);
       MatrixAdaptorType::multiply(lcTrans, *current, *currentRight);
-      rightMMF->deepCopy((*(node->leftChild)) * (*currentMMF));
+      currentRightMMF->deepCopy((*(node->leftChild)) * (*currentMMF));
       transposeFlag = 0;
     }
   }
@@ -522,10 +522,10 @@ void mtimessOp(boost::shared_ptr<MT> result,
 	      boost::shared_ptr<MT> current, 
 	      boost::shared_ptr<MT> currentLeft, 
 	      boost::shared_ptr<MT> currentRight,
-        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
-        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  rightMMF ,
-        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  leftMMF ,
         boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF ,
+        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
+        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF ,
+        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF ,
 	      const MatrixMatrixFunc<MT,ST>* node, 
 	      int& transposeFlag,
 	      bool& identityCurrentFlag, 
@@ -584,14 +584,14 @@ void mtimessOp(boost::shared_ptr<MT> result,
  if (transpose) {
    MatrixAdaptorType::multiply(*current, node->scalarChild->functionVal, 
    *currentLeft);
-   leftMMF->deepCopy((*currentMMF) * (*node->scalarChild));
+   currentLeftMMF->deepCopy((*currentMMF) * (*node->scalarChild));
    transposeFlag = 3;
  } else {
    MT cTrans;
    MatrixAdaptorType::transpose(*current, cTrans);
    MatrixAdaptorType::multiply(cTrans, node->scalarChild->functionVal,
    *currentLeft);
-   leftMMF->deepCopy(transpose(*currentMMF) * (*node->scalarChild));
+   currentLeftMMF->deepCopy(transpose(*currentMMF) * (*node->scalarChild));
    transposeFlag = 0;
  }
  identityCurrentFlag = false;
@@ -654,10 +654,10 @@ void stimesmOp( boost::shared_ptr<MT> result,
 	      boost::shared_ptr<MT> current, 
 	      boost::shared_ptr<MT> currentLeft, 
 	      boost::shared_ptr<MT> currentRight,
-        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
-        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  rightMMF ,
-        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  leftMMF ,
         boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF ,
+        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
+        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF ,
+        boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF ,
 	      const MatrixMatrixFunc<MT,ST>* node, 
 	      int& transposeFlag,
 	      bool& identityCurrentFlag, 
@@ -715,14 +715,14 @@ void stimesmOp( boost::shared_ptr<MT> result,
  if (transpose) {
    MatrixAdaptorType::multiply(*current, node->scalarChild->functionVal, 
    *currentLeft);
-   leftMMF->deepCopy((*currentMMF) * (*node->scalarChild));
+   currentLeftMMF->deepCopy((*currentMMF) * (*node->scalarChild));
    transposeFlag = 3;
  } else {
    MT cTrans;
    MatrixAdaptorType::transpose(*current, cTrans);
    MatrixAdaptorType::multiply(cTrans, node->scalarChild->functionVal,
    *currentLeft);
-   leftMMF->deepCopy(transpose(*currentMMF) * (*node->scalarChild));
+   currentLeftMMF->deepCopy(transpose(*currentMMF) * (*node->scalarChild));
    transposeFlag = 0;
  }
  identityCurrentFlag = false;
@@ -773,10 +773,10 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
                      boost::shared_ptr<MT>   current,
                      boost::shared_ptr<MT>   currentLeft,
                      boost::shared_ptr<MT>   currentRight,
-                     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF,
-                     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  rightMMF,
-                     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  leftMMF,
                      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF,
+                     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF,
+                     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF,
+                     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF,
                      const MatrixMatrixFunc<MT,ST>* node,
                      int& transposeFlag,
                      bool& identityCurrentFlag,
@@ -800,26 +800,26 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
                                           leftChild->matrixPtr),
                                          *(current),
                                          *currentLeft);
-      leftMMF->deepCopy((*(node->rightChild->leftChild)) * (*currentMMF));
+      currentLeftMMF->deepCopy((*(node->rightChild->leftChild)) * (*currentMMF));
       
     } else {
       MatrixAdaptorType::elementwiseProduct(*(node->rightChild->matrixPtr),
                                          *current, 
                                          *currentLeft);
-      leftMMF->deepCopy((*(node->rightChild)) * (*currentMMF));
+      currentLeftMMF->deepCopy((*(node->rightChild)) * (*currentMMF));
     }
     if (TRANSPOSE == node->leftChild->opNum) {
       MatrixAdaptorType::elementwiseProduct(*(node->leftChild-> \
                                          leftChild->matrixPtr),
                                          *current,
                                          *currentRight);
-      rightMMF->deepCopy(elementwiseProduct((*(node->leftChild->leftChild)),
+      currentRightMMF->deepCopy(elementwiseProduct((*(node->leftChild->leftChild)),
                                              (*currentMMF)));
     } else {
       MatrixAdaptorType::elementwiseProduct(*(node->leftChild->matrixPtr),
                                          *current,
                                          *currentRight);
-      rightMMF->deepCopy(elementwiseProduct((*(node->leftChild)),
+      currentRightMMF->deepCopy(elementwiseProduct((*(node->leftChild)),
                                              (*currentMMF)));
     }
     identityCurrentFlag = 0;
@@ -828,22 +828,22 @@ void elementwiseOp ( boost::shared_ptr<MT>   result,
     MT lcTrans, rcTrans;
     MatrixAdaptorType::transpose(*(node->leftChild->matrixPtr), lcTrans);
     MatrixAdaptorType::elementwiseProduct(lcTrans, *(current), *currentRight);
-    rightMMF->deepCopy(elementwiseProduct(transpose(*(node->leftChild)),
+    currentRightMMF->deepCopy(elementwiseProduct(transpose(*(node->leftChild)),
                                            *currentMMF));
     MatrixAdaptorType::transpose(*(node->rightChild->matrixPtr), rcTrans);
     MatrixAdaptorType::elementwiseProduct(rcTrans, *(current), *currentLeft);
-    leftMMF->deepCopy(elementwiseProduct(transpose(*(node->rightChild)), 
+    currentLeftMMF->deepCopy(elementwiseProduct(transpose(*(node->rightChild)), 
                                           *currentMMF));
     transposeFlag = 3;
   } else {
     MatrixAdaptorType::elementwiseProduct(*(node->leftChild->matrixPtr), 
                                        *(current), 
                                        *currentRight);
-    rightMMF->deepCopy(elementwiseProduct((*(node->leftChild)), *currentMMF));
+    currentRightMMF->deepCopy(elementwiseProduct((*(node->leftChild)), *currentMMF));
     MatrixAdaptorType::elementwiseProduct(*(node->rightChild->matrixPtr), 
                                        *(current), 
                                        *currentLeft);
-    leftMMF->deepCopy(elementwiseProduct((*(node->rightChild)), *currentMMF));
+    currentLeftMMF->deepCopy(elementwiseProduct((*(node->rightChild)), *currentMMF));
     transposeFlag = 0;
   }
   }
@@ -885,10 +885,10 @@ void transposeOp( boost::shared_ptr<MT> result,
 		  boost::shared_ptr<MT> current, 
 		  boost::shared_ptr<MT> currentLeft, 
 		  boost::shared_ptr<MT> currentRight,
-      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
-      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  rightMMF ,
-      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  leftMMF ,
       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF ,
+      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
+      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF ,
+      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF ,
 		  const MatrixMatrixFunc<MT,ST>* node, 
 		  int& transposeFlag,
 		  bool& identityCurrentFlag, 
@@ -903,7 +903,7 @@ void transposeOp( boost::shared_ptr<MT> result,
 	  currentLeft.use_count()>=1 );
   // *currentLeft = *current;
   MatrixAdaptorType::copy ((*currentLeft), (*current));
-  leftMMF->deepCopy(*currentMMF);
+  currentLeftMMF->deepCopy(*currentMMF);
   if (!identityCurrentFlag) {
     if (transposeFlag) {
       transposeFlag = 0;
@@ -952,10 +952,10 @@ void diagOp ( boost::shared_ptr<MT>   result,
               boost::shared_ptr<MT>   current,
               boost::shared_ptr<MT>   currentLeft,
               boost::shared_ptr<MT>   currentRight,
-              boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
-              boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  rightMMF ,
-              boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  leftMMF ,
               boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF ,
+              boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
+              boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF ,
+              boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF ,
               const MatrixMatrixFunc<MT,ST>* node, // current node.
               int& transposeFlag,
               bool& identityCurrentFlag,
@@ -968,7 +968,7 @@ void diagOp ( boost::shared_ptr<MT>   result,
           current.use_count() >= 1 &&
           currentLeft.use_count() >= 1 );
   MatrixAdaptorType::diag((*current), (*currentLeft));
-  leftMMF->deepCopy(*currentMMF);
+  currentLeftMMF->deepCopy(*currentMMF);
 }
 
 /**
@@ -1015,10 +1015,10 @@ void invOp( boost::shared_ptr<MT> result,
 	    boost::shared_ptr<MT> current, 
 	    boost::shared_ptr<MT> currentLeft, 
 	    boost::shared_ptr<MT> currentRight,
-      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
-      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  rightMMF ,
-      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  leftMMF ,
       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF ,
+      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF ,
+      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF ,
+      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF ,
 	    const MatrixMatrixFunc<MT,ST>* node, 
 	    int& transposeFlag,
 	    bool& identityCurrentFlag, 
@@ -1039,7 +1039,7 @@ void invOp( boost::shared_ptr<MT> result,
       MatrixAdaptorType::multiply(*initMat, lhsTimesRhs1, lhsTimesRhs2);
       MatrixAdaptorType::negation(lhsTimesRhs2, cNeg);
       MatrixAdaptorType::copy((*currentLeft), cNeg);      
-      leftMMF->deepCopy(-((*node)*(*currentMMF) * (*node)));
+      currentLeftMMF->deepCopy(-((*node)*(*currentMMF) * (*node)));
 
     } else {
       MT cTrans, lhsTimesRhs1, lhsTimesRhs2, cNeg;
@@ -1048,14 +1048,14 @@ void invOp( boost::shared_ptr<MT> result,
       MatrixAdaptorType::multiply(*initMat, lhsTimesRhs1, lhsTimesRhs2);
       MatrixAdaptorType::negation(lhsTimesRhs2, cNeg);
       MatrixAdaptorType::copy((*currentLeft), cNeg);
-      leftMMF->deepCopy(-((*node)*transpose(*currentMMF) * (*node)));
+      currentLeftMMF->deepCopy(-((*node)*transpose(*currentMMF) * (*node)));
     }
   } else {
     MT lhsTimesRhs, lcNeg;
     MatrixAdaptorType::multiply(*initMat, *initMat, lhsTimesRhs);
     MatrixAdaptorType::negation(lhsTimesRhs, lcNeg);
     MatrixAdaptorType::copy((*currentLeft), lcNeg);
-    leftMMF->deepCopy(-((*node)*(*node)));
+    currentLeftMMF->deepCopy(-((*node)*(*node)));
   }
   transposeFlag = 3;
   identityCurrentFlag = false;
