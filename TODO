@@ -93,6 +93,14 @@ void negationOp( boost::shared_ptr<MT> result,
   If you apply the chain rule, you get mis-matched dimensions, but in the 
   answers, you get something with elementWise product in it. How?
 
+- Create presentations that are accurate with respect to what happens within 
+  the library. This can be an animation or PPT or a beamer presentation. 
+
+- TODOs from the other day at IBM were:
+    -- Common sub-expression elimination
+    -- Support for Eigen matrix package
+    -- Avoid duplicating MMFunc nodes.
+
 Discussion with Suyang (August 19th):
 -------------------------------------
 The files that implement the core functionality is in "AMD" subdirectory.
