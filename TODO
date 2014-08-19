@@ -18,15 +18,18 @@ Taylor_Expansion branch:
 From Peder and Anju:
 --------------------
 - Common subexpression elimination
+
 - MatrixAdaptor needs to be used to create a new matrix. Currently we just say
   "new MT", which is wrong. This also means that currently we have to resize 
   any matrix before performing operations --- take a look at 
   ElementalMatrixAdaptor::add() as an example. I have added a new function 
-  in MatrixAdaptor (func number 0).
+  in MatrixAdaptor (func number 0). ****
+
 - Constructor of MMFunc takes in MatrixType by value. Then it creates a new 
   copy constructed MatrixType from this copy. Ideally, we should not even 
   have one copy, let alone two. Furthermore, we are assuming the presence 
-  of a copy constructor. We have to go through MatrixAdaptor instead.
+  of a copy constructor. We have to go through MatrixAdaptor instead ****
+
 - The order of the MMF arguments has to be the same as that of the matrices.
   Otherwise, people get really confused. For example:
 
@@ -61,12 +64,12 @@ void negationOp( boost::shared_ptr<MT> result,
       bool& zeroResultFlag) {
 
 - In binOpSet(), why do you need to deepCopy() the right and left children?
-  Isn't it sufficient to simply point to them?
+  Isn't it sufficient to simply point to them? (****)
 
 - All pointers should be boost::shared_ptr<>. There are some that are not, 
   which is dangerous. binOpSet() should accept boost::shared_ptr<> to it's 
   children. Remember to change the calling sites of boost::shared_ptr<> 
-  in MatrixMatrixFuncHelper() --- this is +, -, *, .*
+  in MatrixMatrixFuncHelper() --- this is +, -, *, .* (****)
 
 - Same problem as above with unaryOpSet(). Fix it.
 
@@ -100,6 +103,10 @@ void negationOp( boost::shared_ptr<MT> result,
     -- Common sub-expression elimination
     -- Support for Eigen matrix package
     -- Avoid duplicating MMFunc nodes.
+
+- Anju will send an example slide out on documenting how a function such as 
+  trace((A+X)*X) is evaluated inside AMD. Suyang will add similar examples for
+  other ScalarMatrix functions and also for functions such as trace(trace(X)*X)
 
 Discussion with Suyang (August 19th):
 -------------------------------------
