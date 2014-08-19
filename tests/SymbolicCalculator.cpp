@@ -71,7 +71,7 @@ class Stack {
 };
 
 /**
- * @brief A useer-defined stack container.
+ * @brief A user-defined stack container.
  *        The stack uses a array for internal 
  *        storage of object. The maximum size 
  *        is 100.

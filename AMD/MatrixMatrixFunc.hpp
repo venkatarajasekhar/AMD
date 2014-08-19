@@ -7,8 +7,9 @@
  * @author Peder Olsen, Anju Kambadur
  *
  * @brief This file defines a class to present Matrix-Matrix function. This 
- * class act as nodes in  the computational tree. The computation of matrix 
- * derivatives is by traversing the computation tree in the reverse mode.
+ * class acts as nodes in the computational tree. The computation of matrix 
+ * derivatives is performed by traversing the computation tree in the reverse
+ * mode.
  */
 
 #include <iostream>
@@ -40,15 +41,15 @@ class MatrixMatrixFunc {
 public:
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   typedef MatrixMatrixFunc<MT, ST> MatrixMatrixFunctionType;
-  typedef MatrixMatrixFunctionType MMFT;
+  typedef MatrixMatrixFunctionType MMF;
   typedef void (*CallBackFuncType)(boost::shared_ptr<MT>, 
 				                           boost::shared_ptr<MT>,
 				                           boost::shared_ptr<MT>, 
 				                           boost::shared_ptr<MT>,
-                                   boost::shared_ptr<MMFT>,/**< current MMFT.*/
-                                   boost::shared_ptr<MMFT>,/**< left MMFT. */
-                                   boost::shared_ptr<MMFT>,/**< right MMFT. */
-                                   boost::shared_ptr<MMFT>,/**< result MMFT. */
+                                   boost::shared_ptr<MMF>,/**< current MMF.*/
+                                   boost::shared_ptr<MMF>,/**< left MMF. */
+                                   boost::shared_ptr<MMF>,/**< right MMF. */
+                                   boost::shared_ptr<MMF>,/**< result MMF. */
 				                           const MatrixMatrixFunc<MT,ST>*,
 				                           int&, bool&, bool&);
 
@@ -60,9 +61,15 @@ public:
   bool isConst; /**< is this a variable or a constant function */
   int varNumRows; /**< number of rows in matrix variable */
   int varNumCols; /**< number of cols in matrix variable */
+#if 1
   MatrixMatrixFunc* leftChild; /**< optional left child */
   MatrixMatrixFunc* rightChild; /**< optional right child */
   ScalarMatrixFunc<MT, ST>* scalarChild; /**< scalar func * matrix func. */
+#else
+  boost::shared_ptr<MatrixMatrixFunc> leftChild; /**< optional left child */
+  boost::shared_ptr<MatrixMatrixFunc> rightChild; /**< optional right child */
+  boost::shared_ptr<ScalarMatrixFunc<MT, ST> > scalarChild; /**< scalar func * matrix func. */
+#endif
 
   // TODO think about an extra scalar value here
   /**
@@ -77,15 +84,13 @@ public:
                        varNumCols(0), 
 			                 leftChild(NULL), 
                        rightChild(NULL),
-                       scalarChild(NULL)
-  //                     matrixVal()
-                       { }
+                       scalarChild(NULL) { }
 
   /**
    * @brief Makes an expensive copy of matrix -- avoid this constructor
    * if your matrices are large.
    */ 
-  MatrixMatrixFunc(MT matrix, bool isConst=true) : matrixPtr(), 
+  MatrixMatrixFunc(const MT& matrix, bool isConst=true) : matrixPtr(), 
                                                    callBackFunc(NULL), 
                                                    opNum(NONE),
                                                    isConst(isConst),
@@ -93,13 +98,12 @@ public:
                                                    varNumCols(0), 
                                                    leftChild(NULL), 
                                                    rightChild(NULL),
-                                                   scalarChild(NULL)
-                        //                           matrixVal() 
-                                                   {
+                                                   scalarChild(NULL) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+
     // Makes an deep-copy of the matrix.
+    // TODO: new MT(matrix) should really be MatrixAdaptorType::copy()
     boost::shared_ptr<MT> copy (new MT(matrix));
-//    matrixVal = matrix;
     matrixPtr = copy;
     setVariableType (isConst);
   }
@@ -107,8 +111,6 @@ public:
   /**
    * @brief Constructor with a MT type variable.
    */
-    
-
   MatrixMatrixFunc(boost::shared_ptr<MT> matrixPtr, 
                    bool isConst=true) : matrixPtr(matrixPtr),
                                         callBackFunc(NULL), 
@@ -118,10 +120,7 @@ public:
                                         varNumCols(0), 
                                         leftChild(NULL), 
                                         rightChild(NULL),
-                                        scalarChild(NULL)
-          //                              matrixVal()
-                                         {
-//    matrixVal = *matrixPtr;
+                                        scalarChild(NULL) {
     setVariableType (isConst);
   }
 
@@ -169,7 +168,6 @@ public:
     if (NULL!=leftChild) delete leftChild;
     if (NULL!=rightChild) delete rightChild;
     if (NULL != scalarChild) delete scalarChild;
-//    if (NULL != derivativeMMFunc) delete derivativeMMFunc;
   }
 
   /**
@@ -184,7 +182,6 @@ public:
    * @return Nothing
    */ 
   void shallowCopy(const MatrixMatrixFunc &other) { 
-//    matrixVal = other.matrixVal;
     matrixPtr = other.matrixPtr;
     opNum = other.opNum;
     isConst = other.isConst;
@@ -223,6 +220,7 @@ public:
       *scalarChild = *other.scalarChild;
     }
   }
+
   /**
    * @brief Create a node with matrix binary operation.
    *
@@ -232,6 +230,7 @@ public:
    * @param[in] lhs The left child node.
    * @param[in] rhs The right child node.
    */
+#if 1
   void binOpSet(boost::shared_ptr<MT> resultPtr,
 		            OpType operatorNum,
 		            CallBackFuncType cbf,
@@ -253,11 +252,38 @@ public:
       varNumRows = 0;
       varNumCols = 0;
     }
+
+    /** TODO: Peder, why is there a deepCopy() here? */
     leftChild = new MatrixMatrixFunc<MT,ST>;
     leftChild->deepCopy(lhs);
     rightChild = new MatrixMatrixFunc<MT,ST>;
     rightChild->deepCopy(rhs);
   }
+#else
+  void binOpSet(boost::shared_ptr<MT> resultPtr,
+		            OpType operatorNum,
+		            CallBackFuncType cbf,
+		            boost::shared_ptr<MatrixMatrixFunc<MT,ST> > lhsMMF, 
+		            boost::shared_ptr<MatrixMatrixFunc<MT,ST> > rhsMMF) { 
+
+    matrixPtr = resultPtr;
+    opNum = operatorNum;
+    callBackFunc = cbf;
+    isConst = lhs.isConst && rhs.isConst;
+
+    if (false==isConst) {
+      varNumRows = MatrixAdaptorType::getNumRows(*matrixPtr);
+      varNumCols = MatrixAdaptorType::getNumCols(*matrixPtr);
+    } else {
+      varNumRows = 0;
+      varNumCols = 0;
+    }
+
+    leftChild = lhsMMF;
+    rightChild = rhsMMF;
+  }
+
+#endif
 
   /**
    * @brief Set the unary operator for this node.
@@ -346,58 +372,79 @@ public:
    *                 
    *
    */
-  void gradientVec(boost::shared_ptr<MT> initial, 
+  void gradientVec(boost::shared_ptr<MT> current, 
 		               boost::shared_ptr<MT> result, 
-                   boost::shared_ptr<MMFT> derivativeMMFT, 
-                   boost::shared_ptr<MMFT> resultMMFT,
+                   boost::shared_ptr<MMF> currentMMF, 
+                   boost::shared_ptr<MMF> resultMMF,
 		               int transposeFlag, 
 		               bool identityInitialFlag,
-		               bool& zeroResultFlag ) const {
+		               bool& zeroResultFlag) const {
 
     /** Make these into individual asserts */
-    assert(initial.use_count()>=1 && 
+    assert(current.use_count()>=1 && 
 	         result.use_count()>=1  &&
 	         isConst || 
            (MatrixAdaptorType::getNumRows(*(result)) == varNumRows &&
 			      MatrixAdaptorType::getNumCols(*(result)) == varNumCols));
 
+    /**
+     * Only need to do something if the current function is not a 
+     * constant
+     */ 
     if (!isConst) { 
-      MT zero= MatrixAdaptorType::zeros(varNumRows, varNumCols);
-      MatrixMatrixFunc<MT, ST> zeroMat(zero, false);
-      boost::shared_ptr<MT> leftPtr(new MT);
-//      if (NULL != leftChild) *leftPtr  = *(leftChild->matrixPtr);
-      boost::shared_ptr<MT> rightPtr(new MT);
-//      if (NULL != rightChild) *rightPtr  = *(rightChild->matrixPtr);
-      boost::shared_ptr<MMFT> leftMMFT(new MMFT);
-      boost::shared_ptr<MMFT> rightMMFT(new MMFT);
+      /** This will be the result matrix for the left child */
+      boost::shared_ptr<MT> currentLeft(new MT);
+
+      /** This will be the result matrix for the right child */
+      boost::shared_ptr<MT> currentRight(new MT);
+
+      /** These two are used for derivative of derivatives */
+      boost::shared_ptr<MMF> leftMMF(new MMF);
+      boost::shared_ptr<MMF> rightMMF(new MMF);
       callBackFunc(result, 
-                   initial, 
-                   leftPtr, 
-                   rightPtr, 
-                   derivativeMMFT,
-                   rightMMFT,
-                   leftMMFT,
-                   resultMMFT,
+                   current, 
+                   currentLeft, 
+                   currentRight, 
+                   currentMMF,
+                   rightMMF,
+                   leftMMF,
+                   resultMMF,
                    this,
 		               transposeFlag,
                    identityInitialFlag, 
                    zeroResultFlag);
+
+      /**
+       * The resultPtr is shared --- both leftChild and rightChild add
+       * to this resultPtr. Therefore we cannot parallelize the calls 
+       * to leftChild and rightChild without cloning the resultPtr.
+       *
+       * Parallelization opportunity here:
+       * (1) leftResultPtr = shared_ptr<>(new MT(*resultPtr));
+       *     rightResultPtr = shared_ptr<>(new MT(*resultPtr));
+       * 
+       * (2) Then call leftChild and rightChild gradientVec() with 
+       * leftResultPtr and rightResultPtr instead of resultPtr in 
+       * parallel.
+       *
+       * (3) *resultPtr = *leftResultPtr + *rightResultPtr
+       */ 
       if (NULL!=leftChild) {
 	      int leftFlag = transposeFlag & 1;
-	      leftChild->gradientVec(leftPtr, 
+	      leftChild->gradientVec(currentLeft, 
 				                       result, 
-                               leftMMFT, 
-                               resultMMFT,  
+                               leftMMF, 
+                               resultMMF,  
 				                       leftFlag, 
 				                       identityInitialFlag,
 				                       zeroResultFlag);
       }
       if (NULL!=rightChild) {
 	      int rightFlag = transposeFlag & 2;
-	      rightChild->gradientVec(rightPtr, 
+	      rightChild->gradientVec(currentRight, 
 				                        result,
-                                rightMMFT,  
-                                resultMMFT,
+                                rightMMF,  
+                                resultMMF,
 				                        rightFlag, 
 				                        identityInitialFlag,
 				                        zeroResultFlag);

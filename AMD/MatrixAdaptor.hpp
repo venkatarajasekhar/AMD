@@ -24,6 +24,15 @@ struct MatrixAdaptor_t {
   /** define matrix_type */
 
   /**
+   * 0. static int createMatrix (int m, int n, std::string name);
+   * Create a matrix of the requested size and name it if possible.
+   * This should replace all occurences of "new MT" because that assumes
+   * there is a default constructor for any matrix type we are using. In 
+   * general, we should not call any matrix function directly and always
+   * should go through MatrixAdaptor_t.
+   */
+
+  /**
    * 1. static int getNumRows (const matrix_type& A);
    * @brief A function to return the number of rows in a matrix
    * @param[in] A The matrix for which we need the number of rows.

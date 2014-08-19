@@ -1,2 +1,9 @@
 build
 ./presentation/build/
+*.aux
+*.log
+*.nav
+*.out
+*.pdf
+*.snm
+*.toc
