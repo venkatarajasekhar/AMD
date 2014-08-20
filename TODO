@@ -30,7 +30,7 @@ From Peder and Anju:
   have one copy, let alone two. Furthermore, we are assuming the presence 
   of a copy constructor. We have to go through MatrixAdaptor instead ****
 
-- The order of the MMF arguments has to be the same as that of the matrices.
+- (DONE)The order of the MMF arguments has to be the same as that of the matrices.
   Otherwise, people get really confused. For example:
 
 template <class MT, class ST>
