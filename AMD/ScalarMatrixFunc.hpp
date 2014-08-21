@@ -131,14 +131,24 @@ ScalarMatrixFunc<MT,ST> operator+( const ScalarMatrixFunc<MT,ST> &lhs,
   assert( lhs.derivativeVal.getNumRows() == rhs.derivativeVal.getNumRows() &&
 	  lhs.derivativeVal.getNumCols() == rhs.derivativeVal.getNumCols() );
   if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
+    // FIXME: I do not know why if I put only *rhs.derivativeFuncVal 
+    // as the third value for SMF constructor(looks like *rhs.derivativeFuncVal
+    // vanish somehow). I create a MMF which is a constant zero and 
+    // put the sum of zero and *rhs.derivativeFuncVal. This leads to 
+    // extra space and unnecessary computation.
+    MT mat = MatrixAdaptor_t<MT>::zeros(rhs.derivativeVal.getNumRows(),
+                                        rhs.derivativeVal.getNumCols());
+    MatrixMatrixFunc<MT, ST> func(mat);
     return( ScalarMatrixFunc<MT,ST>( lhs.functionVal+rhs.functionVal,
-				     rhs.derivativeVal, *rhs.derivativeFuncVal) );
+				     rhs.derivativeVal, func + *rhs.derivativeFuncVal) );
   }
   if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
+    MT mat = MatrixAdaptor_t<MT>::zeros(lhs.derivativeVal.getNumRows(),
+                                        lhs.derivativeVal.getNumCols());
+    MatrixMatrixFunc<MT, ST> func(mat);
     return( ScalarMatrixFunc<MT,ST>( lhs.functionVal+rhs.functionVal,
-				     lhs.derivativeVal, *lhs.derivativeFuncVal) );
+				     lhs.derivativeVal, *lhs.derivativeFuncVal+func ));
   }
-    
   return( ScalarMatrixFunc<MT,ST>( lhs.functionVal+rhs.functionVal,
 				   lhs.derivativeVal+rhs.derivativeVal, 
            *lhs.derivativeFuncVal + *rhs.derivativeFuncVal));
@@ -244,13 +254,14 @@ ScalarMatrixFunc<MT,ST> operator*( const ScalarMatrixFunc<MT,ST> &lhs,
  * @return lhs * rhs
  */
 // TODO  add derivativeFunc
+/*
 template <class MT, class ST> 
 ScalarMatrixFunc<MT,ST> operator*( const ST &lhs,
 				   const ScalarMatrixFunc<MT,ST> &rhs ) {
   ScalarMatrixFunc<MT,ST> f(lhs,rhs.derivativeVal.getNumRows(),rhs.derivativeVal.getNumRows());
   return(f*rhs);
 }
-
+*/
 /**
  * @brief Operator overloading for "*".
  *
@@ -263,12 +274,15 @@ ScalarMatrixFunc<MT,ST> operator*( const ST &lhs,
  * @return lhs * rhs
  */
 // TODO  add derivativeFunc
+// 
+/*
 template <class MT, class ST> 
 ScalarMatrixFunc<MT,ST> operator*( const ScalarMatrixFunc<MT,ST> &lhs,
            const ST &rhs) {
   ScalarMatrixFunc<MT,ST> f(rhs,lhs.derivativeVal.getNumCols(),lhs.derivativeVal.getNumCols());
   return(lhs*f);
 }
+*/
 /**
  * @brief Operator overloading for "/".
  *

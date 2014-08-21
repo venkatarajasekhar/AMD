@@ -52,6 +52,13 @@ void symbolicSample() {
   
  
   
+  AMD::SymbolicScalarMatlab num("10");
+  SymbolicSMFunc constant1(num, ROW, COL);
+  SymbolicSMFunc constant2(num, ROW, COL);
+  SymbolicSMFunc constant3(num, ROW, COL);
+  func = trace(fA*inv(fX)) + constant1 + constant2;
+  std::cout << "Function Value: " << func.functionVal.getString() << std::endl;
+  std::cout << "Derivative Vale: " << func.derivativeVal.getString() << std::endl;
 }
 
 
