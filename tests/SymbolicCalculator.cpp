@@ -240,7 +240,8 @@ bool Calculator::isOp(char c) {
   if (c == '+' || c == '-' ||
       c == '*' || c == '/' ||
       c == 'i' || c == 't' ||
-      c == '(' || c == ')')
+      c == '(' || c == ')' ||
+      c == '.')
     return true;
   else 
     return false;
@@ -250,7 +251,8 @@ bool Calculator::isOpStr(std::string& str) {
   if ( str == "+"   || str == "-"         ||
        str == "*"   || str == "/"         ||
        str == "inv" || str == "transpose" ||
-       str == "("   || str == ")")
+       str == "("   || str == ")"         ||
+       str == ".*")
     return true;
   else 
     return false;  
@@ -271,7 +273,7 @@ int Calculator::priority(char c) {
 int Calculator::priorityStr(std::string& str) {
   if (str == "+" || str == "-") 
     return 1;
-  else if (str == "*" || str == "/") 
+  else if (str == "*" || str == "/" || str == ".*") 
     return 2;
   else if (str == "inv" || str == "transpose") /**< i is inv. t is transpose. */
     return 3;
@@ -305,6 +307,10 @@ std::vector<std::string> Calculator::stringParser(std::string& str) {
     } else 
     if (str[i] == ')') {
       result.push_back(")");
+    } else 
+    if (str[i] == '.') {
+      result.push_back(".*");
+      i +=1;
     } else 
     if (str[i] == 'i') {
       result.push_back("inv");
@@ -483,6 +489,17 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       MMFStack.pop();
       SymbolicMMFunc f3;
       f3.deepCopy(f2*f1);
+      MMFStack.push(f3);
+    } else 
+    if (str[i] == ".*") {
+      SymbolicMMFunc f1;
+      f1.deepCopy( MMFStack.top());
+      MMFStack.pop();
+      SymbolicMMFunc f2;
+      f2.deepCopy(MMFStack.top());
+      MMFStack.pop();
+      SymbolicMMFunc f3;
+      f3.deepCopy(elementwiseProduct(f2, f1));
       MMFStack.push(f3);
     } else 
     if (str[i] == "inv") {
