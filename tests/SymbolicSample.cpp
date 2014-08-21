@@ -49,6 +49,9 @@ void symbolicSample() {
   /** Output the function value and derivative value. */
   std::cout << "Function Value:   "<<func.functionVal.getString()<<std::endl;
   std::cout << "Derivative Value: "<<func.derivativeVal.getString()<<std::endl;
+  
+ 
+  
 }
 
 
