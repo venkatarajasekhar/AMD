@@ -351,7 +351,7 @@ these symbols only. You can also define new symbols in the source code.
 For example:
 `./SymbolicCalculator 'trace(A*trans(X))' row=4 col=4`
 
-`./SymbolicCalcluator '(2*trace(A*inv(X))+5) * logdet(A*X)'`
+`./SymbolicCalculator '(2*trace(A*inv(X))+5) * logdet(A*X)'`
 
 
 
