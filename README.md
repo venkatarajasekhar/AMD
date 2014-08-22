@@ -344,7 +344,7 @@ the size of matrices.
 In the calculator, the inverse of a matrix `X` is written as `inv(X)`
 while the transpose of a matrix `X` is written as `trans(X)`.
 
-Currently the calcluator supports variable matrix `X`, constant matix
+Currently the calculator supports variable matrix `X`, constant matrix
 `A`, `B`, `C`, `I` for identity matrix. Construct the expression using
 these symbols only. You can also define new symbols in the source code.
 
