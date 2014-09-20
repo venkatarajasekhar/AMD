@@ -26,6 +26,12 @@ if (Elemental_FOUND)
   set(AMD_HAVE_ELEMENTAL 1)
 endif(Elemental_FOUND)
 
+# Set AMD_HAVE_EIGEN when we find the include directory
+if (EIGEN3_INCLUDE_DIR)
+  set(ALD_HAVE_EIGEN 1)
+endif(EIGEN3_INCLUDE_DIR)
+
+
 # Set up the configure 
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.h.in 
                 ${CMAKE_CURRENT_BINARY_DIR}/config.h)

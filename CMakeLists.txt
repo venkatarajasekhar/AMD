@@ -179,6 +179,19 @@ endif (USE_ELEMENTAL)
 
 ###############################################################################
 
+option (USE_EIGEN "Build with Eigen Matrix support" ON)
+if (USE_EIGEN)
+  # Find the Eigen package 
+  find_package(Eigen3 REQUIRED)
+
+  # Use the header files in everything you use. We are not using any 
+  # compiled libraries for now.
+  include_directories(${EIGEN3_INCLUDE_DIR})
+
+endif (USE_EIGEN)
+
+###############################################################################
+
 # Add the main subdirectory
 # The order of adding the subdirectories is important --- do not move
 add_subdirectory (AMD)
