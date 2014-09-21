@@ -24,7 +24,7 @@ struct MatrixAdaptor_t {
   /** define matrix_type */
 
   /**
-   * 0. static int createMatrix (int m, int n, std::string name);
+   * 0. static int createMatrix (int m, int n, std::string name="");
    * Create a matrix of the requested size and name it if possible.
    * This should replace all occurences of "new MT" because that assumes
    * there is a default constructor for any matrix type we are using. In 
@@ -57,9 +57,9 @@ struct MatrixAdaptor_t {
    */
 
   /** 
-   * 4.  static void subtract (const matrix_type& A,
-   *                           const matrix_type& B,
-   *                           matrix_type& C);
+   * 4.  static void minus(const matrix_type& A,
+   *                       const matrix_type& B,
+   *                       matrix_type& C);
    * @brief Subtract one matrix from another.
    * @param[in] A The first matrix
    * @param[in] B The second matrix
@@ -146,22 +146,32 @@ struct MatrixAdaptor_t {
    */
 
   /** 
-   * 15.  static void diag(const SymbolicMatrixMatlab& A,
-   *                       SymbolicMatrixMatlab& B);
+   * 15.  static void diag(const matrix_type& A,
+   *                       matrix_type& B);
    * @brief Extract the diagonal elements of a matrix.
    * @param[in] A The (square) matrix whose diagonal is to be extracted.
    * @param[out] B A diagonal matrix containing entries from A.
    */
 
   /** 
-   * 16. static void elementwiseProduct(const SymbolicMatrixMatlab& A,
-   *                                 const SymbolicMatrixMatlab& B,
-   *                                 SymbolicMatrixMatlab& C);
+   * 16. static void elementwiseProduct(const matrix_type& A,
+   *                                    const matrix_type& B,
+   *                                    matrix_type& C);
    * @brief Compute the element-wise product of two matrices.
    * @param[in] A the first matrix.
    * @param[in] B the second matrix.
    * @param[out] C the result, which contains A.*B.
    */ 
+
+  /**
+   * 17. static void multiply(const matrix_type& A,
+   *                          const value_type& a,
+   *                          matrix_type& B);
+   * @brief Multiply a matrix with a scalar
+   * @param[in] A the matrix.
+   * @param[in] a the scalar.
+   * @param[out] B the result, which contains A*a.
+   */
 };
 
 }

@@ -745,11 +745,12 @@ MatrixMatrixFunc<MT,ST> operator* (const ScalarMatrixFunc<MT,ST> &lhs,
   if (STIMESM != rhs.opNum) {
     MT lhsTimesRhs;
     // matrix times scalar
-    MatrixAdaptorType::multiply((lhs.functionVal), *(rhs.matrixPtr),
-    lhsTimesRhs);
+    MatrixAdaptorType::multiply(*(rhs.matrixPtr), 
+                                (lhs.functionVal),
+                                lhsTimesRhs);
     boost::shared_ptr<MT> stimesmPtr(new MT((lhsTimesRhs)));
-    // Initialize new node with mtimess operator.
-    // This is a unary op
+
+    // Initialize new node with mtimess operator.  This is a unary op
     result.unaryOpSet(stimesmPtr, STIMESM, stimesmOp<MT, ST>, rhs);
 
     // the pointer points to scalar function.

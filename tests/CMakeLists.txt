@@ -57,22 +57,30 @@ endif (USE_ELEMENTAL)
 ##############################################################################
 # This is the right way to create an executable with Eigen
 if (USE_EIGEN)
-  add_executable (TestEigenAdaptor TestEigenAdaptor.cpp)
-  add_dependencies (cxx_tests TestEigenAdaptor)
+  add_executable (TestDenseEigenAdaptor TestDenseEigenAdaptor.cpp)
+  add_dependencies (cxx_tests TestDenseEigenAdaptor)
+
+  add_executable (TestSparseEigenAdaptor TestSparseEigenAdaptor.cpp)
+  add_dependencies (cxx_tests TestSparseEigenAdaptor)
 
   # You need to do something special to dynamically link with boost log
-  # Uncomment this line when you have a use for boost::logger 
-  # set_target_properties(TestEigenAdaptor PROPERTIES 
-  #                       COMPILE_FLAGS 
-  #                       "-DBOOST_LOG_DYN_LINK -Wno-deprecated-register")
+  #Uncomment this line when you have a use for boost::logger 
+  #set_target_properties(TestEigenAdaptor PROPERTIES 
+  #                      COMPILE_FLAGS 
+  #                      "-DBOOST_LOG_DYN_LINK -Wno-deprecated-register")
 
   # You have to add link to Eigen_LIBRARIES for all executables!  
-  target_link_libraries (TestEigenAdaptor "-lm")
-  target_link_libraries (TestEigenAdaptor ${Boost_LIBRARIES})
+  target_link_libraries (TestDenseEigenAdaptor "-lm")
+  target_link_libraries (TestDenseEigenAdaptor ${Boost_LIBRARIES})
 
-  if (USE_MATRIX_MARKET)
-    target_link_libraries(TestEigenAdaptor ${MatrixMarket_LIBRARY})
-  endif (USE_MATRIX_MARKET)
+  target_link_libraries (TestSparseEigenAdaptor "-lm")
+  target_link_libraries (TestSparseEigenAdaptor ${Boost_LIBRARIES})
+
+  #Uncomment when you have support for MatrixMarket
+  #if (USE_MATRIX_MARKET)
+  #  target_link_libraries(TestDenseEigenAdaptor ${MatrixMarket_LIBRARY})
+  #  target_link_libraries(TestSparseEigenAdaptor ${MatrixMarket_LIBRARY})
+  #endif (USE_MATRIX_MARKET)
 
 endif (USE_EIGEN)
 ##############################################################################
