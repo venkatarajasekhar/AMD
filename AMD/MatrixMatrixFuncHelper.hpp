@@ -1,5 +1,5 @@
-#ifndef MatrixMatrixFunHelper_H
-#define MatrixMatrixFuncHelper_H
+#ifndef MatrixMatrixFuncHelper_HPP
+#define MatrixMatrixFuncHelper_HPP
 
 /**
  * @file MatrixMatrixFuncHelper.hpp
@@ -578,23 +578,21 @@ void mtimessOp(boost::shared_ptr<MT> result,
                   (*node->scalarChild->derivativeFuncVal)*scalarFunc);
     }
   }
-  
-
  
- if (transpose) {
-   MatrixAdaptorType::multiply(*current, node->scalarChild->functionVal, 
-   *currentLeft);
-   currentLeftMMF->deepCopy((*currentMMF) * (*node->scalarChild));
-   transposeFlag = 3;
- } else {
-   MT cTrans;
-   MatrixAdaptorType::transpose(*current, cTrans);
-   MatrixAdaptorType::multiply(cTrans, node->scalarChild->functionVal,
-   *currentLeft);
-   currentLeftMMF->deepCopy(transpose(*currentMMF) * (*node->scalarChild));
-   transposeFlag = 0;
- }
- identityCurrentFlag = false;
+  if (transposeFlag) {
+    MatrixAdaptorType::multiply(*current, node->scalarChild->functionVal, 
+    *currentLeft);
+    currentLeftMMF->deepCopy((*currentMMF) * (*node->scalarChild));
+    transposeFlag = 3;
+  } else {
+    MT cTrans;
+    MatrixAdaptorType::transpose(*current, cTrans);
+    MatrixAdaptorType::multiply(cTrans, node->scalarChild->functionVal,
+    *currentLeft);
+    currentLeftMMF->deepCopy(transpose(*currentMMF) * (*node->scalarChild));
+    transposeFlag = 0;
+  }
+  identityCurrentFlag = false;
 }
 
 /**
@@ -712,20 +710,20 @@ void stimesmOp( boost::shared_ptr<MT> result,
     }
   }
  
- if (transpose) {
-   MatrixAdaptorType::multiply(*current, node->scalarChild->functionVal, 
-   *currentLeft);
-   currentLeftMMF->deepCopy((*currentMMF) * (*node->scalarChild));
-   transposeFlag = 3;
- } else {
-   MT cTrans;
-   MatrixAdaptorType::transpose(*current, cTrans);
-   MatrixAdaptorType::multiply(cTrans, node->scalarChild->functionVal,
-   *currentLeft);
-   currentLeftMMF->deepCopy(transpose(*currentMMF) * (*node->scalarChild));
-   transposeFlag = 0;
- }
- identityCurrentFlag = false;
+  if (transposeFlag) {
+    MatrixAdaptorType::multiply(*current, node->scalarChild->functionVal, 
+    *currentLeft);
+    currentLeftMMF->deepCopy((*currentMMF) * (*node->scalarChild));
+    transposeFlag = 3;
+  } else {
+    MT cTrans;
+    MatrixAdaptorType::transpose(*current, cTrans);
+    MatrixAdaptorType::multiply(cTrans, node->scalarChild->functionVal,
+    *currentLeft);
+    currentLeftMMF->deepCopy(transpose(*currentMMF) * (*node->scalarChild));
+    transposeFlag = 0;
+  }
+  identityCurrentFlag = false;
 }
 
 /**

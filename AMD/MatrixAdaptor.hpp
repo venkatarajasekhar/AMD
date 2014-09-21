@@ -173,7 +173,7 @@ struct MatrixAdaptor_t {
 #endif
 
 #if AMD_HAVE_EIGEN
-  #include "EigenlMatrixAdaptor.hpp"
+  #include "EigenMatrixAdaptor.hpp"
 #endif
 
 #endif /** MATRIX_ADAPTOR_HPP */

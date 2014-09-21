@@ -21,7 +21,7 @@ struct eigen_llt_t <Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > {
 
 /** Use Eigen::SimplicialLLT for sparse matrices */
 template <typename T>
-struct eigen_llt_t <Eigen::SparseMatrix<double> > {
+struct eigen_llt_t <Eigen::SparseMatrix<T> > {
   typedef Eigen::SparseMatrix<T> MatrixType;
   typedef Eigen::SimplicialLLT<MatrixType> LLTType;
 };
@@ -72,9 +72,7 @@ struct MatrixAdaptor_t<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > {
    */
   static void add (const matrix_type& A,
                    const matrix_type& B,
-                   matrix_type& C) {
-    C = A + B;
-  }
+                   matrix_type& C) { C = A + B; }
 
   /** 
    * 4. 
@@ -85,9 +83,7 @@ struct MatrixAdaptor_t<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > {
    */
   static void minus (const matrix_type& A,
                      const matrix_type& B, 
-                     matrix_type& C) {
-    C = A + B;
-  }
+                     matrix_type& C) { C = A + B; }
 
   /** 
    * 5. 
@@ -98,9 +94,7 @@ struct MatrixAdaptor_t<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > {
    */
   static void multiply (const matrix_type& A,
                         const matrix_type& B,
-                        matrix_type& C) {
-    C = A * B;
-  }
+                        matrix_type& C) { C = A * B; }
 
   /** 
    * 6. 
@@ -109,9 +103,7 @@ struct MatrixAdaptor_t<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > {
    * @param[out] B B is overwritten with A^{T}
    */
   static void transpose (const matrix_type& A, 
-                         matrix_type& B) {
-    B = A.transpose();
-  }
+                         matrix_type& B) { B = A.transpose(); }
 
   /** 
    * 7. 
@@ -120,9 +112,7 @@ struct MatrixAdaptor_t<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > {
    * @param[out] B B is overwritten with -1.0*A
    */
   static void negation (const matrix_type& A,
-                        matrix_type& B) {
-    B = A * -1.0;
-  }
+                        matrix_type& B) { B = A * -1.0; }
 
   /** 
    * 8. 
@@ -131,8 +121,7 @@ struct MatrixAdaptor_t<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > {
    * @param[out] B B is overwritten with A's inverse.
    */
   static void inv(const matrix_type& A,
-                  matrix_type& B) {
-  }
+                  matrix_type& B) { B = A.inverse(); }
 
   /** 
    * 9. 
@@ -156,7 +145,7 @@ struct MatrixAdaptor_t<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > {
    * @param[in] n The dimension of the zero matrix.
    * @return Zero matrix of the required size.
    */
-  static matrix_type zeros(int m, int n) { return matrix_type::zero(m,n); }
+  static matrix_type zeros(int m, int n) { return matrix_type::Zero(m,n); }
 
   /** 
    * 12. 
@@ -173,8 +162,7 @@ struct MatrixAdaptor_t<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > {
     A_shdw = cholesky_A_shdw.matrixL();
  
     double log_trace = 0.0;
-    for (int i=0; i<LogDetBaseType::n; ++i) 
-                  log_trace += log(A_shdw.diagonal()[i]);
+    for (int i=0; i<A_shdw.rows(); ++i)log_trace+=log(A_shdw.diagonal()[i]);
 
     /** Multiply by 2 coz A = L'L */
     log_trace *= 2.0;
@@ -209,7 +197,7 @@ struct MatrixAdaptor_t<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > {
                    matrix_type& B) {
     /* create a zeros matrix of the right dimension and assign to B */
     const int n = A.rows();
-    B = matrix_type::zero(n, n);
+    B = matrix_type::Zero(n, n);
 
     /* Set the diagonals of B */
     for (int i=0; i<n; ++i) B(i,i) = A.diagonal()[i];

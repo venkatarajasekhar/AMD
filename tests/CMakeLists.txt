@@ -22,6 +22,7 @@ add_dependencies (cxx_tests SymbolicSample)
 
 add_executable (TaylorSample TaylorSample.cpp)
 add_dependencies (cxx_tests TaylorSample)
+
 ##############################################################################
 # This is the right way to create an executable with Elemental
 if (USE_ELEMENTAL)
@@ -53,5 +54,25 @@ if (USE_ELEMENTAL)
 
 endif (USE_ELEMENTAL)
 
+##############################################################################
+# This is the right way to create an executable with Eigen
+if (USE_EIGEN)
+  add_executable (TestEigenAdaptor TestEigenAdaptor.cpp)
+  add_dependencies (cxx_tests TestEigenAdaptor)
 
+  # You need to do something special to dynamically link with boost log
+  # Uncomment this line when you have a use for boost::logger 
+  # set_target_properties(TestEigenAdaptor PROPERTIES 
+  #                       COMPILE_FLAGS 
+  #                       "-DBOOST_LOG_DYN_LINK -Wno-deprecated-register")
+
+  # You have to add link to Eigen_LIBRARIES for all executables!  
+  target_link_libraries (TestEigenAdaptor "-lm")
+  target_link_libraries (TestEigenAdaptor ${Boost_LIBRARIES})
+
+  if (USE_MATRIX_MARKET)
+    target_link_libraries(TestEigenAdaptor ${MatrixMarket_LIBRARY})
+  endif (USE_MATRIX_MARKET)
+
+endif (USE_EIGEN)
 ##############################################################################
