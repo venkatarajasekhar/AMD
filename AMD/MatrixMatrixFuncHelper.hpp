@@ -30,7 +30,7 @@ enum OpType { NONE,
               NEGATION,
               TIMES,
               STIMESM, /**< Scalar times Matrix */
-              MTIMESS, /**< Matrix times Scalar */
+              MTIMES, /**< Matrix times Scalar */
               ELEWISE, 
               TRANSPOSE, 
               INV, 
@@ -501,7 +501,7 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
   return(result);
 }
 /**
- * @brief Functions to deal with opNum==MTIMESS 
+ * @brief Functions to deal with opNum==MTIMES 
  * MatrixMatrixFunc - ScalarMatrixFunc product.
  * Callback function for differentiation involving operator*
  *
@@ -518,7 +518,7 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
  * @param zeroResultFlag
 */
 template <class MT, class ST>
-void mtimessOp(boost::shared_ptr<MT> result, 
+void mtimesOp(boost::shared_ptr<MT> result, 
 	      boost::shared_ptr<MT> current, 
 	      boost::shared_ptr<MT> currentLeft, 
 	      boost::shared_ptr<MT> currentRight,
@@ -534,7 +534,7 @@ void mtimessOp(boost::shared_ptr<MT> result,
   assert( NULL != node && // check node type
 	  NULL != node->leftChild &&
     NULL == node->rightChild &&
-	  MTIMESS == node->opNum &&
+	  MTIMES == node->opNum &&
 	  current.use_count()>=1 && // current, currentLeft must be present 
 	  currentLeft.use_count()>=1);
 
@@ -611,15 +611,15 @@ MatrixMatrixFunc<MT,ST> operator* (const MatrixMatrixFunc<MT,ST> &lhs,
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   // New node in computational tree.
   MatrixMatrixFunc<MT,ST> result; 
-  if (MTIMESS != lhs.opNum) {
+  if (MTIMES != lhs.opNum) {
     MT lhsTimesRhs;
     // matrix times scalar
     MatrixAdaptorType::multiply(*(lhs.matrixPtr), (rhs.functionVal), 
     lhsTimesRhs);
-    boost::shared_ptr<MT> mtimessPtr(new MT((lhsTimesRhs)));
-    // Initialize new node with mtimess operator.
+    boost::shared_ptr<MT> mtimesPtr(new MT((lhsTimesRhs)));
+    // Initialize new node with mtimes operator.
     // This is a unary op
-    result.unaryOpSet(mtimessPtr, MTIMESS, mtimessOp<MT, ST>, lhs);
+    result.unaryOpSet(mtimesPtr, MTIMES, mtimesOp<MT, ST>, lhs);
 
     // the pointer points to scalar function.
     result.scalarChild = new ScalarMatrixFunc<MT,ST>;
@@ -750,7 +750,7 @@ MatrixMatrixFunc<MT,ST> operator* (const ScalarMatrixFunc<MT,ST> &lhs,
                                 lhsTimesRhs);
     boost::shared_ptr<MT> stimesmPtr(new MT((lhsTimesRhs)));
 
-    // Initialize new node with mtimess operator.  This is a unary op
+    // Initialize new node with mtimes operator.  This is a unary op
     result.unaryOpSet(stimesmPtr, STIMESM, stimesmOp<MT, ST>, rhs);
 
     // the pointer points to scalar function.

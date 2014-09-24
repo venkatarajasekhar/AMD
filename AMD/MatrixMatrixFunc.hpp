@@ -254,6 +254,7 @@ public:
     }
 
     /** TODO: Peder, why is there a deepCopy() here? */
+    /** Because of temporaries */
     leftChild = new MatrixMatrixFunc<MT,ST>;
     leftChild->deepCopy(lhs);
     rightChild = new MatrixMatrixFunc<MT,ST>;

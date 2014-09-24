@@ -198,6 +198,7 @@ struct MatrixAdaptor_t<Eigen::SparseMatrix<T> > :
   static value_type trace(const matrix_type& A) { 
     double trace_val = 0.0;
     for (int i=0; i<A.rows(); ++i) trace_val+=A.diagonal()[i];
+    return trace_val;
   }
 
   /** 
