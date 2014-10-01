@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <cstdlib>
 #include <assert.h>
 #include "boost/shared_ptr.hpp"
 #include <AMD/AMD.hpp>
@@ -154,7 +155,7 @@ class Calculator {
       }
       if (exprNoSpace.size() == 0) {
         std::cerr << "Empty Input" << std::endl;
-        exit;
+        exit(-1);
       }
       /* Get the infix notation. */
       infix = stringParser(exprNoSpace);
@@ -519,7 +520,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       MMFStack.push(f2);
     } else {
       std::cout << "Incorrect Input" << std::endl;
-      exit;
+      exit(-1);
     }
   }
   if (SMFtype == 1) {
@@ -529,10 +530,11 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
     func = logdet(MMFStack.top());
   } else {
     std::cerr << "ERROR INCORRECT INPUT" << std::endl;
-    exit;
+    exit(-1);
   }
   return func;
 }
+
 /* Compute SymbolicScalarMatrix Stack. */
 SymbolicSMFunc Calculator::computeSMF(std::vector<std::string>& str, 
                                 int Row, 

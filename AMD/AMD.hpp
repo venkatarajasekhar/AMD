@@ -34,4 +34,8 @@
 
 #include "MatrixAdaptor.hpp"
 
+#include "MatrixVisitor.hpp"
+
+#include "RandomMatrices.hpp"
+
 #endif /** AMD_HPP */

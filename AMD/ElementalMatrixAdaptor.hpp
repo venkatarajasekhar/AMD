@@ -18,6 +18,17 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
   typedef elem::Matrix<T> matrix_type;
 
   /**
+   * 0. 
+   * @brief Create a matrix of the requested size and name it if possible.
+   * @param[in] m The number of rows
+   * @param[in] n The number of cols
+   * @return A matrix of dimension (m,n)
+   */
+  static int createMatrix (int m, int n, std::string name="") {
+    return matrix_type (m,n);
+  }
+
+  /**
    * 1. 
    * @brief A function to return the number of rows in a matrix
    * @param[in] A The matrix for which we need the number of rows.
@@ -278,37 +289,15 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
   /**
    * 17.
    * @brief Multiply one scalar with matrix.
-   * @param[in] a The scalar.
-   * @param[in] B The matrix.
-   * @param[out] C C is overwritten with (A*B).
-   */
-  static void multiply(const value_type& a,
-                       const matrix_type& B,
-                       matrix_type& C) {
-    /** Result matrices should always be of the right size */
-    C.Resize(B.Height(), B.Width());
-
-    /** Get the matrix dimensions. */
-    const int m = B.Height();
-    const int n = B.Width();
-   
-    /** Simple scalar-matrix product. */ 
-    for (int i=0; i<m; ++i)
-      for (int j=0; j<n; ++j)
-        C.Set(i, j, (a*B.Get(i, j)));
-  }
-  /**
-   * 18.
-   * @brief Multiply one scalar with matrix.
    * @param[in] A The matrix.
-   * @param[in] b The scalar.
-   * @param[out] C C is overwritten with (A*B).
+   * @param[in] a The scalar.
+   * @param[out] B B is overwritten with (A*B).
    */
   static void multiply(const matrix_type& A,
-                       const value_type& b,
-                       matrix_type& C) {
+                       const value_type& a,
+                       matrix_type& B) {
     /** Result matrices should always be of the right size */
-    C.Resize(A.Height(), A.Width());
+    B.Resize(A.Height(), A.Width());
 
     /** Get the matrix dimensions. */
     const int m = A.Height();
@@ -317,7 +306,7 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
     /** Simple scalar-matrix product. */ 
     for (int i=0; i<m; ++i)
       for (int j=0; j<n; ++j)
-        C.Set(i, j, (b*A.Get(i, j)));
+        B.Set(i, j, (a*A.Get(i, j)));
   }
 };
 

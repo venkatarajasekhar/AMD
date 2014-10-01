@@ -11,6 +11,8 @@
  */
 
 #include <string>
+#include <fstream>
+#include <iostream>
 
 namespace AMD { namespace detail {
 /**
@@ -37,6 +39,18 @@ std::string removeParenthesis(std::string str) {
   }
   
   return retVal;
+}
+
+/**
+ * The one annoying problem is that OutputIterator's do not define
+ * a value type, so it may not always work! Hrmp!
+ */ 
+static int generate_seed () {
+  int r_int;
+  std::ifstream rf("/dev/random", std::ios::binary);
+  if(rf.is_open())rf.read(reinterpret_cast<char*>(&r_int),sizeof(r_int));
+  else r_int = std::time(NULL);
+  return r_int;
 }
 
 } } /** namespace AMD::detail */
