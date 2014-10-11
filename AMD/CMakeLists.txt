@@ -3,6 +3,7 @@ include (CheckIncludeFileCXX)
 
 check_include_file_cxx ("time.h" AMD_HAVE_TIME_H CACHE BOOLEAN ON)
 check_include_file_cxx ("sys/time.h" AMD_HAVE_SYS_TIME_H CACHE BOOLEAN ON)
+check_include_file_cxx ("ctime" AMD_HAVE_CTIME CACHE BOOLEAN ON)
 
 # Get the operating system that is in use
 if (CMAKE_SYSTEM MATCHES "Linux")

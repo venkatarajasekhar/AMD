@@ -4,6 +4,9 @@
 /** Do we have sys/time.h */
 #cmakedefine AMD_HAVE_SYS_TIME_H 1
 
+/** Do we have ctime */
+#cmakedefine AMD_HAVE_CTIME 1
+
 /** Are we running Linux */
 #cmakedefine AMD_LINUX 1
 
