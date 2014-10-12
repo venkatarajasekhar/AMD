@@ -374,12 +374,12 @@ public:
    *
    */
   void gradientVec(boost::shared_ptr<MT> current, 
-		               boost::shared_ptr<MT> result, 
+		   boost::shared_ptr<MT> result, 
                    boost::shared_ptr<MMF> currentMMF, 
                    boost::shared_ptr<MMF> resultMMF,
-		               int transposeFlag, 
-		               bool identityInitialFlag,
-		               bool& zeroResultFlag) const {
+		   int transposeFlag, 
+		   bool identityInitialFlag,
+		   bool& zeroResultFlag) const {
 
     /** Make these into individual asserts */
     assert(current.use_count()>=1 && 
@@ -411,7 +411,7 @@ public:
                    leftMMF,
                    rightMMF,
                    this,
-		               transposeFlag,
+		   transposeFlag,
                    identityInitialFlag, 
                    zeroResultFlag);
 

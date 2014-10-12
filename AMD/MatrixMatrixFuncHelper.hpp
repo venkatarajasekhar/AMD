@@ -224,7 +224,7 @@ void plusOp( boost::shared_ptr<MT> result,
  */ 
 template <class MT, class ST>
 MatrixMatrixFunc<MT,ST> operator+ (const MatrixMatrixFunc<MT,ST> &lhs, 
-				                           const MatrixMatrixFunc<MT,ST> &rhs) {
+				   const MatrixMatrixFunc<MT,ST> &rhs) {
   typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
   assert(lhs.isConst || 
          rhs.isConst || 
