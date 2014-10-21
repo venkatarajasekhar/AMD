@@ -14,6 +14,7 @@
 #include <AMD/AMD.hpp>
 #include <stack>
 #include <vector>
+#include <boost/assign/list_of.hpp>
 
 #define DEBUG
 
@@ -27,101 +28,7 @@
  *        is 100.
  */
 namespace AMD{
-template<typename T> 
-class Stack {
-  public:
-    /**
-     * A constructor
-     * The constructor set the top-curser at the
-     * bottom of the stack.  
-     */
-    Stack() {head = 0;}
-    /**
-     *  @brief Push an object into stack. 
-     *  @param element The reference to the object. 
-     */
-    void push(T& element) {
-      array[head].deepCopy(element);
-      head++;
-    }
-    /**
-     *  @brief Return the top object in stack. 
-     *  @return The reference to the top object in stack. 
-     */
-    T& top() {
-      return array[head-1];
-    }
-    /**
-     * @brief Pop the stack.
-     */
-    void pop() {
-      head--;
-    }
-    /**
-     * @brief Return the stack size.
-     * @return Stack size.
-     */
-    int size() {
-      return head;
-    }
-  private:
-    /* Internal storage data structure. The max size is 100. */
-    T array[100];
-    /* Top cursor. */
-    int head;
-};
 
-/**
- * @brief A user-defined stack container.
- *        The stack uses a array for internal 
- *        storage of object. The maximum size 
- *        is 100.
- */
-template<typename T> 
-class Stack2 {
-  public:
-
-    /**
-     * A constructor
-     * The constructor set the top-curser at the
-     * bottom of the stack.  
-     */
-    Stack2() {head = 0;}
-
-    /**
-     *  @brief Push an object into stack. 
-     *  @param element The reference to the object. 
-     */
-    void push(T& element) {
-      array[head] = (element);
-      head++;
-    }
-    /**
-     *  @brief Return the top object in stack. 
-     *  @return The reference to the top object in stack. 
-     */
-    T& top() {
-      return array[head-1];
-    }
-    /**
-     * @brief Pop the stack.
-     */
-    void pop() {
-      head--;
-    }
-    /**
-     * @brief Return the stack size.
-     * @return Stack size.
-     */
-    int size() {
-      return head;
-    }
-  private:
-    /* Internal storage data structure. The max size is 100. */
-    T array[100];
-    /* Top cursor. */
-    int head;
-};
 /* Typedef for SymbolicMatrixMatlab and SymbolicScalarMatlab. */
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
 typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
@@ -227,60 +134,76 @@ class Calculator {
     std::vector<std::string> infix; /**< expression infix order.*/
     std::vector<std::string> rpn;   /**< expression Reverse Polish Order.*/
     SymbolicSMFunc func;  /**< result of the expression. */
+  
+    /* Return the operator string. */
+    std::string getOpStr(char op);
     /* Decide if c is an operator. */
     bool isOp(char c);    
-    /* Decide if str is an operator. */
-    bool isOpStr(std::string& str); 
+    /* Decide if str[pos:] is an operator. */
+    bool isOpStr(std::string& str,int pos = 0); 
     /* Return the priority of operator. */
     int priority(char c);
     /* Return the priority of operator. */
     int priorityStr(std::string& str);
+
+  
+    const static std::vector<char> opList; /**< vector of operators (char).*/
+    /**< vector of operators (str). */
+    const static std::vector<std::string>  opStrList; 
+    /** vector of priorities of operators. **/ 
+    const static std::vector<int> opPriorityList;
 };
+
+/*initialize constant static data */
+const std::vector<char> Calculator::opList = 
+                     boost::assign::list_of('+')('-')('*')('/')('i')
+                     ('t')('(')(')')('.');
+
+const std::vector<std::string> Calculator::opStrList = 
+                     boost::assign::list_of("+")("-")("*")("/")("inv")
+                     ("transpose")("(")(")")(".*");
+
+const std::vector<int> Calculator::opPriorityList = 
+                     boost::assign::list_of(1)(1)(2)(2)(3)(3)(4)(4)(2);
+
+/* return the operator string */
+std::string Calculator::getOpStr(char op) {
+  for(int i = 0; i < opList.size();i++) {
+    if(op == opList[i])
+      return opStrList[i];
+  }
+  return "";
+}
 /* return if c is operator. */
 bool Calculator::isOp(char c) {
-  if (c == '+' || c == '-' ||
-      c == '*' || c == '/' ||
-      c == 'i' || c == 't' ||
-      c == '(' || c == ')' ||
-      c == '.')
-    return true;
-  else 
-    return false;
+  for(int i = 0; i < opList.size();i++) {
+    if(opList[i] == c)
+      return true;
+  }
+  return false;
 }
 
-bool Calculator::isOpStr(std::string& str) {
-  if ( str == "+"   || str == "-"         ||
-       str == "*"   || str == "/"         ||
-       str == "inv" || str == "transpose" ||
-       str == "("   || str == ")"         ||
-       str == ".*")
-    return true;
-  else 
-    return false;  
+bool Calculator::isOpStr(std::string& str,int pos) {
+  for(int i = 0; i < opStrList.size();i++) {
+    if(str.compare(pos,opStrList[i].size(),opStrList[i]) == 0)
+       return true;
+  }
+  return false;  
 }
 /* return the priority of operator. */
 int Calculator::priority(char c) {
-  if (c == '+' || c == '-') 
-    return 1;
-  else if (c == '*' || c == '/') 
-    return 2;
-  else if (c == 'i' || c == 't') /**< i is inv. t is transpose. */
-    return 3;
-  else if (c == '(' || c == ')')
-    return 4;
+  for(int i = 0; i < opList.size();i++) {
+    if(opList[i] == c)
+      return opPriorityList[i];
+  }
   return 0; 
 }
 
 int Calculator::priorityStr(std::string& str) {
-  if (str == "+" || str == "-") 
-    return 1;
-  else if (str == "*" || str == "/" || str == ".*") 
-    return 2;
-  else if (str == "inv" || str == "transpose") /**< i is inv. t is transpose. */
-    return 3;
-  else if (str == "(" || str == ")")
-    return 4;
-  return 0; 
+  for(int i = 0; i < opStrList.size();i++)
+    if(opStrList[i] == str)
+      return opPriorityList[i];
+  return 0;
 }
 
 /*
@@ -293,81 +216,66 @@ std::vector<std::string> Calculator::stringParser(std::string& str) {
   std::vector<std::string> result;
   int size = str.size();
   int i;
+  
   for (i = 0; i < size; i++) {
-    if (str[i] == '+') {
-      result.push_back("+");
-    } else 
-    if (str[i] == '-') {
-      result.push_back("-");
-    } else 
-    if (str[i] == '*') {
-      result.push_back("*");
-    } else 
-    if (str[i] == '(') {
-      result.push_back("(");
-    } else 
-    if (str[i] == ')') {
-      result.push_back(")");
-    } else 
-    if (str[i] == '.') {
-      result.push_back(".*");
-      i +=1;
-    } else 
-    if (str[i] == 'i') {
-      result.push_back("inv");
-      i += 2;
-    } else 
-    if (str[i] == 't' && str[i+3] == 'n') {
-      result.push_back("transpose");
-      i += 4;
-    } else 
-    if (str[i] == 't' && str[i+3] == 'c') {
-      while (str[i] != '(') {
-        i++;
+    bool foundSymbol = false;
+    for(int j = 0; j < opStrList.size() && !foundSymbol;j++) {
+      if(str.compare(i,opStrList[j].size(),opStrList[j]) == 0) {
+        result.push_back(opStrList[j]);
+        i+=opStrList[j].size()-1;
+        foundSymbol = true;
+        break;
       }
-      i++; 
-      int cnt = 1;
-      std::string traceStr = "trace(";
-      while (cnt != 0) {
-        if (str[i] == '(') {
-          cnt++;
-        } 
-        if (str[i] == ')'){
-          cnt--;
+    }
+    if(!foundSymbol) {
+      if (str[i] == 't' && str[i+3] == 'c') {
+        while (str[i] != '(') {
+          i++;
         }
-        traceStr = traceStr + str[i];
-        i++;
-      }
-      i--;
-      result.push_back(traceStr);
-    } else 
-    if (str[i] == 'l' && str[i+1] == 'o') {
-      while (str[i] != '(') {
-        i++;
-      }
-      i++; 
-      int cnt = 1;
-      std::string traceStr = "logdet(";
-      while (cnt != 0) {
-        if (str[i] == '(') {
-          cnt++;
-        } 
-        if (str[i] == ')'){
-          cnt--;
+        i++; 
+        int cnt = 1;
+        std::string traceStr = "trace(";
+        while (cnt != 0) {
+          if (str[i] == '(') {
+            cnt++;
+          } 
+          if (str[i] == ')'){
+            cnt--;
+          }
+          traceStr = traceStr + str[i];
+          i++;
         }
-        traceStr = traceStr + str[i];
-        i++;
-      }
-      i--;
-      result.push_back(traceStr);
-    } else {
-      std::string varStr = "";
-      while (!isOp(str[i]) && i != size) {
-        varStr = varStr + str[i];
-        i++;
-      }
-      i--;
-      result.push_back(varStr);
+        i--;
+        result.push_back(traceStr);
+      } else 
+        if (str[i] == 'l' && str[i+1] == 'o') {
+          while (str[i] != '(') {
+            i++;
+          }
+          i++; 
+          int cnt = 1;
+          std::string logdetStr = "logdet(";
+          while (cnt != 0) {
+            if (str[i] == '(') {
+              cnt++;
+            } 
+            if (str[i] == ')'){
+              cnt--;
+            }
+            logdetStr = logdetStr + str[i];
+            i++;
+          }
+          i--;
+          result.push_back(logdetStr);
+        } else {
+          std::string varStr = "";
+          while (!isOp(str[i]) && i != size) {
+            varStr = varStr + str[i];
+            i++;
+          }
+          i--;
+          result.push_back(varStr);
+        }
     }
   }
   return result;
@@ -417,117 +325,113 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
                               int Row, 
                               int Col) {
   int i; 
-  Stack<SymbolicMMFunc> MMFStack;
+  std::stack<boost::shared_ptr<SymbolicMMFunc> > MMFStack;
   int size = str.size();
   symbolic_matrix_type X("X", Row, Col);
-  SymbolicMMFunc fX(X, false);
+  boost::shared_ptr<SymbolicMMFunc> fX(new SymbolicMMFunc(X, false));
   symbolic_matrix_type A("A", Row, Col);
-  SymbolicMMFunc fA(A, true);
+  boost::shared_ptr<SymbolicMMFunc> fA(new SymbolicMMFunc(A, true));
   symbolic_matrix_type B("B", Row, Col);
-  SymbolicMMFunc fB(B, true);
+  boost::shared_ptr<SymbolicMMFunc> fB(new SymbolicMMFunc(B, true));
   SymbolicSMFunc func;
 
   symbolic_matrix_type EYE =  symbolic_adaptor_type::eye(Row);
-  SymbolicMMFunc fI(EYE, true);
+  boost::shared_ptr<SymbolicMMFunc> fI(new SymbolicMMFunc (EYE, true));
 
   symbolic_matrix_type ZERO =  symbolic_adaptor_type::zeros(Row, Col);
-  SymbolicMMFunc fZ(ZERO, true);
+  boost::shared_ptr<SymbolicMMFunc> fZ(new SymbolicMMFunc (ZERO, true));
  
   for (i = 0; i < size; i++) {
     if (str[i] == "X" || str[i]=="x") {
-      SymbolicMMFunc fXX;
-      fXX.deepCopy(fX);
-      MMFStack.push(fXX);
+      MMFStack.push(fX);
     } else 
     if (str[i] == "A") {
-      SymbolicMMFunc fAA;
-      fAA.deepCopy(fA);
-      MMFStack.push(fAA);
+      MMFStack.push(fA);
     } else 
     if (str[i] == "B") {
-      SymbolicMMFunc fBB;
-      fBB.deepCopy(fB);
-      MMFStack.push(fBB);
+      MMFStack.push(fB);
     } else 
-    if (str[i] == "I") { 
-      SymbolicMMFunc fII;
-      fII.deepCopy(fI);
-      MMFStack.push(fII);
+    if (str[i] == "I") {
+      MMFStack.push(fI);
     } else 
     if (str[i] == "Z") {
-      SymbolicMMFunc fZZ;
-      fZZ.deepCopy(fZ);
-      MMFStack.push(fZZ);  
+      MMFStack.push(fZ);  
     } else 
     if (str[i] == "+") {
-      SymbolicMMFunc f1;
-      f1.deepCopy(MMFStack.top());
+      boost::shared_ptr<SymbolicMMFunc> f1;
+      f1 = MMFStack.top();
       MMFStack.pop();
-      SymbolicMMFunc f2;
-      f2.deepCopy(MMFStack.top());
+
+      boost::shared_ptr<SymbolicMMFunc> f2;
+      f2 = MMFStack.top();
       MMFStack.pop();
-      SymbolicMMFunc f3;
-      f3.deepCopy(f2+f1);
+
+      boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc((*f2)+(*f1)));
       MMFStack.push(f3);
     } else 
     if (str[i] == "-") {
-      SymbolicMMFunc f1;
-      f1.deepCopy(MMFStack.top());
+      boost::shared_ptr<SymbolicMMFunc> f1;
+      f1 = MMFStack.top();
       MMFStack.pop();
-      SymbolicMMFunc f2;
-      f2.deepCopy(MMFStack.top());
+
+      boost::shared_ptr<SymbolicMMFunc> f2;
+      f2 = MMFStack.top();
       MMFStack.pop();
-      SymbolicMMFunc f3;
-      f3.deepCopy(f2-f1);
+
+      boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc((*f2)-(*f1)));
       MMFStack.push(f3);
-    } else 
+      } else 
     if (str[i] == "*") {
-      SymbolicMMFunc f1;
-      f1.deepCopy( MMFStack.top());
+      boost::shared_ptr<SymbolicMMFunc> f1;
+      f1 = MMFStack.top();
       MMFStack.pop();
-      SymbolicMMFunc f2;
-      f2.deepCopy(MMFStack.top());
+
+      boost::shared_ptr<SymbolicMMFunc> f2;
+      f2 = MMFStack.top();
       MMFStack.pop();
-      SymbolicMMFunc f3;
-      f3.deepCopy(f2*f1);
+
+      boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc((*f2)*(*f1)));
       MMFStack.push(f3);
     } else 
     if (str[i] == ".*") {
-      SymbolicMMFunc f1;
-      f1.deepCopy( MMFStack.top());
+      boost::shared_ptr<SymbolicMMFunc> f1;
+      f1 = MMFStack.top();
       MMFStack.pop();
-      SymbolicMMFunc f2;
-      f2.deepCopy(MMFStack.top());
+
+      boost::shared_ptr<SymbolicMMFunc> f2;
+      f2 = MMFStack.top();
       MMFStack.pop();
-      SymbolicMMFunc f3;
-      f3.deepCopy(elementwiseProduct(f2, f1));
+
+      boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc(elementwiseProduct(*f2, *f1)));
       MMFStack.push(f3);
-    } else 
+      } else 
     if (str[i] == "inv") {
-      SymbolicMMFunc f1;
-      f1.deepCopy(MMFStack.top());
+      boost::shared_ptr<SymbolicMMFunc> f1;
+      f1 = MMFStack.top();
       MMFStack.pop();
-      SymbolicMMFunc f2;
-      f2.deepCopy(inv(f1));
+
+      boost::shared_ptr<SymbolicMMFunc> f2(new SymbolicMMFunc(inv(*f1)));
       MMFStack.push(f2);
     } else 
     if (str[i] == "transpose") {
-      SymbolicMMFunc f1;
-      f1.deepCopy(MMFStack.top());
+      boost::shared_ptr<SymbolicMMFunc> f1;
+      f1 = MMFStack.top();
       MMFStack.pop();
-      SymbolicMMFunc f2;
-      f2.deepCopy(transpose(f1));
+
+      boost::shared_ptr<SymbolicMMFunc> f2(new SymbolicMMFunc(transpose(*f1)));
       MMFStack.push(f2);
     } else {
       std::cout << "Incorrect Input" << std::endl;
       exit(-1);
     }
+    
+
   }
   if (SMFtype == 1) {
-    func = trace(MMFStack.top());
+    func = trace(*MMFStack.top());
   } else 
   if (SMFtype == 2) {
-    func = logdet(MMFStack.top());
+    func = logdet(*MMFStack.top());
   } else {
     std::cerr << "ERROR INCORRECT INPUT" << std::endl;
     exit(-1);
@@ -540,7 +444,7 @@ SymbolicSMFunc Calculator::computeSMF(std::vector<std::string>& str,
                                 int Row, 
                                 int Col) {
   int i; 
-  Stack2<SymbolicSMFunc> SMFStack;
+  std::stack<SymbolicSMFunc> SMFStack;
   int size = str.size();
   SymbolicSMFunc func;
  
