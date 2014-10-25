@@ -7,3 +7,7 @@ build
 *.pdf
 *.snm
 *.toc
+presentation/Thumbs.db
+presentations/Facebook/amd.synctex.gz
+presentations/Facebook/amd.vrb
+*.db
