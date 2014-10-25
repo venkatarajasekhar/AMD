@@ -20,6 +20,8 @@
  */ 
 #include "AMD/config.h"
 
+#include "Exception.hpp"
+
 #include "ScalarMatrixFunc.hpp"
 
 #include "MatrixMatrixFunc.hpp"
