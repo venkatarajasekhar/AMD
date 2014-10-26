@@ -482,7 +482,7 @@ namespace AMD {
         throw internal_node;
       if (!(TIMES == node->opNum))
         throw wrong_operation;
-      if !(current.use_count() >= 1 && // current, currentLeft and currentRight must be present 
+      if( !(current.use_count() >= 1 && // current, currentLeft and currentRight must be present 
         currentLeft.use_count() >= 1 &&
         currentRight.use_count() >= 1) )
         throw invalid_shared_ptr;
@@ -1038,7 +1038,7 @@ namespace AMD {
         NULL != node->leftChild &&
         NULL == node->rightChild))
         throw internal_node;
-      if !(TRANSPOSE == node->opNum) )
+      if( !(TRANSPOSE == node->opNum) )
         throw wrong_operation;
       if (!(current.use_count() >= 1 && // current, currentLeft and currentRight must be present 
         currentLeft.use_count() >= 1))
@@ -1200,7 +1200,7 @@ namespace AMD {
         throw internal_node;
       if (!(INV == node->opNum))
         throw wrong_operation;
-      if (!current.use_count() >= 1 && // current, currentLeft and currentRight must be present 
+      if( !(current.use_count() >= 1 && // current, currentLeft and currentRight must be present 
         currentLeft.use_count() >= 1) )
         throw invalid_shared_ptr;
       boost::shared_ptr<MT> initMat = node->matrixPtr;
