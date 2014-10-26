@@ -12,7 +12,7 @@
 #include <sstream>
 #include "SymbolicMatrixMatlab.hpp"
 
-namespace AMD {
+ namespace AMD {
 
 
   /** 
@@ -20,10 +20,16 @@ namespace AMD {
    * @param[in] a A symbolic matrix argument.
    * @return The SymbolicScalarMatlab representation trace(a)
    */
-  SymbolicScalarMatlab trace(const SymbolicMatrixMatlab& a)  {
-    assert(a.getNumRows() == a.getNumCols());
-    return SymbolicScalarMatlab("trace("+
-				detail::removeParenthesis(a.symbol)+")");
+   SymbolicScalarMatlab trace(const SymbolicMatrixMatlab& a)  {
+    try {
+      if( !(a.getNumRows() == a.getNumCols()) )
+        throw mismatched_dimension;
+      return SymbolicScalarMatlab("trace("+
+        detail::removeParenthesis(a.symbol)+")");
+    }
+    catch (std::exception& error) {
+      std::cerr << error.what() << std::endl;
+    }
   }
 
   /** 
@@ -31,10 +37,16 @@ namespace AMD {
    * @param[in] a A symbolic matrix argument.
    * @return The SymbolicScalarMatlab representation logdet(a)
    */
-  SymbolicScalarMatlab logdet(const SymbolicMatrixMatlab& a)  {
-    assert(a.getNumRows() == a.getNumCols());
-    return SymbolicScalarMatlab("log(det("+
-				detail::removeParenthesis(a.symbol)+"))");
+   SymbolicScalarMatlab logdet(const SymbolicMatrixMatlab& a)  {
+    try {
+      if( !(a.getNumRows() == a.getNumCols()) )
+        throw mismatched_dimension;
+      return SymbolicScalarMatlab("log(det("+
+        detail::removeParenthesis(a.symbol)+"))");
+    }
+    catch (std::exception& error) {
+      std::cerr << error.what() << std::endl;
+    }
   }
 
 
@@ -43,10 +55,10 @@ namespace AMD {
    * @param[in] a A symbolic matrix argument.
    * @return The SymbolicScalarMatlab representation of ||a||_F.
    */
-  SymbolicScalarMatlab fnorm(const SymbolicMatrixMatlab& a)  {
+   SymbolicScalarMatlab fnorm(const SymbolicMatrixMatlab& a)  {
     return 
-      SymbolicScalarMatlab("norm("+
-			   detail::removeParenthesis(a.symbol)+",'fro')");
+    SymbolicScalarMatlab("norm("+
+      detail::removeParenthesis(a.symbol)+",'fro')");
   }
 
   /** 
@@ -54,12 +66,18 @@ namespace AMD {
    * @param[in] a A symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of inv(a).
    */
-  SymbolicMatrixMatlab inv(const SymbolicMatrixMatlab& a) {
-    assert(a.getNumRows() == a.getNumCols());
-    return SymbolicMatrixMatlab("inv("+
-				detail::removeParenthesis(a.symbol)+")",
-				a.getNumRows(), 
-				a.getNumCols());
+   SymbolicMatrixMatlab inv(const SymbolicMatrixMatlab& a) {
+    try {
+      if( !(a.getNumRows() == a.getNumCols()) )
+        throw mismatched_dimension;
+      return SymbolicMatrixMatlab("inv("+
+        detail::removeParenthesis(a.symbol)+")",
+      a.getNumRows(), 
+      a.getNumCols());
+    }
+    catch (std::exception& error) {
+      std::cerr << error.what() << std::endl;
+    }
   }
 
   /** 
@@ -67,10 +85,10 @@ namespace AMD {
    * @param[in] a A symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of a^T.
    */
-  SymbolicMatrixMatlab transpose(const SymbolicMatrixMatlab& a) {
+   SymbolicMatrixMatlab transpose(const SymbolicMatrixMatlab& a) {
     return SymbolicMatrixMatlab (a.symbol+"'",
-				                         a.getNumCols(),
-				                         a.getNumRows());
+     a.getNumCols(),
+     a.getNumRows());
   }
 
   /**
@@ -80,14 +98,19 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of diag(a).
    */
 
-  SymbolicMatrixMatlab diag(const SymbolicMatrixMatlab &a) {
-    assert(a.getNumRows() == a.getNumCols()); // check square matrix.
+   SymbolicMatrixMatlab diag(const SymbolicMatrixMatlab &a) {
+    try {
+    if( !(a.getNumRows() == a.getNumCols()) ) // check square matrix.
+      throw mismatched_dimension;
     return SymbolicMatrixMatlab("diag(" +
-                                detail::removeParenthesis(a.symbol)+")",
-                                a.getNumRows(),
-                                a.getNumCols());
+      detail::removeParenthesis(a.symbol)+")",
+    a.getNumRows(),
+    a.getNumCols());
   }
-
+  catch (std::exception& error) {
+    std::cerr << error.what() << std::endl;
+  }
+}
 
   // bivariate functions that return a matrix
   /** 
@@ -96,13 +119,19 @@ namespace AMD {
    * @param[in] b Another symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of a .* b.
    */
-  SymbolicMatrixMatlab elementwiseProduct(const SymbolicMatrixMatlab& a, 
-				       const SymbolicMatrixMatlab& b) {
-    assert(a.getNumRows() == b.getNumRows() && 
-	   a.getNumCols() == b.getNumCols());
-    return SymbolicMatrixMatlab("("+a.symbol+".*"+b.symbol+")",
-				a.getNumRows(),
-				a.getNumCols());
+   SymbolicMatrixMatlab elementwiseProduct(const SymbolicMatrixMatlab& a, 
+     const SymbolicMatrixMatlab& b) {
+    try {
+      if( !(a.getNumRows() == b.getNumRows() && 
+        a.getNumCols() == b.getNumCols()) )
+        throw mismatched_dimension;
+      return SymbolicMatrixMatlab("("+a.symbol+".*"+b.symbol+")",
+        a.getNumRows(),
+        a.getNumCols());
+    }
+    catch (std::exception& error) {
+      std::cerr << error.what() << std::endl;
+    }
   }
 
   /** 
@@ -111,13 +140,19 @@ namespace AMD {
    * @param[in] b Another symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of a + b.
    */
-  SymbolicMatrixMatlab operator+(const SymbolicMatrixMatlab& a, 
-				 const SymbolicMatrixMatlab& b) {
-    assert(a.getNumRows() == b.getNumRows() && 
-	   a.getNumCols() == b.getNumCols());
-    return SymbolicMatrixMatlab("("+a.symbol+"+"+b.symbol+")",
-				a.getNumRows(),
-				a.getNumCols());
+   SymbolicMatrixMatlab operator+(const SymbolicMatrixMatlab& a, 
+     const SymbolicMatrixMatlab& b) {
+    try {
+      if( !(a.getNumRows() == b.getNumRows() && 
+        a.getNumCols() == b.getNumCols()) )
+        throw mismatched_dimension;
+      return SymbolicMatrixMatlab("("+a.symbol+"+"+b.symbol+")",
+        a.getNumRows(),
+        a.getNumCols());
+    }
+    catch (std::exception& error) {
+      std::cerr << error.what() << std::endl;
+    }
   }
 
   /** 
@@ -126,13 +161,19 @@ namespace AMD {
    * @param[in] b Another symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of a - b.
    */
-  SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a, 
-				 const SymbolicMatrixMatlab& b) {
-    assert(a.getNumRows() == b.getNumRows() && 
-	   a.getNumCols() == b.getNumCols());
-    return SymbolicMatrixMatlab("("+a.symbol+"-"+b.symbol+")",
-				a.getNumRows(),
-				a.getNumCols());
+   SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a, 
+     const SymbolicMatrixMatlab& b) {
+    try {
+      if( !(a.getNumRows() == b.getNumRows() && 
+        a.getNumCols() == b.getNumCols()) )
+        throw mismatched_dimension;
+      return SymbolicMatrixMatlab("("+a.symbol+"-"+b.symbol+")",
+        a.getNumRows(),
+        a.getNumCols());
+    }
+    catch (std::exception& error) {
+      std::cerr << error.what() << std::endl;
+    }
   }
 
   /** 
@@ -140,10 +181,10 @@ namespace AMD {
    * @param[in] a A symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of -a.
    */
-  SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a) {
+   SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a) {
     return SymbolicMatrixMatlab("(-"+a.symbol+")",
-				a.getNumRows(),
-				a.getNumCols());
+      a.getNumRows(),
+      a.getNumCols());
   }
 
 
@@ -153,11 +194,17 @@ namespace AMD {
    * @param[in] b Another symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of a * b.
    */
-  SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a, 
-				 const SymbolicMatrixMatlab& b) {
-    assert(a.getNumCols() == b.getNumRows());
-    return SymbolicMatrixMatlab("("+a.symbol+"*"+b.symbol+")",
-				a.getNumRows(),b.getNumCols());
+   SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a, 
+     const SymbolicMatrixMatlab& b) {
+    try {
+      if( !(a.getNumCols() == b.getNumRows()) )
+        throw mismatched_dimension;
+      return SymbolicMatrixMatlab("("+a.symbol+"*"+b.symbol+")",
+        a.getNumRows(),b.getNumCols());
+    }
+    catch (std::exception& error) {
+      std::cerr << error.what() << std::endl;
+    }
   }
 
   // Element-wise operations: 
@@ -170,10 +217,10 @@ namespace AMD {
    * @param[in] b A SymbolicMatrixMatlab.
    * @return The SymbolicMatrixMatlab representation of a .* b.
    */
-  SymbolicMatrixMatlab operator*(const SymbolicScalarMatlab& a, 
-				 const SymbolicMatrixMatlab& b) {
+   SymbolicMatrixMatlab operator*(const SymbolicScalarMatlab& a, 
+     const SymbolicMatrixMatlab& b) {
     return SymbolicMatrixMatlab("("+a.symbol+".*"+b.symbol+")",
-				b.getNumRows(),b.getNumCols());
+      b.getNumRows(),b.getNumCols());
   }
 
   /** 
@@ -182,10 +229,10 @@ namespace AMD {
    * @param[in] b A SymbolicScalarMatlab.
    * @return The SymbolicMatrixMatlab representation of a .* b.
    */
-  SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a, 
-				 const SymbolicScalarMatlab& b) {
+   SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a, 
+     const SymbolicScalarMatlab& b) {
     return SymbolicMatrixMatlab ("("+b.symbol+".*"+a.symbol+")",
-				 a.getNumRows(),a.getNumCols());
+     a.getNumRows(),a.getNumCols());
   }
 
   // Note: scalar/Matrix should not be defined.  User will have to write 
@@ -196,10 +243,10 @@ namespace AMD {
    * @param[in] b A SymbolicScalarMatlab.
    * @return The SymbolicMatrixMatlab representation of a ./ b.
    */
-  SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a,
-				 const SymbolicScalarMatlab& b) {
+   SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a,
+     const SymbolicScalarMatlab& b) {
     return SymbolicMatrixMatlab ("("+a.symbol+"./"+b.symbol+")",
-				 a.getNumRows(),a.getNumCols());
+     a.getNumRows(),a.getNumCols());
   }
 
 } /** namespace AMD */

@@ -14,11 +14,10 @@
 
 #include <string>
 #include <iostream>
-#include <assert.h>
 
 #include "SymbolicScalarMatlab.hpp"
 
-namespace AMD {
+ namespace AMD {
 
 /**
  * @brief This class represents a symbolic matrix using an internal
@@ -28,8 +27,8 @@ namespace AMD {
  * representation is intended to yield executable MATLAB code, but the
  * variables representing matrices must already be defined.
  */ 
-struct SymbolicMatrixMatlab {
-  public:
+ struct SymbolicMatrixMatlab {
+ public:
   /** Default constructor giving X as the symbol name */
   SymbolicMatrixMatlab() : symbol("X"), nRows(1), nCols(1) {}
 
@@ -40,8 +39,8 @@ struct SymbolicMatrixMatlab {
    * Constructor from string value.  
    * @param[in] symbol String representation of Symbolic Matrix.
    */
-  SymbolicMatrixMatlab(std::string symbol) 
-    : symbol(symbol), nRows(1), nCols(1) {}
+   SymbolicMatrixMatlab(std::string symbol) 
+   : symbol(symbol), nRows(1), nCols(1) {}
 
   /** 
    * Constructor from string value.  
@@ -49,14 +48,14 @@ struct SymbolicMatrixMatlab {
    * @param[in] nRows Number of rows in the symbolic matrix
    * @param[in] nCols Number of columns in the symbolic matrix
    */
-  SymbolicMatrixMatlab(std::string symbol,int _nRows, int _nCols) 
-    : symbol(symbol), nRows(_nRows), nCols(_nCols) { }
+   SymbolicMatrixMatlab(std::string symbol,int _nRows, int _nCols) 
+   : symbol(symbol), nRows(_nRows), nCols(_nCols) { }
 
   /** 
    * Copy constructor.  
    * @param[in] other SymbolicMatrixMatlab to copy.
    */
-  SymbolicMatrixMatlab(const SymbolicMatrixMatlab& other) {
+   SymbolicMatrixMatlab(const SymbolicMatrixMatlab& other) {
     symbol = other.getString();
     nRows = other.getNumRows();
     nCols = other.getNumCols();
@@ -66,13 +65,13 @@ struct SymbolicMatrixMatlab {
    * Return the string representation of the class.
    * @return The value of the internal string representation.
    */
-  std::string getString() const { return(symbol); }
+   std::string getString() const { return(symbol); }
 
   /** 
    * Print internal string representation to a file.
    * @param[out] os Outputstream to print to.
    */
-  void print(std::ostream& os=std::cout) const {
+   void print(std::ostream& os=std::cout) const {
     os << detail::removeParenthesis(symbol);
   }
 
@@ -80,7 +79,7 @@ struct SymbolicMatrixMatlab {
    * Print internal string representation to a file.
    * @param[out] os Outputstream to print to.
    */
-  void println(std::ostream& os=std::cout) const {
+   void println(std::ostream& os=std::cout) const {
     os << detail::removeParenthesis(symbol) << std::endl;
   }
 
@@ -94,20 +93,20 @@ struct SymbolicMatrixMatlab {
    * number of Rows in matrix.  For symbolic matrices this is always 1.
    * @return number of SymbolicMatrix rows.
    */
-  int getNumRows() const { return(nRows); }
+   int getNumRows() const { return(nRows); }
 
   /** 
    * number of Columns in matrix.  For symbolic matrices this is always 1.
    * @return number of SymbolicMatrix columns. 
    */
-  int getNumCols() const { return(nCols); }
+   int getNumCols() const { return(nCols); }
 
   /** 
    * Copy content of one SymbolicMatrixMatlab to another.
    * @param[in] rhs The matrix that we are copying .
    * @return SymbolicMatrixMatlab object which is the deep-copy from another.
    */
-  SymbolicMatrixMatlab& operator=(const SymbolicMatrixMatlab& rhs) {
+   SymbolicMatrixMatlab& operator=(const SymbolicMatrixMatlab& rhs) {
     symbol = rhs.getString();
     nRows = rhs.getNumRows();
     nCols = rhs.getNumCols();
@@ -118,7 +117,7 @@ struct SymbolicMatrixMatlab {
    * @param[in] rhs The matrix that we are copying.
    * @return SymbolicMatrixMatlab object which is the deep-copy from another. 
    */
-  SymbolicMatrixMatlab& copy (const SymbolicMatrixMatlab& rhs) {
+   SymbolicMatrixMatlab& copy (const SymbolicMatrixMatlab& rhs) {
     symbol = rhs.getString();
     nRows = rhs.getNumRows();
     nCols = rhs.getNumCols();
@@ -130,7 +129,7 @@ struct SymbolicMatrixMatlab {
    * @param[in] n The size of the identity matrix.
    * @return the SymbolicScalarMatlab eye(n)
    */
-  static SymbolicMatrixMatlab eye(int n)  {
+   static SymbolicMatrixMatlab eye(int n)  {
     std::ostringstream ss;
     ss << "eye(" << n << ")";
     return SymbolicMatrixMatlab(ss.str(),n,n);
@@ -142,7 +141,7 @@ struct SymbolicMatrixMatlab {
    * @param[in] n Number of cols.
    * @return the SymbolicScalarMatlab zeros(m,n)
    */
-  static SymbolicMatrixMatlab zeros(int m, int n)  {
+   static SymbolicMatrixMatlab zeros(int m, int n)  {
     std::ostringstream ss;
     ss << "zeros(" << m << "," << n << ")";
     return SymbolicMatrixMatlab(ss.str(),m,n);
@@ -155,22 +154,22 @@ struct SymbolicMatrixMatlab {
   friend SymbolicMatrixMatlab transpose(const SymbolicMatrixMatlab& a);
   friend SymbolicMatrixMatlab diag(const SymbolicMatrixMatlab& a);
   friend SymbolicMatrixMatlab elementwiseProduct(const SymbolicMatrixMatlab& a, 
-					      const SymbolicMatrixMatlab& b);
+   const SymbolicMatrixMatlab& b);
   friend SymbolicMatrixMatlab operator+(const SymbolicMatrixMatlab& a, 
-                                        const SymbolicMatrixMatlab& b);
+    const SymbolicMatrixMatlab& b);
   friend SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a);
   friend SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a, 
-                                        const SymbolicMatrixMatlab& b);
+    const SymbolicMatrixMatlab& b);
   friend SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a, 
-                                        const SymbolicMatrixMatlab& b);
+    const SymbolicMatrixMatlab& b);
   friend SymbolicMatrixMatlab operator*(const SymbolicScalarMatlab& a, 
-                                        const SymbolicMatrixMatlab& b);
+    const SymbolicMatrixMatlab& b);
   friend SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a, 
-                                        const SymbolicScalarMatlab& b);
+    const SymbolicScalarMatlab& b);
   friend SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a, 
-                                        const SymbolicScalarMatlab& b);
+    const SymbolicScalarMatlab& b);
 
-  private:
+private:
   std::string symbol; /**< This is the internal string variable */
   int nRows;          /**< The number of SymbolicMatrixMatlab rows. */
   int nCols;          /**< The number of SymbolicMatrixMatlab columns. */

@@ -17,11 +17,11 @@
 #include "ScalarMatrixFunc.hpp"
 #include "MatrixAdaptor.hpp"
 
-namespace AMD {
+ namespace AMD {
   /**
    * @enum Enum type for operators.
    */
-  enum OpType {
+   enum OpType {
     NONE,
     CONST,
     VAR,
@@ -37,18 +37,18 @@ namespace AMD {
     DIAG
   };
   std::string opName[] = { "none",
-    "const",
-    "var",
-    "+",
-    "-",
-    "-",
-    "*",
-    "*",
-    "*",
-    "elementwise",
-    "transpose",
-    "inv",
-    "diag" };
+  "const",
+  "var",
+  "+",
+  "-",
+  "-",
+  "*",
+  "*",
+  "*",
+  "elementwise",
+  "transpose",
+  "inv",
+  "diag" };
 
   // forward declaration
   template <class MT, class ST> class MatrixMatrixFunc;
@@ -79,7 +79,7 @@ namespace AMD {
    *
    */
   template <class MT, class ST>
-  void constOp(boost::shared_ptr<MT> result,
+   void constOp(boost::shared_ptr<MT> result,
     boost::shared_ptr<MT> current,
     boost::shared_ptr<MT> currentLeft,
     boost::shared_ptr<MT> currentRight,
@@ -126,7 +126,7 @@ namespace AMD {
    * @param[in] zeroResultFlag
    */
   template <class MT, class ST>
-  void varOp(boost::shared_ptr<MT> result,
+   void varOp(boost::shared_ptr<MT> result,
     boost::shared_ptr<MT> current,
     boost::shared_ptr<MT> currentLeft,
     boost::shared_ptr<MT> currentRight,
@@ -203,19 +203,19 @@ namespace AMD {
     * @param zeroResultFlag
     */
   template <class MT, class ST>
-  void plusOp(boost::shared_ptr<MT> result,
-    boost::shared_ptr<MT> current,
-    boost::shared_ptr<MT> currentLeft,
-    boost::shared_ptr<MT> currentRight,
-    boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF,
-    boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF,
-    boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF,
-    boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF,
-    const MatrixMatrixFunc<MT, ST>* node,
-    int& transposeFlag,
-    bool& identityCurrentFlag,
-    bool& zeroResultFlag) {
-    try {
+    void plusOp(boost::shared_ptr<MT> result,
+      boost::shared_ptr<MT> current,
+      boost::shared_ptr<MT> currentLeft,
+      boost::shared_ptr<MT> currentRight,
+      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  resultMMF,
+      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentMMF,
+      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentLeftMMF,
+      boost::shared_ptr<MatrixMatrixFunc<MT, ST> >  currentRightMMF,
+      const MatrixMatrixFunc<MT, ST>* node,
+      int& transposeFlag,
+      bool& identityCurrentFlag,
+      bool& zeroResultFlag) {
+      try {
       if (!(NULL != node && // check node type
         NULL != node->leftChild &&
         NULL != node->rightChild))
@@ -252,14 +252,14 @@ namespace AMD {
    * @param rhs
    */
   template <class MT, class ST>
-  MatrixMatrixFunc<MT, ST> operator+ (const MatrixMatrixFunc<MT, ST> &lhs,
+   MatrixMatrixFunc<MT, ST> operator+ (const MatrixMatrixFunc<MT, ST> &lhs,
     const MatrixMatrixFunc<MT, ST> &rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     try {
       if (!(lhs.isConst ||
         rhs.isConst ||
         (lhs.varNumRows == rhs.varNumRows &&
-        lhs.varNumCols == rhs.varNumCols)))
+          lhs.varNumCols == rhs.varNumCols)))
         throw constant_function;
       // The new node of MatrixMatrixFunction.
       MatrixMatrixFunc<MT, ST> result;
@@ -294,7 +294,7 @@ namespace AMD {
    * @param zeroResultFlag
    */
   template <class MT, class ST>
-  void minusOp(boost::shared_ptr<MT> result,
+   void minusOp(boost::shared_ptr<MT> result,
     boost::shared_ptr<MT> current,
     boost::shared_ptr<MT> currentLeft,
     boost::shared_ptr<MT> currentRight,
@@ -341,21 +341,21 @@ namespace AMD {
    * @param rhs
    */
   template <class MT, class ST>
-  MatrixMatrixFunc<MT, ST> operator- (const MatrixMatrixFunc<MT, ST> &lhs,
+   MatrixMatrixFunc<MT, ST> operator- (const MatrixMatrixFunc<MT, ST> &lhs,
     const MatrixMatrixFunc<MT, ST> &rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     try {
       if (!(lhs.isConst ||
         rhs.isConst ||
         (lhs.varNumRows == rhs.varNumRows &&
-        lhs.varNumCols == rhs.varNumCols)))
+          lhs.varNumCols == rhs.varNumCols)))
         throw constant_function;
       // The new node.
       MatrixMatrixFunc<MT, ST> result;
       MT lhsMinusRhs;
       MatrixAdaptorType::minus(*(lhs.matrixPtr), *(rhs.matrixPtr), lhsMinusRhs);
       boost::shared_ptr<MT> diffPtr
-        (new MT(lhsMinusRhs));
+      (new MT(lhsMinusRhs));
       // Initialize the new node with pointers and call back functions.
       result.binOpSet(diffPtr, MINUS, minusOp<MT, ST>, lhs, rhs);
       return(result);
@@ -378,7 +378,7 @@ namespace AMD {
    * @param currentRight
    */
   template <class MT, class ST>
-  void negationOp(boost::shared_ptr<MT> result,
+   void negationOp(boost::shared_ptr<MT> result,
     boost::shared_ptr<MT> current,
     boost::shared_ptr<MT> currentLeft,
     boost::shared_ptr<MT> currentRight,
@@ -423,7 +423,7 @@ namespace AMD {
    * @param lhs
    */
   template <class MT, class ST>
-  MatrixMatrixFunc<MT, ST> operator-(const MatrixMatrixFunc<MT, ST> &lhs) {
+   MatrixMatrixFunc<MT, ST> operator-(const MatrixMatrixFunc<MT, ST> &lhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     MatrixMatrixFunc<MT, ST> result;
     if (NEGATION != lhs.opNum) {
@@ -462,7 +462,7 @@ namespace AMD {
    * @param zeroResultFlag
    */
   template <class MT, class ST>
-  void timesOp(boost::shared_ptr<MT> result,
+   void timesOp(boost::shared_ptr<MT> result,
     boost::shared_ptr<MT> current,
     boost::shared_ptr<MT> currentLeft,
     boost::shared_ptr<MT> currentRight,
@@ -557,14 +557,14 @@ namespace AMD {
    * @param rhs
    */
   template <class MT, class ST>
-  MatrixMatrixFunc<MT, ST> operator* (const MatrixMatrixFunc<MT, ST> &lhs,
+   MatrixMatrixFunc<MT, ST> operator* (const MatrixMatrixFunc<MT, ST> &lhs,
     const MatrixMatrixFunc<MT, ST> &rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     try {
       if (!(lhs.isConst ||
         rhs.isConst ||
         (lhs.varNumRows == rhs.varNumRows &&
-        lhs.varNumCols == rhs.varNumCols)))
+          lhs.varNumCols == rhs.varNumCols)))
         throw variable_function;
 
       // New node in computational tree.
@@ -599,7 +599,7 @@ namespace AMD {
    * @param zeroResultFlag
    */
   template <class MT, class ST>
-  void mtimesOp(boost::shared_ptr<MT> result,
+   void mtimesOp(boost::shared_ptr<MT> result,
     boost::shared_ptr<MT> current,
     boost::shared_ptr<MT> currentLeft,
     boost::shared_ptr<MT> currentRight,
@@ -639,7 +639,7 @@ namespace AMD {
             lhsTimesRhs2);
           MatrixAdaptorType::transpose(lhsTimesRhs2, *result);
           resultMMF->deepCopy          \
-            (transpose(transpose(*node->scalarChild->derivativeFuncVal)*scalarFunc));
+          (transpose(transpose(*node->scalarChild->derivativeFuncVal)*scalarFunc));
         }
         else {
           MatrixAdaptorType::multiply(node->scalarChild->derivativeVal,
@@ -699,7 +699,7 @@ namespace AMD {
    * @param rhs
    */
   template <class MT, class ST>
-  MatrixMatrixFunc<MT, ST> operator* (const MatrixMatrixFunc<MT, ST> &lhs,
+   MatrixMatrixFunc<MT, ST> operator* (const MatrixMatrixFunc<MT, ST> &lhs,
     const ScalarMatrixFunc<MT, ST> &rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     // New node in computational tree.
@@ -749,7 +749,7 @@ namespace AMD {
    * @param zeroResultFlag
    */
   template <class MT, class ST>
-  void stimesmOp(boost::shared_ptr<MT> result,
+   void stimesmOp(boost::shared_ptr<MT> result,
     boost::shared_ptr<MT> current,
     boost::shared_ptr<MT> currentLeft,
     boost::shared_ptr<MT> currentRight,
@@ -789,7 +789,7 @@ namespace AMD {
             lhsTimesRhs2);
           MatrixAdaptorType::transpose(lhsTimesRhs2, *result);
           resultMMF->deepCopy
-            (transpose(transpose(*node->scalarChild->derivativeFuncVal)*scalarFunc));
+          (transpose(transpose(*node->scalarChild->derivativeFuncVal)*scalarFunc));
         }
         else {
           MatrixAdaptorType::multiply(node->scalarChild->derivativeVal,
@@ -850,7 +850,7 @@ namespace AMD {
    * @param rhs
    */
   template <class MT, class ST>
-  MatrixMatrixFunc<MT, ST> operator* (const ScalarMatrixFunc<MT, ST> &lhs,
+   MatrixMatrixFunc<MT, ST> operator* (const ScalarMatrixFunc<MT, ST> &lhs,
     const MatrixMatrixFunc<MT, ST> &rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     // New node in computational tree.
@@ -923,8 +923,8 @@ namespace AMD {
         if (TRANSPOSE == node->rightChild->opNum) {
           MatrixAdaptorType::elementwiseProduct(*(node->rightChild-> \
             leftChild->matrixPtr),
-            *(current),
-            *currentLeft);
+          *(current),
+          *currentLeft);
           currentLeftMMF->deepCopy((*(node->rightChild->leftChild)) * (*currentMMF));
 
         }
@@ -937,8 +937,8 @@ namespace AMD {
         if (TRANSPOSE == node->leftChild->opNum) {
           MatrixAdaptorType::elementwiseProduct(*(node->leftChild-> \
             leftChild->matrixPtr),
-            *current,
-            *currentRight);
+          *current,
+          *currentRight);
           currentRightMMF->deepCopy(elementwiseProduct((*(node->leftChild->leftChild)),
             (*currentMMF)));
         }
@@ -991,7 +991,7 @@ namespace AMD {
       if (!(lhs.isConst ||
         rhs.isConst ||
         (lhs.varNumRows == rhs.varNumRows &&
-        lhs.varNumCols == rhs.varNumCols)))
+          lhs.varNumCols == rhs.varNumCols)))
         throw variable_function;
       MatrixMatrixFunc<MT, ST> result;
       MT lcrcEwisePdt;
@@ -1020,7 +1020,7 @@ namespace AMD {
    * @param currentRight
    */
   template <class MT, class ST>
-  void transposeOp(boost::shared_ptr<MT> result,
+   void transposeOp(boost::shared_ptr<MT> result,
     boost::shared_ptr<MT> current,
     boost::shared_ptr<MT> currentLeft,
     boost::shared_ptr<MT> currentRight,
@@ -1070,7 +1070,7 @@ namespace AMD {
    * @param lhs
    */
   template <class MT, class ST>
-  MatrixMatrixFunc<MT, ST> transpose(const MatrixMatrixFunc<MT, ST> &lhs) {
+   MatrixMatrixFunc<MT, ST> transpose(const MatrixMatrixFunc<MT, ST> &lhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     MatrixMatrixFunc<MT, ST> result;
     if (TRANSPOSE != lhs.opNum) {
@@ -1102,7 +1102,7 @@ namespace AMD {
    */
 
   template <class MT, class ST>
-  void diagOp(boost::shared_ptr<MT> result,
+   void diagOp(boost::shared_ptr<MT> result,
     boost::shared_ptr<MT>   current,
     boost::shared_ptr<MT>   currentLeft,
     boost::shared_ptr<MT>   currentRight,
@@ -1138,7 +1138,7 @@ namespace AMD {
    */
 
   template <class MT, class ST>
-  MatrixMatrixFunc<MT, ST> diag(const MatrixMatrixFunc<MT, ST>& lhs) {
+   MatrixMatrixFunc<MT, ST> diag(const MatrixMatrixFunc<MT, ST>& lhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     MatrixMatrixFunc<MT, ST> result;
     if (DIAG != lhs.opNum) {
@@ -1180,7 +1180,7 @@ namespace AMD {
    * @param zeroResultFlag
    */
   template <class MT, class ST>
-  void invOp(boost::shared_ptr<MT> result,
+   void invOp(boost::shared_ptr<MT> result,
     boost::shared_ptr<MT> current,
     boost::shared_ptr<MT> currentLeft,
     boost::shared_ptr<MT> currentRight,
@@ -1250,7 +1250,7 @@ namespace AMD {
    */
 
   template <class MT, class ST>
-  MatrixMatrixFunc<MT, ST> inv(const MatrixMatrixFunc<MT, ST> &lhs) {
+   MatrixMatrixFunc<MT, ST> inv(const MatrixMatrixFunc<MT, ST> &lhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     MatrixMatrixFunc<MT, ST> result;
     if (INV != lhs.opNum) {
@@ -1284,7 +1284,7 @@ namespace AMD {
    * @param lhs
    */
   template <class MT, class ST>
-  ScalarMatrixFunc<MT, ST> trace(const MatrixMatrixFunc<MT, ST> &lhs) {
+   ScalarMatrixFunc<MT, ST> trace(const MatrixMatrixFunc<MT, ST> &lhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     // matrix must be square in order to compute trace
     try {
@@ -1300,9 +1300,9 @@ namespace AMD {
 
       /** This is needed to be able to compute the derivative of derivative */
       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >
-        initMMF(new MatrixMatrixFunc<MT, ST>(*initPtr, false));
+      initMMF(new MatrixMatrixFunc<MT, ST>(*initPtr, false));
       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >
-        resultMMF(new MatrixMatrixFunc<MT, ST>(*resPtr, false));
+      resultMMF(new MatrixMatrixFunc<MT, ST>(*resPtr, false));
       result.derivativeFuncVal = resultMMF;
 
       bool zeroFlag = true;
@@ -1342,7 +1342,7 @@ namespace AMD {
    * @param lhs
    */
   template <class MT, class ST>
-  ScalarMatrixFunc<MT, ST> logdet(const MatrixMatrixFunc<MT, ST> &lhs) {
+   ScalarMatrixFunc<MT, ST> logdet(const MatrixMatrixFunc<MT, ST> &lhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
     // matrix must be square in order to compute trace
@@ -1358,9 +1358,9 @@ namespace AMD {
       *resPtr = MatrixAdaptorType::zeros(lhs.varNumRows, lhs.varNumCols);
       bool transposeFlag = true;
       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >
-        initMMF(new MatrixMatrixFunc<MT, ST>);
+      initMMF(new MatrixMatrixFunc<MT, ST>);
       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >
-        resultMMF(new MatrixMatrixFunc<MT, ST>);
+      resultMMF(new MatrixMatrixFunc<MT, ST>);
 
       if (TRANSPOSE == lhs.opNum) { // logdet(X^T) == logdet(X)
         // logdet for MMF
@@ -1368,32 +1368,32 @@ namespace AMD {
       }
       if (INV == lhs.opNum) { // logdet(X^{-1)) == - logdet(X)
         // logdet for MMF 
-        return(-logdet((*lhs.leftChild)));
-      }
+  return(-logdet((*lhs.leftChild)));
+}
       // The starting point for logdet is a inverse matrix.
-      MatrixAdaptorType::inv(*lhs.matrixPtr, *initPtr);
-      MatrixMatrixFunc<MT, ST> initMat = inv(lhs);
-      MatrixMatrixFunc<MT, ST> resultMat(*resPtr, false);
-      initMMF->deepCopy(initMat);
-      resultMMF->deepCopy(resultMat);
-      result.derivativeFuncVal = resultMMF;
-      bool zeroFlag = true;
-      lhs.gradientVec(initPtr, resPtr, initMMF, resultMMF,
-        transposeFlag, false, zeroFlag);
-      if (zeroFlag) {
-        result.initWithConst(MatrixAdaptorType::logdet(*lhs.matrixPtr),
-          lhs.varNumCols, lhs.varNumCols);
-        return(result);
-      }
-      else {
-        result.initWithVariable(MatrixAdaptorType::logdet(*lhs.matrixPtr), *resPtr);
-        return(result);
-      }
-    }
-    catch (std::exception& error) {
-      std::cerr << error.what() << std::endl;
-    }
-  }
+MatrixAdaptorType::inv(*lhs.matrixPtr, *initPtr);
+MatrixMatrixFunc<MT, ST> initMat = inv(lhs);
+MatrixMatrixFunc<MT, ST> resultMat(*resPtr, false);
+initMMF->deepCopy(initMat);
+resultMMF->deepCopy(resultMat);
+result.derivativeFuncVal = resultMMF;
+bool zeroFlag = true;
+lhs.gradientVec(initPtr, resPtr, initMMF, resultMMF,
+  transposeFlag, false, zeroFlag);
+if (zeroFlag) {
+  result.initWithConst(MatrixAdaptorType::logdet(*lhs.matrixPtr),
+    lhs.varNumCols, lhs.varNumCols);
+  return(result);
+}
+else {
+  result.initWithVariable(MatrixAdaptorType::logdet(*lhs.matrixPtr), *resPtr);
+  return(result);
+}
+}
+catch (std::exception& error) {
+  std::cerr << error.what() << std::endl;
+}
+}
 
 } /** namespace AMD */
 
