@@ -1,5 +1,5 @@
 /**
- * @file SymbolicMatricMatlab.cpp
+ * @file SymbolicMatrixMatlab.cpp
  * @author adromanova
  * 
  * Python bindings for the SymbolicMatrixMatlab object and helper functions.

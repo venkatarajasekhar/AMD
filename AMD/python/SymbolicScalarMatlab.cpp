@@ -6,12 +6,8 @@
  */
 
 #include <boost/python.hpp>
-#include <boost/python/operators.hpp>
-#include <boost/operators.hpp>
 
 #include "SymbolicScalarMatlab.hpp"
-#include "SymbolicScalarMatlabHelper.hpp"
-#include "SymbolicMatrixMatlabHelper.hpp"
 
 namespace AMD { namespace python {
 
