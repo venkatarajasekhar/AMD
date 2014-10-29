@@ -9,11 +9,67 @@
  * @brief This file defines methods for SymbolicMatrixMatlab class.
  */
 
+#include <string>
 #include <sstream>
 #include "SymbolicMatrixMatlab.hpp"
 
 namespace AMD {
 
+  /**
+   * Compute the sqrt of a scalar symbol.
+   * @return A new SymbolicScalarMatlab whose symbol is "sqrt(a.symbol)"
+   */ 
+  SymbolicScalarMatlab sqrt(const SymbolicScalarMatlab& a) {
+    return SymbolicScalarMatlab("sqrt(" + a.symbol + ")");
+  }
+
+  /**
+   * Compute the addition of two scalars
+   * @return A new SymbolicScalarMatlab whose symbol is "a.symbol+b.symbol"
+   */ 
+  SymbolicScalarMatlab operator+(const SymbolicScalarMatlab& a,
+                                 const SymbolicScalarMatlab& b) {
+    return SymbolicScalarMatlab("(" + a.symbol + "+" + b.symbol + ")");
+  }
+
+  /**
+   * Compute the subraction of two scalars
+   * @return A new SymbolicScalarMatlab whose symbol is "a.symbol-b.symbol"
+   */ 
+  SymbolicScalarMatlab operator-(const SymbolicScalarMatlab& a,
+                                 const SymbolicScalarMatlab& b) {
+    return SymbolicScalarMatlab("(" + a.symbol + "-" + b.symbol + ")");
+  }
+
+  /**
+   * Compute the unary negation of a scalar
+   * @return A new SymbolicScalarMatlab whose symbol is "-a.symbol"
+   */ 
+  SymbolicScalarMatlab operator-(const SymbolicScalarMatlab& a) {
+    return SymbolicScalarMatlab("(-" + a.symbol + ")");
+  }
+
+  /** 
+   * Compute a*b, where a and b are scalar.
+   * @param[in] a A SymbolicScalarMatlab.
+   * @param[in] b A SymbolicScalarMatlab.
+   * @return The SymbolicScalarMatlab representation of a * b.
+   */
+  SymbolicScalarMatlab operator*(const SymbolicScalarMatlab& a, 
+				                         const SymbolicScalarMatlab& b) {
+    return SymbolicScalarMatlab("(" + a.symbol + "*" + b.symbol + ")");
+  }
+
+  /** 
+   * Compute a/b, where a and b are scalar.
+   * @param[in] a A SymbolicScalarMatlab.
+   * @param[in] b A SymbolicScalarMatlab.
+   * @return The SymbolicScalarMatlab representation of a / b.
+   */
+  SymbolicScalarMatlab operator/(const SymbolicScalarMatlab& a, 
+				                         const SymbolicScalarMatlab& b) {
+    return SymbolicScalarMatlab("(" + a.symbol + "/" + b.symbol + ")");
+  }
 
   /** 
    * Compute the scalar trace(a) from the matrix a.
@@ -154,7 +210,7 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of a * b.
    */
   SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a, 
-				 const SymbolicMatrixMatlab& b) {
+				                         const SymbolicMatrixMatlab& b) {
     assert(a.getNumCols() == b.getNumRows());
     return SymbolicMatrixMatlab("("+a.symbol+"*"+b.symbol+")",
 				a.getNumRows(),b.getNumCols());
@@ -171,7 +227,7 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of a .* b.
    */
   SymbolicMatrixMatlab operator*(const SymbolicScalarMatlab& a, 
-				 const SymbolicMatrixMatlab& b) {
+                        				 const SymbolicMatrixMatlab& b) {
     return SymbolicMatrixMatlab("("+a.symbol+".*"+b.symbol+")",
 				b.getNumRows(),b.getNumCols());
   }
@@ -183,13 +239,16 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of a .* b.
    */
   SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a, 
-				 const SymbolicScalarMatlab& b) {
+				                         const SymbolicScalarMatlab& b) {
     return SymbolicMatrixMatlab ("("+b.symbol+".*"+a.symbol+")",
 				 a.getNumRows(),a.getNumCols());
   }
 
-  // Note: scalar/Matrix should not be defined.  User will have to write 
-  // scalar * inv(Matrix)
+  /**
+   * Note: scalar/Matrix should not be defined.  User will have to write 
+   * scalar * inv(Matrix)
+   */ 
+
   /** 
    * Compute a./b, where a is a matrix and b is a scalar.
    * @param[in] a A SymbolicMatrixMatlab.
@@ -197,7 +256,7 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of a ./ b.
    */
   SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a,
-				 const SymbolicScalarMatlab& b) {
+				                         const SymbolicScalarMatlab& b) {
     return SymbolicMatrixMatlab ("("+a.symbol+"./"+b.symbol+")",
 				 a.getNumRows(),a.getNumCols());
   }

@@ -16,6 +16,7 @@
 #include <iostream>
 #include <assert.h>
 
+#include "utility.hpp"
 #include "SymbolicScalarMatlab.hpp"
 
 namespace AMD {

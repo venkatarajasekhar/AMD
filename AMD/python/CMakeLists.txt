@@ -14,27 +14,17 @@ set(AMD_SRCS
 )
 
 add_library(AMD.so SHARED ${AMD_SRCS})
+
 target_link_libraries(AMD.so 
                       ${AMD_LIBS} 
                       ${Boost_LIBRARIES} 
                       ${PYTHON_LIBRARIES})
-set_target_properties(AMD.so 
-                      PROPERTIES COMPILE_FLAGS
-"-Wall -Wno-comment -fPIC"
+
+set_target_properties(
+    AMD.so PROPERTIES 
+    COMPILE_FLAGS "-Wall -Wno-comment -Wno-unused -fPIC"
+    PREFIX "" 
+    SUFFIX "" 
+    OUTPUT_NAME "AMD.so"
+    SOVERSION "${AMD_VERSION_MAJOR}.${AMD_VERSION_MINOR}"
 )
-set_target_properties(AMD.so PROPERTIES PREFIX "" )
-
-
-IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    INSTALL (
-        FILES ${PROJECT_BINARY_DIR}/python/amd.so.dylib
-        DESTINATION lib
-        RENAME AMD.so
-    )
-ELSE (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    INSTALL (
-        TARGETS AMD.so
-        DESTINATION lib
-    )
-ENDIF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-
