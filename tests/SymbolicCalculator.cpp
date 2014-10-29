@@ -5,11 +5,16 @@
  *       expression.
  */
 
+
+/* broken tests:
+   'X+A' - no SMfunc, segfault
+ */ 
 #include <iostream>
 #include <string>
 #include <cmath>
 #include <cstdlib>
 #include <cstdio>
+#include <cctype>
 #include <assert.h>
 #include "boost/shared_ptr.hpp"
 #include <AMD/AMD.hpp>
@@ -22,11 +27,11 @@
 #define ROW 128 
 #define COL 128 
 
-//TO-DO BUG: expr(anything is valid and returns Zero!
 namespace AMD{
 
 /* Typedef for SymbolicMatrixMatlab and SymbolicScalarMatlab. */
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
+typedef AMD::SymbolicScalarMatlab symbolic_scalar_type;
 typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
 typedef symbolic_adaptor_type::value_type symbolic_value_type;
 
@@ -218,7 +223,8 @@ std::vector<std::string> Calculator::stringParser(std::string& str) {
   int size = str.size();
   int i;
   
-  for (i = 0; i < size; i++) {
+
+  for (i = 0; i < size; i++) { //operations
     bool foundSymbol = false;
     for(int j = 0; j < opStrList.size() && !foundSymbol;j++) {
       if(str.compare(i,opStrList[j].size(),opStrList[j]) == 0) {
@@ -229,11 +235,8 @@ std::vector<std::string> Calculator::stringParser(std::string& str) {
       }
     }
     if(!foundSymbol) {
-      if (str[i] == 't' && str[i+3] == 'c') {
-        while (str[i] != '(') {
-          i++;
-        }
-        i++; 
+      if (str.compare(i,6,"trace(") == 0) {//trace
+        i+=6; 
         int cnt = 1;
         std::string traceStr = "trace(";
         while (i < str.size() && cnt != 0) {
@@ -249,16 +252,13 @@ std::vector<std::string> Calculator::stringParser(std::string& str) {
         i--;
         //exception: cnt != 0 - parsing_exception
         if(cnt != 0) {
-          std::cerr << "Parentheses mismatch!" << std::endl;
+          std::cerr << "Parentheses mismatch! - stringparser" << std::endl;
           exit(-1);
         }
         result.push_back(traceStr);
       } else 
-        if (str[i] == 'l' && str[i+1] == 'o') {
-          while (str[i] != '(') {
-            i++;
-          }
-          i++; 
+        if (str.compare(i,7,"logdet(")==0) {//logdet
+          i+=7; 
           int cnt = 1;
           std::string logdetStr = "logdet(";
           while (i < str.size() && cnt != 0) {
@@ -274,18 +274,27 @@ std::vector<std::string> Calculator::stringParser(std::string& str) {
           i--;
           //exception: cnt != 0 - parsing exception
           if(cnt != 0) {
-            std::cerr << "Parentheses mismatch!" << std::endl;
+            std::cerr << "Parentheses mismatch! - stringparser" << std::endl;
             exit(-1);
           }
           result.push_back(logdetStr);
-        } else {
-          std::string varStr = "";
-          while (!isOp(str[i]) && i != size) {
-            varStr = varStr + str[i];
-            i++;
-          }
-          i--;
+        }else
+        if(std::isupper(str[i])) { // matrices
+          std::string varStr(1,str[i]);
           result.push_back(varStr);
+        }else 
+        if(std::isdigit(str[i])) {
+          std::string varStr = "";
+            while(isdigit(str[i])) {
+              varStr += str[i];
+              i++;
+            }
+            i--;
+          result.push_back(varStr);
+        }else { 
+          //exception - parsing_exception
+          std::cout << "Incorrect Input - stringparser" << std::endl;
+          exit(-1);
         }
     }
   }
@@ -308,6 +317,12 @@ std::vector<std::string> Calculator::infix2rpn(std::vector<std::string>& infix) 
         result.push_back(opStack.top());
         opStack.pop();
         }
+        if(opStack.empty() == true) {
+          //exception - parsing_exception
+          std::cout << "Incorrect Input - infix2rpn" << std::endl;
+          exit(-1);
+        }
+        
         //exception: opStack.empty() == 0 - parsing exception
         opStack.pop();
       } else
@@ -344,28 +359,35 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
   std::vector<boost::shared_ptr<SymbolicMMFunc> > matrixFuncs;
   matrices.resize('Z'-'A'+1);
   matrixFuncs.resize('Z'-'A'+1);
-  char identifier[1];
+
+  char identifier[2];
+  identifier[1] = 0;
+
   for(char c = 'A'; c < 'Z';c++) {
-    sprintf(identifier,"%c",c);
+    identifier[0] = c;
     //identity and X are created separately
     if(c == 'I' || c == 'X')
       continue;
     matrices[c-'A'] = symbolic_matrix_type(identifier,Row,Col);
-    matrixFuncs[c-'A'] = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc(matrices[c-'A'],true));
+    matrixFuncs[c-'A'] = boost::shared_ptr<SymbolicMMFunc>
+      (new SymbolicMMFunc(matrices[c-'A'],true));
   }
 
   matrices['X'-'A'] = symbolic_matrix_type("X",Row,Col);
-  matrixFuncs['X'-'A'] = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc(matrices['X'-'A'], false));
+  matrixFuncs['X'-'A'] = boost::shared_ptr<SymbolicMMFunc>
+    (new SymbolicMMFunc(matrices['X'-'A'], false));
  
   matrices['I'-'A'] = symbolic_adaptor_type::eye(Row);
-  matrixFuncs['I'-'A'] = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc (matrices['I'-'A'], true));
+  matrixFuncs['I'-'A'] = boost::shared_ptr<SymbolicMMFunc>
+    (new SymbolicMMFunc (matrices['I'-'A'], true));
 
   matrices['Z'-'A'] =  symbolic_adaptor_type::zeros(Row, Col);
-  matrixFuncs['Z'-'A'] = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc (matrices['Z'-'A'], true));
+  matrixFuncs['Z'-'A'] = boost::shared_ptr<SymbolicMMFunc>
+    (new SymbolicMMFunc (matrices['Z'-'A'], true));
  
   SymbolicSMFunc func;
   for (i = 0; i < size; i++) {
-    if(str[i].size() == 1 && str[i][0] >= 'A' && str[i][0] <= 'Z') {
+    if(str[i].size() == 1 && isupper(str[i][0])) {
       MMFStack.push(matrixFuncs[str[i][0]-'A']);
     } else 
     if (str[i] == "+") {
@@ -436,17 +458,23 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       std::cout << "Incorrect Input" << std::endl;
       exit(-1);
     }
-    
-
   }
   if (SMFtype == 1) {
     func = trace(*MMFStack.top());
+    MMFStack.pop();
   } else 
   if (SMFtype == 2) {
     func = logdet(*MMFStack.top());
+    MMFStack.pop();
   } else {
     //exception - parsing_exception
     std::cerr << "ERROR INCORRECT INPUT" << std::endl;
+    exit(-1);
+  }
+
+  if(MMFStack.empty() == false) {
+    //exception - parsing_exception
+    std::cerr << "ERROR INCORRECT INPUT - stackMMF" << std::endl;
     exit(-1);
   }
   return func;
@@ -512,13 +540,18 @@ SymbolicSMFunc Calculator::computeSMF(std::vector<std::string>& str,
       SymbolicSMFunc funcResult = (computeSingleSMF(rpn, type, Row , Col));
       SMFStack.push(funcResult);
     } else {
-      //TO-DO: new type?
-      AMD::SymbolicScalarMatlab num(str[i]);
+      symbolic_scalar_type num(str[i]);
       SymbolicSMFunc constantSMFunc(num, Row, Row);
       SMFStack.push(constantSMFunc);
     }
   }
   func = SMFStack.top();
+  SMFStack.pop();
+  if(SMFStack.empty() == false) {
+    //exception - parsing_exception
+    std::cerr << "ERROR INCORRECT INPUT - stackSMF" << std::endl;
+    exit(-1);
+  }
   return func;
 }
 }
