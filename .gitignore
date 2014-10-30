@@ -1,5 +1,4 @@
 build
-./presentation/build/
 *.aux
 *.log
 *.nav
@@ -7,7 +6,7 @@ build
 *.pdf
 *.snm
 *.toc
-presentation/Thumbs.db
-presentations/Facebook/amd.synctex.gz
-presentations/Facebook/amd.vrb
 *.db
+*.gz
+*.db
+*.vrb

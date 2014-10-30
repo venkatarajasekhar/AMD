@@ -15,6 +15,7 @@
 #include <string>
 #include <iostream>
 
+#include "utility.hpp"
 #include "SymbolicScalarMatlab.hpp"
 
  namespace AMD {

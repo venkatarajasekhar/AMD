@@ -11,6 +11,8 @@ namespace AMD { namespace python {
 
 extern void export_symbolicscalarmatlab();
 
+extern void export_symbolicmatrixmatlab();
+
 extern const char* module_docstring;
 
 BOOST_PYTHON_MODULE(AMD)
@@ -26,6 +28,7 @@ BOOST_PYTHON_MODULE(AMD)
   scope().attr("__license__") = "http://www.eclipse.org/legal/epl-v10.html";
 
   AMD::python::export_symbolicscalarmatlab();
+  AMD::python::export_symbolicmatrixmatlab();
 
 }
 
