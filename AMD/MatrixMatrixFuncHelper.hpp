@@ -17,6 +17,8 @@
 #include "ScalarMatrixFunc.hpp"
 #include "MatrixAdaptor.hpp"
 
+#include "exception.hpp"
+
  namespace AMD {
   /**
    * @enum Enum type for operators.
@@ -91,22 +93,25 @@
     int& transposeFlag,
     bool& identityCurrentFlag,
     bool& zeroResultFlag) {
-    try {
-      if (!(NULL != node && // check node type. 
-        NULL == node->leftChild &&  // node must be leaf node.
-        NULL == node->rightChild))
-        throw internal_node; //node is internal rather than leaf
-      if (!(node->isConst &&
+
+    AMD_START_TRY_BLOCK();
+    if (NULL==node) throw exception_generic_impl("AMD::constOp",
+                                                 "Node pointer is NULL",
+                                                 AMD_NULL_NODE_PTR);
+    if (NULL!=node->leftChild || NULL!=node->rightChild)
+      throw exception_generic_impl("AMD::constOp",
+                                   "Left and right children not NULL",
+                                   AMD_INTERNAL_NODE);
+    if (false==node->isConst &&
         CONST == node->opNum &&
         0 == node->varNumRows &&
-        0 == node->varNumCols))
-        throw variable_function;
+        0 == node->varNumCols)
+      throw exception_generic_impl("AMD::constOp",
+                                   "Node is not a constant",
+                                   AMD_VARIABLE_NODE);
 
-      // Nothing to do with constant matrices.
-    }
-    catch (std::exception& error) {
-      std::cerr << error.what() << std::endl;
-    }
+    /** Nothing to do with constant matrices.*/
+    AMD_CATCH_AND_RETHROW(AMD,constOp);
   }
 
   /**
