@@ -17,11 +17,13 @@ namespace {
 /* Declaring some enumarations */
 enum { AMD_ERROR = -0xFFFF, /**< An error has occured */
        AMD_MISMATCHED_DIMENSIONS, /**< Matrices don't match up */
+       AMD_INTERNAL_NODE, /**< Internal node when leaf node expected */
+       AMD_CONSTANT_FN, /** Node is a constant function */
+       AMD_VARIABLE_FN, /** Node is a constant function */
+       AMD_NULL_PTR, /**< Null pointer exception */
+       AMD_INVALID_OPERATION, /**< Invalid operation */
        AMD_NOMEM, /**< Malloc failed */
        AMD_INVALID_ARGUMENTS, /**< The arguments are mismatched */
-       AMD_NULL_PTR, /**< Null pointer exception */
-       AMD_INTERNAL_NODE, /**< Internal node when leaf node expected */
-       AMD_VARIABLE_NODE, /**< Node is a variable instead of constant */
        /** ADD OTHER ERROR CODES HERE */
        AMD_SUCCESS = 0, /**< The function succeeded */
 };

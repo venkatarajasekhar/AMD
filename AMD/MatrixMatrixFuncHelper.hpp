@@ -97,7 +97,7 @@
     AMD_START_TRY_BLOCK();
     if (NULL==node) throw exception_generic_impl("AMD::constOp",
                                                  "Node pointer is NULL",
-                                                 AMD_NULL_NODE_PTR);
+                                                 AMD_NULL_PTR);
     if (NULL!=node->leftChild || NULL!=node->rightChild)
       throw exception_generic_impl("AMD::constOp",
                                    "Left and right children not NULL",
@@ -108,7 +108,7 @@
         0 == node->varNumCols)
       throw exception_generic_impl("AMD::constOp",
                                    "Node is not a constant",
-                                   AMD_VARIABLE_NODE);
+                                   AMD_VARIABLE_FN);
 
     /** Nothing to do with constant matrices.*/
     AMD_END_TRY_BLOCK();
