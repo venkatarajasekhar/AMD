@@ -20,7 +20,8 @@ namespace AMD {
    * @return A new SymbolicScalarMatlab.
    */
   SymbolicScalarMatlab sqrt(const SymbolicScalarMatlab& a) {
-    return SymbolicScalarMatlab("sqrt("+detail::removeParenthesis(a.symbol)+")");
+    return 
+      SymbolicScalarMatlab("sqrt("+detail::removeParenthesis(a.symbol)+")");
   }
 
   /** 
@@ -30,7 +31,7 @@ namespace AMD {
    * @return The sum a+b.
    */
   SymbolicScalarMatlab operator+(const SymbolicScalarMatlab& a, 
-				 const SymbolicScalarMatlab& b) {
+				                         const SymbolicScalarMatlab& b) {
     return SymbolicScalarMatlab("("+a.symbol+"+"+b.symbol+")");
   }
 
@@ -41,7 +42,7 @@ namespace AMD {
    * @return The difference a-b.
    */
   SymbolicScalarMatlab operator-(const SymbolicScalarMatlab& a, 
-				 const SymbolicScalarMatlab& b) {
+				                         const SymbolicScalarMatlab& b) {
     return SymbolicScalarMatlab("("+a.symbol+"-"+b.symbol+")");
   }
 
@@ -61,7 +62,7 @@ namespace AMD {
    * @return The product a*b.
    */
   SymbolicScalarMatlab operator*(const SymbolicScalarMatlab& a, 
-				 const SymbolicScalarMatlab& b) {
+				                         const SymbolicScalarMatlab& b) {
     return SymbolicScalarMatlab("("+a.symbol+"*"+b.symbol+")");
   }
 
@@ -72,7 +73,7 @@ namespace AMD {
    * @return The quotient a/b.
    */
   SymbolicScalarMatlab operator/(const SymbolicScalarMatlab& a, 
-				 const SymbolicScalarMatlab& b) {
+				                         const SymbolicScalarMatlab& b) {
     return SymbolicScalarMatlab("("+a.symbol+"/"+b.symbol+")");
   }
 
