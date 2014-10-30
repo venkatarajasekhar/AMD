@@ -8,6 +8,7 @@
 #include <boost/python.hpp>
 
 #include "SymbolicScalarMatlab.hpp"
+#include "SymbolicScalarMatlabHelper.hpp"
 
 namespace AMD { namespace python {
 
