@@ -111,6 +111,7 @@
                                    AMD_VARIABLE_NODE);
 
     /** Nothing to do with constant matrices.*/
+    AMD_END_TRY_BLOCK();
     AMD_CATCH_AND_RETHROW(AMD,constOp);
   }
 
