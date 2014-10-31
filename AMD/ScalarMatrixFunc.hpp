@@ -17,7 +17,8 @@
 #include <iostream>
 #include "MatrixAdaptor.hpp"
 #include "MatrixMatrixFunc.hpp"
- namespace AMD {
+
+namespace AMD {
   /**
    * @brief A Scalar-Matrix Function class. This class is a mapping
    * from MatrixType class to a ScalarType class.
@@ -116,18 +117,11 @@
    *
    * @tparam MT Matrix Type.
    * @tparam ST Scalar Type.
-   *
-   */
-  template <class MT, class ST>
-
-  /**
-   * @param[in] lhs
-   * @param[in] rhs
-   *
    * @return The new ScalarMatrixFunc object which is the some of rhs and lhs.
    */
+  template <class MT, class ST>
    ScalarMatrixFunc<MT, ST> operator+(const ScalarMatrixFunc<MT, ST> &lhs,
-    const ScalarMatrixFunc<MT, ST> &rhs) {
+                                      const ScalarMatrixFunc<MT, ST> &rhs) {
     try {
       if (!(lhs.derivativeVal.getNumRows() == rhs.derivativeVal.getNumRows() &&
         lhs.derivativeVal.getNumCols() == rhs.derivativeVal.getNumCols()))
@@ -163,19 +157,14 @@
   /**
    * @brief Friend function for ScalarMatrixFunc. Operator overloading for
    * "-".
-   *
-   * @tparam MT Matrix Type.
-   * @tparam ST Scalar Type.
-   */
-  template <class MT, class ST>
-  /**
    * @param[in] lhs
    * @param[in] rhs
    *
    * @return The substraction of two ScalarMatrixFun objects.
    */
+   template <class MT, class ST>
    ScalarMatrixFunc<MT, ST> operator-(const ScalarMatrixFunc<MT, ST> &lhs,
-    const ScalarMatrixFunc<MT, ST> &rhs) {
+                                      const ScalarMatrixFunc<MT, ST> &rhs) {
     try {
       if (!(lhs.derivativeVal.getNumRows() == rhs.derivativeVal.getNumRows() &&
         lhs.derivativeVal.getNumCols() == rhs.derivativeVal.getNumCols()))
@@ -210,18 +199,19 @@
    * @return -lhs
    */
   template <class MT, class ST>
-   ScalarMatrixFunc<MT, ST> operator-(const ScalarMatrixFunc<MT, ST> &lhs) {
+  ScalarMatrixFunc<MT, ST> operator-(const ScalarMatrixFunc<MT, ST> &lhs) {
     /*
     if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
     return( ScalarMatrixFunc<MT,ST>( -lhs.functionVal,
     lhs.derivativeVal ) );
     }*/
-typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
-MT lcTrans;
-MatrixAdaptorType::negation(lhs.derivativeVal, lcTrans);
-return(ScalarMatrixFunc<MT, ST>(-lhs.functionVal,
-  lcTrans, -(*lhs.derivativeFuncVal)));
-}
+    typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+    MT lcTrans;
+    MatrixAdaptorType::negation(lhs.derivativeVal, lcTrans);
+    return(ScalarMatrixFunc<MT, ST>(-lhs.functionVal,
+                                    lcTrans, 
+                                    -(*lhs.derivativeFuncVal)));
+  }
 
   /**
    * @brief Operator overloading for "*".
@@ -236,8 +226,8 @@ return(ScalarMatrixFunc<MT, ST>(-lhs.functionVal,
    */
   // TODO  add derivativeFunc
   template <class MT, class ST>
-   ScalarMatrixFunc<MT, ST> operator*(const ScalarMatrixFunc<MT, ST> &lhs,
-    const ScalarMatrixFunc<MT, ST> &rhs) {
+  ScalarMatrixFunc<MT, ST> operator*(const ScalarMatrixFunc<MT, ST> &lhs,
+                                     const ScalarMatrixFunc<MT, ST> &rhs) {
     try {
       if (!(lhs.derivativeVal.getNumRows() == rhs.derivativeVal.getNumRows() &&
         lhs.derivativeVal.getNumCols() == rhs.derivativeVal.getNumCols()))
@@ -301,6 +291,7 @@ return(ScalarMatrixFunc<MT, ST>(-lhs.functionVal,
   return(lhs*f);
   }
   */
+
   /**
    * @brief Operator overloading for "/".
    *
@@ -314,7 +305,7 @@ return(ScalarMatrixFunc<MT, ST>(-lhs.functionVal,
    */
   template <class MT, class ST>
    ScalarMatrixFunc<MT, ST> operator/(const ScalarMatrixFunc<MT, ST> &lhs,
-    const ScalarMatrixFunc<MT, ST> &rhs) {
+                                      const ScalarMatrixFunc<MT, ST> &rhs) {
     try {
       if (!(lhs.derivativeVal.getNumRows() == rhs.derivativeVal.getNumRows() &&
         lhs.derivativeVal.getNumCols() == rhs.derivativeVal.getNumCols()))
@@ -335,8 +326,6 @@ return(ScalarMatrixFunc<MT, ST>(-lhs.functionVal,
       std::cerr << error.what() << std::endl;
     }
   }
-
-
 }  /** namespace AMD */
 
 #endif
