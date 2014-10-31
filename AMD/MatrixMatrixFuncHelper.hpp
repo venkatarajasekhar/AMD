@@ -16,7 +16,7 @@
 #include "utility.hpp"
 #include "ScalarMatrixFunc.hpp"
 #include "MatrixAdaptor.hpp"
-#include "Exception.hpp"
+#include "AnjuException.hpp"
 
 namespace AMD {
   /**
@@ -84,11 +84,11 @@ namespace AMD {
 
     /** 2. The shared pointers should contain valid pointers */
     if (1 > current.use_count()) {
-      throw exception_generic_impl("AMD::binaryDiffOpStandardCheck",
+      throw exception_generic_impl("AMD::unaryDiffOpStandardCheck",
                                "Current use count is not right",
                                AMD_INVALID_SHARED_PTR);
     } else if (1 > currentLeft.use_count()) {
-      throw exception_generic_impl("AMD::binaryDiffOpStandardCheck",
+      throw exception_generic_impl("AMD::unaryDiffOpStandardCheck",
                                "Current-Left use count is not right",
                                AMD_INVALID_SHARED_PTR);
     } 
@@ -417,7 +417,7 @@ namespace AMD {
       bool& zeroResultFlag) {
 
     AMD_START_TRY_BLOCK();
-    binaryOpStandardCheck(node, current, currentLeft, currentRight, PLUS);
+    binaryDiffOpStandardCheck(node, current, currentLeft, currentRight, PLUS);
 
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     if (currentMMF) {
@@ -451,7 +451,7 @@ namespace AMD {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
     AMD_START_TRY_BLOCK();
-    binaryOpStandardCheck(lhs,rhs,OpType::PLUS);
+    binaryOpStandardCheck(lhs,rhs,PLUS);
 
     // The new node of MatrixMatrixFunction.
     MatrixMatrixFunc<MT, ST> result;
@@ -649,7 +649,7 @@ namespace AMD {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
     AMD_START_TRY_BLOCK();
-    binaryDiffOpStandardCheck(node, current, currentLeft, currentRight);
+    binaryDiffOpStandardCheck(node, current, currentLeft, currentRight, TIMES);
 
     if (identityCurrentFlag) { // avoid superfluous multiplication
       transposeFlag = 0;
