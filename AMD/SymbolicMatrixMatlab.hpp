@@ -129,7 +129,7 @@ struct SymbolicMatrixMatlab {
   /** 
    * Return representation of nxn identity matrix.
    * @param[in] n The size of the identity matrix.
-   * @return the SymbolicScalarMatlab eye(n)
+   * @return the SymbolicMatrixMatlab eye(n)
    */
   static SymbolicMatrixMatlab eye(int n)  {
     std::ostringstream ss;
@@ -141,7 +141,7 @@ struct SymbolicMatrixMatlab {
    * Return representation of mxn zero matrix.
    * @param[in] m Number of rows.
    * @param[in] n Number of cols.
-   * @return the SymbolicScalarMatlab zeros(m,n)
+   * @return the SymbolicMatrixMatlab zeros(m,n)
    */
   static SymbolicMatrixMatlab zeros(int m, int n)  {
     std::ostringstream ss;
