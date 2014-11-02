@@ -1,6 +1,6 @@
 /**
  * @file SymbolicScalarMatlab.cpp
- * @author pkambadu
+ * @author pkambadu, adromanova
  * 
  * Python bindings for SymbolicScalarMatlab object and helper functions.
  */
@@ -22,11 +22,26 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(println_overloads, println, 0, 1)
  * A function to export all the definitions for context object.
  */
 void export_symbolicscalarmatlab () {
+ 
+  /**
+   * docstring
+   */
+  const char* symScalMat_docstring = 
+    "This class symbolically represents a scalar using "\
+    "an internal string representation."; 
+
+  const char* sqrt_docstring = 
+    "Compute (sqrt(a). " \
+    "If a is trace(X) then the return value will hold sqrt(trace(X)).\n" \
+    "Args:\n" \
+    "    a: symbolic argument passed to sqrt.\n" \
+    "Returns:\n" \
+    "    SymbolicScalarMatlab representaion of sqrt(a)";
 
   using namespace boost::python;
   using namespace AMD;
 
-  class_<SymbolicScalarMatlab>("symScalMat", init<>())
+  class_<SymbolicScalarMatlab>("symScalMat", symScalMat_docstring, init<>())
   	// constructors
     .def(init<std::string>())
     .def(init<double>())
@@ -34,9 +49,10 @@ void export_symbolicscalarmatlab () {
   	 * to avoid conflict with python built-in 'print' */
   	.def("Print", &SymbolicScalarMatlab::print, print_overloads())
   	.def("println", &SymbolicScalarMatlab::println, println_overloads())
-//    .def("copy", &SymbolicScalarMatlab::copy)   //TODO
     // member variables converted to properties
-    .add_property("string", &SymbolicScalarMatlab::getString)
+    .add_property("string", 
+                  &SymbolicScalarMatlab::getString, 
+                  "internal string representaion")
     // overloaded operators
     .def(self + self)   
     .def(self - self)  
@@ -45,7 +61,7 @@ void export_symbolicscalarmatlab () {
   ;
 
   //helper functions
-  def("sqrt", sqrt);
+  def("sqrt", sqrt, sqrt_docstring);
 
 }
 
