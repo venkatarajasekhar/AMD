@@ -400,6 +400,33 @@ void testTransposeMatrixMatrixFunc () {
 
 }
 
+void testInverseMatrixMatrixFunc () {
+
+  std::string ans;
+//  std::string row = std::to_string(ROW);
+  char rowChar[5];
+  int rowTmp = ROW;
+  sprintf(rowChar, "%d", rowTmp);
+  std::string row = rowChar;
+  /** Create a variable X and an identity function */
+  symbolic_matrix_type X("X", ROW, COL);
+  SymbolicMMFunc fX(X, false);
+
+  /** Create constants A,B and C and identity functions */
+  symbolic_matrix_type A("A", ROW, COL);
+  symbolic_matrix_type B("B", ROW, COL);
+  SymbolicMMFunc fA(A, true);
+  SymbolicMMFunc fB(B, true);
+
+  /** Create a scalar-matrix function placeholder */
+  SymbolicSMFunc func; 
+
+  symbolic_matrix_type C("C", ROW, COL);
+
+  /** 1. inv(inv(A)) = A */
+  ans = "A";
+  func = inv(inv(fA));
+
 }
 
 
