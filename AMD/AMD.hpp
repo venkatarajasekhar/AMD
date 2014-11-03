@@ -20,7 +20,7 @@
  */ 
 #include "AMD/config.h"
 
-#include "AMD_Common.hpp"
+//#include "AMD_Common.hpp"
 
 #include "Exception.hpp"
 

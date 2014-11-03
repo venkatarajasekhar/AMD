@@ -26,6 +26,8 @@ enum { AMD_ERROR = -0xFFFF, /**< An error has occured */
        AMD_INVALID_ARGUMENTS, /**< The arguments are mismatched */
        /** ADD OTHER ERROR CODES HERE */
        AMD_SUCCESS = 0, /**< The function succeeded */
+      AMD_INVALID_SHARED_PTR,
+      AMD_NOT_NULL_PTR,
 };
 } /** Global namespace */
 
@@ -78,7 +80,7 @@ typedef int error_code_type;  /**< Type of the error code */
      (#STRUCT_NAME"::"#FUNC_NAME " at " FILE_AND_LINE(), \
       "Unknown error", \
       static_cast<error_code_type>(AMD_ERROR)); \
-  } 
+  }
 
 /**
  * Used in the top-level functions to return the error from the library.

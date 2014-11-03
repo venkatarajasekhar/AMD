@@ -237,7 +237,7 @@ namespace AMD {
   }
 
   template<typename MT, typename ST>
-  scalarOpDiffStandardCheck(const MatrixMatrixFunc<MT,ST>& lhs) {
+  static void scalarOpDiffStandardCheck(const MatrixMatrixFunc<MT,ST>& lhs) {
     if (lhs.varNumRows != lhs.varNumCols) {
       throw exception_generic_impl(
         "AMD::scalarOpDiffStandardCheck",
@@ -284,7 +284,7 @@ namespace AMD {
     bool& identityCurrentFlag,
     bool& zeroResultFlag) {
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     if (NULL==node) throw exception_generic_impl("AMD::constOp",
                                                  "Node pointer is NULL",
                                                  AMD_NULL_PTR);
@@ -301,8 +301,8 @@ namespace AMD {
                                    AMD_VARIABLE_FN);
 
     /** Nothing to do with constant matrices.*/
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,constOp);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,constOp)
   }
 
   /**
@@ -335,7 +335,7 @@ namespace AMD {
     bool& identityCurrentFlag,
     bool& zeroResultFlag) {
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
 
     if (NULL==node) throw exception_generic_impl("AMD::constOp",
                                                  "Node pointer is NULL",
@@ -381,8 +381,8 @@ namespace AMD {
         (*resultMMF).deepCopy((*resultMMF) + (*currentMMF));
       }
     }
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,varOp);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,varOp)
   }
 
   /**
@@ -416,7 +416,7 @@ namespace AMD {
       bool& identityCurrentFlag,
       bool& zeroResultFlag) {
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     binaryDiffOpStandardCheck(node, current, currentLeft, currentRight, PLUS);
 
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
@@ -431,8 +431,8 @@ namespace AMD {
     /** currentLeft and currentRight should inherit transpose */
     if (transposeFlag) transposeFlag = 3;
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,plusOp);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,plusOp)
   }
 
   /**
@@ -450,7 +450,7 @@ namespace AMD {
                                       const MatrixMatrixFunc<MT, ST> &rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     binaryOpStandardCheck(lhs,rhs,PLUS);
 
     // The new node of MatrixMatrixFunction.
@@ -464,8 +464,8 @@ namespace AMD {
     result.binOpSet(sumPtr, PLUS, plusOp<MT, ST>, lhs, rhs);
     return(result);
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,operatorPlus);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,operatorPlus)
   }
 
   /**
@@ -499,7 +499,7 @@ namespace AMD {
     bool& zeroResultFlag) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     binaryDiffOpStandardCheck(node, current, currentLeft, currentRight, MINUS);
 
     MatrixAdaptorType::copy(*currentLeft, *current);
@@ -510,8 +510,8 @@ namespace AMD {
       transposeFlag = 3; // both currentLeft and currentRight should inherit transpose
     }
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,minusOp);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,minusOp)
   }
 
   /**
@@ -529,7 +529,7 @@ namespace AMD {
                                       const MatrixMatrixFunc<MT, ST> &rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     binaryOpStandardCheck(lhs, rhs, MINUS);
 
     // The new node.
@@ -542,8 +542,8 @@ namespace AMD {
     result.binOpSet(diffPtr, MINUS, minusOp<MT, ST>, lhs, rhs);
     return(result);
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,operatorMinus);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,operatorMinus)
   }
 
   /**
@@ -573,15 +573,15 @@ namespace AMD {
     bool& zeroResultFlag) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     unaryDiffOpStandardCheck(node,current,currentLeft,currentRight,NEGATION);
 
     MatrixAdaptorType::negation((*current), (*currentLeft));
     currentLeftMMF->deepCopy(-(*currentMMF));
     if (transposeFlag) transposeFlag = 3;  
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,negationOp);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,negationOp)
   }
 
   /**
@@ -598,7 +598,7 @@ namespace AMD {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     MatrixMatrixFunc<MT, ST> result;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     unaryOpStandardCheck(lhs, NEGATION);
 
     /** Cancel out double negation */
@@ -613,8 +613,8 @@ namespace AMD {
     }
     return(result);
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,operatorUnaryMinus);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,operatorUnaryMinus)
   }
 
   /**
@@ -648,7 +648,7 @@ namespace AMD {
     bool& zeroResultFlag) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     binaryDiffOpStandardCheck(node, current, currentLeft, currentRight, TIMES);
 
     if (identityCurrentFlag) { // avoid superfluous multiplication
@@ -703,8 +703,8 @@ namespace AMD {
       }
     }
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,timesOp);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,timesOp)
   }
 
   /**
@@ -722,7 +722,7 @@ namespace AMD {
     const MatrixMatrixFunc<MT, ST> &rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     binaryOpStandardCheck(lhs, rhs, TIMES);
 
     // New node in computational tree.
@@ -735,8 +735,8 @@ namespace AMD {
     result.binOpSet(timesPtr, TIMES, timesOp<MT, ST>, lhs, rhs);
     return(result);
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,operatorTimes);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,operatorTimes)
   }
 
   /**
@@ -771,7 +771,7 @@ namespace AMD {
     bool& zeroResultFlag) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     binaryDiffOpStandardCheck(node,current,currentLeft,currentRight,MTIMESS);
 
     // derivative update: 
@@ -830,8 +830,8 @@ namespace AMD {
     }
     identityCurrentFlag = false;
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,mtimesOp);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,mtimesOp)
   }
 
   /**
@@ -850,7 +850,7 @@ namespace AMD {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     MatrixMatrixFunc<MT, ST> result;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
 
     if (MTIMESS != lhs.opNum) {
       MT lhsTimesRhs;
@@ -871,8 +871,8 @@ namespace AMD {
     }
     return(result);
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,operatorMTimesS);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,operatorMTimesS)
   }
 
   /**
@@ -907,7 +907,7 @@ namespace AMD {
     bool& zeroResultFlag) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     binaryDiffOpStandardCheck(node,current,currentLeft,currentRight,STIMESM);
 
     // derivative update: 
@@ -969,8 +969,8 @@ namespace AMD {
     }
     identityCurrentFlag = false;
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,stimesmOp);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,stimesmOp)
   }
 
   /**
@@ -989,7 +989,7 @@ namespace AMD {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     MatrixMatrixFunc<MT, ST> result;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
 
     if (STIMESM != rhs.opNum) {
       MT lhsTimesRhs;
@@ -1011,8 +1011,8 @@ namespace AMD {
     }
     return(result);
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,operatorSTimesM);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,operatorSTimesM)
   }
 
  /* Functions to deal with opNum = ELEWISE
@@ -1035,7 +1035,7 @@ namespace AMD {
     bool& zeroResultFlag) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     binaryDiffOpStandardCheck(node,current,currentLeft,currentRight,ELEWISE);
 
     if (identityCurrentFlag) {
@@ -1096,8 +1096,8 @@ namespace AMD {
       }
     }
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,elementwiseOp);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,elementwiseOp)
   }
 
   // function for elementwise 
@@ -1107,7 +1107,7 @@ namespace AMD {
                const MatrixMatrixFunc<MT, ST>& rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     binaryOpStandardCheck(lhs,rhs,ELEWISE);
 
     MatrixMatrixFunc<MT, ST> result;
@@ -1119,8 +1119,8 @@ namespace AMD {
     result.binOpSet(elewisePtr, ELEWISE, elementwiseOp<MT, ST>, lhs, rhs);
     return (result);
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,elementwiseProduct);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,elementwiseProduct)
   }
 
   /**
@@ -1150,7 +1150,7 @@ namespace AMD {
     bool& zeroResultFlag) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     unaryDiffOpStandardCheck(node,current,currentLeft,currentRight,TRANSPOSE);
 
     MatrixAdaptorType::copy((*currentLeft), (*current));
@@ -1160,8 +1160,8 @@ namespace AMD {
       else transposeFlag = 3;  
     }
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,transposeOp);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,transposeOp)
   }
 
   /**
@@ -1178,7 +1178,7 @@ namespace AMD {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     MatrixMatrixFunc<MT, ST> result;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
 
     if (TRANSPOSE != lhs.opNum) {
       MT lhsTrans;
@@ -1191,8 +1191,8 @@ namespace AMD {
     }
     return(result);
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,transpose);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,transpose)
   }
 
   /**
@@ -1219,14 +1219,14 @@ namespace AMD {
     bool& zeroResultFlag) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     unaryOpStandardCheck(node,current,currentLeft,currentRight,DIAG);
 
     MatrixAdaptorType::diag((*current), (*currentLeft));
     currentLeftMMF->deepCopy(*currentMMF);
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,diagOp);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,diagOp)
   }
 
   /**
@@ -1238,7 +1238,7 @@ namespace AMD {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     MatrixMatrixFunc<MT, ST> result;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
 
     if (DIAG != lhs.opNum) {
       MT lhsDiag;
@@ -1250,8 +1250,8 @@ namespace AMD {
       result.deepCopy(*lhs.leftChild);
     }
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,diag);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,diag)
   }
 
   /**
@@ -1285,7 +1285,7 @@ namespace AMD {
     bool& zeroResultFlag) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     unaryDiffOpStandardCheck(node,current,currentLeft,currentRight,INV);
 
     boost::shared_ptr<MT> initMat = node->matrixPtr;
@@ -1317,8 +1317,8 @@ namespace AMD {
     transposeFlag = 3;
     identityCurrentFlag = false;
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,invOp);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,invOp)
   }
 
   /**
@@ -1336,7 +1336,7 @@ namespace AMD {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     MatrixMatrixFunc<MT, ST> result;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
 
     if (INV != lhs.opNum) {
       MT lhsInv;
@@ -1350,8 +1350,8 @@ namespace AMD {
     }
     return(result);
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,inv);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,inv)
   }
 
   /**
@@ -1368,7 +1368,7 @@ namespace AMD {
    ScalarMatrixFunc<MT, ST> trace(const MatrixMatrixFunc<MT, ST> &lhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     scalarOpDiffStandardCheck(lhs);
 
     const int n = MatrixAdaptorType::getNumRows(*lhs.matrixPtr);
@@ -1408,8 +1408,8 @@ namespace AMD {
       return(result);
     }
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,trace);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,trace)
   }
 
   /**
@@ -1426,7 +1426,7 @@ namespace AMD {
   ScalarMatrixFunc<MT, ST> logdet(const MatrixMatrixFunc<MT, ST> &lhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
-    AMD_START_TRY_BLOCK();
+    AMD_START_TRY_BLOCK()
     scalarOpDiffStandardCheck(lhs);
 
     ScalarMatrixFunc<MT, ST> result;
@@ -1469,8 +1469,8 @@ namespace AMD {
       return(result);
     }
 
-    AMD_END_TRY_BLOCK();
-    AMD_CATCH_AND_RETHROW(AMD,logdet);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD,logdet)
   }
 
 } /** namespace AMD */
