@@ -315,7 +315,7 @@ void testPlusMinusSymbolicMatrixMatrixFunc() {
   std::string row = rowChar;
   /** Create a variable X and an identity function */
   symbolic_matrix_type X("A",ROW,COL);
-  SymbolicMMFunc fX(A,false);  /**< X is variable. */
+  SymbolicMMFunc fX(A,true);  /**< X is variable. */
 
   /** Create a constant A and an identity function */
   symbolic_matrix_type A("A",ROW,COL);
@@ -324,6 +324,8 @@ void testPlusMinusSymbolicMatrixMatrixFunc() {
   /** Create a scalar-matrix function placeholder */ 
   SymbolicSMFunc func;
 
+  symbolic_matrix_type Z = symbolic_adaptor_type::zeros(ROW, COL);
+  SymbolicMMFunc fZ(Z, true);
   /** 1. (A - A) = 0 */
 //  AMD::SymbolicScalarMatlab s("2");
 //  SymbolicSMFunc func3(s, ROW, COL);
@@ -335,82 +337,24 @@ void testPlusMinusSymbolicMatrixMatrixFunc() {
 
 
   /** 2. (A+A) = 2A */
-  ans = "A'";
+  ans = "2A";
   func = fA + fA;
   assert(func.derivativeVal.getString()==ans);
 
   /** 3. A + 0 = A */
-  ans = "A'";
-  func = fA + zeros;
-  assert(func.derivativeVal.getString()==ans);
-
-  /** 4. d/dx(trace(X*A')) = A */
   ans = "A";
-  func = trace(fX*transpose(fA));
+  func = fA + fZ;
   assert(func.derivativeVal.getString()==ans);
 
-  /** 5. d/dx(trace(A*X')) = A */
-  ans = "A";
-  func = trace(fA*transpose(fX));
-  assert(func.derivativeVal.getString()==ans);
-
-  /** 6. d/dx(trace(X)) = I */
-  ans = "eye(" + row + ")";
-  func = trace(fX);
-  assert(func.derivativeVal.getString()==ans);
-
-  /** 7. d/dx(trace(A+X'+A)) = I */
-  ans = "eye(" + row + ")";
-  func = trace(fA+transpose(fX)+fA);
-  assert(func.derivativeVal.getString()==ans);
-
-  /** 8. d/dx(trace(A*(X')^-1)) = -(X')^-1*A*X^-1 */
-  ans = "(-(inv(X)*(A*inv(X))))'";
-  func = trace(fA*inv(fX));
-  assert(func.derivativeVal.getString()==ans);
-
-  /** 9. d/dx(trace(A-X)) = I */
-  ans = "(-eye(" + row + "))";
-  func = trace(fA-fX);
-  assert(func.derivativeVal.getString()==ans);
-
-  /** 10. d/dx(logdet(X)) = X^-1 */
-  ans = "inv(X)'";
-  func = logdet(fX);
-  assert(func.derivativeVal.getString()==ans);
-
-  /** 11. d/dx(logdet(X')) = X^-1 */
-  ans = "inv(X)'";
-  func = logdet(transpose(fX));
-  assert(func.derivativeVal.getString()==ans);
-
-  /** 12. d/dx(logdet(A+X)) = (A+X)^-1 */
-  ans = "inv(A+X)'";
-  func = logdet(fA+fX);
-  assert(func.derivativeVal.getString()==ans);
-  /** 13. d/dx(logdet(A-X)) = -((A-X)')^-1 */
-  ans = "(-inv(A-X))'";
-  func = logdet(fA-fX);
-  assert(func.derivativeVal.getString()==ans);
-
-  /** 14. d/dx(logdet(X'^-1)) = -X'^-1 */
-  ans = "(-inv(X)')";
-  func = logdet(inv(transpose(fX)));
-  assert(func.derivativeVal.getString()==ans);
 
 }
-void testDerivativeSymbolicMatrixMatrixFunc() {
+void testMulSymbolicMatrixMatrixFunc() {
   std::string ans; /**< SymbolicMatrixMatrixFunc result. */
 //  std::string row = std::to_string(ROW); /**< SymbolicMatrix row number. */ 
   char rowChar[5];
   int rowTmp = ROW;
   sprintf(rowChar, "%d", rowTmp);
   std::string row = rowChar;
-
-  /** Create a variable X and an identity function */
-  symbolic_matrix_type X("X",ROW,COL);
-  SymbolicMMFunc fX(X,false); 
-
   /** Create a constant A and an identity function */
   symbolic_matrix_type A("A",ROW,COL);
   symbolic_matrix_type Z = symbolic_adaptor_type::zeros(ROW, COL);
@@ -418,22 +362,16 @@ void testDerivativeSymbolicMatrixMatrixFunc() {
   SymbolicMMFunc fZ(Z, true);
 
   /** Create a scalar-matrix function placeholder */ 
-  SymbolicSMFunc func;
-  SymbolicSMFunc func2;
-  
+  ans = "0";
+  func = fA*fZ;
 
-  func = logdet(elementwiseProduct(fX, fX)); 
-  func2 = trace((*func.derivativeFuncVal));
-  std::cout << "test func matrix matrix func" << std::endl;
-  std::cout << func.derivativeVal.getString() << std::endl;
-  std::cout << func.derivativeFuncVal->matrixPtr->getString() << std::endl;
-  std::cout << "test if trace(trace.derivativeFuncVal) works" << std::endl;
-  std::cout << func2.derivativeVal.getString() << std::endl;
-  std::cout << func2.derivativeFuncVal->matrixPtr->getString() << std::endl;
+  ans = "A";
+  func = fA* /* Identity */
+
 }
 
 /** The function names need to be more descriptive; also add comments */
-void testAdvancedSymbolicMatrixMatrixFunc () {
+void testTransposeMatrixMatrixFunc () {
 
   std::string ans;
 //  std::string row = std::to_string(ROW);
@@ -456,142 +394,11 @@ void testAdvancedSymbolicMatrixMatrixFunc () {
 
   symbolic_matrix_type C("C", ROW, COL);
 
-  /** 1. d/dx(logdet(X))=X'^-1 */
-  ans = "inv(X)'";
-  func = logdet(fX);
-  assert(func.derivativeVal.getString() == ans);
+  /** 1. A'' = A */
+  ans = "A";
+  func = transpose(transpose(fA));
 
-  /** 2. d/dx(logdet(AXB))=B*(AXB)^-1*A */
-  ans = "((B*inv((A*X)*B))*A)'";
-  func = logdet(fA*fX*fB);
-  assert(func.derivativeVal.getString() == ans);
-
-  /** 3. d/dx(logdet(X'*A*X)) = A*X*(X'*A*X)^-1 + ((X'*A*X)^-1*X'*A)' */
-  ans = "((A*(X*inv((X'*A)*X)))+(inv((X'*A)*X)*(X'*A))')";
-  func = logdet(transpose(fX) * fA * fX);
-  assert(func.derivativeVal.getString() == ans);
-
-  /** 4. d/dx(trace(A*X)) = A' */
-  ans = "A'";
-  func = trace (fA*fX);
-  assert(func.derivativeVal.getString() == ans);
-
-  /** 5. d/dx(trace(A*X*B*X)) = (B*X*A)' + (A*X*B)' */
-  ans = "(((B*X)*A)'+((A*X)*B)')";
-  func = trace (fA * fX * fB * fX);
-  assert(func.derivativeVal.getString() == ans);
-
-  /** 6. d/dx(trace(A*X^-1*B)) = (-X^-1*B*A*X^-1)' */
-  ans = "(-(inv(X)*((B*A)*inv(X))))'";
-  func = trace (fA * inv(fX) * fB);
-  assert(func.derivativeVal.getString() == ans);
-  
-  /** 7. d/dx(trace(A*X*X)) = (X*A)' + (A*X) */ 
-  ans = "((X*A)'+(A*X)')";
-  func = trace (fA * fX * fX);
-  assert(func.derivativeVal.getString() == ans);
-
-  // Elemental matrices
-  
-  /** 8. d/dx(trace(A.*X)) = diag(A) */
-  ans = "(A.*eye("+row + "))";
-  func = trace (elementwiseProduct(fA, fX));
-  assert(func.derivativeVal.getString() == ans);
-
-  /** 9. d/dx(trace(X.*X)) = 2diag(X) */
-  ans = "((X.*eye("+ row +"))+(X.*eye("+row+")))";
-  func = trace (elementwiseProduct(fX, fX));
-  assert(func.derivativeVal.getString() == ans);
-
-  /** 10. d/dx(trace(X^3)) = 3diag(X.*X) */
-  ans = "(((X.*(X.*eye("+row+")))+(X.*(X.*eye("+row + "))))+((X.*X).*eye("+ row +")))";
-  func = trace (elementwiseProduct(elementwiseProduct(fX, fX), fX));
-  assert(func.derivativeVal.getString() == ans);
- 
-  /** 11. d/dx(trace(X^-1.*X^-1)) = -2X'^-1*diag(X^-1)*X'^-1 */ 
-  ans = "((-(inv(X)*((inv(X).*eye("+row+ \
-  "))'*inv(X))))'+(-(inv(X)*((inv(X).*eye("+row+"))'*inv(X))))')";
-  func = trace (elementwiseProduct(inv(fX), inv(fX)));
-  assert(func.derivativeVal.getString() == ans);
-
-  /** 12. d/dx(trace(X.*X^-1)) = diag(X^-1) - X'^-1*diag(X)*X'^-1 */
-  ans = "((inv(X).*eye("+row+"))+(-(inv(X)*((X.*eye("+row+"))'*inv(X))))')";
-  func = trace (elementwiseProduct(fX, inv(fX)));
-  assert(func.derivativeVal.getString() ==ans);
- 
-  /** 13. d/dx(logdet(A.*X)) = A.*(A.*X)^-1 */ 
-  ans = "(A'.*inv(A.*X))'";
-  func = logdet (elementwiseProduct(fA, fX));
-  assert(func.derivativeVal.getString() == ans);
-
-  /** 14. d/dx(logdet(A * X')) = A'*(A.*X)^-1 */
-  ans = "(A'.*inv(A.*X'))";
-  func = logdet (elementwiseProduct(fA, transpose(fX)));
-  assert(func.derivativeVal.getString() == ans);
-
-  /** 15. d/dx(logdet(X.*X)) = 2*X.*(X.*X)'^-1 */
-  ans = "((X'.*inv(X.*X))'+(X'.*inv(X.*X))')";
-  func = logdet (elementwiseProduct(fX, fX));
-  assert(func.derivativeVal.getString() == ans);
-  
-  /** 16. d/dx(logdet(X.*X')) = X'.*((X.*X')'^-1 + (X.*X')^-1)*/
-  ans = "((X''.*inv(X.*X'))'+(X'.*inv(X.*X')))";
-  func = logdet (elementwiseProduct(fX, transpose(fX)));
-  assert(func.derivativeVal.getString() == ans);
-
-  
-  /** 17. d/dx(trace(X * trace(X) + X)) = 2trace(X).*I + I. */
-  ans = "(((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')+eye(128))";
-  func = trace(fX * trace(fX) + fX);
-  assert(func.derivativeVal.getString() == ans);
-  /** 18. d/dx(trace(X * trace(X))) = 2trace(X).*I. */
-  ans = "((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')";
-  func = trace(fX * trace(fX));
-  assert(func.derivativeVal.getString() == ans);
-  /** 19. d/dx(trace(trace(X) * X)) = 2trace(X).*I. */
-  ans = "((trace(X*eye(128)).*eye(128))+(trace(X).*eye(128))')";
-  func = trace(trace(fX) * fX);
-  assert(func.derivativeVal.getString() == ans);
-  /** 20. d/dx(trace(trace(X) * X * X)) = trace(X*X).*I + 2trace(X).*X'. */
-  ans = "(((trace(X*X).*eye(128)')'+(trace(X).*X)')+(trace(X).*X)')";
-  func = trace(trace(fX) * fX * fX);
-  assert(func.derivativeVal.getString() == ans);
-  /** 21. d/dx(trace(X * trace(X) * X)) = trace(X*X).*I + 2trace(X).*X'. */
-  ans = "(((trace(X*X).*eye(128)')'+(trace(X).*X)')+(trace(X).*X)')";
-  func = trace( fX * trace(fX) * fX);
-  assert(func.derivativeVal.getString() == ans);
-  /** 22. d/dx(trace(X * X * trace(X))) = trace(X*X).*I + 2trace(X).*X'. */
-  ans = "(((trace((X*X)*eye(128)).*eye(128))+(X*(trace(X).*eye(128)))')+((trace(X).*eye(128))*X)')";
-  func = trace( fX * fX * trace(fX));
-  assert(func.derivativeVal.getString() == ans); 
 }
-
-void testTaylorExp() {
-
-  std::string ans;
-//  std::string row = std::to_string(ROW);
-  char rowChar[5];
-  int rowTmp = ROW;
-  sprintf(rowChar, "%d", rowTmp);
-  std::string row = rowChar;
-
-//  std::string r0 = "1", r1="1/2!", r2= "1/3!";
-  symbolic_matrix_type X("X", ROW, COL);
-  symbolic_matrix_type X0("X0", ROW, COL);
-  symbolic_matrix_type Delta("(X-X0)", ROW, COL);
-  
-//  AMD::SymbolicScalarMatlab a1("1/2!");
-//  AMD::SymbolicScalarMatlab a2("1/3!"); 
-//  SymbolicSMFunc r1(a1,ROW,COL);
-//  SymbolicSMFunc r2(a2,ROW, COL);
-  SymbolicMMFunc fX(X, false);
-  SymbolicMMFunc fX0(X0, false);
-  SymbolicMMFunc fDelta(Delta, true);
-  
-  SymbolicSMFunc f0 =  logdet(fX0);
-  SymbolicSMFunc f1 = trace(fDelta * transpose(*f0.derivativeFuncVal));
-  SymbolicSMFunc f2 = trace(fDelta * transpose(*f1.derivativeFuncVal));
-  SymbolicSMFunc f3 = trace(fDelta * transpose(*f2.derivativeFuncVal));
 
 }
 
