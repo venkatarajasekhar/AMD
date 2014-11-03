@@ -464,16 +464,16 @@ std::cout << std::endl;
   elem::Initialize(argc, argv); 
 #endif
   std::cout << "Testing adding  matrix-matrix functions .... ";
-  testBasicSymbolicMatrixMatrixFunc();
+  testPlusMinusSymbolicMatrixMatrixFunc();
   std::cout << "DONE" << std::endl;
 
   std::cout << "Testing advanced matrix-matrix functions .... ";
-  testAdvancedSymbolicMatrixMatrixFunc();
+  testMulSymbolicMatrixMatrixFunc();
   std::cout << "DONE" << std::endl;
 
 #if AMD_HAVE_ELEMENTAL
   std::cout << "Testing elemetal matrix-matrix functions .... ";
-  testElementalMatrixMatrixFunc();
+  testTransposeMatrixMatrixFunc;
   std::cout << "DONE" << std::endl;
   std::cout << std::endl;
 #endif
