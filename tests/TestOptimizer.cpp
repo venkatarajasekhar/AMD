@@ -324,24 +324,24 @@ void testPlusMinusSymbolicMatrixMatrixFunc() {
   /** Create a scalar-matrix function placeholder */ 
   SymbolicSMFunc func;
 
-  /** 1. d/dx(trace(A - A)) = 0 */
+  /** 1. (A - A) = 0 */
 //  AMD::SymbolicScalarMatlab s("2");
 //  SymbolicSMFunc func3(s, ROW, COL);
   ans = "0";
-  func = trace(fA - fA);
+  func = fA - fA;
   assert(func.derivativeVal.getString()==ans);
 
   SymbolicSMFunc func2;
 
 
-  /** 2. d/dx(trace(X' * A')) = A' */
+  /** 2. (A+A) = 2A */
   ans = "A'";
-  func = trace(fA + fA);
+  func = fA + fA;
   assert(func.derivativeVal.getString()==ans);
 
-  /** 3. d/dx(trace((X*A)')) = A' */
+  /** 3. A + 0 = A */
   ans = "A'";
-  func = trace(transpose(fX*fA));
+  func = fA + zeros;
   assert(func.derivativeVal.getString()==ans);
 
   /** 4. d/dx(trace(X*A')) = A */
