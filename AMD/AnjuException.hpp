@@ -65,7 +65,7 @@ typedef int error_code_type;  /**< Type of the error code */
 #define AMD_CATCH_AND_RETHROW(STRUCT_NAME,FUNC_NAME) \
   catch (const exception& error) { \
     /* Append append the information and throw again */ \
-    error.add_to_trace \
+    const_cast<exception&>(error).add_to_trace \
       (": from " #STRUCT_NAME"::"#FUNC_NAME " at " FILE_AND_LINE()); \
     error.rethrow (); \
   } catch (const std::exception& error) { \

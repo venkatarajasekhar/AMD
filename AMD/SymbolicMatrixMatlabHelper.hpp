@@ -14,7 +14,7 @@
 #include "SymbolicMatrixMatlab.hpp"
 #include "Exception.hpp"
 
- namespace AMD {
+namespace AMD {
 
   /** 
    * Compute the scalar trace(a) from the matrix a.

@@ -168,6 +168,8 @@ namespace AMD {
         }
       }
       break;
+      default:
+      break;
     };
   }
 
@@ -233,7 +235,31 @@ namespace AMD {
         }
       }
       break;
+
+      default:
+      break;
     };
+  }
+
+  template <class MT, class ST>
+  static void binaryOpStandardCheck (const MatrixMatrixFunc<MT, ST> &lhs,
+                                     const ScalarMatrixFunc<MT, ST> &rhs,
+                                     const OpType& opType,
+                                     bool checkConst=true) {
+    if (false == lhs.isConst && false == rhs.isConst) {
+      throw exception_generic_impl("AMD::binaryOpStandardCheck",
+                                   "Both LHS and RHS are constant",
+                                   AMD_CONSTANT_FN);
+    } 
+
+    if (MTIMESS == opType || STIMESM == opType) {
+      if (NULL == lhs.leftChild) {
+        throw exception_generic_impl(
+                  "AMD::binaryOpStandardCheck",
+                  "* NULL left child pointer",
+                  AMD_INVALID_ARGUMENTS);
+      }
+    }
   }
 
   template<typename MT, typename ST>
@@ -449,12 +475,11 @@ namespace AMD {
   MatrixMatrixFunc<MT, ST> operator+ (const MatrixMatrixFunc<MT, ST> &lhs,
                                       const MatrixMatrixFunc<MT, ST> &rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+    MatrixMatrixFunc<MT, ST> result;
 
     AMD_START_TRY_BLOCK()
     binaryOpStandardCheck(lhs,rhs,PLUS);
 
-    // The new node of MatrixMatrixFunction.
-    MatrixMatrixFunc<MT, ST> result;
     MT lhsPlusRhs;
     // Add the matrices of currentLeft node and currentRight node.
     MatrixAdaptorType::add((*lhs.matrixPtr), (*rhs.matrixPtr), lhsPlusRhs);
@@ -462,10 +487,11 @@ namespace AMD {
     // Initialize the node in computational tree with the new matrix and PLUS 
     // operator.
     result.binOpSet(sumPtr, PLUS, plusOp<MT, ST>, lhs, rhs);
-    return(result);
 
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD,operatorPlus)
+
+    return(result);
   }
 
   /**
@@ -528,22 +554,23 @@ namespace AMD {
   MatrixMatrixFunc<MT, ST> operator- (const MatrixMatrixFunc<MT, ST> &lhs,
                                       const MatrixMatrixFunc<MT, ST> &rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+    MatrixMatrixFunc<MT, ST> result;
 
     AMD_START_TRY_BLOCK()
     binaryOpStandardCheck(lhs, rhs, MINUS);
 
     // The new node.
-    MatrixMatrixFunc<MT, ST> result;
     MT lhsMinusRhs;
     MatrixAdaptorType::minus(*(lhs.matrixPtr), *(rhs.matrixPtr), lhsMinusRhs);
     boost::shared_ptr<MT> diffPtr
     (new MT(lhsMinusRhs));
     // Initialize the new node with pointers and call back functions.
     result.binOpSet(diffPtr, MINUS, minusOp<MT, ST>, lhs, rhs);
-    return(result);
 
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD,operatorMinus)
+
+    return(result);
   }
 
   /**
@@ -611,10 +638,11 @@ namespace AMD {
       unaryOpStandardCheck(lhs, NEGATION);
       result.deepCopy(*lhs.leftChild);
     }
-    return(result);
 
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD,operatorUnaryMinus)
+
+    return(result);
   }
 
   /**
@@ -721,22 +749,22 @@ namespace AMD {
   MatrixMatrixFunc<MT, ST> operator* (const MatrixMatrixFunc<MT, ST> &lhs,
     const MatrixMatrixFunc<MT, ST> &rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+    MatrixMatrixFunc<MT, ST> result;
 
     AMD_START_TRY_BLOCK()
     binaryOpStandardCheck(lhs, rhs, TIMES);
 
-    // New node in computational tree.
-    MatrixMatrixFunc<MT, ST> result;
     MT lhsTimesRhs;
     MatrixAdaptorType::multiply(*(lhs.matrixPtr), *(rhs.matrixPtr), lhsTimesRhs);
     boost::shared_ptr<MT> timesPtr(new MT((lhsTimesRhs)));
 
     // Initialize new node with time operator.
     result.binOpSet(timesPtr, TIMES, timesOp<MT, ST>, lhs, rhs);
-    return(result);
 
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD,operatorTimes)
+
+    return(result);
   }
 
   /**
@@ -869,10 +897,11 @@ namespace AMD {
       binaryOpStandardCheck(lhs, rhs, MTIMESS, false/*don't check const*/);
       result.deepCopy(*lhs.leftChild);
     }
-    return(result);
 
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD,operatorMTimesS)
+
+    return(result);
   }
 
   /**
@@ -1006,13 +1035,14 @@ namespace AMD {
       result.scalarChild = new ScalarMatrixFunc < MT, ST > ;
       *result.scalarChild = lhs;
     } else {
-      binaryOpStandardCheck(lhs, rhs, MTIMESS, false/*don't check const*/);
+      binaryOpStandardCheck(rhs, lhs, STIMESM, false/*don't check const*/);
       result.deepCopy(*rhs.leftChild);
     }
-    return(result);
 
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD,operatorSTimesM)
+
+    return(result);
   }
 
  /* Functions to deal with opNum = ELEWISE
@@ -1106,21 +1136,22 @@ namespace AMD {
               (const MatrixMatrixFunc<MT, ST>& lhs,
                const MatrixMatrixFunc<MT, ST>& rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+    MatrixMatrixFunc<MT, ST> result;
 
     AMD_START_TRY_BLOCK()
     binaryOpStandardCheck(lhs,rhs,ELEWISE);
 
-    MatrixMatrixFunc<MT, ST> result;
     MT lcrcEwisePdt;
     MatrixAdaptorType::elementwiseProduct(*(lhs.matrixPtr),
       *(rhs.matrixPtr),
       lcrcEwisePdt);
     boost::shared_ptr<MT> elewisePtr(new MT(lcrcEwisePdt));
     result.binOpSet(elewisePtr, ELEWISE, elementwiseOp<MT, ST>, lhs, rhs);
-    return (result);
 
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD,elementwiseProduct)
+
+    return (result);
   }
 
   /**
@@ -1189,10 +1220,11 @@ namespace AMD {
       unaryOpStandardCheck(lhs,TRANSPOSE);
       result.deepCopy(*lhs.leftChild);
     }
-    return(result);
 
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD,transpose)
+
+    return(result);
   }
 
   /**
@@ -1252,6 +1284,8 @@ namespace AMD {
 
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD,diag)
+
+    return result;
   }
 
   /**
@@ -1348,10 +1382,11 @@ namespace AMD {
       unaryOpStandardCheck(lhs,INV);
       result.deepCopy(*lhs.leftChild);
     }
-    return(result);
 
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD,inv)
+
+    return(result);
   }
 
   /**
@@ -1367,6 +1402,7 @@ namespace AMD {
   template <class MT, class ST>
    ScalarMatrixFunc<MT, ST> trace(const MatrixMatrixFunc<MT, ST> &lhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+    ScalarMatrixFunc<MT, ST> result;
 
     AMD_START_TRY_BLOCK()
     scalarOpDiffStandardCheck(lhs);
@@ -1374,7 +1410,6 @@ namespace AMD {
     const int n = MatrixAdaptorType::getNumRows(*lhs.matrixPtr);
     boost::shared_ptr<MT> initPtr(new MT);
     boost::shared_ptr<MT> resPtr(new MT);
-    ScalarMatrixFunc<MT, ST> result;
     *initPtr = MatrixAdaptorType::eye(n);
     *resPtr = MatrixAdaptorType::zeros(lhs.varNumRows, lhs.varNumCols);
 
@@ -1401,15 +1436,15 @@ namespace AMD {
     if (zeroFlag) {
       result.initWithConst(MatrixAdaptorType::trace(*lhs.matrixPtr),
                            lhs.varNumCols, lhs.varNumCols);
-      return(result);
     } else {
       result.initWithVariable(MatrixAdaptorType::trace(*lhs.matrixPtr), 
                               *resPtr);
-      return(result);
     }
 
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD,trace)
+
+    return(result);
   }
 
   /**
@@ -1425,11 +1460,11 @@ namespace AMD {
   template <class MT, class ST>
   ScalarMatrixFunc<MT, ST> logdet(const MatrixMatrixFunc<MT, ST> &lhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+    ScalarMatrixFunc<MT, ST> result;
 
     AMD_START_TRY_BLOCK()
     scalarOpDiffStandardCheck(lhs);
 
-    ScalarMatrixFunc<MT, ST> result;
     const int n = MatrixAdaptorType::getNumRows(*(lhs.matrixPtr));
     boost::shared_ptr<MT> initPtr(new MT);
     boost::shared_ptr<MT> resPtr(new MT);
@@ -1462,15 +1497,15 @@ namespace AMD {
     if (zeroFlag) {
       result.initWithConst(MatrixAdaptorType::logdet(*lhs.matrixPtr),
         lhs.varNumCols, lhs.varNumCols);
-      return(result);
     } else {
       result.initWithVariable(MatrixAdaptorType::logdet(*lhs.matrixPtr), 
                               *resPtr);
-      return(result);
     }
 
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD,logdet)
+
+    return(result);
   }
 
 } /** namespace AMD */

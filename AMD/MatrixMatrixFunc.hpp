@@ -393,12 +393,13 @@ template <class MT, class ST>
       bool b_matched_dimension = 
       MatrixAdaptorType::getNumRows(*(result)) == varNumRows &&
       MatrixAdaptorType::getNumCols(*(result)) == varNumCols;
-    /*TODO: decide which exceptions will be thrown, potentially creating
-    * another class for mixed exceptions */
-      if( !(b_valid_shared_ptr && b_constant_function || b_matched_dimension) )
-       if( !(b_valid_shared_ptr))
-        throw invalid_shared_ptr;
-      else throw constant_function;
+      /* TODO: decide which exceptions will be thrown, potentially creating
+       * another class for mixed exceptions */
+      if(false==((b_valid_shared_ptr && b_constant_function) 
+                 || b_matched_dimension)) {
+       if(false==b_valid_shared_ptr) throw invalid_shared_ptr;
+       else throw constant_function;
+      }
 
     /**
      * Only need to do something if the current function is not a 
