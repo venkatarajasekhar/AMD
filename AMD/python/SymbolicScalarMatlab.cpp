@@ -2,7 +2,7 @@
  * @file SymbolicScalarMatlab.cpp
  * @author pkambadu, adromanova
  * 
- * Python bindings for SymbolicScalarMatlab object and helper functions.
+ * Python bindings for SymbolicScalarMatlab and helper functions.
  */
 
 #include <boost/python.hpp>
@@ -19,7 +19,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(print_overloads, print, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(println_overloads, println, 0, 1)
 
 /**
- * A function to export all the definitions for context object.
+ * A function to export SymbolicScalarMatrix and helper functions
  */
 void export_symbolicscalarmatlab () {
  
@@ -40,7 +40,8 @@ void export_symbolicscalarmatlab () {
 
   using namespace boost::python;
   using namespace AMD;
-
+  
+  // export SymbolicScalarMatlab
   class_<SymbolicScalarMatlab>("symScalMat", symScalMat_docstring, init<>())
   	// constructors
     .def(init<std::string>())
@@ -49,18 +50,18 @@ void export_symbolicscalarmatlab () {
   	 * to avoid conflict with python built-in 'print' */
   	.def("Print", &SymbolicScalarMatlab::print, print_overloads())
   	.def("println", &SymbolicScalarMatlab::println, println_overloads())
-    // member variables converted to properties
+    // export member variables as properties
     .add_property("string", 
                   &SymbolicScalarMatlab::getString, 
                   "internal string representaion")
-    // overloaded operators
+    // export overloaded operators
     .def(self + self)   
     .def(self - self)  
     .def(self * self)  
     .def(self / self) 
   ;
 
-  //helper functions
+  // export helper functions
   def("sqrt", sqrt, sqrt_docstring);
 
 }

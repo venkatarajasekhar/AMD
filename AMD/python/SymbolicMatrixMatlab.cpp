@@ -2,7 +2,7 @@
  * @file SymbolicMatrixMatlab.cpp
  * @author adromanova
  * 
- * Python bindings for the SymbolicMatrixMatlab object and helper functions.
+ * Python bindings for SymbolicMatrixMatlab and helper functions.
  */
 
 #include <boost/python.hpp>
@@ -19,8 +19,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(print_overloads, print, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(println_overloads, println, 0, 1)
 
 /**
- * A function to export all the definitions for SymbolicMatrixMatlab object 
- * and helper functions.
+ * A function to export symbolicMatrixmatlab and helper functions.
  */
 void export_symbolicmatrixmatlab () {
 
@@ -110,7 +109,7 @@ void export_symbolicmatrixmatlab () {
     //TODO Drop Print method?
   	.def("Print", &SymbolicMatrixMatlab::print, print_overloads())
   	.def("println", &SymbolicMatrixMatlab::println, println_overloads())
-    // static class functions
+    // export static class functions
     .def("eye", &SymbolicMatrixMatlab::eye, eye_docstring)
     .staticmethod("eye")
     .def("zeros", &SymbolicMatrixMatlab::zeros, zeros_docstring)
