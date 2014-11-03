@@ -23,6 +23,8 @@ add_dependencies (cxx_tests SymbolicSample)
 add_executable (TaylorSample TaylorSample.cpp)
 add_dependencies (cxx_tests TaylorSample)
 
+add_executable (Optimizer TestOptimizer.cpp)
+add_dependencies (cxx_tests TestOptimizer)
 ##############################################################################
 # This is the right way to create an executable with Elemental
 if (USE_ELEMENTAL)
