@@ -38,4 +38,6 @@
 
 #include "RandomMatrices.hpp"
 
+#include "SymbolicOptimizer.hpp"
+
 #endif /** AMD_HPP */

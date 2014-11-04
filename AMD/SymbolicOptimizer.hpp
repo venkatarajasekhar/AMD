@@ -9,11 +9,21 @@
  * @brief This file defines optiming functions to simplify the compuatatal tree
  * .
  * TODO: We are using the utliity.hpp as tempalte.
+ *
+ * NOTES FOR WUWEI:
+ * (1) WE CAN REPRESENT IDENTITY and ZERO MATRIX as CONSTANT MATRICES. FIND 
+ *     OUT HOW YOU CAN DECLARE CONSTANT MATRICES FOR EACH OF THE SUPPORTED 
+ *     MATRIX TYPES (SYMBOLIC, ELEMENTAL, and EIGEN). I CAN HELP YOU.
+ *
+ * (2) YOU DON'T REALLY NEED TO STORE FLAGS FOR TRANSPOSE and INVERSE. THE 
+ *     MATRIXMATRIXFUNC STORES THE OPERATION CODE, WHICH IS SUFFICIENT. FOR
+ *     EXAMPLE, FOR transpose(transpose(X)), the root node will have OPERATION
+ *     CODE of TRANPOSE, so will it's LEFT CHILD.
  */
 
 #include <string>
 
-namespace AMD { namespace detail {
+namespace AMD { 
   /**
    * @This function optimizing the both plus and minus operation
    * I believe there is no need to write a function for both plus and minus
@@ -22,8 +32,9 @@ namespace AMD { namespace detail {
    * @param lhs: The left child
    * @param rhs: The right child
    */
-  MatrixMatrixFunc<MT, ST> plusMinusOpt(const MatrixMatrixFunc<MT, ST> &lhs,
-                                        const MatrixMatrixFunc<MT, ST> &rhs) {
+  MatrixMatrixFunc<MT, ST> plusMinusOpt(const MatrixMatrixFunc<MT, ST> &node){
+    /** "node" HAS LHS AND RHS --- YOU SHOULD BE ACCEPTING THE "node" */
+
     /* Assume lhs and rhs pass the error checking part(diminsion match) */
     /* Case 1: If lhs or rhs or both are 0 matrix, we don't have compute 
      * lhs + rhs. 
@@ -52,8 +63,20 @@ namespace AMD { namespace detail {
    * @param lhs: The left child
    * @param rhs: The right child
    */
-  MatrixMatrixFunc<MT, ST> mulOpt(const MatrixMatrixFunc<MT, ST> &lhs,
-                                  const MatrixMatrixFunc<MT, ST> &rhs) {   
+  MatrixMatrixFunc<MT, ST> multiplyOpt(const MatrixMatrixFunc<MT, ST> &node){
+    /** "node" HAS LHS AND RHS --- YOU SHOULD BE ACCEPTING THE "node" */
+
+    /** THERE ARE 3 CASES HERE:
+     *  (1) MATRIX TIMES MATRIX (LHS!=NULL and RHS!=NULL, OPTYPE=TIMES)
+     *  (2) MATRIX TIMES SCALAR (LHS!=NULL and RHS==NULL, SCALARCHILD!=NULL)
+     *  (3) SCALAR TIMES MATRIX (LHS==NULL and RHS!=NULL, SCALARCHILD!=NULL)
+     *
+     *  YOU CAN DIFFERENTIATE THEM VERY EASILY BY LOOKING AT THE OPERATION
+     *  TYPE (TIMES, MTIMESS, STIMESM) AND BY LOOKING AT THE POINTERS. SO
+     *  YOU DONT NEED THREE SEPARATE OPTIMIZERS HERE.
+     */  
+
+    /** CASE 1 */
     /* Assume lhs and rhs pass the error checking part(diminsion match) */
     /* Case 1: If lhs or rhs or both are 0 matrix, we don't have compute 
      * lhs * rhs. */
@@ -80,16 +103,8 @@ namespace AMD { namespace detail {
 
     /* No Optimization is done */
     return NULL; 
-  }
 
-  /**
-   * @This function optimizing M-S multiplication operation.
-   * @param lhs: The left child
-   * @param rhs: The right child
-   * Assume right is always scalar, if not the caller should manually swithch
-   */
-  MatrixMatrixFunc<MT, ST> mulOpt(const MatrixMatrixFunc<MT, ST> &lhs,
-                                  const ScalarMatrixFunc<MT,ST> &rhs){
+    /** CASE 2 */
     /* Case 1: If rhs is 0 or lhs is a zero matrix.
      * then the result is simply a zero Martrix
      */
@@ -111,10 +126,8 @@ namespace AMD { namespace detail {
     }
     */
     return NULL;
-  }
 
-  MatrixMatrixFunc<MT, ST> eleMulOpt(const MatrixMatrixFunc<MT, ST> &lhs,
-                                     const MatrixMatrixFunc<MT, ST> &rhs){
+    /** CASE 3 */
     /**
      * Case 1: If either left or right is a zero matrix,
      * Return a zero matrix instead of acutally computing the result
@@ -135,23 +148,23 @@ namespace AMD { namespace detail {
 
   /* This function optimizing the transpose operation.      
   * Notice thatfor a transpose inner node in the tree, it has only 1 child
-  * @param lhs: The left child     
+  * @param node: The left child     
   */     
-  MatrixMatrixFunc<MT, ST> transOpt(const MatrixMatrixFunc<MT, ST> &lhs){   
-    /* Case 1: If lhs is eye or zero matrix, then there is no need to           
+  MatrixMatrixFunc<MT, ST> transOpt(const MatrixMatrixFunc<MT, ST> &node){   
+    /* Case 1: If node is eye or zero matrix, then there is no need to           
      * actually transpose it*/                                                  
-    if (lhs.identityFlag == 1) return lhs;
-    if (lhs.zeroResultFlag == 1) return lhs;
+    if (node.identityFlag == 1) return node;
+    if (node.zeroResultFlag == 1) return node;
                                                                                 
     /* Case 2: If we are doing two transpose. Transpose(transpoe(A)). We        
      * simply take both transpose operation */                                  
-    if (lhs.transposeFlag == 1){  
-      lhs.transposeFlag = 0; 
-      return lhs;   
+    if (node.transposeFlag == 1){  
+      node.transposeFlag = 0; 
+      return node;   
     }          
     /* TODO: Case 3: We don't want to transpose a symmetric either */                 
     /*
-    if (lhs is Symmetric) 
+    if (node is Symmetric) 
       do not transpose.  
       return;
     */
@@ -159,39 +172,41 @@ namespace AMD { namespace detail {
   }
   /* This function optimizing the inverse operation.                            
    * Notice thatfor a inversion inner node in the tree, it has only 1 child
-   * @param lhs: The left child      
+   * @param node: The left child      
    * */                                                                 
 
-  MatrixMagtrixFunc<MT, ST> inverseOpt(const MatrixMatrixFunc<MT, ST> &lhs){    
-    /* Assumption: lhs is invertible! */                                        
+  MatrixMagtrixFunc<MT, ST> inverseOpt(const MatrixMatrixFunc<MT, ST> &node){    
+    /* Assumption: node is invertible! */                                        
                                                                                 
-    /*Case 1: If lhs is eye or zero matrix, then there is no need to            
+    /*Case 1: If node is eye or zero matrix, then there is no need to            
      * actually inverse it */                                                   
-    if (lhs.identityFlag == 1) return lhs;                                          
-    if (lhs.zeroResultFlag == 1) return lhs;                                                   
-    /*TODO: Case 2: lhs is orthonomal, then (inv)lhs = tranpose(lhs). Compute         
-     * tranpose is cheaper than taking the inverse*/                            
-    /* if (lhs is orthonomal) {                                                    
+    if (node.identityFlag == 1) return node;                                          
+    if (node.zeroResultFlag == 1) return node;                                                   
+    /*TODO: Case 2: node is orthonomal, then (inv)node = tranpose(node).
+     * Compute         tranpose is cheaper than taking the inverse*/                            
+    /* if (node is orthonomal) {                                                    
       set transpose falg to on;                                                 
       return;                                                                   
     }
     */
     return NULL;
   }
-  /* This function optimizing how to calcualte the determinant */               
-  ScalarMagtrixFunc<MT, ST> detOpt(const MatrixMatrixFunc<MT, ST> &lhs){        
-    /* Case 1: If lhs is eye, return 1 */
-    if (lhs.identityFlag == 1) return 1;
 
-    /* Case 2: If lhs is zeroMatrix, return 0 */
+  /* This function optimizing how to calcualte the determinant */               
+  ScalarMagtrixFunc<MT, ST> detOpt(const MatrixMatrixFunc<MT, ST> &node){        
+    /* Case 1: If node is eye, return 1 */
+    if (node.identityFlag == 1) return 1;
+
+    /* Case 2: If node is zeroMatrix, return 0 */
     /* TODO: Logdet cannot be 0 */
-    if (lhs.zeroResultFlag == 0) return 0;
+    if (node.zeroResultFlag == 0) return 0;
     
-    /*TODO: if (lhs == inverse of an expression A)
+    /*TODO: if (node == inverse of an expression A)
       calculating the determinant d of A.
       return 1/d;
     */
   }     
-} } /** namespace AMD::detail */
+
+} /** namespace AMD */
 
 #endif /** AMD_SymbolicOptimizer_HPP */
