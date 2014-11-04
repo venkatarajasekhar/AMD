@@ -3,11 +3,12 @@
  *       SymbolicSMFunc expression 
  *       as input and compute the derivative value of the 
  *       expression.
+ * @author Allan Sapucaia Barboza
  */
 
 
 /* broken tests:
-   'X+A' - no SMfunc, segfault
+   'trace(X*2)' , 'trace(X*trace(X*S))' - should work
  */ 
 #include <iostream>
 #include <string>
@@ -17,6 +18,7 @@
 #include <cctype>
 #include <assert.h>
 #include "boost/shared_ptr.hpp"
+#include "boost/make_shared.hpp"
 #include <AMD/AMD.hpp>
 #include <stack>
 #include <vector>
@@ -75,9 +77,41 @@ class Calculator {
       /* Get the reverse Polish notation. */
       rpn = infix2rpn(infix);
       /* Create the ScalarMatrxiFunc. */
-      func = computeSMF(rpn, row, col);               
+      func = boost::make_shared<SymbolicSMFunc>(computeSMF(rpn, row, col));               
     }
 
+    
+    /**
+     * @brief     Return the function value.
+     * @return    string-type function value. 
+     */
+    std::string functionStr() {
+      return func->functionVal.getString();
+    }
+    /**
+     * @brief     Return the derivative value.
+     * @return    string-type derivative value. 
+     */
+    std::string derivativeStr() {
+      return func->derivativeVal.getString();
+    }
+  
+    /**
+     * @brief     Return a shared_pointer to the computational tree.
+     * @return    shared_ptr<SymbolicSMFunc>-type root of the tree
+     */
+  //does not have a pointer to other functions
+  boost::shared_ptr<SymbolicSMFunc> getComputationalTree() {
+    return func;
+  }
+  private:
+    int row;  /**< row number of matrices. */
+    int col;  /**< colume number of matrices. */ 
+    std::string expr; /**< SMF expression. */
+    std::vector<std::string> infix; /**< expression infix order.*/
+    std::vector<std::string> rpn;   /**< expression Reverse Polish Order.*/
+    boost::shared_ptr<SymbolicSMFunc> func;  /**< result of the expression. */
+  
     /**
      * @brief     An infix notation parser.
      * @param str The input infix notation.
@@ -118,29 +152,7 @@ class Calculator {
     SymbolicSMFunc computeSMF (std::vector<std::string>& str,
                                      int Row,
                                      int Col);
-    /**
-     * @brief     Return the function value.
-     * @return    string-type function value. 
-     */
-    std::string functionStr() {
-      return func.functionVal.getString();
-    }
-    /**
-     * @brief     Return the derivative value.
-     * @return    string-type derivative value. 
-     */
-    std::string derivativeStr() {
-      return func.derivativeVal.getString();
-    }
-   
-  private:
-    int row;  /**< row number of matrices. */
-    int col;  /**< colume number of matrices. */ 
-    std::string expr; /**< SMF expression. */
-    std::vector<std::string> infix; /**< expression infix order.*/
-    std::vector<std::string> rpn;   /**< expression Reverse Polish Order.*/
-    SymbolicSMFunc func;  /**< result of the expression. */
-  
+
     /* Return the operator string. */
     std::string getOpStr(char op);
     /* Decide if c is an operator. */
@@ -279,7 +291,7 @@ std::vector<std::string> Calculator::stringParser(std::string& str) {
           }
           result.push_back(logdetStr);
         }else
-        if(std::isupper(str[i])) { // matrices
+        if(std::isalpha(str[i])) { // matrices and real constants
           std::string varStr(1,str[i]);
           result.push_back(varStr);
         }else 
@@ -322,8 +334,6 @@ std::vector<std::string> Calculator::infix2rpn(std::vector<std::string>& infix) 
           std::cout << "Incorrect Input - infix2rpn" << std::endl;
           exit(-1);
         }
-        
-        //exception: opStack.empty() == 0 - parsing exception
         opStack.pop();
       } else
       if (opStack.empty()       || 
@@ -363,6 +373,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
   char identifier[2];
   identifier[1] = 0;
 
+  //TO-DO: make it global
   for(char c = 'A'; c < 'Z';c++) {
     identifier[0] = c;
     //identity and X are created separately
@@ -399,7 +410,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       f2 = MMFStack.top();
       MMFStack.pop();
 
-      boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc((*f2)+(*f1)));
+      boost::shared_ptr<SymbolicMMFunc> f3 = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc((*f2)+(*f1)));
       MMFStack.push(f3);
     } else 
     if (str[i] == "-") {
@@ -411,7 +422,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       f2 = MMFStack.top();
       MMFStack.pop();
 
-      boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc((*f2)-(*f1)));
+      boost::shared_ptr<SymbolicMMFunc> f3 = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc((*f2)-(*f1)));
       MMFStack.push(f3);
       } else 
     if (str[i] == "*") {
@@ -423,7 +434,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       f2 = MMFStack.top();
       MMFStack.pop();
 
-      boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc((*f2)*(*f1)));
+      boost::shared_ptr<SymbolicMMFunc> f3 = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc((*f2)*(*f1)));
       MMFStack.push(f3);
     } else 
     if (str[i] == ".*") {
@@ -435,7 +446,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       f2 = MMFStack.top();
       MMFStack.pop();
 
-      boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc(elementwiseProduct(*f2, *f1)));
+      boost::shared_ptr<SymbolicMMFunc> f3 = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc(elementwiseProduct(*f2, *f1)));
       MMFStack.push(f3);
       } else 
     if (str[i] == "inv") {
@@ -443,7 +454,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       f1 = MMFStack.top();
       MMFStack.pop();
 
-      boost::shared_ptr<SymbolicMMFunc> f2(new SymbolicMMFunc(inv(*f1)));
+      boost::shared_ptr<SymbolicMMFunc> f2 = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc(inv(*f1)));
       MMFStack.push(f2);
     } else 
     if (str[i] == "transpose") {
@@ -451,7 +462,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       f1 = MMFStack.top();
       MMFStack.pop();
 
-      boost::shared_ptr<SymbolicMMFunc> f2(new SymbolicMMFunc(transpose(*f1)));
+      boost::shared_ptr<SymbolicMMFunc> f2 = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc(transpose(*f1)));
       MMFStack.push(f2);
     } else {
       //exception - parsing_exception
@@ -523,7 +534,7 @@ SymbolicSMFunc Calculator::computeSMF(std::vector<std::string>& str,
       SymbolicSMFunc f3 = f2 * f1;
       SMFStack.push(f3);
     } else 
-      if (str[i][0] == 't') { //trace
+    if (str[i].compare(0,5,"trace") == 0) { //trace
       std::string exp = str[i].substr(5, str[i].size() -5);
       int type = 1;
       std::vector<std::string> par = stringParser(exp);
@@ -531,18 +542,36 @@ SymbolicSMFunc Calculator::computeSMF(std::vector<std::string>& str,
       SymbolicSMFunc funcResult = (computeSingleSMF(rpn, type, Row , Col));
       SMFStack.push(funcResult);
     } else
-        if (str[i][0] == 'l') { //logdet
+    if (str[i].compare(0,6,"logdet") == 0) {
       std::string exp = str[i].substr(6, str[i].size() -6);
       int type = 2;
       std::vector<std::string> par = stringParser(exp);
       std::vector<std::string> rpn = infix2rpn(par);
       
       SymbolicSMFunc funcResult = (computeSingleSMF(rpn, type, Row , Col));
-      SMFStack.push(funcResult);
+      SMFStack.push(funcResult);    
     } else {
-      symbolic_scalar_type num(str[i]);
-      SymbolicSMFunc constantSMFunc(num, Row, Row);
-      SMFStack.push(constantSMFunc);
+      bool isRealConst = false;
+      
+      if (str[i].size() == 1 && islower(str[i][0]) && str[i][0] != 'x') //check if it is a real constant
+        isRealConst = true;
+      
+      bool isRealNumber = true;
+      for (int j = 0; j < str[i].size();j++) {
+        if(!isdigit(str[i][j]))
+          isRealNumber = false;
+
+      }    
+      if (isRealConst || isRealNumber) {
+        symbolic_scalar_type num(str[i]);
+        SymbolicSMFunc constantSMFunc(num, Row, Row);
+        SMFStack.push(constantSMFunc);
+      }
+      else {
+        //exception - parsing_exception
+        std::cerr << "ERROR INCORRECT INPUT - invalid SMF" << std::endl;
+        exit(-1);
+      }
     }
   }
   func = SMFStack.top();
@@ -588,6 +617,8 @@ int main(int argc, char** argv) {
   AMD::Calculator cal(str, row, col);
   std::cout << "Function:   " << cal.functionStr() << std::endl;
   std::cout << "Derivative: " << cal.derivativeStr() << std::endl;
+  //std::cout << "MMF: " << cal.getComputationalTree()->derivativeFuncVal->matrixPtr->getString() << std::endl;
+  //std::cout << cal.getComputationalTree()->functionVal.getString() << std::endl;
   return 0;
 }
 
