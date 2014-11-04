@@ -72,12 +72,44 @@ class Calculator {
         std::cerr << "Row and Col must be positive" << std::endl;
         exit(-1);
       }
+      
+      /* Create matrices for the variables and constant matrices */
+      char identifier[2];//one letter identifier
+      identifier[1] = 0;//end of string character
+
+      std::vector<symbolic_matrix_type> matrices;
+      matrices.resize('Z'-'A'+1);
+      matrixFuncs.resize('Z'-'A'+1);
+
+      for(char c = 'A'; c < 'Z';c++) {
+        identifier[0] = c;
+        //identity and X are created separately
+        if(c == 'I' || c == 'X')
+          continue;
+        matrices[c-'A'] = symbolic_matrix_type(identifier,row,col);
+        matrixFuncs[c-'A'] = boost::shared_ptr<SymbolicMMFunc>
+          (new SymbolicMMFunc(matrices[c-'A'],true));
+      }
+
+      matrices['X'-'A'] = symbolic_matrix_type("X",row,col);
+      matrixFuncs['X'-'A'] = boost::shared_ptr<SymbolicMMFunc>
+        (new SymbolicMMFunc(matrices['X'-'A'], false));
+ 
+      matrices['I'-'A'] = symbolic_adaptor_type::eye(row);
+      matrixFuncs['I'-'A'] = boost::shared_ptr<SymbolicMMFunc>
+        (new SymbolicMMFunc (matrices['I'-'A'], true));
+
+      matrices['Z'-'A'] =  symbolic_adaptor_type::zeros(row, col);
+      matrixFuncs['Z'-'A'] = boost::shared_ptr<SymbolicMMFunc>
+        (new SymbolicMMFunc (matrices['Z'-'A'], true));
+ 
+
       /* Get the infix notation. */
       infix = stringParser(exprNoSpace);
       /* Get the reverse Polish notation. */
       rpn = infix2rpn(infix);
       /* Create the ScalarMatrxiFunc. */
-      func = boost::make_shared<SymbolicSMFunc>(computeSMF(rpn, row, col));               
+      func = computeSMF(rpn, row, col);               
     }
 
     
@@ -111,7 +143,8 @@ class Calculator {
     std::vector<std::string> infix; /**< expression infix order.*/
     std::vector<std::string> rpn;   /**< expression Reverse Polish Order.*/
     boost::shared_ptr<SymbolicSMFunc> func;  /**< result of the expression. */
-  
+    std::vector<boost::shared_ptr<SymbolicMMFunc> > matrixFuncs; /**< MMFunc for the variable and constant matrices. */
+
     /**
      * @brief     An infix notation parser.
      * @param str The input infix notation.
@@ -135,9 +168,9 @@ class Calculator {
      * @param SMFtype The type of the SMF. trace or logdet.
      * @param Row Row number of the matrices.
      * @param Col Colume number of the matrices.
-     * @return The Symbolic ScalarMatrixFunction object.
+     * @return The Symbolic ScalarMatrixFunction object's shared pointer.
      */
-    SymbolicSMFunc computeSingleSMF (std::vector<std::string>& str,
+    boost::shared_ptr<SymbolicSMFunc> computeSingleSMF (std::vector<std::string>& str,
                                    int SMFtype,
                                    int Row,
                                    int Col);
@@ -147,9 +180,9 @@ class Calculator {
      * @param str The RPN of the operands and operators.
      * @param Row The row number of the matrices.
      * @param Col The colume number of the matrices.
-     * @return The sum of the SMF expression. 
+     * @return The pointer for the sum of the SMF expression. 
      */
-    SymbolicSMFunc computeSMF (std::vector<std::string>& str,
+    boost::shared_ptr<SymbolicSMFunc> computeSMF (std::vector<std::string>& str,
                                      int Row,
                                      int Col);
 
@@ -357,7 +390,7 @@ std::vector<std::string> Calculator::infix2rpn(std::vector<std::string>& infix) 
   return result;
 }
 /* Compute SymbolicMatrixMatrix Stack. */
-SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
+boost::shared_ptr<SymbolicSMFunc> Calculator::computeSingleSMF(std::vector<std::string>& str,
                               int SMFtype, 
                               int Row, 
                               int Col) {
@@ -365,38 +398,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
   std::stack<boost::shared_ptr<SymbolicMMFunc> > MMFStack;
   int size = str.size();
   
-  std::vector<symbolic_matrix_type> matrices;
-  std::vector<boost::shared_ptr<SymbolicMMFunc> > matrixFuncs;
-  matrices.resize('Z'-'A'+1);
-  matrixFuncs.resize('Z'-'A'+1);
-
-  char identifier[2];
-  identifier[1] = 0;
-
-  //TO-DO: make it global
-  for(char c = 'A'; c < 'Z';c++) {
-    identifier[0] = c;
-    //identity and X are created separately
-    if(c == 'I' || c == 'X')
-      continue;
-    matrices[c-'A'] = symbolic_matrix_type(identifier,Row,Col);
-    matrixFuncs[c-'A'] = boost::shared_ptr<SymbolicMMFunc>
-      (new SymbolicMMFunc(matrices[c-'A'],true));
-  }
-
-  matrices['X'-'A'] = symbolic_matrix_type("X",Row,Col);
-  matrixFuncs['X'-'A'] = boost::shared_ptr<SymbolicMMFunc>
-    (new SymbolicMMFunc(matrices['X'-'A'], false));
- 
-  matrices['I'-'A'] = symbolic_adaptor_type::eye(Row);
-  matrixFuncs['I'-'A'] = boost::shared_ptr<SymbolicMMFunc>
-    (new SymbolicMMFunc (matrices['I'-'A'], true));
-
-  matrices['Z'-'A'] =  symbolic_adaptor_type::zeros(Row, Col);
-  matrixFuncs['Z'-'A'] = boost::shared_ptr<SymbolicMMFunc>
-    (new SymbolicMMFunc (matrices['Z'-'A'], true));
- 
-  SymbolicSMFunc func;
+  boost::shared_ptr<SymbolicSMFunc> func;
   for (i = 0; i < size; i++) {
     if(str[i].size() == 1 && isupper(str[i][0])) {
       MMFStack.push(matrixFuncs[str[i][0]-'A']);
@@ -410,7 +412,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       f2 = MMFStack.top();
       MMFStack.pop();
 
-      boost::shared_ptr<SymbolicMMFunc> f3 = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc((*f2)+(*f1)));
+      boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc((*f2)+(*f1)));
       MMFStack.push(f3);
     } else 
     if (str[i] == "-") {
@@ -422,7 +424,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       f2 = MMFStack.top();
       MMFStack.pop();
 
-      boost::shared_ptr<SymbolicMMFunc> f3 = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc((*f2)-(*f1)));
+      boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc((*f2)-(*f1)));
       MMFStack.push(f3);
       } else 
     if (str[i] == "*") {
@@ -434,7 +436,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       f2 = MMFStack.top();
       MMFStack.pop();
 
-      boost::shared_ptr<SymbolicMMFunc> f3 = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc((*f2)*(*f1)));
+      boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc((*f2)*(*f1)));
       MMFStack.push(f3);
     } else 
     if (str[i] == ".*") {
@@ -446,7 +448,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       f2 = MMFStack.top();
       MMFStack.pop();
 
-      boost::shared_ptr<SymbolicMMFunc> f3 = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc(elementwiseProduct(*f2, *f1)));
+      boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc(elementwiseProduct(*f2, *f1)));
       MMFStack.push(f3);
       } else 
     if (str[i] == "inv") {
@@ -454,7 +456,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       f1 = MMFStack.top();
       MMFStack.pop();
 
-      boost::shared_ptr<SymbolicMMFunc> f2 = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc(inv(*f1)));
+      boost::shared_ptr<SymbolicMMFunc> f2(new SymbolicMMFunc(inv(*f1)));
       MMFStack.push(f2);
     } else 
     if (str[i] == "transpose") {
@@ -462,7 +464,7 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
       f1 = MMFStack.top();
       MMFStack.pop();
 
-      boost::shared_ptr<SymbolicMMFunc> f2 = boost::shared_ptr<SymbolicMMFunc>(new SymbolicMMFunc(transpose(*f1)));
+      boost::shared_ptr<SymbolicMMFunc> f2(new SymbolicMMFunc(transpose(*f1)));
       MMFStack.push(f2);
     } else {
       //exception - parsing_exception
@@ -471,11 +473,11 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
     }
   }
   if (SMFtype == 1) {
-    func = trace(*MMFStack.top());
+    func = boost::make_shared<SymbolicSMFunc>(trace(*MMFStack.top()));
     MMFStack.pop();
   } else 
   if (SMFtype == 2) {
-    func = logdet(*MMFStack.top());
+    func = boost::make_shared<SymbolicSMFunc>(logdet(*MMFStack.top()));
     MMFStack.pop();
   } else {
     //exception - parsing_exception
@@ -492,54 +494,56 @@ SymbolicSMFunc Calculator::computeSingleSMF(std::vector<std::string>& str,
 }
 
 /* Compute SymbolicScalarMatrix Stack. */
-SymbolicSMFunc Calculator::computeSMF(std::vector<std::string>& str, 
+boost::shared_ptr<SymbolicSMFunc> Calculator::computeSMF(std::vector<std::string>& str, 
                                 int Row, 
                                 int Col) {
   int i; 
-  std::stack<SymbolicSMFunc> SMFStack;
+  std::stack<boost::shared_ptr<SymbolicSMFunc> > SMFStack;
   int size = str.size();
-  SymbolicSMFunc func;
+  boost::shared_ptr<SymbolicSMFunc> func;
  
   for (i = 0; i < size; i++) {
     if (str[i] == "+") {
-      SymbolicSMFunc f1;
+      boost::shared_ptr<SymbolicSMFunc> f1;
       f1 = SMFStack.top();
       SMFStack.pop();
-      SymbolicSMFunc f2;
+      boost::shared_ptr<SymbolicSMFunc> f2;
       f2 = SMFStack.top();
       SMFStack.pop();
       //exception: (f2.m != f1.m || f2.n != f1.n) -mismatched_dimension
-      SymbolicSMFunc f3 = f2 + f1;
+      boost::shared_ptr<SymbolicSMFunc> f3( new SymbolicSMFunc(*f2 + *f1));
       SMFStack.push(f3);
     } else 
     if (str[i] == "-") {
-      SymbolicSMFunc f1;
-      f1 = (SMFStack.top());
+      boost::shared_ptr<SymbolicSMFunc> f1;
+      f1 = SMFStack.top();
       SMFStack.pop();
-      SymbolicSMFunc f2;
-      f2 = (SMFStack.top());
+      boost::shared_ptr<SymbolicSMFunc> f2;
+      f2 = SMFStack.top();
       SMFStack.pop();
       //exception: (f2.m != f1.m || f2.n != f1.n) -mismatched_dimension
-      SymbolicSMFunc f3 = f2 - f1;
+      boost::shared_ptr<SymbolicSMFunc> f3( new SymbolicSMFunc(*f2 - *f1));
       SMFStack.push(f3);
-    } else 
+    } else
+ 
     if (str[i] == "*") {
-      SymbolicSMFunc f1;
-      f1 = ( SMFStack.top());
+      boost::shared_ptr<SymbolicSMFunc> f1;
+      f1 = SMFStack.top();
       SMFStack.pop();
-      SymbolicSMFunc f2;
-      f2=(SMFStack.top());
+      boost::shared_ptr<SymbolicSMFunc> f2;
+      f2 = SMFStack.top();
       SMFStack.pop();
-      //exception: (f2.n != f1.m ) -mismatched_dimension
-      SymbolicSMFunc f3 = f2 * f1;
+      //exception: (f2.m != f1.m || f2.n != f1.n) -mismatched_dimension
+      boost::shared_ptr<SymbolicSMFunc> f3( new SymbolicSMFunc(*f2 * *f1));
       SMFStack.push(f3);
-    } else 
+    } else
     if (str[i].compare(0,5,"trace") == 0) { //trace
       std::string exp = str[i].substr(5, str[i].size() -5);
       int type = 1;
       std::vector<std::string> par = stringParser(exp);
       std::vector<std::string> rpn = infix2rpn(par);
-      SymbolicSMFunc funcResult = (computeSingleSMF(rpn, type, Row , Col));
+      boost::shared_ptr<SymbolicSMFunc> funcResult = (computeSingleSMF(rpn, type, Row , Col));
+ 
       SMFStack.push(funcResult);
     } else
     if (str[i].compare(0,6,"logdet") == 0) {
@@ -548,9 +552,10 @@ SymbolicSMFunc Calculator::computeSMF(std::vector<std::string>& str,
       std::vector<std::string> par = stringParser(exp);
       std::vector<std::string> rpn = infix2rpn(par);
       
-      SymbolicSMFunc funcResult = (computeSingleSMF(rpn, type, Row , Col));
-      SMFStack.push(funcResult);    
-    } else {
+      boost::shared_ptr<SymbolicSMFunc> funcResult = (computeSingleSMF(rpn, type, Row , Col));
+      SMFStack.push(funcResult);
+      
+      } else {
       bool isRealConst = false;
       
       if (str[i].size() == 1 && islower(str[i][0]) && str[i][0] != 'x') //check if it is a real constant
@@ -564,7 +569,7 @@ SymbolicSMFunc Calculator::computeSMF(std::vector<std::string>& str,
       }    
       if (isRealConst || isRealNumber) {
         symbolic_scalar_type num(str[i]);
-        SymbolicSMFunc constantSMFunc(num, Row, Row);
+        boost::shared_ptr<SymbolicSMFunc> constantSMFunc(new SymbolicSMFunc(num, Row, Row));
         SMFStack.push(constantSMFunc);
       }
       else {
@@ -573,6 +578,7 @@ SymbolicSMFunc Calculator::computeSMF(std::vector<std::string>& str,
         exit(-1);
       }
     }
+      
   }
   func = SMFStack.top();
   SMFStack.pop();
