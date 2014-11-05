@@ -17,6 +17,7 @@
 #include <iostream>
 #include "MatrixAdaptor.hpp"
 #include "MatrixMatrixFunc.hpp"
+#include "AnjuException.hpp"
 
 namespace AMD {
   /**
@@ -28,8 +29,8 @@ namespace AMD {
    *
    */
   template <class MT, class ST>
-   class ScalarMatrixFunc {
-   public:
+  class ScalarMatrixFunc {
+  public:
     typedef MT MatrixType;
     typedef ST ScalarType;
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
@@ -44,10 +45,10 @@ namespace AMD {
      * @brief Constructor for a ScalarMatrixFunc object. The default
      * setting is a variable.
      */
-     ScalarMatrixFunc() : functionVal(), derivativeVal(), isConst(false),
-     derivativeFuncVal() { }
+    ScalarMatrixFunc() : functionVal(), derivativeVal(), isConst(false),
+      derivativeFuncVal() { }
 
-     ~ScalarMatrixFunc() { }
+    ~ScalarMatrixFunc() { }
 
 
     /**
@@ -56,15 +57,15 @@ namespace AMD {
      * @param[in] fVal ScalarType function variable.
      * @param[in] dVal MatrixType function variable.
      */
-     ScalarMatrixFunc(ST fVal, MT dVal)
-     : functionVal(fVal), derivativeVal(dVal), isConst(false),
-     derivativeFuncVal() { }
+    ScalarMatrixFunc(ST fVal, MT dVal)
+      : functionVal(fVal), derivativeVal(dVal), isConst(false),
+      derivativeFuncVal() { }
 
-     ScalarMatrixFunc(ST fVal, MT dVal, MMF dFuncVal)
-     : functionVal(fVal), derivativeVal(dVal), isConst(false)
-     {
+    ScalarMatrixFunc(ST fVal, MT dVal, MMF dFuncVal)
+      : functionVal(fVal), derivativeVal(dVal), isConst(false)
+    {
       boost::shared_ptr<MatrixMatrixFunc<MT, ST> >
-      copy(new MatrixMatrixFunc<MT, ST>);
+        copy(new MatrixMatrixFunc<MT, ST>);
       derivativeFuncVal = copy;
       derivativeFuncVal->deepCopy(dFuncVal);
     }
@@ -78,9 +79,9 @@ namespace AMD {
      * @param[in] m     Number of rows.
      * @param[in] n     Number of columns.
      */
-     ScalarMatrixFunc(ST fVal, int m, int n)
-     : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m, n)),
-     isConst(true), derivativeFuncVal() { }
+    ScalarMatrixFunc(ST fVal, int m, int n)
+      : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m, n)),
+      isConst(true), derivativeFuncVal() { }
 
     /**
      * @brief Operator overloading for "=". rhs and lhs are
@@ -89,7 +90,7 @@ namespace AMD {
      *
      * @param[in] x ScalarmatrixFunc rhs.
      */
-     void initWithVariable(ST fVal, MT dVal) {
+    void initWithVariable(ST fVal, MT dVal) {
       functionVal = fVal;
       derivativeVal = dVal;
       isConst = false;
@@ -120,12 +121,14 @@ namespace AMD {
    * @return The new ScalarMatrixFunc object which is the some of rhs and lhs.
    */
   template <class MT, class ST>
-   ScalarMatrixFunc<MT, ST> operator+(const ScalarMatrixFunc<MT, ST> &lhs,
-                                      const ScalarMatrixFunc<MT, ST> &rhs) {
-    try {
-      if (!(lhs.derivativeVal.getNumRows() == rhs.derivativeVal.getNumRows() &&
-        lhs.derivativeVal.getNumCols() == rhs.derivativeVal.getNumCols()))
-        throw mismatched_dimension;
+  ScalarMatrixFunc<MT, ST> operator+(const ScalarMatrixFunc<MT, ST> &lhs,
+    const ScalarMatrixFunc<MT, ST> &rhs) {
+    AMD_START_TRY_BLOCK()
+      if (lhs.derivativeVal.getNumRows() != rhs.derivativeVal.getNumRows() ||
+        lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
+        throw exception_generic_impl("AMD::operator+", 
+          "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
+
       if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
         // FIXME: I do not know why if I put only *rhs.derivativeFuncVal 
         // as the third value for SMF constructor(looks like *rhs.derivativeFuncVal
@@ -148,10 +151,8 @@ namespace AMD {
       return(ScalarMatrixFunc<MT, ST>(lhs.functionVal + rhs.functionVal,
         lhs.derivativeVal + rhs.derivativeVal,
         *lhs.derivativeFuncVal + *rhs.derivativeFuncVal));
-    }
-    catch (std::exception& error) {
-      std::cerr << error.what() << std::endl;
-    }
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD, operator+)
   }
 
   /**
@@ -162,13 +163,15 @@ namespace AMD {
    *
    * @return The substraction of two ScalarMatrixFun objects.
    */
-   template <class MT, class ST>
-   ScalarMatrixFunc<MT, ST> operator-(const ScalarMatrixFunc<MT, ST> &lhs,
-                                      const ScalarMatrixFunc<MT, ST> &rhs) {
-    try {
-      if (!(lhs.derivativeVal.getNumRows() == rhs.derivativeVal.getNumRows() &&
-        lhs.derivativeVal.getNumCols() == rhs.derivativeVal.getNumCols()))
-        throw mismatched_dimension;
+  template <class MT, class ST>
+  ScalarMatrixFunc<MT, ST> operator-(const ScalarMatrixFunc<MT, ST> &lhs,
+    const ScalarMatrixFunc<MT, ST> &rhs) {
+    AMD_START_TRY_BLOCK()
+      if (lhs.derivativeVal.getNumRows() != rhs.derivativeVal.getNumRows() ||
+        lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
+        throw exception_generic_impl("AMD::operator-", 
+          "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
+
       if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
         return(ScalarMatrixFunc<MT, ST>(lhs.functionVal - rhs.functionVal,
           -rhs.derivativeVal, -(*rhs.derivativeFuncVal)));
@@ -181,10 +184,8 @@ namespace AMD {
       return(ScalarMatrixFunc<MT, ST>(lhs.functionVal - rhs.functionVal,
         lhs.derivativeVal - rhs.derivativeVal,
         *lhs.derivativeFuncVal - *rhs.derivativeFuncVal));
-    }
-    catch (std::exception& error) {
-      std::cerr << error.what() << std::endl;
-    }
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD, operator-)
   }
 
   // unary minus
@@ -209,8 +210,8 @@ namespace AMD {
     MT lcTrans;
     MatrixAdaptorType::negation(lhs.derivativeVal, lcTrans);
     return(ScalarMatrixFunc<MT, ST>(-lhs.functionVal,
-                                    lcTrans, 
-                                    -(*lhs.derivativeFuncVal)));
+      lcTrans,
+      -(*lhs.derivativeFuncVal)));
   }
 
   /**
@@ -227,11 +228,13 @@ namespace AMD {
   // TODO  add derivativeFunc
   template <class MT, class ST>
   ScalarMatrixFunc<MT, ST> operator*(const ScalarMatrixFunc<MT, ST> &lhs,
-                                     const ScalarMatrixFunc<MT, ST> &rhs) {
-    try {
-      if (!(lhs.derivativeVal.getNumRows() == rhs.derivativeVal.getNumRows() &&
-        lhs.derivativeVal.getNumCols() == rhs.derivativeVal.getNumCols()))
-        throw mismatched_dimension;
+    const ScalarMatrixFunc<MT, ST> &rhs) {
+    AMD_START_TRY_BLOCK()
+      if (lhs.derivativeVal.getNumRows() != rhs.derivativeVal.getNumRows() ||
+        lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
+        throw exception_generic_impl("AMD::operator*", 
+          "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
+
       const ST& f = lhs.functionVal;
       const ST& g = rhs.functionVal;
       const MT& df = lhs.derivativeVal;
@@ -244,10 +247,8 @@ namespace AMD {
       }
       return(ScalarMatrixFunc<MT, ST>(f*g, f*dg + df*g,
         lhs * (*rhs.derivativeFuncVal) + (*lhs.derivativeFuncVal)*rhs));
-    }
-    catch (std::exception& error) {
-      std::cerr << error.what() << std::endl;
-    }
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD, operator*)
   }
 
   /**
@@ -304,12 +305,14 @@ namespace AMD {
    * @return lhs / rhs
    */
   template <class MT, class ST>
-   ScalarMatrixFunc<MT, ST> operator/(const ScalarMatrixFunc<MT, ST> &lhs,
-                                      const ScalarMatrixFunc<MT, ST> &rhs) {
-    try {
-      if (!(lhs.derivativeVal.getNumRows() == rhs.derivativeVal.getNumRows() &&
-        lhs.derivativeVal.getNumCols() == rhs.derivativeVal.getNumCols()))
-        throw mismatched_dimension;
+  ScalarMatrixFunc<MT, ST> operator/(const ScalarMatrixFunc<MT, ST> &lhs,
+    const ScalarMatrixFunc<MT, ST> &rhs) {
+    AMD_START_TRY_BLOCK()
+      if (lhs.derivativeVal.getNumRows() != rhs.derivativeVal.getNumRows() ||
+        lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
+        throw exception_generic_impl("AMD::operator/", 
+          "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
+
       const ST& f = lhs.functionVal;
       const ST& g = rhs.functionVal;
       const MT& df = lhs.derivativeVal;
@@ -321,10 +324,8 @@ namespace AMD {
         return(ScalarMatrixFunc<MT, ST>(f + g, (df*g) / (g*g)));
       }
       return(ScalarMatrixFunc<MT, ST>(f + g, (df*g - f*dg) / (g*g)));
-    }
-    catch (std::exception& error) {
-      std::cerr << error.what() << std::endl;
-    }
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_RETHROW(AMD, operator/)
   }
 }  /** namespace AMD */
 
