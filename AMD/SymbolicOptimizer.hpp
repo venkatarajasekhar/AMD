@@ -127,14 +127,15 @@ namespace AMD {
   MatrixMatrixFunc<MT, ST> transOpt(const MatrixMatrixFunc<MT, ST> &node){   
     /* Case 1: If node is eye or zero matrix, then there is no need to           
      * actually transpose it*/                                                  
-    if (node.identityFlag == 1) return node;
-    if (node.zeroResultFlag == 1) return node;
+    if (node.leftChild == symbolicIdentityMatrix) 
+      return node.leftChild;
+    if (node.leftChild == symbolicZeroMatrix)
+      return node.leftChild;
                                                                                 
     /* Case 2: If we are doing two transpose. Transpose(transpoe(A)). We        
      * simply take both transpose operation */                                  
-    if (node.transposeFlag == 1){  
-      node.transposeFlag = 0; 
-      return node;   
+    if (node.leftChild.opNum == TRANSPOSE){   
+      return node.leftChild.leftChild;   
     }          
     /* TODO: Case 3: We don't want to transpose a symmetric either */                 
     /*
@@ -149,13 +150,15 @@ namespace AMD {
    * @param node: The left child      
    * */                                                                 
 
-  MatrixMagtrixFunc<MT, ST> inverseOpt(const MatrixMatrixFunc<MT, ST> &node){    
+  MatrixMatrixFunc<MT, ST> inverseOpt(const MatrixMatrixFunc<MT, ST> &node){    
     /* Assumption: node is invertible! */                                        
                                                                                 
     /*Case 1: If node is eye or zero matrix, then there is no need to            
      * actually inverse it */                                                   
-    if (node.identityFlag == 1) return node;                                          
-    if (node.zeroResultFlag == 1) return node;                                                   
+    if (node.leftChild == symbolicIdentityMatrix) 
+      return node.leftChild;                                          
+    if (node.leftChild == symbolicZeroMatrix) 
+      return node.leftChild;                                                   
     /*TODO: Case 2: node is orthonomal, then (inv)node = tranpose(node).
      * Compute         tranpose is cheaper than taking the inverse*/                            
     /* if (node is orthonomal) {                                                    
@@ -166,20 +169,23 @@ namespace AMD {
     return NULL;
   }
 
-  /* This function optimizing how to calcualte the determinant */               
-  ScalarMagtrixFunc<MT, ST> detOpt(const MatrixMatrixFunc<MT, ST> &node){        
-    /* Case 1: If node is eye, return 1 */
-    if (node.identityFlag == 1) return 1;
+/* This function optimizing how to calcualte the determinant */               
 
+//  ScalarMatrixFunc<MT, ST> detOpt(const MatrixMatrixFunc<MT, ST> &node){        
+    /* Case 1: If node is eye, return 1 */
+  //  if (node.leftChild == symbolicIdentityMatrix ) {
+    //  ScalarMatrixFunc<MT,ST> retValue()
+    //  return 1;
+   // }
     /* Case 2: If node is zeroMatrix, return 0 */
     /* TODO: Logdet cannot be 0 */
-    if (node.zeroResultFlag == 0) return 0;
+   // if (node.leftChild == symbolicZeroMatrix) return 0;
     
     /*TODO: if (node == inverse of an expression A)
       calculating the determinant d of A.
       return 1/d;
     */
-  }     
+//  }     
 
 } /** namespace AMD */
 
