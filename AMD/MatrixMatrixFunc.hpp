@@ -42,15 +42,15 @@ namespace AMD {
     typedef MatrixMatrixFunc<MT, ST> MatrixMatrixFunctionType;
     typedef MatrixMatrixFunctionType MMF;
     typedef void(*CallBackFuncType)(boost::shared_ptr<MT>,
-      boost::shared_ptr<MT>,
-      boost::shared_ptr<MT>,
-      boost::shared_ptr<MT>,
-      boost::shared_ptr<MMF>,/**< current MMF.*/
-      boost::shared_ptr<MMF>,/**< left MMF. */
-      boost::shared_ptr<MMF>,/**< right MMF. */
-      boost::shared_ptr<MMF>,/**< result MMF. */
-      const MatrixMatrixFunc<MT, ST>*,
-      int&, bool&, bool&);
+                                    boost::shared_ptr<MT>,
+                                    boost::shared_ptr<MT>,
+                                    boost::shared_ptr<MT>,
+                                    boost::shared_ptr<MMF>,/**< current MMF.*/
+                                    boost::shared_ptr<MMF>,/**< left MMF. */
+                                    boost::shared_ptr<MMF>,/**< right MMF. */
+                                    boost::shared_ptr<MMF>,/**< result MMF. */
+                                    const MatrixMatrixFunc<MT, ST>*,
+                                    int&, bool&, bool&);
 
     boost::shared_ptr<MT> matrixPtr; /**< Once recorded the matrix should never
                                           be changed - so a pointer is safe */
@@ -388,90 +388,93 @@ namespace AMD {
       int transposeFlag,
       bool identityInitialFlag,
       bool& zeroResultFlag) const {
+
       AMD_START_TRY_BLOCK()
-        bool b_valid_shared_ptr = current.use_count() >= 1 &&
-          result.use_count() >= 1;
-        bool b_constant_function = isConst;
-        bool b_matched_dimension =
-          MatrixAdaptorType::getNumRows(*(result)) == varNumRows &&
-          MatrixAdaptorType::getNumCols(*(result)) == varNumCols;
-        
-        /* Throwing first exception found. Alternatively, we could throw the
-         * most critical one instead. */
-        if (false == (b_valid_shared_ptr && b_constant_function || 
-          b_matched_dimension)) {
-          if (false == b_valid_shared_ptr)
-            throw exception_generic_impl("AMD::gradientVec",
-              "Shared pointer is not valid anymore",
-             AMD_INVALID_SHARED_PTR);
-          else throw exception_generic_impl("AMD::gradientVec",
-              "Node is not a variable function",
-             AMD_CONSTANT_FN);
-        }
+      bool b_valid_shared_ptr = 
+          current.use_count() >= 1 && result.use_count() >= 1;
+      bool b_constant_function = isConst;
+      bool b_matched_dimension =
+        MatrixAdaptorType::getNumRows(*(result)) == varNumRows &&
+        MatrixAdaptorType::getNumCols(*(result)) == varNumCols;
+
+      /* Throwing first exception found. Alternatively, we could throw the
+       * most critical one instead. */
+      if (false == b_matched_dimension) throw 
+        exception_generic_impl("AMD::gradientVec",
+                               "Dimensions of result and current don't match",
+                               AMD_MISMATCHED_DIMENSIONS);
+      if (false == b_valid_shared_ptr) throw
+        exception_generic_impl("AMD::gradientVec",
+                               "Shared pointer is not valid anymore",
+                               AMD_INVALID_SHARED_PTR);
+      if (false == b_constant_function) throw 
+        exception_generic_impl("AMD::gradientVec",
+                               "Node is not a variable function",
+                               AMD_CONSTANT_FN);
+
+      /**
+       * Only need to do something if the current function is not a
+       * constant
+       */
+      if (!isConst) {
+        /** This will be the result matrix for the left child */
+        boost::shared_ptr<MT> currentLeft(new MT);
+
+        /** This will be the result matrix for the right child */
+        boost::shared_ptr<MT> currentRight(new MT);
+
+        /** These two are used for derivative of derivatives */
+        boost::shared_ptr<MMF> leftMMF(new MMF);
+        boost::shared_ptr<MMF> rightMMF(new MMF);
+        callBackFunc(result,
+          current,
+          currentLeft,
+          currentRight,
+          resultMMF,
+          currentMMF,
+          leftMMF,
+          rightMMF,
+          this,
+          transposeFlag,
+          identityInitialFlag,
+          zeroResultFlag);
 
         /**
-         * Only need to do something if the current function is not a
-         * constant
+         * The resultPtr is shared --- both leftChild and rightChild add
+         * to this resultPtr. Therefore we cannot parallelize the calls
+         * to leftChild and rightChild without cloning the resultPtr.
+         *
+         * Parallelization opportunity here:
+         * (1) leftResultPtr = shared_ptr<>(new MT(*resultPtr));
+         *     rightResultPtr = shared_ptr<>(new MT(*resultPtr));
+         *
+         * (2) Then call leftChild and rightChild gradientVec() with
+         * leftResultPtr and rightResultPtr instead of resultPtr in
+         * parallel.
+         *
+         * (3) *resultPtr = *leftResultPtr + *rightResultPtr
          */
-        if (!isConst) {
-          /** This will be the result matrix for the left child */
-          boost::shared_ptr<MT> currentLeft(new MT);
-
-          /** This will be the result matrix for the right child */
-          boost::shared_ptr<MT> currentRight(new MT);
-
-          /** These two are used for derivative of derivatives */
-          boost::shared_ptr<MMF> leftMMF(new MMF);
-          boost::shared_ptr<MMF> rightMMF(new MMF);
-          callBackFunc(result,
-            current,
-            currentLeft,
-            currentRight,
-            resultMMF,
-            currentMMF,
+        if (NULL != leftChild) {
+          int leftFlag = transposeFlag & 1;
+          leftChild->gradientVec(currentLeft,
+            result,
             leftMMF,
-            rightMMF,
-            this,
-            transposeFlag,
+            resultMMF,
+            leftFlag,
             identityInitialFlag,
             zeroResultFlag);
-
-          /**
-           * The resultPtr is shared --- both leftChild and rightChild add
-           * to this resultPtr. Therefore we cannot parallelize the calls
-           * to leftChild and rightChild without cloning the resultPtr.
-           *
-           * Parallelization opportunity here:
-           * (1) leftResultPtr = shared_ptr<>(new MT(*resultPtr));
-           *     rightResultPtr = shared_ptr<>(new MT(*resultPtr));
-           *
-           * (2) Then call leftChild and rightChild gradientVec() with
-           * leftResultPtr and rightResultPtr instead of resultPtr in
-           * parallel.
-           *
-           * (3) *resultPtr = *leftResultPtr + *rightResultPtr
-           */
-          if (NULL != leftChild) {
-            int leftFlag = transposeFlag & 1;
-            leftChild->gradientVec(currentLeft,
-              result,
-              leftMMF,
-              resultMMF,
-              leftFlag,
-              identityInitialFlag,
-              zeroResultFlag);
-          }
-          if (NULL != rightChild) {
-            int rightFlag = transposeFlag & 2;
-            rightChild->gradientVec(currentRight,
-              result,
-              rightMMF,
-              resultMMF,
-              rightFlag,
-              identityInitialFlag,
-              zeroResultFlag);
-          }
-        } // end if (!isConst) 
+        }
+        if (NULL != rightChild) {
+          int rightFlag = transposeFlag & 2;
+          rightChild->gradientVec(currentRight,
+            result,
+            rightMMF,
+            resultMMF,
+            rightFlag,
+            identityInitialFlag,
+            zeroResultFlag);
+        }
+      } // end if (!isConst) 
       AMD_END_TRY_BLOCK()
       AMD_CATCH_AND_RETHROW(AMD, gradientVec)
     }

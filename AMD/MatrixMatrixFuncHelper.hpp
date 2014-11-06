@@ -16,7 +16,7 @@
 #include "utility.hpp"
 #include "ScalarMatrixFunc.hpp"
 #include "MatrixAdaptor.hpp"
-#include "AnjuException.hpp"
+#include "Exception.hpp"
 
 namespace AMD {
   /**

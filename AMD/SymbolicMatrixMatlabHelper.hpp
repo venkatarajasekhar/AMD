@@ -13,7 +13,6 @@
 #include <sstream>
 #include "SymbolicMatrixMatlab.hpp"
 #include "Exception.hpp"
-#include "AnjuException.hpp"
 
 namespace AMD {
 
@@ -23,15 +22,20 @@ namespace AMD {
    * @return The SymbolicScalarMatlab representation trace(a)
    */
   SymbolicScalarMatlab trace(const SymbolicMatrixMatlab& a)  {
-    AMD_START_TRY_BLOCK()
-      if (a.getNumRows() != a.getNumCols())
-        throw exception_generic_impl("AMD::trace", 
-          "Matrix is not square", AMD_NON_SQUARE);
+    SymbolicScalarMatlab retVal;
 
-      return SymbolicScalarMatlab("trace(" +
-        detail::removeParenthesis(a.symbol) + ")");
+    AMD_START_TRY_BLOCK()
+    if (a.getNumRows() != a.getNumCols())
+      throw exception_generic_impl("AMD::trace", 
+                                   "Matrix is not square", 
+                                   AMD_NON_SQUARE);
+
+    retVal = SymbolicScalarMatlab
+                ("trace(" + detail::removeParenthesis(a.symbol) + ")");
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, trace)
+
+    return retVal;
   }
 
   /**
@@ -40,15 +44,19 @@ namespace AMD {
    * @return The SymbolicScalarMatlab representation logdet(a)
    */
   SymbolicScalarMatlab logdet(const SymbolicMatrixMatlab& a)  {
-    AMD_START_TRY_BLOCK()
-      if (a.getNumRows() != a.getNumCols())
-        throw exception_generic_impl("AMD::logdet", 
-          "Matrix is not square", AMD_NON_SQUARE);
+    SymbolicScalarMatlab retVal;
 
-      return SymbolicScalarMatlab("log(det(" +
-        detail::removeParenthesis(a.symbol) + "))");
+    AMD_START_TRY_BLOCK()
+    if (a.getNumRows() != a.getNumCols())
+      throw exception_generic_impl("AMD::logdet", 
+        "Matrix is not square", AMD_NON_SQUARE);
+
+    retVal =  SymbolicScalarMatlab
+                ("log(det(" + detail::removeParenthesis(a.symbol) + "))");
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, logdet)
+
+    return retVal;
   }
 
 
@@ -58,9 +66,8 @@ namespace AMD {
    * @return The SymbolicScalarMatlab representation of ||a||_F.
    */
   SymbolicScalarMatlab fnorm(const SymbolicMatrixMatlab& a)  {
-    return
-      SymbolicScalarMatlab("norm(" +
-      detail::removeParenthesis(a.symbol) + ",'fro')");
+    return SymbolicScalarMatlab
+              ("norm(" + detail::removeParenthesis(a.symbol) + ",'fro')");
   }
 
   /**
@@ -69,17 +76,21 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of inv(a).
    */
   SymbolicMatrixMatlab inv(const SymbolicMatrixMatlab& a) {
-    AMD_START_TRY_BLOCK()
-      if (a.getNumRows() != a.getNumCols())
-        throw exception_generic_impl("AMD::inv", 
-          "Matrix is not square", AMD_NON_SQUARE);
+    SymbolicMatrixMatlab retVal;
 
-      return SymbolicMatrixMatlab("inv(" +
-        detail::removeParenthesis(a.symbol) + ")",
-        a.getNumRows(),
-        a.getNumCols());
+    AMD_START_TRY_BLOCK()
+    if (a.getNumRows() != a.getNumCols())
+      throw exception_generic_impl("AMD::inv", 
+        "Matrix is not square", AMD_NON_SQUARE);
+
+    retVal =  SymbolicMatrixMatlab("inv(" +
+                                   detail::removeParenthesis(a.symbol) + ")",
+                                   a.getNumRows(),
+                                   a.getNumCols());
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, inv)
+
+    return retVal;
   }
 
   /**
@@ -101,17 +112,21 @@ namespace AMD {
    */
 
   SymbolicMatrixMatlab diag(const SymbolicMatrixMatlab &a) {
-    AMD_START_TRY_BLOCK()
-      if (a.getNumRows() != a.getNumCols())
-        throw exception_generic_impl("AMD::diag", 
-          "Matrix is not square", AMD_NON_SQUARE);
+    SymbolicMatrixMatlab retVal;
 
-      return SymbolicMatrixMatlab("diag(" +
-        detail::removeParenthesis(a.symbol) + ")",
-        a.getNumRows(),
-        a.getNumCols());
+    AMD_START_TRY_BLOCK()
+    if (a.getNumRows() != a.getNumCols())
+      throw exception_generic_impl("AMD::diag", 
+        "Matrix is not square", AMD_NON_SQUARE);
+
+    retVal =  SymbolicMatrixMatlab("diag(" +
+                                   detail::removeParenthesis(a.symbol) + ")",
+                                   a.getNumRows(),
+                                   a.getNumCols());
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, diag)
+
+    return retVal;
   }
 
   // bivariate functions that return a matrix
@@ -122,18 +137,22 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of a .* b.
    */
   SymbolicMatrixMatlab elementwiseProduct(const SymbolicMatrixMatlab& a,
-    const SymbolicMatrixMatlab& b) {
-    AMD_START_TRY_BLOCK()
-      if (a.getNumRows() != b.getNumRows() || 
-        a.getNumCols() != b.getNumCols())
-        throw exception_generic_impl("AMD::elementwiseProduct", 
-          "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
+                                          const SymbolicMatrixMatlab& b) {
+    SymbolicMatrixMatlab retVal;
 
-      return SymbolicMatrixMatlab("(" + a.symbol + ".*" + b.symbol + ")",
-        a.getNumRows(),
-        a.getNumCols());
+    AMD_START_TRY_BLOCK()
+    if (a.getNumRows() != b.getNumRows() || 
+      a.getNumCols() != b.getNumCols())
+      throw exception_generic_impl("AMD::elementwiseProduct", 
+        "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
+
+    retVal =  SymbolicMatrixMatlab("(" + a.symbol + ".*" + b.symbol + ")",
+                                   a.getNumRows(),
+                                   a.getNumCols());
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, elementwiseProduct)
+
+    return retVal;
   }
 
   /**
@@ -144,17 +163,21 @@ namespace AMD {
    */
   SymbolicMatrixMatlab operator+(const SymbolicMatrixMatlab& a,
     const SymbolicMatrixMatlab& b) {
-    AMD_START_TRY_BLOCK()
-      if (a.getNumRows() != b.getNumRows() || 
-        a.getNumCols() != b.getNumCols())
-        throw exception_generic_impl("AMD::operator+", 
-          "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
+    SymbolicMatrixMatlab retVal;
 
-      return SymbolicMatrixMatlab("(" + a.symbol + "+" + b.symbol + ")",
-        a.getNumRows(),
-        a.getNumCols());
+    AMD_START_TRY_BLOCK()
+    if (a.getNumRows() != b.getNumRows() || 
+      a.getNumCols() != b.getNumCols())
+      throw exception_generic_impl("AMD::operator+", 
+        "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
+
+    retVal =  SymbolicMatrixMatlab("(" + a.symbol + "+" + b.symbol + ")",
+                                   a.getNumRows(),
+                                   a.getNumCols());
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, operator+)
+
+    return retVal;
   }
 
   /**
@@ -165,16 +188,20 @@ namespace AMD {
    */
   SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a,
     const SymbolicMatrixMatlab& b) {
+    SymbolicMatrixMatlab retVal;
+
     AMD_START_TRY_BLOCK()
-      if (a.getNumRows() != b.getNumRows() || 
-        a.getNumCols() != b.getNumCols())
-        throw exception_generic_impl("AMD::operator-", 
-          "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
-      return SymbolicMatrixMatlab("(" + a.symbol + "-" + b.symbol + ")",
-        a.getNumRows(),
-        a.getNumCols());
+    if (a.getNumRows() != b.getNumRows() || 
+      a.getNumCols() != b.getNumCols())
+      throw exception_generic_impl("AMD::operator-", 
+        "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
+    retVal = SymbolicMatrixMatlab("(" + a.symbol + "-" + b.symbol + ")",
+                                  a.getNumRows(),
+                                  a.getNumCols());
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, operator-)
+
+    return retVal;
   }
 
   /**
@@ -184,8 +211,8 @@ namespace AMD {
    */
   SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a) {
     return SymbolicMatrixMatlab("(-" + a.symbol + ")",
-      a.getNumRows(),
-      a.getNumCols());
+                                a.getNumRows(),
+                                a.getNumCols());
   }
 
 
@@ -197,14 +224,19 @@ namespace AMD {
    */
   SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a,
     const SymbolicMatrixMatlab& b) {
+    SymbolicMatrixMatlab retVal;
+
     AMD_START_TRY_BLOCK()
-      if (a.getNumCols() != b.getNumRows())
-        throw exception_generic_impl("AMD::operator*", 
-          "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
-      return SymbolicMatrixMatlab("(" + a.symbol + "*" + b.symbol + ")",
-        a.getNumRows(), b.getNumCols());
+    if (a.getNumCols() != b.getNumRows())
+      throw exception_generic_impl("AMD::operator*", 
+        "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
+    retVal = SymbolicMatrixMatlab("(" + a.symbol + "*" + b.symbol + ")",
+                                  a.getNumRows(), 
+                                  b.getNumCols());
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, operator*)
+
+    return retVal;
   }
 
   // Element-wise operations: 

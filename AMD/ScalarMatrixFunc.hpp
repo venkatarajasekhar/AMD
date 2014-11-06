@@ -17,7 +17,7 @@
 #include <iostream>
 #include "MatrixAdaptor.hpp"
 #include "MatrixMatrixFunc.hpp"
-#include "AnjuException.hpp"
+#include "Exception.hpp"
 
 namespace AMD {
   /**
@@ -123,36 +123,51 @@ namespace AMD {
   template <class MT, class ST>
   ScalarMatrixFunc<MT, ST> operator+(const ScalarMatrixFunc<MT, ST> &lhs,
     const ScalarMatrixFunc<MT, ST> &rhs) {
-    AMD_START_TRY_BLOCK()
-      if (lhs.derivativeVal.getNumRows() != rhs.derivativeVal.getNumRows() ||
-        lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
-        throw exception_generic_impl("AMD::operator+", 
-          "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
 
-      if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
-        // FIXME: I do not know why if I put only *rhs.derivativeFuncVal 
-        // as the third value for SMF constructor(looks like *rhs.derivativeFuncVal
-        // vanish somehow). I create a MMF which is a constant zero and 
-        // put the sum of zero and *rhs.derivativeFuncVal. This leads to 
-        // extra space and unnecessary computation.
-        MT mat = MatrixAdaptor_t<MT>::zeros(rhs.derivativeVal.getNumRows(),
-          rhs.derivativeVal.getNumCols());
-        MatrixMatrixFunc<MT, ST> func(mat);
-        return(ScalarMatrixFunc<MT, ST>(lhs.functionVal + rhs.functionVal,
-          rhs.derivativeVal, func + *rhs.derivativeFuncVal));
-      }
-      if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
-        MT mat = MatrixAdaptor_t<MT>::zeros(lhs.derivativeVal.getNumRows(),
-          lhs.derivativeVal.getNumCols());
-        MatrixMatrixFunc<MT, ST> func(mat);
-        return(ScalarMatrixFunc<MT, ST>(lhs.functionVal + rhs.functionVal,
-          lhs.derivativeVal, *lhs.derivativeFuncVal + func));
-      }
-      return(ScalarMatrixFunc<MT, ST>(lhs.functionVal + rhs.functionVal,
-        lhs.derivativeVal + rhs.derivativeVal,
-        *lhs.derivativeFuncVal + *rhs.derivativeFuncVal));
+    ScalarMatrixFunc<MT, ST> retVal;
+
+    AMD_START_TRY_BLOCK()
+
+    if (lhs.derivativeVal.getNumRows() != rhs.derivativeVal.getNumRows() ||
+        lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
+      throw exception_generic_impl("AMD::operator+", 
+                                   "Matrices don't match up", 
+                                   AMD_MISMATCHED_DIMENSIONS);
+
+    if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
+      // FIXME: I do not know why if I put only *rhs.derivativeFuncVal as the
+      // third value for SMF constructor(looks like *rhs.derivativeFuncVal
+      // vanish somehow). I create a MMF which is a constant zero and put the
+      // sum of zero and *rhs.derivativeFuncVal. This leads to extra space and
+      // unnecessary computation.
+      MT mat = MatrixAdaptor_t<MT>::zeros(rhs.derivativeVal.getNumRows(),
+                                          rhs.derivativeVal.getNumCols());
+      MatrixMatrixFunc<MT, ST> func(mat);
+      retVal = ScalarMatrixFunc<MT, ST>(
+                  lhs.functionVal + rhs.functionVal,
+                  rhs.derivativeVal, 
+                  func + *rhs.derivativeFuncVal);
+    }
+
+    if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
+      MT mat = MatrixAdaptor_t<MT>::zeros(lhs.derivativeVal.getNumRows(),
+        lhs.derivativeVal.getNumCols());
+      MatrixMatrixFunc<MT, ST> func(mat);
+      retVal = ScalarMatrixFunc<MT, ST>(
+              lhs.functionVal + rhs.functionVal,
+              lhs.derivativeVal, 
+              *lhs.derivativeFuncVal + func);
+    }
+
+    retVal = ScalarMatrixFunc<MT, ST>(
+                   lhs.functionVal + rhs.functionVal,
+                   lhs.derivativeVal + rhs.derivativeVal,
+                   *lhs.derivativeFuncVal+ *rhs.derivativeFuncVal);
+
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, operator+)
+
+    return retVal;
   }
 
   /**
@@ -166,26 +181,38 @@ namespace AMD {
   template <class MT, class ST>
   ScalarMatrixFunc<MT, ST> operator-(const ScalarMatrixFunc<MT, ST> &lhs,
     const ScalarMatrixFunc<MT, ST> &rhs) {
+
+    ScalarMatrixFunc<MT, ST> retVal;
     AMD_START_TRY_BLOCK()
-      if (lhs.derivativeVal.getNumRows() != rhs.derivativeVal.getNumRows() ||
-        lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
-        throw exception_generic_impl("AMD::operator-", 
-          "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
 
-      if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
-        return(ScalarMatrixFunc<MT, ST>(lhs.functionVal - rhs.functionVal,
-          -rhs.derivativeVal, -(*rhs.derivativeFuncVal)));
-      }
-      if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
-        return(ScalarMatrixFunc<MT, ST>(lhs.functionVal - rhs.functionVal,
-          lhs.derivativeVal, *lhs.derivativeFuncVal));
-      }
+    if (lhs.derivativeVal.getNumRows() != rhs.derivativeVal.getNumRows() ||
+      lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
+      throw exception_generic_impl("AMD::operator-", 
+        "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
 
-      return(ScalarMatrixFunc<MT, ST>(lhs.functionVal - rhs.functionVal,
-        lhs.derivativeVal - rhs.derivativeVal,
-        *lhs.derivativeFuncVal - *rhs.derivativeFuncVal));
+    if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
+      retVal = ScalarMatrixFunc<MT, ST>(
+                  lhs.functionVal - rhs.functionVal,
+                  -rhs.derivativeVal, 
+                  -(*rhs.derivativeFuncVal));
+    }
+
+    if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
+      retVal = ScalarMatrixFunc<MT, ST>(
+              lhs.functionVal - rhs.functionVal,
+              lhs.derivativeVal, 
+              *lhs.derivativeFuncVal);
+    }
+
+    retVal =  ScalarMatrixFunc<MT, ST>(
+                   lhs.functionVal - rhs.functionVal,
+                   lhs.derivativeVal - rhs.derivativeVal,
+                   *lhs.derivativeFuncVal - *rhs.derivativeFuncVal);
+
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, operator-)
+    
+    return retVal;
   }
 
   // unary minus
@@ -229,26 +256,38 @@ namespace AMD {
   template <class MT, class ST>
   ScalarMatrixFunc<MT, ST> operator*(const ScalarMatrixFunc<MT, ST> &lhs,
     const ScalarMatrixFunc<MT, ST> &rhs) {
-    AMD_START_TRY_BLOCK()
-      if (lhs.derivativeVal.getNumRows() != rhs.derivativeVal.getNumRows() ||
-        lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
-        throw exception_generic_impl("AMD::operator*", 
-          "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
 
-      const ST& f = lhs.functionVal;
-      const ST& g = rhs.functionVal;
-      const MT& df = lhs.derivativeVal;
-      const MT& dg = rhs.derivativeVal;
-      if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
-        return(ScalarMatrixFunc<MT, ST>(f*g, f*dg, lhs*(*rhs.derivativeFuncVal)));
-      }
-      if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
-        return(ScalarMatrixFunc<MT, ST>(f*g, df*g, (*lhs.derivativeFuncVal)*rhs));
-      }
-      return(ScalarMatrixFunc<MT, ST>(f*g, f*dg + df*g,
-        lhs * (*rhs.derivativeFuncVal) + (*lhs.derivativeFuncVal)*rhs));
+    ScalarMatrixFunc<MT, ST> retVal;
+
+    AMD_START_TRY_BLOCK()
+
+    if (lhs.derivativeVal.getNumRows() != rhs.derivativeVal.getNumRows() ||
+      lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
+      throw exception_generic_impl("AMD::operator*", 
+        "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
+
+    const ST& f = lhs.functionVal;
+    const ST& g = rhs.functionVal;
+    const MT& df = lhs.derivativeVal;
+    const MT& dg = rhs.derivativeVal;
+    if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
+      retVal = ScalarMatrixFunc<MT, ST>
+            (f*g, f*dg, lhs*(*rhs.derivativeFuncVal));
+    }
+    if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
+      retVal = ScalarMatrixFunc<MT, ST>
+                      (f*g, df*g, (*lhs.derivativeFuncVal)*rhs);
+    }
+
+    retVal = ScalarMatrixFunc<MT, ST>(
+               f*g, 
+               f*dg + df*g,
+               lhs * (*rhs.derivativeFuncVal) + (*lhs.derivativeFuncVal)*rhs);
+
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, operator*)
+
+    return retVal;
   }
 
   /**
@@ -267,9 +306,11 @@ namespace AMD {
   template <class MT, class ST>
   ScalarMatrixFunc<MT,ST> operator*( const ST &lhs,
   const ScalarMatrixFunc<MT,ST> &rhs ) {
-  ScalarMatrixFunc<MT,ST> f(lhs,rhs.derivativeVal.getNumRows(),rhs.derivativeVal.getNumRows());
+  ScalarMatrixFunc<MT,ST>
+  f(lhs,rhs.derivativeVal.getNumRows(),rhs.derivativeVal.getNumRows());
   return(f*rhs);
   }
+
   */
   /**
    * @brief Operator overloading for "*".
@@ -288,7 +329,8 @@ namespace AMD {
   template <class MT, class ST>
   ScalarMatrixFunc<MT,ST> operator*( const ScalarMatrixFunc<MT,ST> &lhs,
   const ST &rhs) {
-  ScalarMatrixFunc<MT,ST> f(rhs,lhs.derivativeVal.getNumCols(),lhs.derivativeVal.getNumCols());
+      ScalarMatrixFunc<MT,ST>
+      f(rhs,lhs.derivativeVal.getNumCols(),lhs.derivativeVal.getNumCols());
   return(lhs*f);
   }
   */
@@ -307,25 +349,33 @@ namespace AMD {
   template <class MT, class ST>
   ScalarMatrixFunc<MT, ST> operator/(const ScalarMatrixFunc<MT, ST> &lhs,
     const ScalarMatrixFunc<MT, ST> &rhs) {
-    AMD_START_TRY_BLOCK()
-      if (lhs.derivativeVal.getNumRows() != rhs.derivativeVal.getNumRows() ||
-        lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
-        throw exception_generic_impl("AMD::operator/", 
-          "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
 
-      const ST& f = lhs.functionVal;
-      const ST& g = rhs.functionVal;
-      const MT& df = lhs.derivativeVal;
-      const MT& dg = rhs.derivativeVal;
-      if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
-        return(ScalarMatrixFunc<MT, ST>(f + g, (-f*dg) / (g*g)));
-      }
-      if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
-        return(ScalarMatrixFunc<MT, ST>(f + g, (df*g) / (g*g)));
-      }
-      return(ScalarMatrixFunc<MT, ST>(f + g, (df*g - f*dg) / (g*g)));
+    ScalarMatrixFunc<MT, ST> retVal;
+
+    AMD_START_TRY_BLOCK()
+
+    if (lhs.derivativeVal.getNumRows() != rhs.derivativeVal.getNumRows() ||
+      lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
+      throw exception_generic_impl("AMD::operator/", 
+        "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
+
+    const ST& f = lhs.functionVal;
+    const ST& g = rhs.functionVal;
+    const MT& df = lhs.derivativeVal;
+    const MT& dg = rhs.derivativeVal;
+    if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
+      retVal = ScalarMatrixFunc<MT, ST>(f + g, (-f*dg) / (g*g));
+    }
+    if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
+      retVal = ScalarMatrixFunc<MT, ST>(f + g, (df*g) / (g*g));
+    }
+
+    retVal = ScalarMatrixFunc<MT, ST>(f + g, (df*g - f*dg) / (g*g));
+
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, operator/)
+
+    return retVal;
   }
 }  /** namespace AMD */
 
