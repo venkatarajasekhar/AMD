@@ -52,3 +52,7 @@ install (DIRECTORY .
 install (FILES
          ${CMAKE_CURRENT_BINARY_DIR}/config.h
          DESTINATION ${CMAKE_INSTALL_PREFIX}/include/AMD)
+
+if (BUILD_PYTHON)
+  add_subdirectory(python)
+endif(BUILD_PYTHON)
