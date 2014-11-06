@@ -1,5 +1,4 @@
 build
-./presentation/build/
 *.aux
 *.log
 *.nav
@@ -7,3 +6,7 @@ build
 *.pdf
 *.snm
 *.toc
+*.db
+*.gz
+*.db
+*.vrb
