@@ -22,9 +22,20 @@
  */
 
 #include <string>
-
+#include "SymbolicMatrixMatlab.hpp"
+#include "MatrixAdaptor.hpp"
+#include "MatrixMatrixFunc.hpp"
+#include "SymbolicMatrixMatlab.hpp"
+#include "SymbolicMatrixMatlabHelper.hpp"
+#include "MatrixMatrixFuncHelper.hpp"
+typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
+typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
+typedef symbolic_adaptor_type::value_type symbolic_value_type;
+typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
+                              symbolic_value_type> SymbolicMMFunc;
+typedef AMD::ScalarMatrixFunc<symbolic_matrix_type,
+                              symbolic_value_type> SymbolicSMFunc;
 namespace AMD {
-    
   /**
    * @This function optimizing the both plus and minus operation
    * I believe there is no need to write a function for both plus and minus

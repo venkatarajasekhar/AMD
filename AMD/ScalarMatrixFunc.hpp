@@ -80,7 +80,7 @@ namespace AMD {
      * @param[in] n     Number of columns.
      */
     ScalarMatrixFunc(ST fVal, int m, int n)
-      : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m, n)),
+      : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m, n)), 
       isConst(true), derivativeFuncVal() { }
 
     /**
