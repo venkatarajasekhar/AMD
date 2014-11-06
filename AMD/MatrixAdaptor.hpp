@@ -177,13 +177,18 @@ struct MatrixAdaptor_t {
 }
 
 #include "SymbolicMatrixAdaptor.hpp"
+AMD::SymbolicMatrixMatlab symbolicIdentityMatrix("I");
+AMD::SymbolicMatrixMatlab symbolicZeroMatrix("0");
 
 #if AMD_HAVE_ELEMENTAL
   #include "ElementalMatrixAdaptor.hpp"
+  //elem::Matrix symbolicIdentityMatrix("I");
+  //elem::SymbolicMatrixMatlab symbolicIdentityMatrix("I");
 #endif
 
 #if AMD_HAVE_EIGEN
   #include "EigenMatrixAdaptor.hpp"
+
 #endif
 
 #endif /** MATRIX_ADAPTOR_HPP */

@@ -23,7 +23,8 @@
 
 #include <string>
 
-namespace AMD { 
+namespace AMD {
+    
   /**
    * @This function optimizing the both plus and minus operation
    * I believe there is no need to write a function for both plus and minus
@@ -39,8 +40,8 @@ namespace AMD {
     /* Case 1: If lhs or rhs or both are 0 matrix, we don't have compute 
      * lhs + rhs. 
      */
-    if (lhs.zeroResultFlag == 1) return rhs;
-    if (rhs.zeroResultFlag == 1) return lhs;
+    if (node.leftChild == symbolicZeroMatrix) return node.rightChild;
+    if (node.rightChild == symbolicZeroMatrix) return node.leftChild;
 
     /* Case 2: If lhs == -rhs, don't compute, return a zero matrix */
     /*TODO: I suggest we add negationFlag or cofficient  
@@ -48,12 +49,13 @@ namespace AMD {
     */
     /* Case 3: If lhs == rhs, return factor*lhs
      */
-    if (lhs == rhs){
-      /* Step 1: Create a new MatrixMatrixFunc */
-      MatrixMatrixFunc result = (lhs, false /*TODO: set cofficient to 2*/);
+    /*
+    if (node.leftChild == node.rightChild){
+       Step 1: Create a new MatrixMatrixFunc 
+      MatrixMatrixFunc result = (node.leftChild);
       return result;
     }
-
+     */
     /* No Optimization is done */
     return NULL;
   }
@@ -80,19 +82,31 @@ namespace AMD {
     /* Assume lhs and rhs pass the error checking part(diminsion match) */
     /* Case 1: If lhs or rhs or both are 0 matrix, we don't have compute 
      * lhs * rhs. */
-    if (lhs.zeroResultFlag ==1) return lhs;
-    if (rhs.zeroResultFlag ==1) return rhs;
+    if (node.leftChild == symbolicZeroMatrix) 
+      return node.leftChild;
+    if (node.rightChild == symbolicZeroMatrix)
+      return node.rightChild;
 
     /* Case 2: If lhs or rhs or both are identity matrix, we don't have compute 
      * lhs * rhs. */
-    if (lhs.identityInitialFlag == 1) return rhs;
-    if (rhs.identityInitialFlag == 1) return lhs;
+    if (node.leftChild == symbolicIdentityMatrix)
+      return node.rightChild;
+    if (node.rightChild == symbolicIdentityMatrix)
+      return node.leftChild;
+
 
     /* Case 3: If lhs == inv(rhs), we don't compute lhs * rhs. */
-    if (lhs == rhs || (rhs.inverseFlag + lhs.inverseFlag ==1)){ 
-      lhs.identityFlag = 1;
-      return lhs;
+    if (node.rightChild.opNum == INV){ 
+      if (node.rightChild.leftChild == node.leftChild){
+        return symbolicIdentityMatrix;
+      }
     }
+    if (node.leftChild.opNum == INV){
+      if (node.leftChild.leftChild == node.rightChild){
+        return symbolicIdentityMatrix;
+      }
+    }
+  
     /* Spelical case, lhs is orthonomal */
     //if (rhs == tranpose(lhs) && lhs is orthonomal) return eye; 
 
@@ -103,46 +117,6 @@ namespace AMD {
 
     /* No Optimization is done */
     return NULL; 
-
-    /** CASE 2 */
-    /* Case 1: If rhs is 0 or lhs is a zero matrix.
-     * then the result is simply a zero Martrix
-     */
-    if (rhs.FunctionVal == 0) {
-      lhs.zeroResultFlag = 1;
-      return lhs;
-    }
-    if (lhs.zeroResultFlag ==1) return lhs;
-
-    /* Case 2: If rhs is a 1 then we can ignore it */
-
-    /* TODO if (rhs is 1) return lhs; */
-
-    /* Case 3: If rhs < 0, we negate the matrix */
-    /*
-    if (rhs is -1){
-      set lhs's negate flag to 1
-      return lhs;
-    }
-    */
-    return NULL;
-
-    /** CASE 3 */
-    /**
-     * Case 1: If either left or right is a zero matrix,
-     * Return a zero matrix instead of acutally computing the result
-     */
-    if (lhs.zeroResultFlag == 1) return lhs;
-
-    if (rhs.zeroResultFlag == 1) return rhs;
-
-    /* Case 2: If either the left or right is identity 
-     * Return the other side instead of computing*/
-    if (lhs.identityFlag == 1 ) return rhs;
-
-    if (rhs.identityFlag == 1) return lfs;
-    
-    return NULL;
   }
 
 

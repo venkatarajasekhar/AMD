@@ -17,8 +17,7 @@ typedef AMD::ScalarMatrixFunc<symbolic_matrix_type,
 
 void testMultiplicationOptimizations() {
   symbolic_matrix_type X("A",ROW,COL);
-  SymbolicMMFunc fX(A,true); 
-
+  SymbolicMMFunc fX(A,true);
   SymbolicMMFunc fX_times_fX = fX*fX;
   SymbolicMMFunc fX_times_fX_optimized = AMD::multiplyOpt(fX_times_fX);
 }
