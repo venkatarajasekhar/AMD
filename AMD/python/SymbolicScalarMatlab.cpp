@@ -1,8 +1,8 @@
 /**
  * @file SymbolicScalarMatlab.cpp
- * @author pkambadu
+ * @author pkambadu, adromanova
  * 
- * Python bindings for SymbolicScalarMatlab object and helper functions.
+ * Python bindings for SymbolicScalarMatlab and helper functions.
  */
 
 #include <boost/python.hpp>
@@ -19,14 +19,30 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(print_overloads, print, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(println_overloads, println, 0, 1)
 
 /**
- * A function to export all the definitions for context object.
+ * A function to export SymbolicScalarMatrix and helper functions
  */
 void export_symbolicscalarmatlab () {
+ 
+  /**
+   * docstring
+   */
+  const char* symScalMat_docstring = 
+    "This class symbolically represents a scalar using "\
+    "an internal string representation."; 
+
+  const char* sqrt_docstring = 
+    "Compute (sqrt(a). " \
+    "If a is trace(X) then the return value will hold sqrt(trace(X)).\n" \
+    "Args:\n" \
+    "    a: symbolic argument passed to sqrt.\n" \
+    "Returns:\n" \
+    "    SymbolicScalarMatlab representaion of sqrt(a)";
 
   using namespace boost::python;
   using namespace AMD;
-
-  class_<SymbolicScalarMatlab>("symScalMat", init<>())
+  
+  // export SymbolicScalarMatlab
+  class_<SymbolicScalarMatlab>("symScalMat", symScalMat_docstring, init<>())
   	// constructors
     .def(init<std::string>())
     .def(init<double>())
@@ -34,18 +50,19 @@ void export_symbolicscalarmatlab () {
   	 * to avoid conflict with python built-in 'print' */
   	.def("Print", &SymbolicScalarMatlab::print, print_overloads())
   	.def("println", &SymbolicScalarMatlab::println, println_overloads())
-//    .def("copy", &SymbolicScalarMatlab::copy)   //TODO
-    // member variables converted to properties
-    .add_property("string", &SymbolicScalarMatlab::getString)
-    // overloaded operators
+    // export member variables as properties
+    .add_property("string", 
+                  &SymbolicScalarMatlab::getString, 
+                  "internal string representaion")
+    // export overloaded operators
     .def(self + self)   
     .def(self - self)  
     .def(self * self)  
     .def(self / self) 
   ;
 
-  //helper functions
-  def("sqrt", sqrt);
+  // export helper functions
+  def("sqrt", sqrt, sqrt_docstring);
 
 }
 

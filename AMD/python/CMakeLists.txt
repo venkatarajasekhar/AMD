@@ -1,9 +1,10 @@
 find_package(PythonLibs REQUIRED)
 
-include_directories (
+include_directories(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/AMD
     ${PYTHON_INCLUDE_DIRS}
+    ${AMD_BINARY_DIR} # for generated header files
 )
 
 set(AMD_SRCS
@@ -11,6 +12,7 @@ set(AMD_SRCS
     documentation.cpp
     SymbolicScalarMatlab.cpp
     SymbolicMatrixMatlab.cpp
+    ScalarMatrixFunc.cpp
 )
 
 add_library(AMD.so SHARED ${AMD_SRCS})
@@ -28,3 +30,4 @@ set_target_properties(
     OUTPUT_NAME "AMD.so"
     SOVERSION "${AMD_VERSION_MAJOR}.${AMD_VERSION_MINOR}"
 )
+

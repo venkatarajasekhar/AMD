@@ -29,7 +29,6 @@ namespace AMD {
    * variables representing matrices must already be defined.
    */
   struct SymbolicMatrixMatlab {
-  public:
     /** Default constructor giving X as the symbol name */
     SymbolicMatrixMatlab() : symbol("X"), nRows(1), nCols(1) {}
 
@@ -154,23 +153,23 @@ namespace AMD {
     friend SymbolicMatrixMatlab inv(const SymbolicMatrixMatlab& a);
     friend SymbolicMatrixMatlab transpose(const SymbolicMatrixMatlab& a);
     friend SymbolicMatrixMatlab diag(const SymbolicMatrixMatlab& a);
-    friend SymbolicMatrixMatlab elementwiseProduct(const SymbolicMatrixMatlab& a,
-      const SymbolicMatrixMatlab& b);
+    friend SymbolicMatrixMatlab elementwiseProduct
+        (const SymbolicMatrixMatlab& a, const SymbolicMatrixMatlab& b);
     friend SymbolicMatrixMatlab operator+(const SymbolicMatrixMatlab& a,
-      const SymbolicMatrixMatlab& b);
+                                          const SymbolicMatrixMatlab& b);
     friend SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a);
     friend SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a,
-      const SymbolicMatrixMatlab& b);
+                                          const SymbolicMatrixMatlab& b);
     friend SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a,
-      const SymbolicMatrixMatlab& b);
+                                          const SymbolicMatrixMatlab& b);
     friend SymbolicMatrixMatlab operator*(const SymbolicScalarMatlab& a,
-      const SymbolicMatrixMatlab& b);
+                                          const SymbolicMatrixMatlab& b);
     friend SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a,
-      const SymbolicScalarMatlab& b);
+                                          const SymbolicScalarMatlab& b);
     friend SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a,
-      const SymbolicScalarMatlab& b);
+                                          const SymbolicScalarMatlab& b);
 
-  private:
+    private:
     std::string symbol; /**< This is the internal string variable */
     int nRows;          /**< The number of SymbolicMatrixMatlab rows. */
     int nCols;          /**< The number of SymbolicMatrixMatlab columns. */
