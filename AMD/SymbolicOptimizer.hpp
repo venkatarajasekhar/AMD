@@ -44,7 +44,7 @@ namespace AMD {
    * @param lhs: The left child
    * @param rhs: The right child
    */
-  MatrixMatrixFunc<MT, ST> plusMinusOpt(const MatrixMatrixFunc<MT, ST> &node){
+  SymbolicMMFunc plusMinusOpt(const MatrixMatrixFunc<MT, ST> &node){
     /** "node" HAS LHS AND RHS --- YOU SHOULD BE ACCEPTING THE "node" */
 
     /* Assume lhs and rhs pass the error checking part(diminsion match) */
@@ -76,7 +76,7 @@ namespace AMD {
    * @param lhs: The left child
    * @param rhs: The right child
    */
-  MatrixMatrixFunc<MT, ST> multiplyOpt(const MatrixMatrixFunc<MT, ST> &node){
+  SymbolicMMFunc multiplyOpt(const MatrixMatrixFunc<MT, ST> &node){
     /** "node" HAS LHS AND RHS --- YOU SHOULD BE ACCEPTING THE "node" */
 
     /** THERE ARE 3 CASES HERE:
@@ -135,7 +135,7 @@ namespace AMD {
   * Notice thatfor a transpose inner node in the tree, it has only 1 child
   * @param node: The left child     
   */     
-  MatrixMatrixFunc<MT, ST> transOpt(const MatrixMatrixFunc<MT, ST> &node){   
+  SymbolicMMFunc transOpt(const MatrixMatrixFunc<MT, ST> &node){   
     /* Case 1: If node is eye or zero matrix, then there is no need to           
      * actually transpose it*/                                                  
     if (node.leftChild == symbolicIdentityMatrix) 
@@ -161,7 +161,7 @@ namespace AMD {
    * @param node: The left child      
    * */                                                                 
 
-  MatrixMatrixFunc<MT, ST> inverseOpt(const MatrixMatrixFunc<MT, ST> &node){    
+  SymbolicMMFunc<MT, ST> inverseOpt(const MatrixMatrixFunc<MT, ST> &node){    
     /* Assumption: node is invertible! */                                        
                                                                                 
     /*Case 1: If node is eye or zero matrix, then there is no need to            
