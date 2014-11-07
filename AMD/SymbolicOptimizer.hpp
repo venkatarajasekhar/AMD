@@ -44,15 +44,15 @@ namespace AMD {
    * @param lhs: The left child
    * @param rhs: The right child
    */
-  SymbolicMMFunc plusMinusOpt(const MatrixMatrixFunc<MT, ST> &node){
+  const SymbolicMMFunc plusMinusOpt(const SymbolicMMFunc &node){
     /** "node" HAS LHS AND RHS --- YOU SHOULD BE ACCEPTING THE "node" */
 
     /* Assume lhs and rhs pass the error checking part(diminsion match) */
     /* Case 1: If lhs or rhs or both are 0 matrix, we don't have compute 
      * lhs + rhs. 
      */
-    if (node.leftChild == symbolicZeroMatrix) return node.rightChild;
-    if (node.rightChild == symbolicZeroMatrix) return node.leftChild;
+    if (node.leftChild->value() == symbolicZeroMatrix) return node.rightChild;
+    if (node.rightChild->value() == symbolicZeroMatrix) return node.leftChild;
 
     /* Case 2: If lhs == -rhs, don't compute, return a zero matrix */
     /*TODO: I suggest we add negationFlag or cofficient  
@@ -76,7 +76,7 @@ namespace AMD {
    * @param lhs: The left child
    * @param rhs: The right child
    */
-  SymbolicMMFunc multiplyOpt(const MatrixMatrixFunc<MT, ST> &node){
+  SymbolicMMFunc multiplyOpt(const SymbolicMMFunc &node){
     /** "node" HAS LHS AND RHS --- YOU SHOULD BE ACCEPTING THE "node" */
 
     /** THERE ARE 3 CASES HERE:
@@ -107,13 +107,13 @@ namespace AMD {
 
 
     /* Case 3: If lhs == inv(rhs), we don't compute lhs * rhs. */
-    if (node.rightChild.opNum == INV){ 
-      if (node.rightChild.leftChild == node.leftChild){
+    if (node.rightChild->opNum == INV){
+      if (node.rightChild->leftChild == node.leftChild){
         return symbolicIdentityMatrix;
       }
     }
-    if (node.leftChild.opNum == INV){
-      if (node.leftChild.leftChild == node.rightChild){
+    if (node.leftChild->opNum == INV){
+      if (node.leftChild->leftChild == node.rightChild){
         return symbolicIdentityMatrix;
       }
     }
@@ -135,7 +135,7 @@ namespace AMD {
   * Notice thatfor a transpose inner node in the tree, it has only 1 child
   * @param node: The left child     
   */     
-  SymbolicMMFunc transOpt(const MatrixMatrixFunc<MT, ST> &node){   
+  SymbolicMMFunc transOpt(const SymbolicMMFunc &node){   
     /* Case 1: If node is eye or zero matrix, then there is no need to           
      * actually transpose it*/                                                  
     if (node.leftChild == symbolicIdentityMatrix) 
@@ -145,8 +145,8 @@ namespace AMD {
                                                                                 
     /* Case 2: If we are doing two transpose. Transpose(transpoe(A)). We        
      * simply take both transpose operation */                                  
-    if (node.leftChild.opNum == TRANSPOSE){   
-      return node.leftChild.leftChild;   
+    if (node.leftChild->opNum == TRANSPOSE){
+      return node.leftChild->leftChild;
     }          
     /* TODO: Case 3: We don't want to transpose a symmetric either */                 
     /*
@@ -161,7 +161,7 @@ namespace AMD {
    * @param node: The left child      
    * */                                                                 
 
-  SymbolicMMFunc<MT, ST> inverseOpt(const MatrixMatrixFunc<MT, ST> &node){    
+  SymbolicMMFunc inverseOpt(const SymbolicMMFunc &node){
     /* Assumption: node is invertible! */                                        
                                                                                 
     /*Case 1: If node is eye or zero matrix, then there is no need to            
@@ -182,7 +182,7 @@ namespace AMD {
 
 /* This function optimizing how to calcualte the determinant */               
 
-//  ScalarMatrixFunc<MT, ST> detOpt(const MatrixMatrixFunc<MT, ST> &node){        
+//  ScalarMatrixFunc<MT, ST> detOpt(const SymbolicMMFunc &node){        
     /* Case 1: If node is eye, return 1 */
   //  if (node.leftChild == symbolicIdentityMatrix ) {
     //  ScalarMatrixFunc<MT,ST> retValue()

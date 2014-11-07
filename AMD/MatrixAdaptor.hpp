@@ -177,6 +177,7 @@ struct MatrixAdaptor_t {
 }
 
 #include "SymbolicMatrixAdaptor.hpp"
+
 AMD::SymbolicMatrixMatlab symbolicIdentityMatrix("I");
 AMD::SymbolicMatrixMatlab symbolicZeroMatrix("0");
 
