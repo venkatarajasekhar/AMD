@@ -20,6 +20,28 @@
 
 namespace AMD {
 
+  static SymbolicScalarMatlab trace(const SymbolicMatrixMatlab& a);
+  static SymbolicScalarMatlab logdet(const SymbolicMatrixMatlab& a);
+  static SymbolicScalarMatlab fnorm(const SymbolicMatrixMatlab& a);
+  static SymbolicMatrixMatlab inv(const SymbolicMatrixMatlab& a);
+  static SymbolicMatrixMatlab transpose(const SymbolicMatrixMatlab& a);
+  static SymbolicMatrixMatlab diag(const SymbolicMatrixMatlab& a);
+  static SymbolicMatrixMatlab elementwiseProduct(const SymbolicMatrixMatlab& a, 
+                                                 const SymbolicMatrixMatlab& b);
+  static SymbolicMatrixMatlab operator+(const SymbolicMatrixMatlab& a,
+                                        const SymbolicMatrixMatlab& b);
+  static SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a);
+  static SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a,
+                                        const SymbolicMatrixMatlab& b);
+  static SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a,
+                                        const SymbolicMatrixMatlab& b);
+  static SymbolicMatrixMatlab operator*(const SymbolicScalarMatlab& a,
+                                        const SymbolicMatrixMatlab& b);
+  static SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a,
+                                        const SymbolicScalarMatlab& b);
+  static SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a,
+                                        const SymbolicScalarMatlab& b);
+
   /**
    * @brief This class represents a symbolic matrix using an internal
    * string represenation.  The string representation can be a variable
