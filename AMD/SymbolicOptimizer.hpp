@@ -28,6 +28,7 @@
 #include "SymbolicMatrixMatlab.hpp"
 #include "SymbolicMatrixMatlabHelper.hpp"
 #include "MatrixMatrixFuncHelper.hpp"
+
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
 typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
 typedef symbolic_adaptor_type::value_type symbolic_value_type;

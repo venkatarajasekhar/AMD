@@ -359,14 +359,14 @@ namespace AMD {
     /**
      * @brief  Get the matrix associated to this node.
      *
-     * @return The matxi associated to this node.
+     * @return The matrix associated with this node. Note this can only 
+     *         be used when have symbolic matrices. Else returning by 
+     *         value is ridiculuously expensive. FIXME.
      */
+    MT value() const { return(*matrixPtr); }
 
-    virtual MT value() const { return(*matrixPtr); }
-
-    // initial and result must point to existing MatrixTypes
     /**
-     * @brief Traversse the computational tree in post-order. Replace the matrix
+     * @brief Traverse the computational tree in post-order. Replace the matrix
      * as moving towards the leaf nodes(Reverse Mode) by applying different
      * specific callBackFunction to each node.
      *

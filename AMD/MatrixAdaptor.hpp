@@ -183,8 +183,6 @@ AMD::SymbolicMatrixMatlab symbolicZeroMatrix("0");
 
 #if AMD_HAVE_ELEMENTAL
   #include "ElementalMatrixAdaptor.hpp"
-  //elem::Matrix symbolicIdentityMatrix("I");
-  //elem::SymbolicMatrixMatlab symbolicIdentityMatrix("I");
 #endif
 
 #if AMD_HAVE_EIGEN
