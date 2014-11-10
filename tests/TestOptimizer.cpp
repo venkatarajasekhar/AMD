@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
   std::cout << "Testing matrix-product optimizations .... ";
   testMultiplicationOptimizations();
   std::cout << "DONE" << std::endl;
-
+/*
   std::cout << "Testing matrix-add optimizations .... ";
   testAdditionOptimizations();
   std::cout << "DONE" << std::endl;
@@ -80,6 +80,6 @@ int main(int argc, char** argv) {
 
   std::cout << "DONE" << std::endl;
   std::cout << "All tests passed." << std::endl;
-
+*/
   return(0);
 }

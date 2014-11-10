@@ -28,14 +28,16 @@
 #include "SymbolicMatrixMatlab.hpp"
 #include "SymbolicMatrixMatlabHelper.hpp"
 #include "MatrixMatrixFuncHelper.hpp"
-
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
 typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
 typedef symbolic_adaptor_type::value_type symbolic_value_type;
+AMD::SymbolicMatrixMatlab symbolicIdentityMatrix("I");
+AMD::SymbolicMatrixMatlab symbolicZeroMatrix("0");
 typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
-                              symbolic_value_type> SymbolicMMFunc;
-typedef AMD::ScalarMatrixFunc<symbolic_matrix_type,
-                              symbolic_value_type> SymbolicSMFunc;
+symbolic_value_type> SymbolicMMFunc;
+SymbolicMMFunc* symbolicIdentityMMFunc;
+SymbolicMMFunc* symbolicZeroMMFunc;
+
 namespace AMD {
   /**
    * @This function optimizing the both plus and minus operation
@@ -45,7 +47,7 @@ namespace AMD {
    * @param lhs: The left child
    * @param rhs: The right child
    */
-  SymbolicMMFunc* plusMinusOpt(const SymbolicMMFunc &node){
+  SymbolicMMFunc* plusMinusOpt(SymbolicMMFunc &node){
     /** "node" HAS LHS AND RHS --- YOU SHOULD BE ACCEPTING THE "node" */
 
     /* Assume lhs and rhs pass the error checking part(diminsion match) */
@@ -69,7 +71,7 @@ namespace AMD {
     }
      */
     /* No Optimization is done */
-    return NULL;
+    return &node;
   }
 
   /**
@@ -77,7 +79,7 @@ namespace AMD {
    * @param lhs: The left child
    * @param rhs: The right child
    */
-  SymbolicMMFunc* multiplyOpt(const SymbolicMMFunc &node){
+  SymbolicMMFunc* multiplyOpt(SymbolicMMFunc &node){
     /** "node" HAS LHS AND RHS --- YOU SHOULD BE ACCEPTING THE "node" */
 
     /** THERE ARE 3 CASES HERE:
@@ -128,7 +130,7 @@ namespace AMD {
      */
 
     /* No Optimization is done */
-    return NULL; 
+    return &node;
   }
 
 
@@ -136,7 +138,7 @@ namespace AMD {
   * Notice thatfor a transpose inner node in the tree, it has only 1 child
   * @param node: The left child     
   */     
-  SymbolicMMFunc* transOpt(const SymbolicMMFunc &node){   
+  SymbolicMMFunc* transOpt(SymbolicMMFunc &node){
     /* Case 1: If node is eye or zero matrix, then there is no need to           
      * actually transpose it*/                                                  
     if (node.leftChild->value() == symbolicIdentityMatrix) 
@@ -155,14 +157,14 @@ namespace AMD {
       do not transpose.  
       return;
     */
-    return NULL;
+    return &node;
   }
   /* This function optimizing the inverse operation.                            
    * Notice thatfor a inversion inner node in the tree, it has only 1 child
    * @param node: The left child      
    * */                                                                 
 
-  SymbolicMMFunc* inverseOpt(const SymbolicMMFunc &node){
+  SymbolicMMFunc* inverseOpt(SymbolicMMFunc &node){
     /* Assumption: node is invertible! */                                        
                                                                                 
     /*Case 1: If node is eye or zero matrix, then there is no need to            
@@ -178,7 +180,7 @@ namespace AMD {
       return;                                                                   
     }
     */
-    return NULL;
+    return &node;
   }
 
 /* This function optimizing how to calcualte the determinant */               
