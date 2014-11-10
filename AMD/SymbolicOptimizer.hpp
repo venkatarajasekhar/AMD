@@ -39,13 +39,13 @@ typedef AMD::ScalarMatrixFunc<symbolic_matrix_type,
 namespace AMD {
   /**
    * @This function optimizing the both plus and minus operation
-   * I believe there is no need to write a function for both plus and minus
+   * I believe there is no need to wrmiamdite a function for both plus and minus
    * because in fact they are the same. For minus we can pass the parameter 
    * as lhs and -rhs
    * @param lhs: The left child
    * @param rhs: The right child
    */
-  const SymbolicMMFunc plusMinusOpt(const SymbolicMMFunc &node){
+  SymbolicMMFunc* plusMinusOpt(const SymbolicMMFunc &node){
     /** "node" HAS LHS AND RHS --- YOU SHOULD BE ACCEPTING THE "node" */
 
     /* Assume lhs and rhs pass the error checking part(diminsion match) */
@@ -77,7 +77,7 @@ namespace AMD {
    * @param lhs: The left child
    * @param rhs: The right child
    */
-  SymbolicMMFunc multiplyOpt(const SymbolicMMFunc &node){
+  SymbolicMMFunc* multiplyOpt(const SymbolicMMFunc &node){
     /** "node" HAS LHS AND RHS --- YOU SHOULD BE ACCEPTING THE "node" */
 
     /** THERE ARE 3 CASES HERE:
@@ -94,28 +94,28 @@ namespace AMD {
     /* Assume lhs and rhs pass the error checking part(diminsion match) */
     /* Case 1: If lhs or rhs or both are 0 matrix, we don't have compute 
      * lhs * rhs. */
-    if (node.leftChild == symbolicZeroMatrix) 
+    if (node.leftChild->value() == symbolicZeroMatrix) 
       return node.leftChild;
-    if (node.rightChild == symbolicZeroMatrix)
+    if (node.rightChild->value() == symbolicZeroMatrix)
       return node.rightChild;
 
     /* Case 2: If lhs or rhs or both are identity matrix, we don't have compute 
      * lhs * rhs. */
-    if (node.leftChild == symbolicIdentityMatrix)
+    if (node.leftChild->value() == symbolicIdentityMatrix)
       return node.rightChild;
-    if (node.rightChild == symbolicIdentityMatrix)
+    if (node.rightChild->value() == symbolicIdentityMatrix)
       return node.leftChild;
 
 
     /* Case 3: If lhs == inv(rhs), we don't compute lhs * rhs. */
     if (node.rightChild->opNum == INV){
       if (node.rightChild->leftChild == node.leftChild){
-        return symbolicIdentityMatrix;
+        return symbolicIdentityMMFunc;
       }
     }
     if (node.leftChild->opNum == INV){
       if (node.leftChild->leftChild == node.rightChild){
-        return symbolicIdentityMatrix;
+        return symbolicIdentityMMFunc;
       }
     }
   
@@ -136,12 +136,12 @@ namespace AMD {
   * Notice thatfor a transpose inner node in the tree, it has only 1 child
   * @param node: The left child     
   */     
-  SymbolicMMFunc transOpt(const SymbolicMMFunc &node){   
+  SymbolicMMFunc* transOpt(const SymbolicMMFunc &node){   
     /* Case 1: If node is eye or zero matrix, then there is no need to           
      * actually transpose it*/                                                  
-    if (node.leftChild == symbolicIdentityMatrix) 
+    if (node.leftChild->value() == symbolicIdentityMatrix) 
       return node.leftChild;
-    if (node.leftChild == symbolicZeroMatrix)
+    if (node.leftChild->value() == symbolicZeroMatrix)
       return node.leftChild;
                                                                                 
     /* Case 2: If we are doing two transpose. Transpose(transpoe(A)). We        
@@ -162,14 +162,14 @@ namespace AMD {
    * @param node: The left child      
    * */                                                                 
 
-  SymbolicMMFunc inverseOpt(const SymbolicMMFunc &node){
+  SymbolicMMFunc* inverseOpt(const SymbolicMMFunc &node){
     /* Assumption: node is invertible! */                                        
                                                                                 
     /*Case 1: If node is eye or zero matrix, then there is no need to            
      * actually inverse it */                                                   
-    if (node.leftChild == symbolicIdentityMatrix) 
+    if (node.leftChild->value() == symbolicIdentityMatrix) 
       return node.leftChild;                                          
-    if (node.leftChild == symbolicZeroMatrix) 
+    if (node.leftChild->value() == symbolicZeroMatrix) 
       return node.leftChild;                                                   
     /*TODO: Case 2: node is orthonomal, then (inv)node = tranpose(node).
      * Compute         tranpose is cheaper than taking the inverse*/                            

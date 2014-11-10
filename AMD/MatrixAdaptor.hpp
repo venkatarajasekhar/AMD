@@ -175,12 +175,17 @@ struct MatrixAdaptor_t {
 };
 
 }
-
+#include "MatrixMatrixFunc.hpp"
 #include "SymbolicMatrixAdaptor.hpp"
-
+typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
+typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
+typedef symbolic_adaptor_type::value_type symbolic_value_type;
 AMD::SymbolicMatrixMatlab symbolicIdentityMatrix("I");
 AMD::SymbolicMatrixMatlab symbolicZeroMatrix("0");
-
+typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
+                     symbolic_value_type> SymbolicMMFunc;
+SymbolicMMFunc* symbolicIdentityMMFunc;
+SymbolicMMFunc* symbolicZeroMMFunc;
 #if AMD_HAVE_ELEMENTAL
   #include "ElementalMatrixAdaptor.hpp"
 #endif
