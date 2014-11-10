@@ -6,12 +6,17 @@
  */
 
 #include <boost/python.hpp>
+#include "Exception.hpp"
 
 namespace AMD { namespace python {
 
 extern void export_symbolicscalarmatlab();
 
 extern void export_symbolicmatrixmatlab();
+
+extern void export_scalarmatrixfunc();
+
+extern void translate_exception_generic_impl(exception_generic_impl const& e);
 
 extern const char* module_docstring;
 
@@ -29,7 +34,9 @@ BOOST_PYTHON_MODULE(AMD)
 
   AMD::python::export_symbolicscalarmatlab();
   AMD::python::export_symbolicmatrixmatlab();
-
+  AMD::python::export_scalarmatrixfunc();
+  register_exception_translator<AMD::exception_generic_impl>(
+      &translate_exception_generic_impl);
 }
 
 } } /* namespace AMD::python */

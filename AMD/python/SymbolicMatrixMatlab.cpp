@@ -19,7 +19,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(print_overloads, print, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(println_overloads, println, 0, 1)
 
 /**
- * A function to export symbolicMatrixmatlab and helper functions.
+ * A function to export SymbolicMatrixMatlab and helper functions.
  */
 void export_symbolicmatrixmatlab () {
 
@@ -114,7 +114,7 @@ void export_symbolicmatrixmatlab () {
     .staticmethod("eye")
     .def("zeros", &SymbolicMatrixMatlab::zeros, zeros_docstring)
     .staticmethod("zeros")
-    // export member variables as properties
+    // export data members as properties
     .add_property("string",  
                   &SymbolicMatrixMatlab::getString, 
                   "internal string representaiton")

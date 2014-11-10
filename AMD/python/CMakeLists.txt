@@ -10,6 +10,7 @@ include_directories(
 set(AMD_SRCS
     module.cpp
     documentation.cpp
+    Exception.cpp
     SymbolicScalarMatlab.cpp
     SymbolicMatrixMatlab.cpp
     ScalarMatrixFunc.cpp
