@@ -19,6 +19,7 @@
 #include <assert.h>
 #include "boost/shared_ptr.hpp"
 #include "boost/make_shared.hpp"
+#include "boost/variant.hpp"
 #include <AMD/AMD.hpp>
 #include <stack>
 #include <vector>
@@ -395,45 +396,51 @@ boost::shared_ptr<SymbolicSMFunc> Calculator::computeSingleSMF(std::vector<std::
                               int Row, 
                               int Col) {
   int i; 
-  std::stack<boost::shared_ptr<SymbolicMMFunc> > MMFStack;
+  std::stack<boost::variant<boost::shared_ptr<SymbolicSMFunc>,
+                            boost::shared_ptr<SymbolicMMFunc> > > MMFStack;
   int size = str.size();
   
   boost::shared_ptr<SymbolicSMFunc> func;
   for (i = 0; i < size; i++) {
-    if(str[i].size() == 1 && isupper(str[i][0])) {
-      MMFStack.push(matrixFuncs[str[i][0]-'A']);
+    if (str[i].size() == 1 && isupper(str[i][0])) {
+      boost::shared_ptr<SymbolicMMFunc> mmfunc = matrixFuncs[str[i][0]-'A'];
+      MMFStack.push(mmfunc);
     } else 
     if (str[i] == "+") {
-      boost::shared_ptr<SymbolicMMFunc> f1;
-      f1 = MMFStack.top();
-      MMFStack.pop();
 
+      boost::shared_ptr<SymbolicMMFunc> f1;
+      f1 = boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top());
+      MMFStack.pop();
+            
       boost::shared_ptr<SymbolicMMFunc> f2;
-      f2 = MMFStack.top();
+      f2 = boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top());
       MMFStack.pop();
 
       boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc((*f2)+(*f1)));
       MMFStack.push(f3);
+
+
     } else 
     if (str[i] == "-") {
       boost::shared_ptr<SymbolicMMFunc> f1;
-      f1 = MMFStack.top();
+      f1 = boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top());
       MMFStack.pop();
-
+            
       boost::shared_ptr<SymbolicMMFunc> f2;
-      f2 = MMFStack.top();
+      f2 = boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top());
       MMFStack.pop();
 
       boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc((*f2)-(*f1)));
       MMFStack.push(f3);
       } else 
     if (str[i] == "*") {
+      
       boost::shared_ptr<SymbolicMMFunc> f1;
-      f1 = MMFStack.top();
+      f1 = boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top());
       MMFStack.pop();
-
+            
       boost::shared_ptr<SymbolicMMFunc> f2;
-      f2 = MMFStack.top();
+      f2 = boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top());
       MMFStack.pop();
 
       boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc((*f2)*(*f1)));
@@ -441,19 +448,19 @@ boost::shared_ptr<SymbolicSMFunc> Calculator::computeSingleSMF(std::vector<std::
     } else 
     if (str[i] == ".*") {
       boost::shared_ptr<SymbolicMMFunc> f1;
-      f1 = MMFStack.top();
+      f1 = boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top());
       MMFStack.pop();
-
+            
       boost::shared_ptr<SymbolicMMFunc> f2;
-      f2 = MMFStack.top();
+      f2 = boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top());
       MMFStack.pop();
 
       boost::shared_ptr<SymbolicMMFunc> f3(new SymbolicMMFunc(elementwiseProduct(*f2, *f1)));
       MMFStack.push(f3);
-      } else 
+    } else 
     if (str[i] == "inv") {
       boost::shared_ptr<SymbolicMMFunc> f1;
-      f1 = MMFStack.top();
+      f1 = boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top());
       MMFStack.pop();
 
       boost::shared_ptr<SymbolicMMFunc> f2(new SymbolicMMFunc(inv(*f1)));
@@ -461,23 +468,36 @@ boost::shared_ptr<SymbolicSMFunc> Calculator::computeSingleSMF(std::vector<std::
     } else 
     if (str[i] == "transpose") {
       boost::shared_ptr<SymbolicMMFunc> f1;
-      f1 = MMFStack.top();
+      f1 = boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top());
       MMFStack.pop();
 
       boost::shared_ptr<SymbolicMMFunc> f2(new SymbolicMMFunc(transpose(*f1)));
       MMFStack.push(f2);
-    } else {
+      } else {
       //exception - parsing_exception
       std::cout << "Incorrect Input" << std::endl;
       exit(-1);
     }
-  }
+    
+  } 
   if (SMFtype == 1) {
-    func = boost::make_shared<SymbolicSMFunc>(trace(*MMFStack.top()));
+    if ((MMFStack.top()).type() == typeid(boost::shared_ptr<SymbolicMMFunc>))
+      func = boost::make_shared<SymbolicSMFunc>(trace(*boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top())));
+    else
+      {
+        std::cerr << "ERROR INCORRECT INPUT" << std::endl;
+        exit(-1);
+      }
     MMFStack.pop();
   } else 
   if (SMFtype == 2) {
-    func = boost::make_shared<SymbolicSMFunc>(logdet(*MMFStack.top()));
+    if ((MMFStack.top()).type() == typeid(boost::shared_ptr<SymbolicMMFunc>))
+      func = boost::make_shared<SymbolicSMFunc>(logdet(*boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top())));
+    else
+      {
+        std::cerr << "ERROR INCORRECT INPUT" << std::endl;
+        exit(-1);
+      }
     MMFStack.pop();
   } else {
     //exception - parsing_exception
@@ -598,14 +618,23 @@ int main(int argc, char** argv) {
   int row;
   int col;
   int i; 
+
+  bool testMode = false;
   if ( argc <=1) {
     std::cout << "./SymbolicCalculator 'express' row=? col=?" << std::endl;
+    std::cout << "or" << std::endl;
+    std::cout << "./SymbolicCalculator examples" << std::endl;
     return -1;
   }
   if (argc == 2) {
-    str = argv[1];
-    row = 4;
-    col = 4;
+    str = argv[1]; 
+    if (str == "examples") {
+      testMode = true;
+    }
+    else { 
+      row = 4;
+      col = 4;
+    }
   } else 
   if (argc == 4) {
     str = argv[1];
@@ -620,11 +649,41 @@ int main(int argc, char** argv) {
     return -1;
   }
   
+  if (testMode) {
+    std::vector<std::string> testsInput;
+
+    //valid tests
+    testsInput.push_back("trace(X)");
+    testsInput.push_back("trace(S*X)");;
+    testsInput.push_back("logdet(X*transpose(S*X))");
+    testsInput.push_back("2*logdet(X+A)");
+    testsInput.push_back("d*trace(X) + 3*logdet(X*transpose(X))*trace(inv(X)+X)+d");
+
+    //invalid tests
+    /*
+    testsInput.push_back("trace(amd)");
+    testsInput.push_back("trc(X)");
+    testsInput.push_back("logdet((X+X)");
+    testsInput.push_back("trace(X)(");
+    testsInput.push_back("X+trace(X)");
+    */
+
+    for (std::vector<std::string>::iterator s = testsInput.begin();
+         s != testsInput.end();s++) {
+      AMD::Calculator cal(*s);
+      std::cout << "Expression: " << *s << std::endl;
+      std::cout << "Function:   " << cal.functionStr() << std::endl;
+      std::cout << "Derivative: " << cal.derivativeStr() << std::endl;
+      std::cout << std::endl;
+    }
+    return 0;
+  }
   AMD::Calculator cal(str, row, col);
   std::cout << "Function:   " << cal.functionStr() << std::endl;
   std::cout << "Derivative: " << cal.derivativeStr() << std::endl;
-  //std::cout << "MMF: " << cal.getComputationalTree()->derivativeFuncVal->matrixPtr->getString() << std::endl;
+  std::cout << "MMF: " << cal.getComputationalTree()->derivativeFuncVal->matrixPtr->getString() << std::endl;
   //std::cout << cal.getComputationalTree()->functionVal.getString() << std::endl;
+  
   return 0;
 }
 
