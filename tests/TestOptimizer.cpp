@@ -20,7 +20,7 @@ void testMultiplicationOptimizations() {
   symbolic_matrix_type X("A",ROW,COL);
   SymbolicMMFunc fX(X,true);
   SymbolicMMFunc fX_times_fX = fX*fX;
-  SymbolicMMFunc fX_times_fX_optimized = AMD::multiplyOpt(fX_times_fX);
+  SymbolicMMFunc* fX_times_fX_optimized = AMD::multiplyOpt(fX_times_fX);
 }
 
 void testAdditionOptimizations() {
@@ -28,7 +28,7 @@ void testAdditionOptimizations() {
   SymbolicMMFunc fX(X,true);
 
   SymbolicMMFunc fX_plus_fX = fX+fX;
-  SymbolicMMFunc fX_plus_fX_optimized = AMD::plusMinusOpt(fX_plus_fX);
+  SymbolicMMFunc* fX_plus_fX_optimized = AMD::plusMinusOpt(fX_plus_fX);
 }
 
 void testSubtractionOptimizations() {
@@ -36,7 +36,7 @@ void testSubtractionOptimizations() {
   SymbolicMMFunc fX(X,true);
 
   SymbolicMMFunc fX_minus_fX = fX-fX;
-  SymbolicMMFunc fX_minus_fX_optimized = AMD::plusMinusOpt(fX_minus_fX);
+  SymbolicMMFunc* fX_minus_fX_optimized = AMD::plusMinusOpt(fX_minus_fX);
 }
 
 void testTransposeOptimizations() {
@@ -44,7 +44,7 @@ void testTransposeOptimizations() {
   SymbolicMMFunc fX(X,true);
 
   SymbolicMMFunc trans_of_trans_of_fX = transpose(transpose(fX));
-  SymbolicMMFunc trans_of_trans_of_fX_optimized = 
+  SymbolicMMFunc* trans_of_trans_of_fX_optimized = 
                              AMD::transOpt(trans_of_trans_of_fX);
 }
 
@@ -53,7 +53,7 @@ void testInverseOptimizations() {
   SymbolicMMFunc fX(X,true);
 
   SymbolicMMFunc inv_of_inv_of_fX = inv(inv(fX));
-  SymbolicMMFunc inv_of_inv_of_fX_optimized = AMD::invOpt(inv_of_inv_of_fX);
+  SymbolicMMFunc* inv_of_inv_of_fX_optimized = AMD::inverseOpt(inv_of_inv_of_fX);
 }
 
 
