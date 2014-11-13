@@ -54,7 +54,7 @@ namespace AMD {
     /* Case 1: If lhs or rhs or both are 0 matrix, we don't have compute 
      * lhs + rhs. 
      */
-    if (node.leftChild ==null || node.rightChild == null) return &node;
+    if (node.leftChild ==NULL || node.rightChild == NULL) return &node;
     if (node.leftChild->value() == symbolicZeroMatrix) return node.rightChild;
     if (node.rightChild->value() == symbolicZeroMatrix) return node.leftChild;
 
@@ -94,7 +94,7 @@ namespace AMD {
      */  
     
     /* CASE A Matrix * Matrix */
-    if (node.leftChild != null && node.rightChild != null){
+    if (node.leftChild != NULL && node.rightChild != NULL){
         /* Case 1: If lhs or rhs or both are 0 matrix, we don't have compute
          * lhs * rhs. */
       if (node.leftChild->value() == symbolicZeroMatrix)
@@ -123,10 +123,10 @@ namespace AMD {
       }
     }
     /* Case B: Matrix * Scalar */
-    else if(node.leftChild != null && node.scalarChild != null){
+    else if(node.leftChild != NULL && node.scalarChild != NULL){
         /* TBD */
     }
-    else if(node.rightChild !=null && node.scalarChild != null){
+    else if(node.rightChild !=NULL && node.scalarChild != NULL){
         /* TBD */
     }
     /* Spelical case, lhs is orthonomal */
@@ -149,7 +149,7 @@ namespace AMD {
   SymbolicMMFunc* transOpt(SymbolicMMFunc &node){
     /* Case 1: If node is eye or zero matrix, then there is no need to           
      * actually transpose it*/
-    if (node.leftChild == null) return &node;
+    if (node.leftChild == NULL) return &node;
     if (node.leftChild->value() == symbolicIdentityMatrix) 
       return node.leftChild;
     if (node.leftChild->value() == symbolicZeroMatrix)
@@ -158,8 +158,8 @@ namespace AMD {
     /* Case 2: If we are doing two transpose. Transpose(transpoe(A)). We        
      * simply take both transpose operation */                                  
     if (node.leftChild->opNum == TRANSPOSE){
-      if(node.leftChild->leftChild!=null)return node.leftChild->leftChild;
-      else if(node.leftChild->rightChild!=null) return node.leftChild->rightChild;
+      if(node.leftChild->leftChild!=NULL)return node.leftChild->leftChild;
+      else if(node.leftChild->rightChild!=NULL) return node.leftChild->rightChild;
     }          
     /* TODO: Case 3: We don't want to transpose a symmetric either */                 
     /*
@@ -176,7 +176,7 @@ namespace AMD {
 
   SymbolicMMFunc* inverseOpt(SymbolicMMFunc &node){
     /* Assumption: if node exists then it is invertible! */
-    if (node.leftChild == null) return &node;
+    if (node.leftChild == NULL) return &node;
     /*Case 1: If node is eye or zero matrix, then there is no need to            
      * actually inverse it */                                                   
     if (node.leftChild->value() == symbolicIdentityMatrix) 
@@ -186,8 +186,8 @@ namespace AMD {
       /* Case 2: If we are doing two transpose. Transpose(transpoe(A)). We
        * simply take both transpose operation */
     if (node.leftChild->opNum == INV){
-      if(node.leftChild->leftChild!=null)return node.leftChild->leftChild;
-      else if(node.leftChild->rightChild!=null) return node.leftChild->rightChild;
+      if(node.leftChild->leftChild!=NULL)return node.leftChild->leftChild;
+      else if(node.leftChild->rightChild!=NULL) return node.leftChild->rightChild;
     }
     /*TODO: Case 2: node is orthonomal, then (inv)node = tranpose(node).
      * Compute         tranpose is cheaper than taking the inverse*/                            
