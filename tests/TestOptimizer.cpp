@@ -19,8 +19,11 @@ static int ROW = 4, COL = 4;
 void testMultiplicationOptimizations() {
   symbolic_matrix_type X("A",ROW,COL);
   SymbolicMMFunc fX(X,true);
-  SymbolicMMFunc fX_times_fX = fX*fX;
-  SymbolicMMFunc* fX_times_fX_optimized = AMD::multiplyOpt(fX_times_fX);
+
+  SymbolicMMFunc fX_times_zero = fX*symbolicZeroMMFunc;
+  SymbolicMMFunc* fX_times_zero_optimized = AMD::multiplyOpt(fX_times_zero);
+  assert(fX_times_zero_optimized == symbolicZeroMMFunc);
+  
 }
 
 void testAdditionOptimizations() {

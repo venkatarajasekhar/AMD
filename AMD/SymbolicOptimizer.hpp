@@ -35,8 +35,8 @@ AMD::SymbolicMatrixMatlab symbolicIdentityMatrix("I");
 AMD::SymbolicMatrixMatlab symbolicZeroMatrix("0");
 typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
 symbolic_value_type> SymbolicMMFunc;
-SymbolicMMFunc* symbolicIdentityMMFunc;
-SymbolicMMFunc* symbolicZeroMMFunc;
+SymbolicMMFunc symbolicIdentityMMFunc(symbolicIdentityMatrix,true);
+SymbolicMMFunc symbolicZeroMMFunc(symbolicZeroMatrix,true);
 
 namespace AMD {
   /**
@@ -113,12 +113,12 @@ namespace AMD {
     /* Case 3: If lhs == inv(rhs), we don't compute lhs * rhs. */
       if (node.rightChild->opNum == INV){
         if (node.rightChild->leftChild == node.leftChild){
-          return symbolicIdentityMMFunc;
+          return &symbolicIdentityMMFunc;
         }
       }
       if (node.leftChild->opNum == INV){
         if (node.leftChild->leftChild == node.rightChild){
-          return symbolicIdentityMMFunc;
+          return &symbolicIdentityMMFunc;
         }
       }
     }
