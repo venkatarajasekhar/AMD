@@ -17,7 +17,7 @@ static int ROW = 4, COL = 4;
 
 
 void testMultiplicationOptimizations() {
-  symbolic_matrix_type X("A",ROW,COL);
+  symbolic_matrix_type X("A");
   SymbolicMMFunc fX(X,true);
 
   SymbolicMMFunc fX_times_zero = fX*symbolicZeroMMFunc;
