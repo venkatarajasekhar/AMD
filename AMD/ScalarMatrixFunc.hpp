@@ -11,7 +11,11 @@
  * in the computational tree. Currently the program can
  * compute derivates for Scalar-Matrix Function "trace" and "logdet".
  **/
-
+/* Known bugs:
+- Derivative of * over two constant matrices doesn't work:
+      Quickfix: Ignore
+      Properfix: Create proper zero matrix
+*/
 #include <string>
 #include <cstdio>
 #include <iostream>
@@ -270,20 +274,24 @@ namespace AMD {
     const ST& g = rhs.functionVal;
     const MT& df = lhs.derivativeVal;
     const MT& dg = rhs.derivativeVal;
-    if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
+    
+    if (lhs.isConst && rhs.isConst) {
+      //TODO
+    }
+    else if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
       retVal = ScalarMatrixFunc<MT, ST>
             (f*g, f*dg, lhs*(*rhs.derivativeFuncVal));
     }
-    if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
+    else if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
       retVal = ScalarMatrixFunc<MT, ST>
                       (f*g, df*g, (*lhs.derivativeFuncVal)*rhs);
     }
-
+    else {
     retVal = ScalarMatrixFunc<MT, ST>(
                f*g, 
                f*dg + df*g,
                lhs * (*rhs.derivativeFuncVal) + (*lhs.derivativeFuncVal)*rhs);
-
+    }
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, operator*)
 

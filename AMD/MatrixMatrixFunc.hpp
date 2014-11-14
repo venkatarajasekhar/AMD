@@ -11,7 +11,14 @@
  * derivatives is performed by traversing the computation tree in the reverse
  * mode.
  */
-
+/* Known bugs:
+   - Constant matrices with dimension 0:
+      Quickfix: default dimension
+      Properfix: matrices "discover" their dimension from operations
+   - Derivative of a coperation over two constant matrices doesn't work:
+      Quickfix: Ignore
+      Properfix: Create zero matrix
+*/
 #include <iostream>
 #include <string>
 #include <cstdio>
@@ -146,15 +153,16 @@ namespace AMD {
           "Node is not a leaf", AMD_INTERNAL_NODE);
 
         // If is constant, call the callbackfunction for constant.
+      
+        varNumRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
+        varNumCols = MatrixAdaptorType::getNumCols(*(matrixPtr));
         if (isConst) {
           callBackFunc = constOp < MT, ST > ;
           opNum = CONST;
-          varNumRows = 0;
-          varNumCols = 0;
+          //varNumRows = 0;
+          //varNumCols = 0;
         }
         else {
-          varNumRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
-          varNumCols = MatrixAdaptorType::getNumCols(*(matrixPtr));
           callBackFunc = varOp < MT, ST > ;
           opNum = VAR;
         }
@@ -251,6 +259,7 @@ namespace AMD {
 
       isConst = lhs.isConst && rhs.isConst;
 
+    /*
       if (false == isConst) {
         varNumRows = MatrixAdaptorType::getNumRows(*matrixPtr);
         varNumCols = MatrixAdaptorType::getNumCols(*matrixPtr);
@@ -259,7 +268,10 @@ namespace AMD {
         varNumRows = 0;
         varNumCols = 0;
       }
-
+    */
+      varNumRows = MatrixAdaptorType::getNumRows(*matrixPtr);
+      varNumCols = MatrixAdaptorType::getNumCols(*matrixPtr);
+      
       /** TODO: Peder, why is there a deepCopy() here? */
       /** Because of temporaries */
       leftChild = new MatrixMatrixFunc < MT, ST > ;
@@ -279,6 +291,7 @@ namespace AMD {
       callBackFunc = cbf;
       isConst = lhs.isConst && rhs.isConst;
 
+      /*
       if (false == isConst) {
         varNumRows = MatrixAdaptorType::getNumRows(*matrixPtr);
         varNumCols = MatrixAdaptorType::getNumCols(*matrixPtr);
@@ -287,6 +300,9 @@ namespace AMD {
         varNumRows = 0;
         varNumCols = 0;
       }
+      */
+      varNumRows = MatrixAdaptorType::getNumRows(*matrixPtr);
+      varNumCols = MatrixAdaptorType::getNumCols(*matrixPtr);
 
       leftChild = lhsMMF;
       rightChild = rhsMMF;
@@ -407,10 +423,10 @@ namespace AMD {
         exception_generic_impl("AMD::gradientVec",
                                "Shared pointer is not valid anymore",
                                AMD_INVALID_SHARED_PTR);
-      if (false == b_constant_function) throw 
-        exception_generic_impl("AMD::gradientVec",
-                               "Node is not a variable function",
-                               AMD_CONSTANT_FN);
+      //if (true == b_constant_function) throw 
+      //  exception_generic_impl("AMD::gradientVec",
+      //                         "Node is not a variable function",
+      //                         AMD_CONSTANT_FN);
 
       /**
        * Only need to do something if the current function is not a

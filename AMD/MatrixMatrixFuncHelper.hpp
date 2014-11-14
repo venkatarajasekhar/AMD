@@ -190,7 +190,7 @@ namespace AMD {
     const MatrixMatrixFunc<MT, ST> &rhs,
     const OpType& opType,
     bool checkConst = true) {
-    if (false == lhs.isConst && false == rhs.isConst) {
+    if (true == lhs.isConst && true == rhs.isConst) {
       throw exception_generic_impl("AMD::binaryOpStandardCheck",
         "Both LHS and RHS are constant",
         AMD_CONSTANT_FN);
