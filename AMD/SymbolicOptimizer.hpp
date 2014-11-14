@@ -94,11 +94,9 @@ namespace AMD {
      */  
     
     /* CASE A Matrix * Matrix */
-    fprintf(stderr,"\nCalled the function\n");
     if (node.leftChild != NULL && node.rightChild != NULL){
         /* Case 1: If lhs or rhs or both are 0 matrix, we don't have compute
          * lhs * rhs. */
-      fprintf(stderr,"Passed Error Checking\n");
       if (node.leftChild->value() == symbolicZeroMatrix)
         return node.leftChild;
       if (node.rightChild->value() == symbolicZeroMatrix)
