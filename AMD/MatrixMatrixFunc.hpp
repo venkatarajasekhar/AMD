@@ -15,9 +15,7 @@
    - Constant matrices with dimension 0:
       Quickfix: default dimension
       Properfix: matrices "discover" their dimension from operations
-   - Derivative of a coperation over two constant matrices doesn't work:
-      Quickfix: Ignore
-      Properfix: Create zero matrix
+   
 */
 #include <iostream>
 #include <string>
