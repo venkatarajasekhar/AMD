@@ -84,9 +84,11 @@ namespace AMD {
      * @param[in] m     Number of rows.
      * @param[in] n     Number of columns.
      */
-    ScalarMatrixFunc(ST fVal, int m, int n)
-      : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m, n)),
-      isConst(true), derivativeFuncVal() { }
+    ScalarMatrixFunc(ST fVal, int m, int n) : 
+      functionVal(fVal), 
+      derivativeVal(MatrixAdaptorType::zeros(m, n)),
+      derivativeFuncVal(),
+      isConst(true){ }
 
     /**
      * @brief Operator overloading for "=". rhs and lhs are
