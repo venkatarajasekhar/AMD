@@ -40,14 +40,26 @@ SymbolicMMFunc symbolicZeroMMFunc(symbolicZeroMatrix,true);
 
 namespace AMD {
   /**
-   * @This function optimizing the both plus and minus operation
-   * I believe there is no need to wrmiamdite a function for both plus and minus
-   * because in fact they are the same. For minus we can pass the parameter 
-   * as lhs and -rhs
-   * @param lhs: The left child
-   * @param rhs: The right child
+   * @This function optimizing the minus operation
+   * @param node
    */
-  SymbolicMMFunc* plusMinusOpt(SymbolicMMFunc &node){
+  SymbolicMMFunc* minusOpt(SymbolicMMFunc &node){
+    if (node.leftChild->value() == symbolicZeroMatrix){ 
+      /* Create a negation version of rightChild */
+      node.opNum = NEGATION;
+      node.leftChild->value() = node.rightChild->value();
+      return &node;
+    }
+    if (node.rightChild->value() == symbolicZeroMatrix) 
+      return node.leftChild;
+    return &node;
+  }
+  /**
+   * @This function optimizing the minus operation
+   * @param node
+   */
+  
+  SymbolicMMFunc* plusOpt(SymbolicMMFunc &node){
     /** "node" HAS LHS AND RHS --- YOU SHOULD BE ACCEPTING THE "node" */
 
     /* Assume lhs and rhs pass the error checking part(diminsion match) */
