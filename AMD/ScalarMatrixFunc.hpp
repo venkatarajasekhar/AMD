@@ -45,8 +45,11 @@ namespace AMD {
      * @brief Constructor for a ScalarMatrixFunc object. The default
      * setting is a variable.
      */
-    ScalarMatrixFunc() : functionVal(), derivativeVal(), isConst(false),
-      derivativeFuncVal() { }
+    ScalarMatrixFunc() : 
+      functionVal(), 
+      derivativeVal(), 
+      derivativeFuncVal(), 
+      isConst(false) { }
 
     ~ScalarMatrixFunc() { }
 
@@ -57,9 +60,11 @@ namespace AMD {
      * @param[in] fVal ScalarType function variable.
      * @param[in] dVal MatrixType function variable.
      */
-    ScalarMatrixFunc(ST fVal, MT dVal)
-      : functionVal(fVal), derivativeVal(dVal), isConst(false),
-      derivativeFuncVal() { }
+    ScalarMatrixFunc(ST fVal, MT dVal) : 
+      functionVal(fVal), 
+      derivativeVal(dVal), 
+      derivativeFuncVal(), 
+      isConst(false) { }
 
     ScalarMatrixFunc(ST fVal, MT dVal, MMF dFuncVal)
       : functionVal(fVal), derivativeVal(dVal), isConst(false)
