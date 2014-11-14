@@ -8,11 +8,15 @@
 #include <boost/python.hpp>
 
 #include "ScalarMatrixFunc.hpp"
+#include "SymbolicScalarMatlab.hpp"
+#include "SymbolicMatrixMatlab.hpp"
 
 namespace AMD { namespace python {
 
   using namespace boost::python;
   using namespace AMD;
+  
+  //template <class MT, class ST> class ScalarMatrixFunc;
 
 /**
  * @brief A function to export ScalarMatrixFunc and helper functions. 
@@ -20,10 +24,7 @@ namespace AMD { namespace python {
  * @param[in] docstirng class description
  */
 template<class MT, class ST>
-void export_scalarmatrixfunc (std::string name, std::string docstring) {
- 
-  using namespace boost::python;
-  using namespace AMD;
+void export_scalarmatrixfunc(std::string name, std::string docstring) {
 
   /**
    * docstring
@@ -70,7 +71,7 @@ void export_scalarmatrixfunc (std::string name, std::string docstring) {
     .def(init<ST, int, int>(), const_constructor_docstring)
     // methods
     .def("initWithVariable", 
-        &ScalarMatrixFunc<MT, ST>::initWithAVariable, 
+        &ScalarMatrixFunc<MT, ST>::initWithVariable, 
         initWithVariable_docstring)
     // data members to properties
     .add_property("functionVal", 
@@ -94,7 +95,9 @@ void export_scalarmatrixfunc (std::string name, std::string docstring) {
 }
 
 void export_scalarmatrixfunc() {
-  // TODO call export_scalarmatrfunc to export 
+  export_scalarmatrixfunc<SymbolicScalarMatlab, SymbolicMatrixMatlab>(
+      "symScalMatFunc", 
+      "...");  
 }
 
 } } /* namespace AMD::python */
