@@ -106,21 +106,40 @@ void testSubtractionOptimizations() {
 }
 
 void testTransposeOptimizations() {
-  symbolic_matrix_type X("A",ROW,COL);
+  symbolic_matrix_type X("A");
   SymbolicMMFunc fX(X,true);
-
   SymbolicMMFunc trans_of_trans_of_fX = transpose(transpose(fX));
   SymbolicMMFunc* trans_of_trans_of_fX_optimized = 
                              AMD::transOpt(trans_of_trans_of_fX);
+  assert(trans_of_trans_of_fX == fX);
+  printf("\t-Passed trans(trans(X)) test\n");
+ 
+  SymbolicMMFunc trans_of_zero = transpose(symbolicZeroMMFunc); 
+  assert(trans_of_zero == symbolicZeroMMFunc);
+  printf("\t-Passed trans(0) test\n");
+  
+  SymbolicMMFunc trans_of_identity = transpose(symbolicIdentityMMFunc); 
+  assert(trans_of_identity == symbolicIdentityMMFunc);
+  printf("\t-Passed trans(I) test\n");
 }
 
 void testInverseOptimizations() {
-  symbolic_matrix_type X("A",ROW,COL);
+  symbolic_matrix_type X("A");
   SymbolicMMFunc fX(X,true);
-
   SymbolicMMFunc inv_of_inv_of_fX = inv(inv(fX));
   SymbolicMMFunc* inv_of_inv_of_fX_optimized = 
-                             AMD::inverseOpt(inv_of_inv_of_fX);
+                             AMD::transOpt(inv_of_inv_of_fX);
+  assert(inv_of_inv_of_fX == fX);
+  printf("\t-Passed inv(inv(X)) test\n");
+ 
+  SymbolicMMFunc inv_of_zero = inv(symbolicZeroMMFunc); 
+  assert(inv_of_zero == symbolicZeroMMFunc);
+  printf("\t-Passed inv(0) test\n");
+  
+  SymbolicMMFunc inv_of_identity = inv(symbolicIdentityMMFunc); 
+  assert(inv_of_identity == symbolicIdentityMMFunc);
+  printf("\t-Passed inv(I) test\n");
+
 }
 
 
@@ -136,15 +155,15 @@ int main(int argc, char** argv) {
   std::cout << "Testing matrix-minus optimizations ....\n";
   testSubtractionOptimizations();
   std::cout << "DONE" << std::endl;
-/*
-  std::cout << "Testing matrix-transpose optimizations .... ";
+
+  std::cout << "Testing matrix-transpose optimizations ....\n";
   testTransposeOptimizations();
   std::cout << "DONE" << std::endl;
 
-  std::cout << "Testing matrix-inverse optimizations .... ";
+  std::cout << "Testing matrix-inverse optimizations ....\n";
   testInverseOptimizations();
   std::cout << "DONE" << std::endl;
-
+/*
   std::cout << "DONE" << std::endl;
   std::cout << "All tests passed." << std::endl;
 */
