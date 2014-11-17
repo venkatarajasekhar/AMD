@@ -11,11 +11,7 @@
  * in the computational tree. Currently the program can
  * compute derivates for Scalar-Matrix Function "trace" and "logdet".
  **/
-/* Known bugs:
-- Derivative of * over two constant matrices doesn't work:
-      Quickfix: Ignore
-      Properfix: Create proper zero matrix
-*/
+
 #include <string>
 #include <cstdio>
 #include <iostream>
@@ -137,7 +133,11 @@ namespace AMD {
       throw exception_generic_impl("AMD::operator+", 
                                    "Matrices don't match up", 
                                    AMD_MISMATCHED_DIMENSIONS);
-
+    if (true == lhs.isConst && true == rhs.isConst) {
+      throw exception_generic_impl("AMD::operator+",
+        "Both LHS and RHS are constant",
+        AMD_CONSTANT_FN);
+    }
     if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
       // FIXME: I do not know why if I put only *rhs.derivativeFuncVal as the
       // third value for SMF constructor(looks like *rhs.derivativeFuncVal
@@ -153,7 +153,7 @@ namespace AMD {
                   func + *rhs.derivativeFuncVal);
     }
 
-    if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
+    else if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
       MT mat = MatrixAdaptor_t<MT>::zeros(lhs.derivativeVal.getNumRows(),
         lhs.derivativeVal.getNumCols());
       MatrixMatrixFunc<MT, ST> func(mat);
@@ -162,12 +162,12 @@ namespace AMD {
               lhs.derivativeVal, 
               *lhs.derivativeFuncVal + func);
     }
-
-    retVal = ScalarMatrixFunc<MT, ST>(
+    else {
+      retVal = ScalarMatrixFunc<MT, ST>(
                    lhs.functionVal + rhs.functionVal,
                    lhs.derivativeVal + rhs.derivativeVal,
                    *lhs.derivativeFuncVal+ *rhs.derivativeFuncVal);
-
+    }
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, operator+)
 
@@ -194,6 +194,11 @@ namespace AMD {
       throw exception_generic_impl("AMD::operator-", 
         "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
 
+    if (true == lhs.isConst && true == rhs.isConst) {
+      throw exception_generic_impl("AMD::operator-",
+        "Both LHS and RHS are constant",
+        AMD_CONSTANT_FN);
+    }
     if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
       retVal = ScalarMatrixFunc<MT, ST>(
                   lhs.functionVal - rhs.functionVal,
@@ -207,11 +212,12 @@ namespace AMD {
               lhs.derivativeVal, 
               *lhs.derivativeFuncVal);
     }
-
-    retVal =  ScalarMatrixFunc<MT, ST>(
-                   lhs.functionVal - rhs.functionVal,
-                   lhs.derivativeVal - rhs.derivativeVal,
-                   *lhs.derivativeFuncVal - *rhs.derivativeFuncVal);
+    else {
+      retVal =  ScalarMatrixFunc<MT, ST>(
+              lhs.functionVal - rhs.functionVal,
+              lhs.derivativeVal - rhs.derivativeVal,
+              *lhs.derivativeFuncVal - *rhs.derivativeFuncVal);
+    }
 
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, operator-)
@@ -232,11 +238,11 @@ namespace AMD {
    */
   template <class MT, class ST>
   ScalarMatrixFunc<MT, ST> operator-(const ScalarMatrixFunc<MT, ST> &lhs) {
-    /*
-    if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
-    return( ScalarMatrixFunc<MT,ST>( -lhs.functionVal,
-    lhs.derivativeVal ) );
-    }*/
+    if (true == lhs.isConst) {
+      throw exception_generic_impl("AMD::operator-",
+        "LHS is constant",
+        AMD_CONSTANT_FN);
+    }
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     MT lcTrans;
     MatrixAdaptorType::negation(lhs.derivativeVal, lcTrans);
@@ -269,16 +275,18 @@ namespace AMD {
       lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
       throw exception_generic_impl("AMD::operator*", 
         "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
-
+    
+    if (true == lhs.isConst && true == rhs.isConst) {
+      throw exception_generic_impl("AMD::operator*",
+        "Both LHS and RHS are constant",
+        AMD_CONSTANT_FN);
+    }
     const ST& f = lhs.functionVal;
     const ST& g = rhs.functionVal;
     const MT& df = lhs.derivativeVal;
     const MT& dg = rhs.derivativeVal;
     
-    if (lhs.isConst && rhs.isConst) {
-      //TODO
-    }
-    else if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
+    if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
       retVal = ScalarMatrixFunc<MT, ST>
             (f*g, f*dg, lhs*(*rhs.derivativeFuncVal));
     }
@@ -366,20 +374,25 @@ namespace AMD {
       lhs.derivativeVal.getNumCols() != rhs.derivativeVal.getNumCols())
       throw exception_generic_impl("AMD::operator/", 
         "Matrices don't match up", AMD_MISMATCHED_DIMENSIONS);
-
+     if (true == lhs.isConst && true == rhs.isConst) {
+      throw exception_generic_impl("AMD::Operator/",
+        "Both LHS and RHS are constant",
+        AMD_CONSTANT_FN);
+    }
     const ST& f = lhs.functionVal;
     const ST& g = rhs.functionVal;
     const MT& df = lhs.derivativeVal;
     const MT& dg = rhs.derivativeVal;
+    
     if (lhs.isConst) {// i.e. lhs.derivativeVal == zero
       retVal = ScalarMatrixFunc<MT, ST>(f + g, (-f*dg) / (g*g));
     }
     if (rhs.isConst) {// i.e. rhs.derivativeVal == zero
       retVal = ScalarMatrixFunc<MT, ST>(f + g, (df*g) / (g*g));
     }
-
-    retVal = ScalarMatrixFunc<MT, ST>(f + g, (df*g - f*dg) / (g*g));
-
+    else {
+      retVal = ScalarMatrixFunc<MT, ST>(f + g, (df*g - f*dg) / (g*g));
+    }
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_RETHROW(AMD, operator/)
 
