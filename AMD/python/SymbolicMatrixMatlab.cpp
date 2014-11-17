@@ -69,13 +69,14 @@ void export_symbolicmatrixmatlab () {
   const char* fnorm_docstring = 
     "Computes the scalar frobenius norm from the matrix a\n."
     "Args:\n" \
-    "    a: symbolic matrix argument\n" \
+    "    a: symbolic matrix\n" \
     "Returns:\n" \
     "    SymbolicScalarMatlab representaion of ||a||_F";
 
   const char* inv_docstring = 
     "Computes the inverse matrix of the matrix a.\n" \
     "Agrs:\n" \
+    "    a: symboliv matrix\n" \
     "    SymbolicMatrixMatlab  representaion of inv(a)";
 
   const char* transpose_docstring = 
@@ -110,9 +111,12 @@ void export_symbolicmatrixmatlab () {
   	.def("Print", &SymbolicMatrixMatlab::print, print_overloads())
   	.def("println", &SymbolicMatrixMatlab::println, println_overloads())
     // export static class functions
-    .def("eye", &SymbolicMatrixMatlab::eye, eye_docstring)
+    .def("eye", &SymbolicMatrixMatlab::eye, args("n"), eye_docstring)
     .staticmethod("eye")
-    .def("zeros", &SymbolicMatrixMatlab::zeros, zeros_docstring)
+    .def("zeros", 
+        &SymbolicMatrixMatlab::zeros, 
+        args("m", "n"), 
+        zeros_docstring)
     .staticmethod("zeros")
     // export data members as properties
     .add_property("string",  
@@ -134,13 +138,16 @@ void export_symbolicmatrixmatlab () {
   ;
 
   // export helper functions
-  def("trace", trace, trace_docstring);
-  def("logdet", logdet, logdet_docstring);
-  def("fnorm", fnorm, fnorm_docstring);
-  def("inv", inv, inv_docstring);
-  def("transpose", transpose, transpose_docstring);
-  def("diag", diag, diag_docstring);
-  def("elementwiseProduct", elementwiseProduct, elementwiseProduct_docstring);
+  def("trace", trace, args("a"), trace_docstring);
+  def("logdet", logdet, args("a"), logdet_docstring);
+  def("fnorm", fnorm, ("a"), fnorm_docstring);
+  def("inv", inv, args("a"), inv_docstring);
+  def("transpose", transpose, args("a"), transpose_docstring);
+  def("diag", diag, args("a"), diag_docstring);
+  def("elementwiseProduct", 
+      elementwiseProduct, 
+      args("a", "b"),
+      elementwiseProduct_docstring);
 
 }
 

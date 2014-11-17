@@ -16,7 +16,9 @@ extern void export_symbolicmatrixmatlab();
 
 extern void export_scalarmatrixfunc();
 
-extern void translate_exception_generic_impl(exception_generic_impl const& e);
+extern void export_matrixmatrixfunc();
+
+//extern void translate_exception_generic_impl(exception_generic_impl const& e);
 
 extern const char* module_docstring;
 
@@ -32,11 +34,13 @@ BOOST_PYTHON_MODULE(AMD)
   scope().attr("__copyright__") = "Copyright (C) 2014 Bloomberg";
   scope().attr("__license__") = "http://www.eclipse.org/legal/epl-v10.html";
 
-  AMD::python::export_symbolicscalarmatlab();
-  AMD::python::export_symbolicmatrixmatlab();
-  AMD::python::export_scalarmatrixfunc();
-  register_exception_translator<AMD::exception_generic_impl>(
+  export_symbolicscalarmatlab();
+  export_symbolicmatrixmatlab();
+  export_scalarmatrixfunc();
+  export_matrixmatrixfunc();
+ /* register_exception_translator<AMD::exception_generic_impl>(
       &translate_exception_generic_impl);
+*/
 }
 
 } } /* namespace AMD::python */

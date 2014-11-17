@@ -38,7 +38,7 @@ namespace AMD {
     DIAG
   };
 
-  std::string opName[] = { "none",
+  static std::string opName[] = { "none",
     "const",
     "var",
     "+",

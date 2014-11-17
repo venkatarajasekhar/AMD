@@ -18,9 +18,9 @@ namespace AMD { namespace python {
   using namespace AMD;
 
 /**
- * @brief A function to export ScalarMatrixFunc and helper functions. 
- * @param[in] name      class name 
- * @param[in] docstirng class description
+ * @brief A function template to export ScalarMatrixFunc and helper functions. 
+ * @param[in] name      exported class name 
+ * @param[in] docstirng exported class description
  */
 template<class MT, class ST>
 void export_scalarmatrixfunc(std::string name, std::string docstring) {
@@ -37,8 +37,6 @@ void export_scalarmatrixfunc(std::string name, std::string docstring) {
     "    Args:\n"\
     "        fVal: scalar type function variable\n"\
     "        dVal: matrix type function variable\n";
-
-  const char* MMF_val_constructor_docstring = ""; //TODO 
 
   const char* const_constructor_docstring = 
     "Constructor for constant functions\n"\
@@ -65,7 +63,6 @@ void export_scalarmatrixfunc(std::string name, std::string docstring) {
     // constructors
     .def(init<>(default_constructor_docstring))
     .def(init<ST, MT>(args("fVal", "dVal"), val_constructor_docstring)) 
-    .def(init<ST, MT, MatrixMatrixFunc<MT, ST> >(MMF_val_constructor_docstring))
     .def(init<ST, int, int>(args("fVal", "m", "n"),
                             const_constructor_docstring))
     // methods
@@ -98,13 +95,13 @@ void export_scalarmatrixfunc(std::string name, std::string docstring) {
     ;
 }
 
-/**
- *
- */
 void export_scalarmatrixfunc() {
+  // export symbolic
   export_scalarmatrixfunc<SymbolicMatrixMatlab, SymbolicScalarMatlab>(
-      "symScalMatrFunc", 
-      "...");  
+      "symSMF", 
+      "Symbolic Scalar-Matrix function. This object acts as the root node\n" \
+      "in the computational tree. Currently th e propgram can compute\n" \
+      "derivatives for Scalar-Matrix function \"trace\" and \"logdet\".");  
 }
 
 } } /* namespace AMD::python */

@@ -27,8 +27,18 @@ void export_symbolicscalarmatlab () {
    * docstring
    */
   const char* symScalMat_docstring = 
-    "This class symbolically represents a scalar using "\
+    "This class symbolically represents a scalar using " \
     "an internal string representation."; 
+
+  const char* str_constructor_docstring = 
+    "Constructor from string value.\n" \
+    "Args:\n" \
+    "    symbol: string representation of symbolic scalar.";
+
+  const char* double_constructor_docstring = 
+    "Constructor from double value.\n" \
+    "Agrs:\n" \
+    "    val: initializer for a symbol (to be converted to string)";
 
   const char* sqrt_docstring = 
     "Compute (sqrt(a). " \
@@ -44,8 +54,9 @@ void export_symbolicscalarmatlab () {
   // export SymbolicScalarMatlab
   class_<SymbolicScalarMatlab>("symScalMat", symScalMat_docstring, init<>())
   	// constructors
-    .def(init<std::string>())
-    .def(init<double>())
+    .def(init<>("Default constructor. Sets symbol name to 'x'"))
+    .def(init<std::string>(args("symbol"), str_constructor_docstring))
+    .def(init<double>(args("val"), double_constructor_docstring))
   	/* Attention to the capital 'P' in Print, such as *
   	 * to avoid conflict with python built-in 'print' */
   	.def("Print", &SymbolicScalarMatlab::print, print_overloads())
@@ -62,7 +73,7 @@ void export_symbolicscalarmatlab () {
   ;
 
   // export helper functions
-  def("sqrt", sqrt, sqrt_docstring);
+  def("sqrt", sqrt, args("a"), sqrt_docstring);
 
 }
 

@@ -14,6 +14,7 @@ set(AMD_SRCS
     SymbolicScalarMatlab.cpp
     SymbolicMatrixMatlab.cpp
     ScalarMatrixFunc.cpp
+    MatrixMatrixFunc.cpp
 )
 
 add_library(AMD.so SHARED ${AMD_SRCS})
