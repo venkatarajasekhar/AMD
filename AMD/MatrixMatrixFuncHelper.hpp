@@ -329,12 +329,12 @@ namespace AMD {
         AMD_NULL_PTR);
     if (NULL != node->leftChild || NULL != node->rightChild)
       throw exception_generic_impl("AMD::constOp",
-      "Left and right children not NULL",
+      "Left or right children are not NULL",
       AMD_INTERNAL_NODE);
-    if (false == node->isConst &&
-      CONST == node->opNum &&
-      0 == node->varNumRows &&
-      0 == node->varNumCols)
+    if (false == node->isConst ||
+      CONST != node->opNum ||
+      0 != node->varNumRows ||
+      0 != node->varNumCols)
       throw exception_generic_impl("AMD::constOp",
       "Node is not a constant",
       AMD_VARIABLE_FN);
@@ -381,13 +381,13 @@ namespace AMD {
         AMD_NULL_PTR);
     if (NULL != node->leftChild || NULL != node->rightChild)
       throw exception_generic_impl("AMD::varOp",
-      "Left and right children not NULL",
+      "Left or right children are not NULL",
       AMD_INTERNAL_NODE);
 
-    if (true == node->isConst &&
-      VAR == node->opNum &&
-      0 <= node->varNumRows &&
-      0 <= node->varNumCols)
+    if (true == node->isConst ||
+      VAR != node->opNum ||
+      0 > node->varNumRows ||
+      0 > node->varNumCols)
       throw exception_generic_impl("AMD::varOp",
       "Node is not a constant",
       AMD_CONSTANT_FN);
