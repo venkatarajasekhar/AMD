@@ -131,6 +131,7 @@ void export_symbolicmatrixmatlab () {
     // export overloaded operators
     .def(self + self)
     .def(self - self)
+    .def(-self)
     .def(self * self)
     .def(SymbolicScalarMatlab() * self)
     .def(self * SymbolicScalarMatlab())

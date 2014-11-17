@@ -67,7 +67,8 @@ void export_symbolicscalarmatlab () {
                   "internal string representaion")
     // export overloaded operators
     .def(self + self)   
-    .def(self - self)  
+    .def(self - self) 
+    .def(-self)
     .def(self * self)  
     .def(self / self) 
   ;
