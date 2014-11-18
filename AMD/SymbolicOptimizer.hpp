@@ -31,8 +31,8 @@
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
 typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
 typedef symbolic_adaptor_type::value_type symbolic_value_type;
-AMD::SymbolicMatrixMatlab symbolicIdentityMatrix("I");
-AMD::SymbolicMatrixMatlab symbolicZeroMatrix("0");
+const AMD::SymbolicMatrixMatlab symbolicIdentityMatrix("I");
+const AMD::SymbolicMatrixMatlab symbolicZeroMatrix("0");
 typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
 symbolic_value_type> SymbolicMMFunc;
 SymbolicMMFunc symbolicIdentityMMFunc(symbolicIdentityMatrix,true);
@@ -44,13 +44,13 @@ namespace AMD {
    * @param node
    */
   SymbolicMMFunc* minusOpt(SymbolicMMFunc &node){
-    if (node.leftChild->value() == symbolicZeroMatrix){ 
+    if (node.leftChild == symbolicZeroMMFunc){ 
       /* Create a negation version of rightChild */
       node.opNum = NEGATION;
-      node.leftChild->value() = node.rightChild->value();
+      node.leftChild = node.rightChild;
       return &node;
     }
-    if (node.rightChild->value() == symbolicZeroMatrix) 
+    if (node.rightChild == symbolicZeroMMFunc) 
       return node.leftChild;
     return &node;
   }
@@ -67,8 +67,8 @@ namespace AMD {
      * lhs + rhs. 
      */
     if (node.leftChild ==NULL || node.rightChild == NULL) return &node;
-    if (node.leftChild->value() == symbolicZeroMatrix) return node.rightChild;
-    if (node.rightChild->value() == symbolicZeroMatrix) return node.leftChild;
+    if (node.leftChild == symbolicZeroMMFunc) return node.rightChild;
+    if (node.rightChild == symbolicZeroMMFunc) return node.leftChild;
 
     /* Case 2: If lhs == -rhs, don't compute, return a zero matrix */
     /*TODO: I suggest we add negationFlag or cofficient  
@@ -109,16 +109,16 @@ namespace AMD {
     if (node.leftChild != NULL && node.rightChild != NULL){
         /* Case 1: If lhs or rhs or both are 0 matrix, we don't have compute
          * lhs * rhs. */
-      if (node.leftChild->value() == symbolicZeroMatrix)
+      if (node.leftChild == symbolicZeroMMFunc)
         return node.leftChild;
-      if (node.rightChild->value() == symbolicZeroMatrix)
+      if (node.rightChild == symbolicZeroMMFunc)
         return node.rightChild;
 
       /* Case 2: If lhs or rhs or both are identity matrix, we don't have compute
          * lhs * rhs. */
-      if (node.leftChild->value() == symbolicIdentityMatrix)
+      if (node.leftChild == symbolicIdentityMMFunc)
         return node.rightChild;
-      if (node.rightChild->value() == symbolicIdentityMatrix)
+      if (node.rightChild == symbolicIdentityMMFunc)
         return node.leftChild;
 
 
@@ -162,9 +162,9 @@ namespace AMD {
     /* Case 1: If node is eye or zero matrix, then there is no need to           
      * actually transpose it*/
     if (node.leftChild == NULL) return &node;
-    if (node.leftChild->value() == symbolicIdentityMatrix) 
+    if (node.leftChild == symbolicIdentityMMFunc) 
       return node.leftChild;
-    if (node.leftChild->value() == symbolicZeroMatrix)
+    if (node.leftChild == symbolicZeroMMFunc)
       return node.leftChild;
                                                                                 
     /* Case 2: If we are doing two transpose. Transpose(transpoe(A)). We        
@@ -191,9 +191,9 @@ namespace AMD {
     if (node.leftChild == NULL) return &node;
     /*Case 1: If node is eye or zero matrix, then there is no need to            
      * actually inverse it */                                                   
-    if (node.leftChild->value() == symbolicIdentityMatrix) 
+    if (node.leftChild == symbolicIdentityMMFunc) 
       return node.leftChild;                                          
-    if (node.leftChild->value() == symbolicZeroMatrix) 
+    if (node.leftChild == symbolicZeroMMFunc) 
       return node.leftChild;
       /* Case 2: If we are doing two transpose. Transpose(transpoe(A)). We
        * simply take both transpose operation */

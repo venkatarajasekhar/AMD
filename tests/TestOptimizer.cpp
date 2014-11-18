@@ -163,9 +163,8 @@ int main(int argc, char** argv) {
   std::cout << "Testing matrix-inverse optimizations ....\n";
   testInverseOptimizations();
   std::cout << "DONE" << std::endl;
-/*
+
   std::cout << "DONE" << std::endl;
   std::cout << "All tests passed." << std::endl;
-*/
   return(0);
 }
