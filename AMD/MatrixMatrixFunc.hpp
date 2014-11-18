@@ -399,18 +399,20 @@ namespace AMD {
 
       /* Throwing first exception found. Alternatively, we could throw the
        * most critical one instead. */
-      if (false == b_matched_dimension) throw 
-        exception_generic_impl("AMD::gradientVec",
-                               "Dimensions of result and current don't match",
-                               AMD_MISMATCHED_DIMENSIONS);
-      if (false == b_valid_shared_ptr) throw
-        exception_generic_impl("AMD::gradientVec",
-                               "Shared pointer is not valid anymore",
-                               AMD_INVALID_SHARED_PTR);
-      if (false == b_constant_function) throw 
-        exception_generic_impl("AMD::gradientVec",
-                               "Node is not a variable function",
-                               AMD_CONSTANT_FN);
+      if (false == b_matched_dimension) {
+        /*throw
+          exception_generic_impl("AMD::gradientVec",
+          "Dimensions of result and current don't match",
+          AMD_MISMATCHED_DIMENSIONS);*/
+        if (false == b_valid_shared_ptr) throw
+          exception_generic_impl("AMD::gradientVec",
+          "Shared pointer is not valid anymore",
+          AMD_INVALID_SHARED_PTR);
+        if (false == b_constant_function) throw
+          exception_generic_impl("AMD::gradientVec",
+          "Node is not a variable function",
+          AMD_CONSTANT_FN);
+      }
 
       /**
        * Only need to do something if the current function is not a
