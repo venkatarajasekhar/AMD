@@ -38,6 +38,16 @@ namespace AMD {
     DIAG
   };
 
+  /* enum type for possible status of a matrix. The first one is a progenerate
+   * case, whereas the rest are degenerate ones*/
+  enum MatrixType {
+    kNormal, //progenerate; common case
+    kInvalid, //needs to be initialised
+    kZero, //zero matrix
+    kIdentity, //identity matrix
+    kTranspose //transpose of a matrix
+  };
+
   std::string opName[] = { "none",
     "const",
     "var",

@@ -31,12 +31,14 @@
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
 typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
 typedef symbolic_adaptor_type::value_type symbolic_value_type;
+/* Not needed anymore
 const AMD::SymbolicMatrixMatlab symbolicIdentityMatrix("I");
-const AMD::SymbolicMatrixMatlab symbolicZeroMatrix("0");
+const AMD::SymbolicMatrixMatlab symbolicZeroMatrix("0");*/
 typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
 symbolic_value_type> SymbolicMMFunc;
+/* Not needed anymore
 SymbolicMMFunc symbolicIdentityMMFunc(symbolicIdentityMatrix,true);
-SymbolicMMFunc symbolicZeroMMFunc(symbolicZeroMatrix,true);
+SymbolicMMFunc symbolicZeroMMFunc(symbolicZeroMatrix,true);*/
 
 namespace AMD {
   /**
@@ -44,13 +46,13 @@ namespace AMD {
    * @param node
    */
   SymbolicMMFunc* minusOpt(SymbolicMMFunc &node){
-    if (node.leftChild == symbolicZeroMMFunc){ 
+    if (node.leftChild->mType == kZero){ 
       /* Create a negation version of rightChild */
       node.opNum = NEGATION;
       node.leftChild = node.rightChild;
       return &node;
     }
-    if (node.rightChild == symbolicZeroMMFunc) 
+    if (node.rightChild->mType == kZero) 
       return node.leftChild;
     return &node;
   }
@@ -67,8 +69,8 @@ namespace AMD {
      * lhs + rhs. 
      */
     if (node.leftChild ==NULL || node.rightChild == NULL) return &node;
-    if (node.leftChild == symbolicZeroMMFunc) return node.rightChild;
-    if (node.rightChild == symbolicZeroMMFunc) return node.leftChild;
+    if (node.leftChild->mType == kZero) return node.rightChild;
+    if (node.rightChild->mType == kZero) return node.leftChild;
 
     /* Case 2: If lhs == -rhs, don't compute, return a zero matrix */
     /*TODO: I suggest we add negationFlag or cofficient  
@@ -109,28 +111,30 @@ namespace AMD {
     if (node.leftChild != NULL && node.rightChild != NULL){
         /* Case 1: If lhs or rhs or both are 0 matrix, we don't have compute
          * lhs * rhs. */
-      if (node.leftChild == symbolicZeroMMFunc)
+      if (node.leftChild->mType == kZero)
         return node.leftChild;
-      if (node.rightChild == symbolicZeroMMFunc)
+      if (node.rightChild->mType == kZero)
         return node.rightChild;
 
       /* Case 2: If lhs or rhs or both are identity matrix, we don't have compute
          * lhs * rhs. */
-      if (node.leftChild == symbolicIdentityMMFunc)
+      if (node.leftChild->mType == kIdentity)
         return node.rightChild;
-      if (node.rightChild == symbolicIdentityMMFunc)
+      if (node.rightChild->mType == kIdentity)
         return node.leftChild;
 
 
     /* Case 3: If lhs == inv(rhs), we don't compute lhs * rhs. */
       if (node.rightChild->opNum == INV){
         if (node.rightChild->leftChild == node.leftChild){
-          return &symbolicIdentityMMFunc;
+          node.mType = kIdentity;
+          return &node;
         }
       }
       if (node.leftChild->opNum == INV){
         if (node.leftChild->leftChild == node.rightChild){
-          return &symbolicIdentityMMFunc;
+          node.mType = kIdentity;
+          return &node;
         }
       }
     }
@@ -162,9 +166,9 @@ namespace AMD {
     /* Case 1: If node is eye or zero matrix, then there is no need to           
      * actually transpose it*/
     if (node.leftChild == NULL) return &node;
-    if (node.leftChild == symbolicIdentityMMFunc) 
+    if (node.leftChild->mType == kIdentity) 
       return node.leftChild;
-    if (node.leftChild == symbolicZeroMMFunc)
+    if (node.leftChild->mType == kZero)
       return node.leftChild;
                                                                                 
     /* Case 2: If we are doing two transpose. Transpose(transpoe(A)). We        
@@ -191,9 +195,9 @@ namespace AMD {
     if (node.leftChild == NULL) return &node;
     /*Case 1: If node is eye or zero matrix, then there is no need to            
      * actually inverse it */                                                   
-    if (node.leftChild == symbolicIdentityMMFunc) 
+    if (node.leftChild->mType == kIdentity) 
       return node.leftChild;                                          
-    if (node.leftChild == symbolicZeroMMFunc) 
+    if (node.leftChild->mType == kZero) 
       return node.leftChild;
       /* Case 2: If we are doing two transpose. Transpose(transpoe(A)). We
        * simply take both transpose operation */

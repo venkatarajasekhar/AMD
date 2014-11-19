@@ -57,6 +57,7 @@ namespace AMD {
     CallBackFuncType callBackFunc; /**< Used to compute derivative after
                                         evaluation tree is recorded */
     OpType opNum; /**< enum for the operator used at this node in the tree */
+    MatrixType mType; /**< enum for the matrix type used at this node */
     bool isConst; /**< is this a variable or a constant function */
     int varNumRows; /**< number of rows in matrix variable */
     int varNumCols; /**< number of cols in matrix variable */
@@ -78,6 +79,7 @@ namespace AMD {
     MatrixMatrixFunc() : matrixPtr(),
       callBackFunc(NULL),
       opNum(NONE),
+      mType(kInvalid),
       isConst(true),
       varNumRows(0),
       varNumCols(0),
@@ -92,6 +94,7 @@ namespace AMD {
     MatrixMatrixFunc(const MT& matrix, bool isConst = true) : matrixPtr(),
       callBackFunc(NULL),
       opNum(NONE),
+      mType(kInvalid),
       isConst(isConst),
       varNumRows(0),
       varNumCols(0),
@@ -114,6 +117,7 @@ namespace AMD {
       bool isConst = true) : matrixPtr(matrixPtr),
       callBackFunc(NULL),
       opNum(NONE),
+      mType(kInvalid),
       isConst(isConst),
       varNumRows(0),
       varNumCols(0),
@@ -168,6 +172,7 @@ namespace AMD {
     void reset() {
       callBackFunc = NULL;
       opNum = NONE;
+      mType = kInvalid;
       varNumRows = 0;
       varNumCols = 0;
       // Reset its left & right child recursively.
@@ -190,6 +195,7 @@ namespace AMD {
     void shallowCopy(const MatrixMatrixFunc &other) {
       matrixPtr = other.matrixPtr;
       opNum = other.opNum;
+      mType = other.mType;
       isConst = other.isConst;
       callBackFunc = other.callBackFunc;
       varNumRows = other.varNumRows;
