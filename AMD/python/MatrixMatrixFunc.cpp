@@ -144,9 +144,7 @@ void export_matrixmatrixfunc (std::string name, std::string docstring) {
       args("lhs"),
       elementwiseProduct_docstring);
   def("transpose", transpose<MT, ST>, args("lhs"), transpose_docstring);
-  // TODO The line below is commented out until issues with 
-  // MatrixMatrixFuncHelper.hpp:1289 unaryOpStandardCheck are resolved 
-  // def("diag", diag<MT, ST>, args("lhs"), diag_docstring);
+  def("diag", diag<MT, ST>, args("lhs"), diag_docstring);
   def("trace", trace<MT, ST>, args("lhs"), trace_docstring);
   def("logdet", logdet<MT, ST>, args("lhs"), logdet_docstring);
   

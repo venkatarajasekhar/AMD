@@ -1286,7 +1286,7 @@ namespace AMD {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
     AMD_START_TRY_BLOCK()
-      unaryOpStandardCheck(node, current, currentLeft, currentRight, DIAG);
+      unaryDiffOpStandardCheck(node, current, currentLeft, currentRight, DIAG);
 
     MatrixAdaptorType::diag((*current), (*currentLeft));
     currentLeftMMF->deepCopy(*currentMMF);
