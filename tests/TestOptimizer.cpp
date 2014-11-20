@@ -14,48 +14,49 @@ typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
 typedef AMD::ScalarMatrixFunc<symbolic_matrix_type,
                        				symbolic_value_type> SymbolicSMFunc;
 static int ROW = 4, COL = 4;
-
-
+symbolic_matrix_type zero("0");
+SymbolicMMFunc symbolicZeroMMFunc(zero,false);
+symbolic_matrix_type identityMatrix("I");
+SymbolicMMFunc symbolicIdentityMMFunc(identityMatrix,false);
 void testMultiplicationOptimizations() {
   symbolic_matrix_type X("A");
   SymbolicMMFunc fX(X,true);
-
   /*Case 1 M*0 */
   SymbolicMMFunc fX_times_zero = fX*symbolicZeroMMFunc;
   SymbolicMMFunc* fX_times_zero_optimized = AMD::multiplyOpt(fX_times_zero);
-  assert(fX_times_zero_optimized == symbolicZeroMMFunc);
+  assert(fX_times_zero_optimized.mTpye == kZero);
   printf("\t-Passed M*0 test\n");
   
   /*Case 2 0*M */
   SymbolicMMFunc zero_times_fX = symbolicZeroMMFunc*fX;
   SymbolicMMFunc* zero_times_fX_optimized = AMD::multiplyOpt(zero_times_fX);
-  assert(zero_times_fX_optimized == symbolicZeroMMFunc);
+  assert(zero_times_fX_optimized.mType == kZero);
   printf("\t-Passed 0*M test\n");
   
   /*Case 3 M*I */
   SymbolicMMFunc fX_times_identity = fX*symbolicIdentityMMFunc;
   SymbolicMMFunc* fX_times_identity_optimized = 
       AMD::multiplyOpt(fX_times_identity);
-  assert(fX_times_identity_optimized == symbolicIdentityMMFunc); 
+  assert(fX_times_identity_optimized.mType == kIdentity); 
   printf("\t-Passed M*I test\n");
   /*Case 4 I*M */
   SymbolicMMFunc identity_times_fX = symbolicIdentityMMFunc*fX;
   SymbolicMMFunc* identity_times_fX_optimized = 
       AMD::multiplyOpt(identity_times_fX);
-  assert(identity_times_fX_optimized == symbolicIdentityMMFunc);
+  assert(identity_times_fX_optimized.mType == kIdentity);
   printf("\t-Passed I*M test\n");
   /*Case 5 M*INV(M) */
   SymbolicMMFunc invfX = inv(fX);
   SymbolicMMFunc M_times_InvM = fX*invfX;
   SymbolicMMFunc* M_times_InvM_optimized =
       AMD::multiplyOpt(M_times_InvM);
-  assert(M_times_InvM_optimized == symbolicIdentityMMFunc);
+  assert(M_times_InvM_optimized.mTpye == kIdentity);
   printf("\t-Passed M*inv(M) test\n");
   /*Case 6 INV(M)*M */
   SymbolicMMFunc InvM_times_M = invfX*fX;
   SymbolicMMFunc* InvM_times_M_optimized =
       AMD::multiplyOpt(InvM_times_M);
-  assert(InvM_times_M_optimized == symbolicIdentityMMFunc);
+  assert(InvM_times_M_optimized.mType == kIdentity);
   printf("\t-Passed inv(M)*M test\n");
 
 }
@@ -77,7 +78,7 @@ void testAdditionOptimizations(){
   SymbolicMMFunc zero_plus_zero = symbolicZeroMMFunc+symbolicZeroMMFunc;
   SymbolicMMFunc* zero_plus_zero_optimized 
     = AMD::plusOpt(zero_plus_zero);
-  assert(zero_plus_zero_optimized == symbolicZeroMMFunc);
+  assert(zero_plus_zero_optimized.mType);
   printf("\t-Passed 0+0 test\n");
 
 }
@@ -88,7 +89,7 @@ void testSubtractionOptimizations() {
   /* Case 1: fX - fX */
   SymbolicMMFunc fX_minus_fX = fX-fX;
   SymbolicMMFunc* fX_minus_fX_optimized = AMD::minusOpt(fX_minus_fX);
-  assert(fx_minus_fX_optimized == symbolicZeroMMFunc);
+  assert(fx_minus_fX_optimized.mType);
   printf("\t-Passed X-X test\n");
   /* Case 2: 0 - fX */
   SymbolicMMFunc zero_minus_fX = symbolicZeroMMFunc-fX;
@@ -145,6 +146,8 @@ void testInverseOptimizations() {
 
 int main(int argc, char** argv) {
 
+  symbolicZeroMMFunc.mTpye = AMD::kZero;
+  symbolicIdentityMMFunc.mTpye = AMD::kIdentity;
   std::cout << "Testing matrix-product optimizations ....\n";
   testMultiplicationOptimizations();
   std::cout << "DONE" << std::endl;
