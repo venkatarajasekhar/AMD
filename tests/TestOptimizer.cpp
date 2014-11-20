@@ -146,8 +146,8 @@ void testInverseOptimizations() {
 
 int main(int argc, char** argv) {
 
-  symbolicZeroMMFunc.mTpye = AMD::kZero;
-  symbolicIdentityMMFunc.mTpye = AMD::kIdentity;
+  symbolicZeroMMFunc.mType = AMD::kZero;
+  symbolicIdentityMMFunc.mType = AMD::kIdentity;
   std::cout << "Testing matrix-product optimizations ....\n";
   testMultiplicationOptimizations();
   std::cout << "DONE" << std::endl;
