@@ -7,19 +7,24 @@ def symbolicSample():
     col = 128
     
     # Create a variable X and an identity function
-    X = AMD.symMatrMat("X", row, col)
-    fX = AMD.symMMF(X, False)
+    X = symMatrMat("X", row, col)
+    fX = symMMF(X, False)
 
     # Create constants AB, and C and identity functions
-    A = AMD.symMatrMat("A", row, col)
-    fA = AMD.symMMF(A, True)
+    A = symMatrMat("A", row, col)
+    fA = symMMF(A, False)
 
-    # Create scalar-matrix function
-    func = AMD.trace(fA * AMD.inv(fX))
-
-    # Output the function value and derivative value
-    print 'Function value: {}'.format(func.functionVal.string)
-    print 'Derivative value: {}'.format(func.derivativeVal.string)
+    try:
+        # Create scalar-matrix function
+        func = trace(fX)
+        #func = trace(fA * inv(fX))
+        # Output the function value and derivative value
+        print 'Function value: {}'.format(func.functionVal.string)
+        print 'Derivative value: {}'.format(func.derivativeVal.string)
+    except AMDException, e:
+        print 'Trace: ', e.trace
+        print 'What: ', e.what
+        print 'Error code: ', e.errorCode
 
 def main():
     """ Sample script that uses symbolicMMF """ 
