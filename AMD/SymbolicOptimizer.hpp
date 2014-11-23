@@ -51,7 +51,6 @@ namespace AMD {
 
 	if (node.leftChild->mType == kZero){
       /* Create a negation version of rightChild */
-	  printf("Enter this case\n");
       node.opNum = NEGATION;
       node.leftChild->shallowCopy(*node.rightChild);
       return &node;
