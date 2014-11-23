@@ -140,11 +140,24 @@ void testExpressionOptimizations() {
   printf("\t-Passed X*(Y-Y) test\n");
 
   /* Test Case 2: X * (I + 0) - X + X
-   * result should be X*/
+   * result should be X
+   * */
   SymbolicMMFunc expression2 = fX*(symbolicIdentityMMFunc-symbolicZeroMMFunc) - fX + fX;
-  SymbolicMMFunc* expression2_optimized = AMD::optimize(expression1);
-  assert(expression1_optimized.mType == fX);
+  SymbolicMMFunc* expression2_optimized = AMD::optimize(expression2);
+  assert(expression2_optimized == fX);
   printf("\t-Passed X*(I + 0) - X + X test\n");
+
+  /* Test Case 3: X*inv(X) - I + inv(I)*0 + inv(I)*X - X*I
+   * result should be 0
+   * */
+  SymbolicMMFunc expression3 = fX*inv(fX) - symbolicIdentityMMFunc + 
+                            inv(symbolicIdentityMMFunc)*symbolicZeroMMFunc + 
+                            inv(symbolicIdentityMMFunc)*fX 
+                            - fX*symbolicIdentityMMFunc;
+  SymbolicMMFunc* expression3_optimized = AMD::optimize(expression3);
+  assert(expression3_optimized.mType == kZero);
+  printf("\t-Passed X*inv(X) - I + inv(I)*0 + inv(I)*X - X*I test\n");
+  /* Please add more test caes to test the functionality */
 
 }
 void testInverseOptimizations() {
