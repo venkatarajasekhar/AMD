@@ -127,7 +127,26 @@ void testTransposeOptimizations() {
   assert(trans_of_identity_optimized == symbolicIdentityMMFunc);
   printf("\t-Passed trans(I) test\n");
 }
+void testExpressionOptimizations() {
+  /* Test Case 1: X * (Y - Y)
+   * result should be zero matrix*/
+  symbolic_matrix_type X("A");
+  SymbolicMMFunc fX(X,true);
+  symbolic_matrix_type Y("B");
+  SymbolicMMFunc fY(Y,true);
+  SymbolicMMFunc expression1 = fX*(fY-fY);
+  SymbolicMMFunc* expression1_optimized = AMD::optimize(expression1);
+  assert(expression1_optimized.mType == kZero);
+  printf("\t-Passed X*(Y-Y) test\n");
 
+  /* Test Case 2: X * (I + 0) - X + X
+   * result should be X*/
+  SymbolicMMFunc expression2 = fX*(symbolicIdentityMMFunc-symbolicZeroMMFunc) - fX + fX;
+  SymbolicMMFunc* expression2_optimized = AMD::optimize(expression1);
+  assert(expression1_optimized.mType == fX);
+  printf("\t-Passed X*(I + 0) - X + X test\n");
+
+}
 void testInverseOptimizations() {
   symbolic_matrix_type X("A");
   SymbolicMMFunc fX(X,true);
@@ -140,13 +159,13 @@ void testInverseOptimizations() {
   SymbolicMMFunc inv_of_zero = inv(symbolicZeroMMFunc); 
   SymbolicMMFunc* inv_of_zero_optimized =
                              AMD::optimize(inv_of_zero);
-  assert(inv_of_zero_optimized == symbolicZeroMMFunc);
+  assert(inv_of_zero_optimized.mType == kZero);
   printf("\t-Passed inv(0) test\n");
   
   SymbolicMMFunc inv_of_identity = inv(symbolicIdentityMMFunc);
   SymbolicMMFunc* inv_of_identity_optimized =
                              AMD::optimize(inv_of_identity);
-  assert(inv_of_identity_optimized == symbolicIdentityMMFunc);
+  assert(inv_of_identity_optimized.mType == kIdentity);
   printf("\t-Passed inv(I) test\n");
 
 }
@@ -156,7 +175,7 @@ int main(int argc, char** argv) {
 
   symbolicZeroMMFunc.mType = AMD::kZero;
   symbolicIdentityMMFunc.mType = AMD::kIdentity;
-
+  std::cout << "Unit Test ....\n";
   std::cout << "Testing matrix-product optimizations ....\n";
   testMultiplicationOptimizations();
   std::cout << "DONE" << std::endl;
@@ -177,6 +196,10 @@ int main(int argc, char** argv) {
   testInverseOptimizations();
   std::cout << "DONE" << std::endl;
 
+  std::cout << "Unit Test DONE" << std::endl;
+
+  std::cout << "Expression Optimization Test ....\n";
+  testExpressionOptimizations();
   std::cout << "DONE" << std::endl;
   std::cout << "All tests passed." << std::endl;
   return(0);
