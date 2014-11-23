@@ -46,10 +46,12 @@ namespace AMD {
    * @param node
    */
   SymbolicMMFunc* minusOpt(SymbolicMMFunc &node){
-    if (node.leftChild->mType == kZero){ 
+
+	if (node.leftChild->mType == kZero){
       /* Create a negation version of rightChild */
+	  printf("Enter this case\n");
       node.opNum = NEGATION;
-      node.leftChild = node.rightChild;
+      node.leftChild->shallowCopy(*node.rightChild);
       return &node;
     }
     if (node.rightChild->mType == kZero) 
