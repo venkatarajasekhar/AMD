@@ -22,6 +22,7 @@
  */
 
 #include <string>
+
 #include "SymbolicMatrixMatlab.hpp"
 #include "MatrixAdaptor.hpp"
 #include "MatrixMatrixFunc.hpp"
@@ -31,14 +32,8 @@
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
 typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
 typedef symbolic_adaptor_type::value_type symbolic_value_type;
-/* Not needed anymore
-const AMD::SymbolicMatrixMatlab symbolicIdentityMatrix("I");
-const AMD::SymbolicMatrixMatlab symbolicZeroMatrix("0");*/
 typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
-symbolic_value_type> SymbolicMMFunc;
-/* Not needed anymore
-SymbolicMMFunc symbolicIdentityMMFunc(symbolicIdentityMatrix,true);
-SymbolicMMFunc symbolicZeroMMFunc(symbolicZeroMatrix,true);*/
+							symbolic_value_type> SymbolicMMFunc;
 
 namespace AMD {
   /**
@@ -46,27 +41,12 @@ namespace AMD {
    * choose which opt functions to use like minusOpt or optimizeOpt
    * @param node
    */
-  SymbolicMMFunc* optimize(SymbolicMMFunc &node){
-    /* Two recursive call to optimize the node's child first */
-	if (node.leftChild != NULL) optimize(*(node.leftChild));
-	if (node.rightChild != NULL) optimize(*(node.rightChild));
-	if (node.opNum == PLUS)
-	  plusOpt(node);
-    else if (node.opNum ==MINUS)
-	  minusOpt(node);
-	else if (node.opNum == TIMES)
-	  multiplyOpt(node);
-	else if (node.opNum == INV)
-	  inverseOpt(node);
-	else if  (node.opNum ==TRANSPOSE)
-	  transOpt(node);
 
-
-  }
   /**
    * @This function optimizing the minus operation
    * @param node
    */
+
   SymbolicMMFunc* minusOpt(SymbolicMMFunc &node){
 
 	if (node.leftChild->mType == kZero){
@@ -238,7 +218,22 @@ namespace AMD {
     */
     return &node;
   }
-
+  SymbolicMMFunc* optimize(SymbolicMMFunc &node){
+    /* Two recursive call to optimize the node's child first */
+	if (node.leftChild != NULL) node.leftChild = optimize(*(node.leftChild));
+	if (node.rightChild != NULL) node.rightChild =optimize(*(node.rightChild));
+	if (node.opNum == PLUS)
+	  return plusOpt(node);
+    else if (node.opNum ==MINUS)
+      return minusOpt(node);
+	else if (node.opNum == TIMES)
+	  return multiplyOpt(node);
+	else if (node.opNum == INV)
+	  return inverseOpt(node);
+	else if  (node.opNum ==TRANSPOSE)
+	  return transOpt(node);
+	return &node;
+  }
 /* This function optimizing how to calcualte the determinant */               
 
 //  ScalarMatrixFunc<MT, ST> detOpt(const SymbolicMMFunc &node){        

@@ -94,8 +94,8 @@ void testSubtractionOptimizations() {
   /* Case 2: 0 - fX */
   SymbolicMMFunc zero_minus_fX = symbolicZeroMMFunc-fX;
   SymbolicMMFunc* zero_minus_fX_optimized = AMD::minusOpt(zero_minus_fX);
-  //assert(zero_minus_fX_optimized.opNum == NEGATION);
-  //assert(zero_minus_fX_optimized.leftChild == fX);
+  assert(zero_minus_fX_optimized.opNum == NEGATION);
+  assert(zero_minus_fX_optimized.leftChild == fX);
   printf("\t-Passed 0-X test\n");
   /* Case 3: fx - 0 */
   SymbolicMMFunc fX_minus_zero = fX - symbolicZeroMMFunc;
