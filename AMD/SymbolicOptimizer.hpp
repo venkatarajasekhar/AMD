@@ -42,6 +42,28 @@ SymbolicMMFunc symbolicZeroMMFunc(symbolicZeroMatrix,true);*/
 
 namespace AMD {
   /**
+   * This function optimize the symbolic expression and automatically
+   * choose which opt functions to use like minusOpt or optimizeOpt
+   * @param node
+   */
+  SymbolicMMFunc* optimize(SymbolicMMFunc &node){
+    /* Two recursive call to optimize the node's child first */
+	if (node.leftChild != NULL) optimize(*(node.leftChild));
+	if (node.rightChild != NULL) optimize(*(node.rightChild));
+	if (node.opNum == PLUS)
+	  plusOpt(node);
+    else if (node.opNum ==MINUS)
+	  minusOpt(node);
+	else if (node.opNum == TIMES)
+	  multiplyOpt(node);
+	else if (node.opNum == INV)
+	  inverseOpt(node);
+	else if  (node.opNum ==TRANSPOSE)
+	  transOpt(node);
+
+
+  }
+  /**
    * @This function optimizing the minus operation
    * @param node
    */
