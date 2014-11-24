@@ -218,19 +218,19 @@ namespace AMD {
   }
   SymbolicMMFunc* optimize(SymbolicMMFunc &node){
     /* Two recursive call to optimize the node's child first */
-	if (node.leftChild != NULL) node.leftChild = optimize(*(node.leftChild));
-	if (node.rightChild != NULL) node.rightChild =optimize(*(node.rightChild));
-	if (node.opNum == PLUS)
-	  return plusOpt(node);
-  else if (node.opNum ==MINUS)
+	  if (node.leftChild != NULL) node.leftChild = optimize(*(node.leftChild));
+	  if (node.rightChild != NULL) node.rightChild =optimize(*(node.rightChild));
+	  if (node.opNum == PLUS)
+	    return plusOpt(node);
+    else if (node.opNum ==MINUS)
       return minusOpt(node);
-	else if (node.opNum == TIMES)
-	  return multiplyOpt(node);
-	else if (node.opNum == INV)
-	  return inverseOpt(node);
-	else if  (node.opNum ==TRANSPOSE)
-	  return transOpt(node);
-	return &node;
+	  else if (node.opNum == TIMES)
+	    return multiplyOpt(node);
+	  else if (node.opNum == INV)
+	    return inverseOpt(node);
+	  else if  (node.opNum ==TRANSPOSE)
+	    return transOpt(node);
+	  return &node;
   }
 /* This function optimizing how to calcualte the determinant */               
 
