@@ -48,8 +48,7 @@ namespace AMD {
    */
 
   SymbolicMMFunc* minusOpt(SymbolicMMFunc &node){
-
-	if (node.leftChild->mType == kZero){
+	  if (node.leftChild->mType == kZero){
       /* Create a negation version of rightChild */
       node.opNum = NEGATION;
       node.leftChild->shallowCopy(*node.rightChild);
@@ -223,7 +222,7 @@ namespace AMD {
 	if (node.rightChild != NULL) node.rightChild =optimize(*(node.rightChild));
 	if (node.opNum == PLUS)
 	  return plusOpt(node);
-    else if (node.opNum ==MINUS)
+  else if (node.opNum ==MINUS)
       return minusOpt(node);
 	else if (node.opNum == TIMES)
 	  return multiplyOpt(node);
