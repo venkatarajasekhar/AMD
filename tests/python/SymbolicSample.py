@@ -21,10 +21,9 @@ def symbolicSample():
         # Output the function value and derivative value
         print 'Function value: {}'.format(func.functionVal.string)
         print 'Derivative value: {}'.format(func.derivativeVal.string)
-    except AMDException, e:
-        print 'Trace: ', e.trace
-        print 'What: ', e.what
-        print 'Error code: ', e.errorCode
+    
+    except AMDExceptionType, e:
+        print e
 
 def main():
     """ Sample script that uses symbolicMMF """ 

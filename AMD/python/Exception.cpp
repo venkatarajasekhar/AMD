@@ -15,23 +15,27 @@ namespace AMD { namespace python {
   using namespace AMD;
   using namespace boost::python;
 
-  static PyObject* AMDExceptionType = NULL;
+  static PyObject* AMDExceptionTypeObj = NULL; 
 
   void translate_exception_generic_impl(exception_generic_impl const& e) {
-        PyErr_SetObject(AMDExceptionType, object(e).ptr());
+    PyErr_SetString(AMDExceptionTypeObj, e.what());  
   }
 
   void export_exception() {
-    class_<exception_generic_impl> AMDExceptionClass("AMDException",
-        init<const char*, const char*, const error_code_type&>());
-    AMDExceptionClass.add_property("trace", &exception_generic_impl::trace)
-      .add_property("what", &exception_generic_impl::what)
-      .add_property("errorCode", &exception_generic_impl::code);
-
-    AMDExceptionType = AMDExceptionClass.ptr();
     
+    /*
+      class_<exception_generic_impl>("AMDException",
+        init<const char*, const char*, optional<const error_code_type&> >())
+      .add_property("trace", &exception_generic_impl::trace)
+      .add_property("what", &exception_generic_impl::what)
+      .add_property("errorCode", &exception_generic_impl::code)
+      ;
+      */
+    
+    AMDExceptionTypeObj = PyErr_NewException("AMD.AMDExceptionType", NULL, NULL);
+    scope().attr("AMDExceptionType") = handle<>(borrowed(AMDExceptionTypeObj));
     register_exception_translator<exception_generic_impl>(
-        &translate_exception_generic_impl);     
+        &translate_exception_generic_impl);
   }
 
 } } /* namespace AMD::python */
