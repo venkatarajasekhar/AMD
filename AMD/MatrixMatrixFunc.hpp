@@ -407,7 +407,7 @@ namespace AMD {
         exception_generic_impl("AMD::gradientVec",
                                "Shared pointer is not valid anymore",
                                AMD_INVALID_SHARED_PTR);
-      if (false == b_constant_function) throw 
+      if (b_constant_function) throw 
         exception_generic_impl("AMD::gradientVec",
                                "Node is not a variable function",
                                AMD_CONSTANT_FN);

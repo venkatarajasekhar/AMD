@@ -12,14 +12,15 @@ def testSymMMF():
     fA = symMMF(A, False) #TODO make 2nd argument True when exceptions are fixed
     
     try :
-        func = trace(fA*fX)
-        assert func == "A'"
+        fX.
+        func = trace(fX)
+        assert func == "I"
 
-        func = trace(transpose(fX)*transpose(fA))
-        assert func == "A'"
+        #func = trace(transpose(fX)*transpose(fA))
+        #assert func == "A'"
 
-        func = trace(transpose(fX*fA))
-        assert func == "A'"
+        #func = trace(transpose(fX*fA))
+        #assert func == "A'"
 
     except AMDExceptionType, e:
         print e
