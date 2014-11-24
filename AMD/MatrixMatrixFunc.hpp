@@ -362,7 +362,7 @@ namespace AMD {
      * @return The matxi associated to this node.
      */
 
-    virtual MT value() const { return(*matrixPtr); }
+    MT value() const { return(*matrixPtr); }
 
     // initial and result must point to existing MatrixTypes
     /**
