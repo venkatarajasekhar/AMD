@@ -12,13 +12,6 @@
 namespace AMD { namespace python {
 
 /**
- * Automatically wrap overloaded member methods 
- * and member methods with default parameters.
- */
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(print_overloads, print, 0, 1)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(println_overloads, println, 0, 1)
-
-/**
  * A function to export SymbolicMatrixMatlab and helper functions.
  */
 void export_symbolicmatrixmatlab () {
@@ -29,7 +22,7 @@ void export_symbolicmatrixmatlab () {
   /**
    * docstring
    */
-  const char* symMatrMat_docstring = 
+  const char* symMat_docstring = 
     "This class represents a symbolic matrix using an internal string\n" \
     "representation. The string representation can be a variable name\n" \
     "such as X, HouseHolder or a derived value sich as transpose(X)*X,\n" \
@@ -76,7 +69,7 @@ void export_symbolicmatrixmatlab () {
   const char* inv_docstring = 
     "Computes the inverse matrix of the matrix a.\n" \
     "Agrs:\n" \
-    "    a: symboliv matrix\n" \
+    "    a: symbolic matrix\n" \
     "    SymbolicMatrixMatlab  representaion of inv(a)";
 
   const char* transpose_docstring = 
@@ -102,14 +95,11 @@ void export_symbolicmatrixmatlab () {
     "    SymbolicMatrixMatlab representiaon of a.*b.";  
 
   // export SymbolicMatricMatlab
-  class_<SymbolicMatrixMatlab>("symMatrMat", symMatrMat_docstring, init<>())
+  class_<SymbolicMatrixMatlab>("symMat", symMat_docstring, init<>())
     .def(init<int, int>())
   	.def(init<std::string>())
     .def(init<std::string, int, int>())
     .def(init<const SymbolicMatrixMatlab &>())
-    //TODO Drop Print method?
-  	.def("Print", &SymbolicMatrixMatlab::print, print_overloads())
-  	.def("println", &SymbolicMatrixMatlab::println, println_overloads())
     // export static class functions
     .def("eye", &SymbolicMatrixMatlab::eye, args("n"), eye_docstring)
     .staticmethod("eye")
@@ -136,6 +126,7 @@ void export_symbolicmatrixmatlab () {
     .def(SymbolicScalarMatlab() * self)
     .def(self * SymbolicScalarMatlab())
     .def(self / SymbolicScalarMatlab())
+    .def("__str__", &SymbolicMatrixMatlab::getString)
   ;
 
   // export helper functions

@@ -16,6 +16,20 @@
 namespace AMD { namespace python {
 
 /**
+ * @brief This function is a wrapper around MatrixMatrixFunc::print() method.
+ * It prints computational tree to std::stringstream and returns the resulting 
+ * std::string.
+ * @param[in] MatrixMatrixFunc 
+ * @return std::string containing computational tree 
+ */
+template <class MT, class ST> 
+static std::string getMMFString(const MatrixMatrixFunc<MT, ST>& mmf) {
+  std::stringstream sStream;
+  mmf.print(sStream);
+  return sStream.str();
+}
+
+/**
  * @brief A funciton template to export MatrixMatrixFunc an dhelper functions.
  * @param[in] name      exported class name
  * @param[in] docstring exported class docstring
@@ -136,6 +150,7 @@ void export_matrixmatrixfunc (std::string name, std::string docstring) {
   .def(self * self)
   .def(self * ScalarMatrixFunc<MT, ST>())
   .def(ScalarMatrixFunc<MT, ST>() * self)
+  .def("__str__", &getMMFString<MT, ST>)
   ;
 
   def("inv", inv<MT, ST>, args("lhs"), inv_docstring);
