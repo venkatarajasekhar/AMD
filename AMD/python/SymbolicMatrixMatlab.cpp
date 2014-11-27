@@ -22,7 +22,7 @@ void export_symbolicmatrixmatlab () {
   /**
    * docstring
    */
-  const char* symMat_docstring = 
+  const char* SymMat_docstring = 
     "This class represents a symbolic matrix using an internal string\n" \
     "representation. The string representation can be a variable name\n" \
     "such as X, HouseHolder or a derived value sich as transpose(X)*X,\n" \
@@ -87,7 +87,7 @@ void export_symbolicmatrixmatlab () {
     "Returns:\n" \
     "    SymMat representaion of diag(a)";
 
-  const char* elementwiseProduct_docstring = 
+  const char* elementwise_product_docstring = 
     "Compute elementwise product between a and b.\n" \
     "Args:\n" \
     "    a: symbolic matrix argument\n" \
@@ -96,7 +96,7 @@ void export_symbolicmatrixmatlab () {
     "    SymMat representiaon of a.*b.";  
 
   // export SymbolicMatricMatlab
-  class_<SymbolicMatrixMatlab>("SymMat", symMat_docstring, init<>())
+  class_<SymbolicMatrixMatlab>("SymMat", SymMat_docstring, init<>())
     .def(init<int, int>())
   	.def(init<std::string>())
     .def(init<std::string, int, int>())
@@ -140,7 +140,7 @@ void export_symbolicmatrixmatlab () {
   def("elementwise_product", 
       elementwiseProduct, 
       args("a", "b"),
-      elementwiseProduct_docstring);
+      elementwise_product_docstring);
 
 }
 

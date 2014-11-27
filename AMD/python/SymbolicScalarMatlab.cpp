@@ -19,7 +19,7 @@ void export_symbolicscalarmatlab () {
   /**
    * docstring
    */
-  const char* symScal_docstring = 
+  const char* SymScal_docstring = 
     "This class symbolically represents a scalar using " \
     "an internal string representation."; 
 
@@ -45,7 +45,7 @@ void export_symbolicscalarmatlab () {
   using namespace AMD;
   
   // export SymbolicScalarMatlab
-  class_<SymbolicScalarMatlab>("SymScal", symScal_docstring, init<>())
+  class_<SymbolicScalarMatlab>("SymScal", SymScal_docstring, init<>())
   	// constructors
     .def(init<>("Default constructor. Sets symbol name to 'x'"))
     .def(init<std::string>(args("symbol"), str_constructor_docstring))

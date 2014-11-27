@@ -40,9 +40,10 @@ void export_matrixmatrixfunc (std::string name, std::string docstring) {
   /**
    * docstring 
    */
-  const char* default_constructor_docstring = "";
+  const char* default_constructor_docstring =
+    "Initialize all values to defaults."; 
   
-  const char* setVariableType_docstring = 
+  const char* set_variable_type_docstring = 
     "Set the value of member variables of leaf nodes.\n" \
     "If the matrix of leaf node is constant matrix ...\n" \
     "Args:\n" \
@@ -52,25 +53,25 @@ void export_matrixmatrixfunc (std::string name, std::string docstring) {
 
   const char* reset_docstring = "Reset the entire computational tree."; 
 
-  const char* shallowCopy_docstring = 
+  const char* shallow_copy_docstring = 
     "Copy other to current MatrixMatrixfunc. This function creates\n" \
     "a shallow copy. It does not copy children nodes.\n"\
     "Agrs:\n" \
     "    other: the MMFunc to be copied from";
 
-  const char* deepCopy_docstring = 
+  const char* deep_copy_docstring = 
     "Copy other to MatrixMatrixFunc node. This function creates a deep copy.\n" \
     "It also recursively copies the current node's children nodes\n" \
     "Agrs:\n" \
     "    other: the MMFunc to be copied from.";
 
-  const char* gradientVec_docstring = 
+  const char* gradient_vec_docstring = 
     "Traverse the computational tree in post-order. Replase the matrix\n" \
     "as moving towards the leaf nodes(Reverse Mode) by applying\n" \
     "specific callback function to each node.\n" \
     "Args:\n" \
     "    initial: initial matrix\n" \
-    "    result:  result matrix\n"; //TODO 
+    "    result:  result matrix\n"; //TODO
 
   const char* inv_docstring = 
     "inv operator. Create a new node inverse in computational tree\n" \
@@ -91,7 +92,7 @@ void export_matrixmatrixfunc (std::string name, std::string docstring) {
     "Args:\n"\
     "    lhs: MatrixMatrixFunc";
   
-  const char* elementwiseProduct_docstring = ""; //TODO
+  const char* elementwise_product_docstring = ""; //TODO
 
   const char* transpose_docstring = 
     "Create a new node with operator transpose in computational tree.";
@@ -116,6 +117,9 @@ void export_matrixmatrixfunc (std::string name, std::string docstring) {
   .add_property("var_num_cols",
                 &MatrixMatrixFunc<MT, ST>::numCols,
                 "number of columns in matrix variable")
+  .add_property("value", 
+                &MatrixMatrixFunc<MT, ST>::value, 
+                "matrix associated with this node")
   .add_property("left_child", 
                 &MatrixMatrixFunc<MT, ST>::leftChild,
                 "optional left child")
@@ -129,21 +133,21 @@ void export_matrixmatrixfunc (std::string name, std::string docstring) {
   .def("set_variable_type", 
        &MatrixMatrixFunc<MT, ST>::setVariableType, 
        args("is_variable"), 
-       setVariableType_docstring)
+       set_variable_type_docstring)
   .def("reset", &MatrixMatrixFunc<MT, ST>::reset, reset_docstring)
   .def("shallow_copy", 
        &MatrixMatrixFunc<MT, ST>::shallowCopy, 
        args("other"), 
-       shallowCopy_docstring)
-  .def("deepCopy", 
+       shallow_copy_docstring)
+  .def("deep_copy", 
        &MatrixMatrixFunc<MT, ST>::deepCopy,
        args("other"),
-       deepCopy_docstring)
-  .def("gradientVec",
+       deep_copy_docstring)
+  .def("gradient_vec",
        &MatrixMatrixFunc<MT, ST>::gradientVec, 
        args("initial", "result", "current_MMF", "result_MMF", "transpose_flag",
          "identity_initial_falg", "zero_result_flag"),
-       gradientVec_docstring)
+       gradient_vec_docstring)
   //operators
   .def(self + self)
   .def(-self)
@@ -157,7 +161,7 @@ void export_matrixmatrixfunc (std::string name, std::string docstring) {
   def("elementwise_product", 
       elementwiseProduct<MT, ST>, 
       args("lhs"),
-      elementwiseProduct_docstring);
+      elementwise_product_docstring);
   def("transpose", transpose<MT, ST>, args("lhs"), transpose_docstring);
   def("diag", diag<MT, ST>, args("lhs"), diag_docstring);
   def("trace", trace<MT, ST>, args("lhs"), trace_docstring);

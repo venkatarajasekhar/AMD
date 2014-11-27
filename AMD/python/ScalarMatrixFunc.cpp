@@ -45,13 +45,13 @@ void export_scalarmatrixfunc(std::string name, std::string docstring) {
     "        m:    number of rows\n"\
     "        n:    number of columns\n";
   
-  const char* initWithVariable_docstring = 
+  const char* init_with_variable_docstring = 
     "Assign parameters to data members, set co.\n"\
     "    Args:\n"\
     "        f_val: scalar type function variable to be assigned to functionVal\n"\
     "        d_val: matrix type function variable to be assigned to derivativeVal\n";
 
-  const char* initWithConst_docstring = 
+  const char* init_with_const_docstring = 
     "Assign parameter to .\n"
     "    Args:\n"\
     "        f_val: scalar type funciton variable\n"\
@@ -69,11 +69,11 @@ void export_scalarmatrixfunc(std::string name, std::string docstring) {
     .def("init_with_variable", 
         &ScalarMatrixFunc<MT, ST>::initWithVariable,
         args("f_val, d_val"),
-        initWithVariable_docstring)
+        init_with_variable_docstring)
     .def("init_with_const",
         &ScalarMatrixFunc<MT, ST>::initWithConst,
         args("f_val", "m", "n"), 
-        initWithConst_docstring)
+        init_with_const_docstring)
     // data members to properties
     .add_property("function_val", 
                   &ScalarMatrixFunc<MT, ST>::functionVal,
