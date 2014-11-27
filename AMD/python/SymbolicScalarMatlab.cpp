@@ -39,13 +39,13 @@ void export_symbolicscalarmatlab () {
     "Args:\n" \
     "    a: symbolic argument passed to sqrt.\n" \
     "Returns:\n" \
-    "    SymbolicScalarMatlab representaion of sqrt(a)";
+    "    SymScal representaion of sqrt(a)";
 
   using namespace boost::python;
   using namespace AMD;
   
   // export SymbolicScalarMatlab
-  class_<SymbolicScalarMatlab>("symScal", symScal_docstring, init<>())
+  class_<SymbolicScalarMatlab>("SymScal", symScal_docstring, init<>())
   	// constructors
     .def(init<>("Default constructor. Sets symbol name to 'x'"))
     .def(init<std::string>(args("symbol"), str_constructor_docstring))

@@ -2,16 +2,16 @@
 
 from setup import *
 
-def test_symScal():
-    """ Test symScal (SymbolicScalarMatlab) """
-    print 'Testing symScal...'
-    a = symScal('a')
-    b = symScal('b')
-    c = symScal('c')
+def test_SymScal():
+    """ Test SymScal (SymbolicScalarMatlab) """
+    print 'Testing SymScal...'
+    a = SymScal('a')
+    b = SymScal('b')
+    c = SymScal('c')
     d = sqrt(a + b * a / c - c)
     assert d.string == "sqrt((a+((b*a)/c))-c)"
 
-    e = symScal(1.2)
+    e = SymScal(1.2)
     assert e.string == '1.2'
 
     print 'a = ', a
@@ -19,12 +19,12 @@ def test_symScal():
     print 'c = ', c
     print 'd = ', d
 
-def test_symMat():
-    """ Test symMat (SymbolicMatrixMatlab) """
-    print 'Testing symMat...'
-    a = symMat("A")
-    b = symMat("B")
-    c = symMat("C")
+def test_SymMat():
+    """ Test SymMat (SymbolicMatrixMatlab) """
+    print 'Testing SymMat...'
+    a = SymMat("A")
+    b = SymMat("B")
+    c = SymMat("C")
     d = inv(a + b * (transpose(a) - c))
     assert d.string == "inv(A+(B*(A'-C)))"
 
@@ -39,10 +39,10 @@ def test_symMat():
     e = logdet(a - b * c)
     assert e.string == "log(det(A-(B*C)))"
 
-    e = fnorm(a + elementwiseProduct(b, c))
+    e = fnorm(a + elementwise_product(b, c))
     assert e.string == "norm(A+(B.*C),'fro')"
 
-    f = symScal("f")
+    f = SymScal("f")
     b = f * a + a / f
     assert b.string == "((f.*A)+(A./f))"
 
@@ -50,18 +50,18 @@ def test_symMat():
     assert b.string == "(f.*A)"
 
     #check sizes
-    x = symMat("X", 2, 3)
-    y = symMat("B", 3, 5)
-    z = symMat("C", 2, 5)
+    x = SymMat("X", 2, 3)
+    y = SymMat("B", 3, 5)
+    z = SymMat("C", 2, 5)
     u = transpose(x * y + z)
-    assert u.numRows == 5 and u.numCols == 2
+    assert u.num_rows == 5 and u.num_cols == 2
 
     
 
 def main():
     """ Test Symbolic Matrices Python binding """
-    test_symScal()
-    test_symMat()
+    test_SymScal()
+    test_SymMat()
     print 'Done.'
 
 if __name__ == '__main__':

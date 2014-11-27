@@ -2,19 +2,20 @@
 
 from setup import *
 
-def testSymMMF():
+def test_SymMMF():
     row, col = 128, 128
     
-    X = symMat("X", row, col)
-    fX = symMMF(X, False)
+    X = SymMat("X", row, col)
+    fX = SymMMF(X, False)
 
-    A = symMat("A", row, col)
-    fA = symMMF(A, False) #TODO make 2nd argument True when exceptions are fixed
+    A = SymMat("A", row, col)
+    fA = SymMMF(A, False) #TODO make 2nd argument True when exceptions are fixed
     
     try :
-        func = trace(fX)
+        func = trace(fX*fA)
 
     except AMDExceptionType, e:
+        print 'Type : ', type(e)
         print e
 
     print 'fA = ', fA 
@@ -22,7 +23,7 @@ def testSymMMF():
 
 def main():
     """ Test MatrixMatrixFunc and ScalarMatrixFunc Python binding """
-    testSymMMF()
+    test_SymMMF()
     print 'Done'
 
 if __name__ == '__main__':

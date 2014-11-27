@@ -35,7 +35,7 @@ void export_symbolicmatrixmatlab () {
     "Args:\n" \
     "    n: size of the idetity matrix\n" \
     "Returns:\n" \
-    "    SymbolicMatrixMatlab eye(n)";
+    "    SymMat representation of eye(n)";
 
   const char* zeros_docstring = 
     "Returns representation of mxn zero matrix.\n" \
@@ -43,48 +43,49 @@ void export_symbolicmatrixmatlab () {
     "    m: number of rows\n" \
     "    n: number of columns\n" \
     "Returns:\n" \
-    "    SymbolicMatrixMatlab zeros(m, n)";
+    "    SymMat representation of zeros(m, n)";
 
   const char* trace_docstring = 
     "Computes the scalar trace(a) from matrix a.\n" \
     "Args:\n" \
     "    a: symbolic matrix\n" \
     "Returns:\n" \
-    "    SymbolicScalarMatlab representaion trace(a)";
+    "    SymMat representation of trace(a)";
 
   const char* logdet_docstring = 
     "Compute scalar logdet(a) from matrix a.\n" \
     "Args:\n" \
     "    a: symbolic matrix\n" \
     "Returns:\n" \
-    "    SymbolicScalarMatlab representaion logdet(a)";
+    "    SymMat representation of logdet(a)";
 
   const char* fnorm_docstring = 
     "Computes the scalar frobenius norm from the matrix a\n."
     "Args:\n" \
     "    a: symbolic matrix\n" \
     "Returns:\n" \
-    "    SymbolicScalarMatlab representaion of ||a||_F";
+    "    SymMat representaion of ||a||_F";
 
   const char* inv_docstring = 
     "Computes the inverse matrix of the matrix a.\n" \
     "Agrs:\n" \
     "    a: symbolic matrix\n" \
-    "    SymbolicMatrixMatlab  representaion of inv(a)";
+    "Returns:\n" \
+    "    SymMat representation of inv(a)";
 
   const char* transpose_docstring = 
     "Computes the transposed matrix of the matrix a.\n" \
     "Args:\n" \
     "    a: symbolic matrix argument.\n" \
     "Returns:\n" \
-    "    SymbolicMatrixMatlab representation of a^T";
+    "    SymMat representation of a^T";
 
   const char* diag_docstring = 
     "Compute the diagonal matrix of matrix a.\n" \
     "Agrs:\n" \
     "    a: symbolic matrix argument\n" \
     "Returns:\n" \
-    "    SymbolicMatrixMatlab representaion of diag(a)";
+    "    SymMat representaion of diag(a)";
 
   const char* elementwiseProduct_docstring = 
     "Compute elementwise product between a and b.\n" \
@@ -92,10 +93,10 @@ void export_symbolicmatrixmatlab () {
     "    a: symbolic matrix argument\n" \
     "    b: another symbolic matrix argument\n" \
     "Returns:\n" \
-    "    SymbolicMatrixMatlab representiaon of a.*b.";  
+    "    SymMat representiaon of a.*b.";  
 
   // export SymbolicMatricMatlab
-  class_<SymbolicMatrixMatlab>("symMat", symMat_docstring, init<>())
+  class_<SymbolicMatrixMatlab>("SymMat", symMat_docstring, init<>())
     .def(init<int, int>())
   	.def(init<std::string>())
     .def(init<std::string, int, int>())
@@ -112,10 +113,10 @@ void export_symbolicmatrixmatlab () {
     .add_property("string",  
                   &SymbolicMatrixMatlab::getString, 
                   "internal string representaiton")
-    .add_property("numRows", 
+    .add_property("num_rows", 
                   &SymbolicMatrixMatlab::getNumRows, 
                   "number of rows")
-    .add_property("numCols", 
+    .add_property("num_cols", 
                   &SymbolicMatrixMatlab::getNumCols,
                   "number of columns")
     // export overloaded operators
@@ -136,7 +137,7 @@ void export_symbolicmatrixmatlab () {
   def("inv", inv, args("a"), inv_docstring);
   def("transpose", transpose, args("a"), transpose_docstring);
   def("diag", diag, args("a"), diag_docstring);
-  def("elementwiseProduct", 
+  def("elementwise_product", 
       elementwiseProduct, 
       args("a", "b"),
       elementwiseProduct_docstring);

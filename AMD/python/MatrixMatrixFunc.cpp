@@ -46,7 +46,7 @@ void export_matrixmatrixfunc (std::string name, std::string docstring) {
     "Set the value of member variables of leaf nodes.\n" \
     "If the matrix of leaf node is constant matrix ...\n" \
     "Args:\n" \
-    "    isVariable: Boolean value indicating whether the implicit matrix\n" \
+    "    is_variable: Boolean value indicating whether the implicit matrix\n" \
     "                is a variable. If so, initialize the object as \n" \
     "                a variable. Otherwise initialize it as a constant.\n";
 
@@ -107,31 +107,31 @@ void export_matrixmatrixfunc (std::string name, std::string docstring) {
   .def(init<>(default_constructor_docstring))
   .def(init<const MT&, optional<bool> >())
   // data members to properties
-  .add_property("isConst", 
+  .add_property("is_const", 
                 &MatrixMatrixFunc<MT, ST>::isConst, 
                 "true if this is a constant function")
-  .add_property("varNumRows",
+  .add_property("var_num_rows",
                 &MatrixMatrixFunc<MT, ST>::numRows,
                 "number of rows in matrix variable")
-  .add_property("varNumCols",
+  .add_property("var_num_cols",
                 &MatrixMatrixFunc<MT, ST>::numCols,
                 "number of columns in matrix variable")
-  .add_property("leftChild", 
+  .add_property("left_child", 
                 &MatrixMatrixFunc<MT, ST>::leftChild,
                 "optional left child")
-  .add_property("rightChild", 
+  .add_property("right_child", 
                 &MatrixMatrixFunc<MT, ST>::rightChild,
                 "optional right child")
-  .add_property("scalarChild",
+  .add_property("scalar_child",
                 &MatrixMatrixFunc<MT, ST>::scalarChild,
                 "scalar func * matrix func") //TODO
   // methods
-  .def("setVariableType", 
+  .def("set_variable_type", 
        &MatrixMatrixFunc<MT, ST>::setVariableType, 
-       args("isVariable"), 
+       args("is_variable"), 
        setVariableType_docstring)
   .def("reset", &MatrixMatrixFunc<MT, ST>::reset, reset_docstring)
-  .def("shallowCopy", 
+  .def("shallow_copy", 
        &MatrixMatrixFunc<MT, ST>::shallowCopy, 
        args("other"), 
        shallowCopy_docstring)
@@ -141,8 +141,8 @@ void export_matrixmatrixfunc (std::string name, std::string docstring) {
        deepCopy_docstring)
   .def("gradientVec",
        &MatrixMatrixFunc<MT, ST>::gradientVec, 
-       args("initial", "result", "currentMMF", "resultMMF", "transposeFlag",
-         "identityInitialFalg", "zeroResultFlag"),
+       args("initial", "result", "current_MMF", "result_MMF", "transpose_flag",
+         "identity_initial_falg", "zero_result_flag"),
        gradientVec_docstring)
   //operators
   .def(self + self)
@@ -154,7 +154,7 @@ void export_matrixmatrixfunc (std::string name, std::string docstring) {
   ;
 
   def("inv", inv<MT, ST>, args("lhs"), inv_docstring);
-  def("elementwiseProduct", 
+  def("elementwise_product", 
       elementwiseProduct<MT, ST>, 
       args("lhs"),
       elementwiseProduct_docstring);
@@ -167,7 +167,7 @@ void export_matrixmatrixfunc (std::string name, std::string docstring) {
 
 void export_matrixmatrixfunc() {
   export_matrixmatrixfunc<SymbolicMatrixMatlab, SymbolicScalarMatlab>(
-      "symMMF", 
+      "SymMMF",
       "A symbolic Matrix-Matrix function.\n" \
       "This class acts as a node in computational tree. The computation\n" \
       "of matrix derivatices is performed by traversing the computational\n" \
