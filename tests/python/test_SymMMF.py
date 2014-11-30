@@ -15,8 +15,11 @@ def test_SymMMF():
         func = trace(fX*fA)
 
     except AMDExceptionType, e:
-        print 'Type : ', type(e)
-        print e
+        print 'type = ', type(e)
+        print 'e = ', e
+        print 'e.args = ', e.args
+        print 'e.message = ', e.message
+        exception_obj = e.args
 
     print 'fA = ', fA 
     print 'fX = ', fX
