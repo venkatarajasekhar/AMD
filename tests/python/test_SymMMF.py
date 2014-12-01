@@ -19,7 +19,10 @@ def test_SymMMF():
         print 'e = ', e
         print 'e.args = ', e.args
         print 'e.message = ', e.message
-        exception_obj = e.args
+        e_obj = e.args[0]
+        print 'what = ', e_obj.what
+        print 'trace = ', e_obj.trace
+        print 'error_code = ', e_obj.error_code
 
     print 'fA = ', fA 
     print 'fX = ', fX

@@ -23,15 +23,11 @@ namespace AMD { namespace python {
   }
 
   void translate_exception_generic_impl(exception_generic_impl const& e) {
-    std::string s(e.what());
-    s.append("\nTrace:\n");
-    s.append(e.trace());
-    PyErr_SetString(AMDExceptionTypeObj, s.c_str()); 
-    // PyErr_SetObject(AMDExceptionTypeObj, object(e).ptr()); //TODO 
+    PyErr_SetObject(AMDExceptionTypeObj, object(e).ptr());  
   }
 
   void export_exception() {
-   /* 
+    
     class_<exception_generic_impl>("AMDException",
       init<const char*, const char*, optional<const error_code_type&> >())
     .add_property("trace", &exception_generic_impl::trace, "exception trace")
@@ -39,7 +35,7 @@ namespace AMD { namespace python {
     .add_property("error_code", &exception_generic_impl::code, "error code")
     .def("__str__", &getString)
     ;
-    */
+    
     AMDExceptionTypeObj = PyErr_NewException("AMD.AMDExceptionType", NULL, NULL);
     scope().attr("AMDExceptionType") = handle<>(borrowed(AMDExceptionTypeObj));
     register_exception_translator<exception_generic_impl>(
