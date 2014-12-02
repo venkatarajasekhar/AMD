@@ -14,6 +14,7 @@ typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
 typedef AMD::ScalarMatrixFunc<symbolic_matrix_type,
                        				symbolic_value_type> SymbolicSMFunc;
 static int ROW = 4, COL = 4;
+//const int POSTORDER = 1;
 symbolic_matrix_type zero("0");
 SymbolicMMFunc symbolicZeroMMFunc(zero,true);
 symbolic_matrix_type identityMatrix("I");
@@ -36,7 +37,7 @@ void testMultiplicationOptimizations() {
   /*Case 3 M*I */
   SymbolicMMFunc fX_times_identity = fX*symbolicIdentityMMFunc;
   SymbolicMMFunc* fX_times_identity_optimized = 
-      AMD::optimize(fX_times_identity);
+      AMD::optimize(fX_times_identity,POSTORDER);
   assert(fX_times_identity_optimized.mType == kIdentity); 
   printf("\t-Passed M*I test\n");
   /*Case 4 I*M */
@@ -158,7 +159,11 @@ void testExpressionOptimizations() {
   assert(expression3_optimized.mType == kZero);
   printf("\t-Passed X*inv(X) - I + inv(I)*0 + inv(I)*X - X*I test\n");
   /* Please add more test caes to test the functionality */
-
+  
+  SymbolicMMFunc expression4 = fX*transpose(symbolicIdentityMMFunc) + symbolicZeroMMFunc
+    - fX*inv(symbolicIdentityMMFunc);
+  SymbolicMMFunc* expression4_optimized = AMD::optimize(expression4);
+  assert(expression4_optimize.mType == kZero);
 }
 void testInverseOptimizations() {
   symbolic_matrix_type X("A");
