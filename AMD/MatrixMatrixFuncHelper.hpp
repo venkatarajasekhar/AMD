@@ -38,6 +38,16 @@ namespace AMD {
     DIAG
   };
 
+  /* enum type for possible status of a matrix. The first one is a progenerate
+   * case, whereas the rest are degenerate ones*/
+  enum MatrixType {
+    kGeneral, //progenerate; common case
+    kInvalid, //needs to be initialised
+    kZero, //zero matrix
+    kIdentity, //identity matrix
+    kTranspose //transpose of a matrix
+  };
+
   std::string opName[] = { "none",
     "const",
     "var",
@@ -201,13 +211,13 @@ namespace AMD {
     case MINUS:
     case ELEWISE:
     {
-      if (lhs.getNumRows() != rhs.getNumRows() && lhs.isConst == false && rhs.isConst == false) {
+      if (lhs.getNumRows() != rhs.getNumRows() && lhs.mType == kZero && rhs.isConst == kZero) {
         throw exception_generic_impl(
           "AMD::binaryOpStandardCheck",
           "+/- Mismatched number of rows",
           AMD_INVALID_ARGUMENTS);
       }
-      else if (lhs.getNumCols() != rhs.getNumCols() && lhs.isConst == false && rhs.isConst == false) {
+      else if (lhs.getNumCols() != rhs.getNumCols() && lhs.mType == kZero && rhs.isConst == kZero) {
         throw exception_generic_impl(
           "AMD::binaryOpStandardCheck",
           "+/- Mismatched number of cols",
@@ -218,7 +228,7 @@ namespace AMD {
 
     case TIMES:
     {
-      if (lhs.getNumCols() != rhs.getNumRows() && lhs.isConst == false && rhs.isConst == false) {
+      if (lhs.getNumCols() != rhs.getNumRows() && lhs.mType == kZero && rhs.isConst == kZero) {
         throw exception_generic_impl(
           "AMD::binaryOpStandardCheck",
           "* Mismatched number of rows/cols",

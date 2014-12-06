@@ -55,6 +55,7 @@ namespace AMD {
     CallBackFuncType callBackFunc; /**< Used to compute derivative after
                                         evaluation tree is recorded */
     OpType opNum; /**< enum for the operator used at this node in the tree */
+    MatrixType mType;
     bool isConst; /**< is this a variable or a constant function */
     int numRows; /**< number of rows in matrix */
     int numCols; /**< number of cols in matrix */
@@ -73,12 +74,13 @@ namespace AMD {
     // TODO think about an extra scalar value here
     /**
      * @brief This is an empty constructor that initializes all values to
-     * defaults.  Create a constant function.
+     * defaults.  Create a invalid function.
      */
     MatrixMatrixFunc() : matrixPtr(),
       callBackFunc(NULL),
       opNum(NONE),
       isConst(true),
+      mType(kInvalid),
       numRows(0),
       numCols(0),
       leftChild(NULL),
@@ -89,10 +91,11 @@ namespace AMD {
      * @brief Makes an expensive copy of matrix -- avoid this constructor
      * if your matrices are large.
      */
-    MatrixMatrixFunc(const MT& matrix, bool isConst = true) : matrixPtr(),
+    MatrixMatrixFunc(const MT& matrix, bool isConst = true, MatrixType mType = kGeneral) : matrixPtr(),
       callBackFunc(NULL),
       opNum(NONE),
       isConst(isConst),
+      mType(mType),
       numRows(0),
       numCols(0),
       leftChild(NULL),
@@ -111,10 +114,11 @@ namespace AMD {
      * @brief Constructor with a MT type variable.
      */
     MatrixMatrixFunc(boost::shared_ptr<MT> matrixPtr,
-      bool isConst = true) : matrixPtr(matrixPtr),
+      bool isConst = true, MatrixType mType = kGeneral) : matrixPtr(matrixPtr),
       callBackFunc(NULL),
       opNum(NONE),
       isConst(isConst),
+      mType(mType),
       numRows(0),
       numCols(0),
       leftChild(NULL),

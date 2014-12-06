@@ -11,14 +11,13 @@
 
 
 int main(int argc, char** argv) {
-  std::string str ;
-  std::string rowStr;
-  std::string colStr;
-  int row;
-  int col;
-  int i; 
+  std::string str ; /* expression */
+  std::string rowStr; /* string corresponding to the umber of rows */
+  std::string colStr; /* string corresponding to the number of cols */
+  int row; /* number of rows */
+  int col; /* number of cols */
 
-  bool testMode = false;
+  bool isTestMode = false; /* run examples? */ 
   if ( argc <=1) {
     std::cout << "./SymbolicCalculator 'express' row=? col=?" << std::endl;
     std::cout << "or" << std::endl;
@@ -28,7 +27,7 @@ int main(int argc, char** argv) {
   if (argc == 2) {
     str = argv[1]; 
     if (str == "examples") {
-      testMode = true;
+      isTestMode = true;
     }
     else { 
       row = 4;
@@ -48,19 +47,21 @@ int main(int argc, char** argv) {
     return -1;
   }
   
-  if (testMode) {
+  if (isTestMode) {
     std::vector<std::string> testsInput;
 
-    //valid tests
+    /*valid tests*/
     testsInput.push_back("trace(X)");
     testsInput.push_back("trace(X*X)");;
     testsInput.push_back("logdet(X*transpose(S*X))");
     testsInput.push_back("2*logdet(X+A)");
+    testsInput.push_back("logdet(X*(X+I))");
+    testsInput.push_back("logdet(X*(X+Z))");
     testsInput.push_back("2*logdet(A+X+B)");
     testsInput.push_back("3*logdet(X*transpose(X))*trace(inv(X)+X)");
     testsInput.push_back("d*trace(X) + 3*logdet(X*transpose(X))*trace(inv(X)+X)+d");
 
-    //invalid tests
+    /*invalid tests*/
     testsInput.push_back("amd");
     testsInput.push_back("trace(amd)");
     testsInput.push_back("trc(X)");
@@ -68,7 +69,7 @@ int main(int argc, char** argv) {
     testsInput.push_back("trace(X)(");
     testsInput.push_back("X+trace(X)");
     
-    
+    /* parse tests */
     for (std::vector<std::string>::iterator s = testsInput.begin();
          s != testsInput.end();s++) {
       AMD::Calculator cal;
@@ -94,7 +95,6 @@ int main(int argc, char** argv) {
     std::cout << "Function:   " << cal.functionStr() << std::endl;
     std::cout << "Derivative: " << cal.derivativeStr() << std::endl;
     std::cout << "MMF: " << cal.getComputationalTree()->derivativeFuncVal->matrixPtr->getString() << std::endl;
-    //std::cout << cal.getComputationalTree()->functionVal.getString() << std::endl;
   } catch (const AMD::exception & error) {
     std::cout << "Your expression is invalid:" << error.what() << std::endl;
     std::cout << "Run \"./SymbolicCalculator examples\" for examples of valid and invalid expressions." << std::endl;

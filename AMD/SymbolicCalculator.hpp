@@ -63,35 +63,34 @@ class Calculator {
       }
       
       AMD_START_TRY_BLOCK()
-      /* Create matrices for the variables and constant matrices */
-      char identifier[2];//one letter identifier
-      identifier[1] = 0;//end of string character
+      std::vector<boost::shared_ptr<symbolic_matrix_type> > matrices;/* Create matrix_type for the variables and constant matrices */
+      char identifier[2];/* one letter identifier */
+      identifier[1] = 0;/* end of string character */
 
-      std::vector<symbolic_matrix_type> matrices;
+      
       matrices.resize('Z'-'A'+1);
       matrixFuncs.resize('Z'-'A'+1);
 
+      /* create matrix types */
       for(char c = 'A'; c < 'Z';c++) {
         identifier[0] = c;
-        //identity and X are created separately
+        /* identity,zero and X are created separately */
         if(c == 'I' || c == 'X')
           continue;
-        matrices[c-'A'] = symbolic_matrix_type(identifier,row,col);
+        matrices[c-'A'] = boost::shared_ptr<symbolic_matrix_type>(new symbolic_matrix_type(identifier,row,col));
         matrixFuncs[c-'A'] = boost::shared_ptr<SymbolicMMFunc>
           (new SymbolicMMFunc(matrices[c-'A'],true));
       }
-
-      matrices['X'-'A'] = symbolic_matrix_type("X",row,col);
+      /* create X's MMF */
+      matrices['X'-'A'] = boost::shared_ptr<symbolic_matrix_type>(new symbolic_matrix_type("X",row,col));
       matrixFuncs['X'-'A'] = boost::shared_ptr<SymbolicMMFunc>
         (new SymbolicMMFunc(matrices['X'-'A'], false));
- 
-      matrices['I'-'A'] = symbolic_adaptor_type::eye(row);
+      /* create I's MMF */
       matrixFuncs['I'-'A'] = boost::shared_ptr<SymbolicMMFunc>
-        (new SymbolicMMFunc (matrices['I'-'A'], true));
-
-      matrices['Z'-'A'] =  symbolic_adaptor_type::zeros(row, col);
+        (new SymbolicMMFunc (symbolic_adaptor_type::eye(row), true));
+      /* create Z's MMF */
       matrixFuncs['Z'-'A'] = boost::shared_ptr<SymbolicMMFunc>
-        (new SymbolicMMFunc (matrices['Z'-'A'], true));
+        (new SymbolicMMFunc (symbolic_adaptor_type::zeros(row,col), true, kZero));
  
 
       AMD_END_TRY_BLOCK()
@@ -108,10 +107,12 @@ class Calculator {
     void compute(std::string expr) {
       this->expr = expr;
       std::string exprNoSpace = "";
+      /* remove spaces */
       for (std::string::iterator it = expr.begin(); it != expr.end(); it++) {
         if (*it != ' ') 
           exprNoSpace += *it;
       }
+      
       if (exprNoSpace.size() == 0) {
         throw exception_generic_impl("AMD::Calculator::compute",
                                      "Empty expression",
@@ -128,7 +129,7 @@ class Calculator {
       func = computeSMF(rpn, row, col);
 
       AMD_END_TRY_BLOCK()
-        AMD_CATCH_AND_RETHROW(SymbolicCalculator,compute)
+      AMD_CATCH_AND_RETHROW(SymbolicCalculator,compute)
     }
     /**
      * @brief     Return the function value.
@@ -149,7 +150,6 @@ class Calculator {
      * @brief     Return a shared_pointer to the computational tree.
      * @return    shared_ptr<SymbolicSMFunc>-type root of the tree
      */
-  //does not have a pointer to other functions
   boost::shared_ptr<SymbolicSMFunc> getComputationalTree() {
     return func;
   }
@@ -250,7 +250,7 @@ bool Calculator::isOp(char c) {
   }
   return false;
 }
-
+/* return if str starting at pos is operator. */
 bool Calculator::isOpStr(std::string& str,int pos) {
   for(int i = 0; i < opStrList.size();i++) {
     if(str.compare(pos,opStrList[i].size(),opStrList[i]) == 0)
@@ -267,6 +267,7 @@ int Calculator::priority(char c) {
   return 0; 
 }
 
+/* return the priority of operator. */
 int Calculator::priorityStr(std::string& str) {
   for(int i = 0; i < opStrList.size();i++)
     if(opStrList[i] == str)
@@ -285,8 +286,8 @@ std::vector<std::string> Calculator::stringParser(std::string& str) {
   int size = str.size();
   int i;
   
-
-  for (i = 0; i < size; i++) { //operations
+  /* try to identify operators */
+  for (i = 0; i < size; i++) { 
     bool foundSymbol = false;
     for(int j = 0; j < opStrList.size() && !foundSymbol;j++) {
       if(str.compare(i,opStrList[j].size(),opStrList[j]) == 0) {
@@ -312,7 +313,7 @@ std::vector<std::string> Calculator::stringParser(std::string& str) {
           i++;
         }
         i--;
-        //exception: cnt != 0 - parsing_exception
+        
         if(cnt != 0) {
           throw exception_generic_impl("AMD::Calculator::stringParser",
                                        "Parentheses mismatch",
@@ -320,7 +321,7 @@ std::vector<std::string> Calculator::stringParser(std::string& str) {
         }
         result.push_back(traceStr);
       } else 
-        if (str.compare(i,7,"logdet(")==0) {//logdet
+        if (str.compare(i,7,"logdet(")==0) {
           i+=7; 
           int cnt = 1;
           std::string logdetStr = "logdet(";
@@ -335,28 +336,29 @@ std::vector<std::string> Calculator::stringParser(std::string& str) {
             i++;
           }
           i--;
-          //exception: cnt != 0 - parsing exception
+
           if(cnt != 0) {
             throw exception_generic_impl("AMD::Calculator::stringParser",
                                          "Parentheses mismatch",
                                          AMD_INVALID_EXPRESSION);
           }
           result.push_back(logdetStr);
-        }else
-        if(std::isalpha(str[i])) { // matrices and real constants
+        } else
+        /* identify operants ( letters ) */
+        if(std::isalpha(str[i])) { 
           std::string varStr(1,str[i]);
           result.push_back(varStr);
-        }else 
+        }else
+        /* identify scalar constants ( digits ) */ 
         if(std::isdigit(str[i])) {
           std::string varStr = "";
-            while(isdigit(str[i])) {
-              varStr += str[i];
-              i++;
-            }
-            i--;
+          while(isdigit(str[i])) {
+            varStr += str[i];
+            i++;
+          }
+          i--;
           result.push_back(varStr);
         }else { 
-          //exception - parsing_exception
           throw exception_generic_impl("AMD::Calculator::stringParser",
                                        "Invalid term or character",
                                        AMD_INVALID_EXPRESSION);          
@@ -383,7 +385,6 @@ std::vector<std::string> Calculator::infix2rpn(std::vector<std::string>& infix) 
         opStack.pop();
         }
         if(opStack.empty() == true) {
-          //exception - parsing_exception
           throw exception_generic_impl("AMD::Calculator::stringParser",
                                        "Parentheses mismatch",
                                        AMD_INVALID_EXPRESSION);
@@ -424,6 +425,7 @@ boost::shared_ptr<SymbolicSMFunc> Calculator::computeSingleSMF(std::vector<std::
 
   AMD_START_TRY_BLOCK()
   for (i = 0; i < size; i++) {
+    /* identify const matrices ( upper case letters ) */
     if (str[i].size() == 1 && isupper(str[i][0])) {
       boost::shared_ptr<SymbolicMMFunc> mmfunc = matrixFuncs[str[i][0]-'A'];
       MMFStack.push(mmfunc);
@@ -502,6 +504,7 @@ boost::shared_ptr<SymbolicSMFunc> Calculator::computeSingleSMF(std::vector<std::
     }
     
   } 
+  /*scalar matrix func is trace */
   if (SMFtype == 1) {
     if ((MMFStack.top()).type() == typeid(boost::shared_ptr<SymbolicMMFunc>))
       func = boost::make_shared<SymbolicSMFunc>(trace(*boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top())));
@@ -513,6 +516,7 @@ boost::shared_ptr<SymbolicSMFunc> Calculator::computeSingleSMF(std::vector<std::
       }
     MMFStack.pop();
   } else 
+  /*scalar matrix func is logdet */
   if (SMFtype == 2) {
     if ((MMFStack.top()).type() == typeid(boost::shared_ptr<SymbolicMMFunc>))
       func = boost::make_shared<SymbolicSMFunc>(logdet(*boost::get<boost::shared_ptr<SymbolicMMFunc> >(MMFStack.top())));
@@ -603,18 +607,18 @@ boost::shared_ptr<SymbolicSMFunc> Calculator::computeSMF(std::vector<std::string
       SMFStack.push(funcResult);
       
       } else {
-      bool isRealConst = false;
+      bool isScalarConst = false;
       
       if (str[i].size() == 1 && islower(str[i][0]) && str[i][0] != 'x') //check if it is a real constant
-        isRealConst = true;
+        isScalarConst = true;
       
-      bool isRealNumber = true;
+      bool isScalar = true;
       for (int j = 0; j < str[i].size();j++) {
         if(!isdigit(str[i][j]))
-          isRealNumber = false;
+          isScalar = false;
 
       }    
-      if (isRealConst || isRealNumber) {
+      if (isScalarConst || isScalar) {
         symbolic_scalar_type num(str[i]);
         boost::shared_ptr<SymbolicSMFunc> constantSMFunc(new SymbolicSMFunc(num, Row, Row));
         SMFStack.push(constantSMFunc);
