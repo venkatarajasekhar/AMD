@@ -1,22 +1,15 @@
 #ifndef MatrixMatrixFunc_H
 #define MatrixMatrixFunc_H
-
 /**
  * @file MatrixMatrixFunc.hpp
  *
- * @author Peder Olsen, Anju Kambadur
+ * @author Peder Olsen, Anju Kambadur, Allan Sapucaia
  *
  * @brief This file defines a class to present Matrix-Matrix function. This
  * class acts as nodes in the computational tree. The computation of matrix
  * derivatives is performed by traversing the computation tree in the reverse
  * mode.
  */
-/* Known bugs:
-   - Constant matrices with dimension 0:
-      Quickfix: default dimension
-      Properfix: matrices "discover" their dimension from operations
-   
-*/
 #include <iostream>
 #include <string>
 #include <cstdio>
@@ -56,15 +49,17 @@ namespace AMD {
                                     boost::shared_ptr<MMF>,/**< result MMF. */
                                     const MatrixMatrixFunc<MT, ST>*,
                                     int&, bool&, bool&);
-
-    boost::shared_ptr<MT> matrixPtr; /**< Once recorded the matrix should never
+ 
+   boost::shared_ptr<MT> matrixPtr; /**< Once recorded the matrix should never
                                           be changed - so a pointer is safe */
     CallBackFuncType callBackFunc; /**< Used to compute derivative after
                                         evaluation tree is recorded */
     OpType opNum; /**< enum for the operator used at this node in the tree */
     bool isConst; /**< is this a variable or a constant function */
-    int varNumRows; /**< number of rows in matrix variable */
-    int varNumCols; /**< number of cols in matrix variable */
+    int numRows; /**< number of rows in matrix */
+    int numCols; /**< number of cols in matrix */
+    //int varNumRows; /**< number of rows in matrix variable */
+    //int varNumCols; /**< number of cols in matrix variable */
 #if 1
     MatrixMatrixFunc* leftChild; /**< optional left child */
     MatrixMatrixFunc* rightChild; /**< optional right child */
@@ -84,8 +79,8 @@ namespace AMD {
       callBackFunc(NULL),
       opNum(NONE),
       isConst(true),
-      varNumRows(0),
-      varNumCols(0),
+      numRows(0),
+      numCols(0),
       leftChild(NULL),
       rightChild(NULL),
       scalarChild(NULL) { }
@@ -98,8 +93,8 @@ namespace AMD {
       callBackFunc(NULL),
       opNum(NONE),
       isConst(isConst),
-      varNumRows(0),
-      varNumCols(0),
+      numRows(0),
+      numCols(0),
       leftChild(NULL),
       rightChild(NULL),
       scalarChild(NULL) {
@@ -120,8 +115,8 @@ namespace AMD {
       callBackFunc(NULL),
       opNum(NONE),
       isConst(isConst),
-      varNumRows(0),
-      varNumCols(0),
+      numRows(0),
+      numCols(0),
       leftChild(NULL),
       rightChild(NULL),
       scalarChild(NULL) {
@@ -151,18 +146,18 @@ namespace AMD {
           "Node is not a leaf", AMD_INTERNAL_NODE);
 
         // If is constant, call the callbackfunction for constant.
-      
-        varNumRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
-        varNumCols = MatrixAdaptorType::getNumCols(*(matrixPtr));
         if (isConst) {
           callBackFunc = constOp < MT, ST > ;
           opNum = CONST;
-          //varNumRows = 0;
-          //varNumCols = 0;
+          numRows = 0;
+          numCols = 0;
         }
         else {
           callBackFunc = varOp < MT, ST > ;
           opNum = VAR;
+          numRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
+          numCols = MatrixAdaptorType::getNumCols(*(matrixPtr));
+        
         }
       AMD_END_TRY_BLOCK()
       AMD_CATCH_AND_RETHROW(AMD, isVariable)
@@ -174,8 +169,8 @@ namespace AMD {
     void reset() {
       callBackFunc = NULL;
       opNum = NONE;
-      varNumRows = 0;
-      varNumCols = 0;
+      numRows = 0;
+      numCols = 0;
       // Reset its left & right child recursively.
       if (NULL != leftChild) delete leftChild;
       if (NULL != rightChild) delete rightChild;
@@ -198,8 +193,8 @@ namespace AMD {
       opNum = other.opNum;
       isConst = other.isConst;
       callBackFunc = other.callBackFunc;
-      varNumRows = other.varNumRows;
-      varNumCols = other.varNumCols;
+      numRows = other.getNumRows();
+      numCols = other.getNumCols();
       leftChild = NULL;
       rightChild = NULL;
       scalarChild = NULL;
@@ -207,7 +202,7 @@ namespace AMD {
 
     /**
      * @function
-     * Create a deep copy of the current MatrixMatrixFunc node. This function
+     *     * Create a deep copy of the current MatrixMatrixFunc node. This function
      * will create a copy of this node as well as its children nodes.
      * @param[in] other The MMFunc that we want to copy from.
      * @return Nothing
@@ -257,18 +252,15 @@ namespace AMD {
 
       isConst = lhs.isConst && rhs.isConst;
 
-    /*
+    
       if (false == isConst) {
-        varNumRows = MatrixAdaptorType::getNumRows(*matrixPtr);
-        varNumCols = MatrixAdaptorType::getNumCols(*matrixPtr);
+        numRows = MatrixAdaptorType::getNumRows(*matrixPtr);
+        numCols = MatrixAdaptorType::getNumCols(*matrixPtr);
       }
       else {
-        varNumRows = 0;
-        varNumCols = 0;
+        numRows = 0;
+        numCols = 0;
       }
-    */
-      varNumRows = MatrixAdaptorType::getNumRows(*matrixPtr);
-      varNumCols = MatrixAdaptorType::getNumCols(*matrixPtr);
       
       /** TODO: Peder, why is there a deepCopy() here? */
       /** Because of temporaries */
@@ -289,19 +281,16 @@ namespace AMD {
       callBackFunc = cbf;
       isConst = lhs.isConst && rhs.isConst;
 
-      /*
+      
       if (false == isConst) {
-        varNumRows = MatrixAdaptorType::getNumRows(*matrixPtr);
-        varNumCols = MatrixAdaptorType::getNumCols(*matrixPtr);
+        numRows = MatrixAdaptorType::getNumRows(*matrixPtr);
+        numCols = MatrixAdaptorType::getNumCols(*matrixPtr);
       }
       else {
-        varNumRows = 0;
-        varNumCols = 0;
+        numRows = 0;
+        numCols = 0;
       }
-      */
-      varNumRows = MatrixAdaptorType::getNumRows(*matrixPtr);
-      varNumCols = MatrixAdaptorType::getNumCols(*matrixPtr);
-
+      
       leftChild = lhsMMF;
       rightChild = rhsMMF;
     }
@@ -320,8 +309,8 @@ namespace AMD {
       OpType _opNum,
       CallBackFuncType cbf,
       const MatrixMatrixFunc<MT, ST> &lhs) {
-      varNumRows = lhs.varNumRows;  // should be 0 or a size
-      varNumCols = lhs.varNumCols;
+      numRows = lhs.getNumRows();  // should be 0 or a size
+      numCols = lhs.getNumCols();
       matrixPtr = resultPtr;
       opNum = _opNum;
       isConst = lhs.isConst;
@@ -360,7 +349,7 @@ namespace AMD {
      *
      * @return Number of rows.
      */
-    int numRows() const { return varNumRows; }
+    int getNumRows() const { return numRows; }
 
     /**
      * @brief Get the number of columns.
@@ -368,7 +357,7 @@ namespace AMD {
      * @return Number of columns.
      */
 
-    int numCols() const { return varNumCols; }
+    int getNumCols() const { return numCols; }
 
     /**
      * @brief  Get the matrix associated to this node.
@@ -407,9 +396,9 @@ namespace AMD {
       bool b_valid_shared_ptr = 
           current.use_count() >= 1 && result.use_count() >= 1;
       bool b_constant_function = isConst;
-      bool b_matched_dimension =
-        MatrixAdaptorType::getNumRows(*(result)) == varNumRows &&
-        MatrixAdaptorType::getNumCols(*(result)) == varNumCols;
+      bool b_matched_dimension = ( true == (*currentMMF).isConst || false == (*resultMMF).isConst ) ||
+        (MatrixAdaptorType::getNumRows(*(result)) == getNumRows() &&
+         MatrixAdaptorType::getNumCols(*(result)) == getNumCols() );
 
       /* Throwing first exception found. Alternatively, we could throw the
        * most critical one instead. */
@@ -421,11 +410,7 @@ namespace AMD {
         exception_generic_impl("AMD::gradientVec",
                                "Shared pointer is not valid anymore",
                                AMD_INVALID_SHARED_PTR);
-      //if (true == b_constant_function) throw 
-      //  exception_generic_impl("AMD::gradientVec",
-      //                         "Node is not a variable function",
-      //                         AMD_CONSTANT_FN);
-
+      
       /**
        * Only need to do something if the current function is not a
        * constant

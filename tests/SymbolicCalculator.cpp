@@ -81,7 +81,8 @@ int main(int argc, char** argv) {
         
       } catch (const AMD::exception & error) {
         std::cout << "An error occurred:"<< std::endl;
-        std::cout << error.what() << std::endl;
+        std::cout << "\t" << error.what() << std::endl;
+        std::cout << "\t" << error.trace() << std::endl;
       }
       std::cout << std::endl;
     }

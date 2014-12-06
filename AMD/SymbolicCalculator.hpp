@@ -95,7 +95,7 @@ class Calculator {
  
 
       AMD_END_TRY_BLOCK()
-        AMD_CATCH_AND_RETHROW(SymbolicCalculator,SymbolicCalculator)
+      AMD_CATCH_AND_RETHROW(SymbolicCalculator,SymbolicCalculator)
     }
 
     /**

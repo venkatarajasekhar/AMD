@@ -4,7 +4,7 @@
 /**
  * @file MatrixMatrixFuncHelper.hpp
  *
- * @author Peder Olsen, Anju Kambadur, Suyang Zhu
+ * @author Peder Olsen, Anju Kambadur, Suyang Zhu, Allan Sapucaia
  *
  * @brief This file defines different types call-back functions
  * (callBackFunc) and operator overloading for MatrixMatrixFunc class.
@@ -201,13 +201,13 @@ namespace AMD {
     case MINUS:
     case ELEWISE:
     {
-      if (lhs.varNumRows != rhs.varNumRows) {
+      if (lhs.getNumRows() != rhs.getNumRows() && lhs.isConst == false && rhs.isConst == false) {
         throw exception_generic_impl(
           "AMD::binaryOpStandardCheck",
           "+/- Mismatched number of rows",
           AMD_INVALID_ARGUMENTS);
       }
-      else if (lhs.varNumCols != rhs.varNumCols) {
+      else if (lhs.getNumCols() != rhs.getNumCols() && lhs.isConst == false && rhs.isConst == false) {
         throw exception_generic_impl(
           "AMD::binaryOpStandardCheck",
           "+/- Mismatched number of cols",
@@ -218,7 +218,7 @@ namespace AMD {
 
     case TIMES:
     {
-      if (lhs.varNumCols != rhs.varNumRows) {
+      if (lhs.getNumCols() != rhs.getNumRows() && lhs.isConst == false && rhs.isConst == false) {
         throw exception_generic_impl(
           "AMD::binaryOpStandardCheck",
           "* Mismatched number of rows/cols",
@@ -277,7 +277,7 @@ namespace AMD {
 
   template<typename MT, typename ST>
   static void scalarOpDiffStandardCheck(const MatrixMatrixFunc<MT, ST>& lhs) {
-    if (lhs.varNumRows != lhs.varNumCols) {
+    if (lhs.getNumRows() != lhs.getNumCols()) {
       throw exception_generic_impl(
         "AMD::scalarOpDiffStandardCheck",
         "scalar function (trace/logdet) called on non-square matrix",
@@ -329,12 +329,12 @@ namespace AMD {
         AMD_NULL_PTR);
     if (NULL != node->leftChild || NULL != node->rightChild)
       throw exception_generic_impl("AMD::constOp",
-      "Left and right children not NULL",
+      "Left or right children not NULL",
       AMD_INTERNAL_NODE);
-    if (false == node->isConst &&
-      CONST == node->opNum &&
-      0 == node->varNumRows &&
-      0 == node->varNumCols)
+    if (false == node->isConst ||
+      CONST != node->opNum ||
+      0 != node->getNumRows() ||
+      0 != node->getNumCols())
       throw exception_generic_impl("AMD::constOp",
       "Node is not a constant",
       AMD_VARIABLE_FN);
@@ -381,15 +381,15 @@ namespace AMD {
         AMD_NULL_PTR);
     if (NULL != node->leftChild || NULL != node->rightChild)
       throw exception_generic_impl("AMD::varOp",
-      "Left and right children not NULL",
+      "Left or right children not NULL",
       AMD_INTERNAL_NODE);
 
-    if (true == node->isConst &&
-      VAR == node->opNum &&
-      0 <= node->varNumRows &&
-      0 <= node->varNumCols)
+    if (true == node->isConst ||
+      VAR != node->opNum ||
+      0 >= node->getNumRows() ||
+      0 >= node->getNumCols())
       throw exception_generic_impl("AMD::varOp",
-      "Node is not a constant",
+      "Node is a constant",
       AMD_CONSTANT_FN);
 
     if (1 > result.use_count() || 1 > current.use_count())
@@ -1449,7 +1449,7 @@ namespace AMD {
     boost::shared_ptr<MT> initPtr(new MT);
     boost::shared_ptr<MT> resPtr(new MT);
     *initPtr = MatrixAdaptorType::eye(n);
-    *resPtr = MatrixAdaptorType::zeros(lhs.varNumRows, lhs.varNumCols);
+    *resPtr = MatrixAdaptorType::zeros(lhs.getNumRows(), lhs.getNumCols());
 
     /** This is needed to be able to compute the derivative of derivative */
     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >
@@ -1473,7 +1473,7 @@ namespace AMD {
       zeroFlag);
     if (zeroFlag) {
       result.initWithConst(MatrixAdaptorType::trace(*lhs.matrixPtr),
-        lhs.varNumCols, lhs.varNumCols);
+        lhs.getNumCols(), lhs.getNumCols());
     }
     else {
       result.initWithVariable(MatrixAdaptorType::trace(*lhs.matrixPtr),
@@ -1507,7 +1507,7 @@ namespace AMD {
     const int n = MatrixAdaptorType::getNumRows(*(lhs.matrixPtr));
     boost::shared_ptr<MT> initPtr(new MT);
     boost::shared_ptr<MT> resPtr(new MT);
-    *resPtr = MatrixAdaptorType::zeros(lhs.varNumRows, lhs.varNumCols);
+    *resPtr = MatrixAdaptorType::zeros(lhs.getNumRows(), lhs.getNumCols());
     bool transposeFlag = true;
     boost::shared_ptr<MatrixMatrixFunc<MT, ST> >
       initMMF(new MatrixMatrixFunc<MT, ST>);
@@ -1535,7 +1535,7 @@ namespace AMD {
       transposeFlag, false, zeroFlag);
     if (zeroFlag) {
       result.initWithConst(MatrixAdaptorType::logdet(*lhs.matrixPtr),
-        lhs.varNumCols, lhs.varNumCols);
+        lhs.getNumCols(), lhs.getNumCols());
     }
     else {
       result.initWithVariable(MatrixAdaptorType::logdet(*lhs.matrixPtr),
