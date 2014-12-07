@@ -109,7 +109,7 @@ namespace AMD {
    */
   SymbolicMMFunc* multiplyOpt(SymbolicMMFunc &node){
     /** "node" HAS LHS AND RHS --- YOU SHOULD BE ACCEPTING THE "node" */
-
+    
     
     /* CASE A Matrix * Matrix */
     if (node.leftChild != NULL && node.rightChild != NULL){
@@ -208,7 +208,106 @@ namespace AMD {
      */
     return &node;
   }
+  /* This function optimizing log-determinant */
+  SymbolicMMFunc* logdetOpt(SymbolicMMFunc &node){
+    /* Case 1: If node is eye, return 1 */
+    if (node.leftChild != NULL){
+      
+      
+      if (node.leftChild->mType == kIdentity ) {
+        AMD::SymbolicScalarMatlab one("1");
+        SymbolicSMFunc retVal(one,
+                              node.leftChild->varNumRows,
+                              node.leftChild->varNumCols);
+        node.scalarChild = &retVal;
+        return &node;
+      }
+      /* Case 2: If node is zeroMatrix, return 0 */
+      if (node.leftChild->mType == kIdentity ) {
+        AMD::SymbolicScalarMatlab one("0");
+        SymbolicSMFunc retVal(one,
+                              node.leftChild->varNumRows,
+                              node.leftChild->varNumCols);
+        node.scalarChild = &retVal;
+        return &node;
+      }
+
+    }
+    
+    if (node.rightChild != NULL){
+      
+      
+      if (node.rightChild->mType == kIdentity ) {
+        AMD::SymbolicScalarMatlab one("1");
+        SymbolicSMFunc retVal(one,
+                              node.rightChild->varNumRows,
+                              node.rightChild->varNumCols);
+        node.scalarChild = &retVal;
+        return &node;
+      }
+      /* Case 2: If node is zeroMatrix, return 0 */
+      if (node.rightChild->mType == kIdentity ) {
+        AMD::SymbolicScalarMatlab one("0");
+        SymbolicSMFunc retVal(one,
+                              node.rightChild->varNumRows,
+                              node.rightChild->varNumCols);
+        node.scalarChild = &retVal;
+        return &node;
+      }
+      
+    }
+    return &node;
+  }
   
+  /* This function optimizing trace */
+  SymbolicMMFunc* traceOpt(SymbolicMMFunc &node){
+
+    if (node.leftChild != NULL){
+      /* Case 1: If node is eye, return 1 */
+      if (node.leftChild->mType == kIdentity ) {
+        AMD::SymbolicScalarMatlab one(node.leftChild->varNumCols);
+        SymbolicSMFunc retVal(one,
+                              node.leftChild->varNumRows,
+                              node.leftChild->varNumCols);
+        node.scalarChild = &retVal;
+        return &node;
+      }
+      /* Case 2: If node is zeroMatrix, return 0 */
+      if (node.leftChild->mType == kIdentity ) {
+        AMD::SymbolicScalarMatlab one("0");
+        SymbolicSMFunc retVal(one,
+                              node.leftChild->varNumRows,
+                              node.leftChild->varNumCols);
+        node.scalarChild = &retVal;
+        return &node;
+      }
+      
+    }
+    
+    if (node.rightChild != NULL){
+      
+      if (node.rightChild->mType == kIdentity ) {
+        AMD::SymbolicScalarMatlab one(node.rightChild->varNumRows);
+        SymbolicSMFunc retVal(one,
+                              node.rightChild->varNumRows,
+                              node.rightChild->varNumCols);
+        node.scalarChild = &retVal;
+        return &node;
+      }
+      /* Case 2: If node is zeroMatrix, return 0 */
+      if (node.rightChild->mType == kIdentity ) {
+        AMD::SymbolicScalarMatlab one("0");
+        SymbolicSMFunc retVal(one,
+                              node.rightChild->varNumRows,
+                              node.rightChild->varNumCols);
+        node.scalarChild = &retVal;
+        return &node;
+      }
+      
+    }
+    return &node;
+  }
+
   /* This function optimize the current node and its children recursively
    * with a specified optimize flag, the default is 1 == POSTORDER */
   SymbolicMMFunc* optimizeCurrentNode(SymbolicMMFunc &node){
@@ -229,7 +328,7 @@ namespace AMD {
   SymbolicMMFunc* optimize(SymbolicMMFunc &node, int optOrder){
     
     if (optOrder == PREORDER) optimizeCurrentNode(node);
-
+    
     if (node.leftChild != NULL){
       node.leftChild = optimize(*(node.leftChild),optOrder);
     }
@@ -237,33 +336,19 @@ namespace AMD {
     if (optOrder == INORDER) optimizeCurrentNode(node);
     
     if (node.rightChild != NULL){
-        node.rightChild =optimize(*(node.rightChild),optOrder);
+      node.rightChild =optimize(*(node.rightChild),optOrder);
     }
     if (optOrder == POSTORDER) optimizeCurrentNode(node);
     return &node;
   }
   
-
+  
   SymbolicMMFunc* optimize(SymbolicMMFunc &node){
     return optimize(node, POSTORDER);
   }
-  /* This function optimizing how to calcualte the determinant */
   
-  //  ScalarMatrixFunc<MT, ST> detOpt(const SymbolicMMFunc &node){
-  /* Case 1: If node is eye, return 1 */
-  //  if (node.leftChild == symbolicIdentityMatrix ) {
-  //  ScalarMatrixFunc<MT,ST> retValue()
-  //  return 1;
-  // }
-  /* Case 2: If node is zeroMatrix, return 0 */
-  /* TODO: Logdet cannot be 0 */
-  // if (node.leftChild == symbolicZeroMatrix) return 0;
   
-  /*TODO: if (node == inverse of an expression A)
-   calculating the determinant d of A.
-   return 1/d;
-   */
-  //  }
+  
   
 } /** namespace AMD */
 
