@@ -48,6 +48,16 @@ endif (NOT CMAKE_C_COMPILER OR NOT CMAKE_CXX_COMPILER)
 
 ###############################################################################
 
+#Optionally, users can request that warnings be enabled, such as to avoid
+#mistakes that could be identified with the option otherwise enabled.
+#Naturally, output is expected to be verbose.
+option (WARNINGS "Build with warnings enabled" OFF)
+if (WARNINGS)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-reorder -pedantic")
+endif (WARNINGS)
+
+###############################################################################
+
 # Make sure that the users know that there are choices to build
 if (CMAKE_BUILD_TYPE MATCHES "Release" OR CMAKE_BUILD_TYPE MATCHES "None")
   # Release version is being built -- exceptions are disabled 
