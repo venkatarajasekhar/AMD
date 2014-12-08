@@ -41,7 +41,7 @@ namespace AMD {
   /* enum type for possible status of a matrix. The first one is a progenerate
    * case, whereas the rest are degenerate ones*/
   enum MatrixType {
-    kGeneral, //progenerate; common case
+    kGeneral, //general; common case
     kInvalid, //needs to be initialised
     kZero, //zero matrix
     kIdentity, //identity matrix
@@ -211,13 +211,13 @@ namespace AMD {
     case MINUS:
     case ELEWISE:
     {
-      if (lhs.getNumRows() != rhs.getNumRows() && lhs.mType == kZero && rhs.isConst == kZero) {
+      if (lhs.getNumRows() != rhs.getNumRows() && lhs.mType != kZero && rhs.mType != kZero) {
         throw exception_generic_impl(
           "AMD::binaryOpStandardCheck",
           "+/- Mismatched number of rows",
           AMD_INVALID_ARGUMENTS);
       }
-      else if (lhs.getNumCols() != rhs.getNumCols() && lhs.mType == kZero && rhs.isConst == kZero) {
+      else if (lhs.getNumCols() != rhs.getNumCols() && lhs.mType != kZero && rhs.mType != kZero) {
         throw exception_generic_impl(
           "AMD::binaryOpStandardCheck",
           "+/- Mismatched number of cols",
@@ -1514,7 +1514,7 @@ namespace AMD {
     AMD_START_TRY_BLOCK()
       scalarOpDiffStandardCheck(lhs);
 
-    const int n = MatrixAdaptorType::getNumRows(*(lhs.matrixPtr));
+    //const int n = MatrixAdaptorType::getNumRows(*(lhs.matrixPtr)); /*unused*/
     boost::shared_ptr<MT> initPtr(new MT);
     boost::shared_ptr<MT> resPtr(new MT);
     *resPtr = MatrixAdaptorType::zeros(lhs.getNumRows(), lhs.getNumCols());

@@ -35,7 +35,7 @@ namespace {
     AMD_NOT_NULL_PTR, /**< Not null pointer exception */
     AMD_NON_SQUARE, /**< Non square matrix (no. of rows != no. of columns) */
     AMD_INVALID_DIMENSIONS, /**< Invalid matrix dimesions ( row < 0 or col < 0 ) */
-    AMD_INVALID_EXPRESSION,
+    AMD_INVALID_EXPRESSION
   };
 } /** Global namespace */
 

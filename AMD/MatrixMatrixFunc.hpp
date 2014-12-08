@@ -74,7 +74,7 @@ namespace AMD {
     // TODO think about an extra scalar value here
     /**
      * @brief This is an empty constructor that initializes all values to
-     * defaults.  Create a invalid function.
+     * defaults.  Create an invalid function.
      */
     MatrixMatrixFunc() : matrixPtr(),
       callBackFunc(NULL),
@@ -101,7 +101,7 @@ namespace AMD {
       leftChild(NULL),
       rightChild(NULL),
       scalarChild(NULL) {
-      typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
+      //typedef MatrixAdaptor_t<MT> MatrixAdaptorType; /*Not being used*/
 
       // Makes an deep-copy of the matrix.
       // TODO: new MT(matrix) should really be MatrixAdaptorType::copy()
@@ -399,8 +399,7 @@ namespace AMD {
       AMD_START_TRY_BLOCK()
       bool b_valid_shared_ptr = 
           current.use_count() >= 1 && result.use_count() >= 1;
-      bool b_constant_function = isConst;
-      bool b_matched_dimension = ( true == (*currentMMF).isConst || false == (*resultMMF).isConst ) ||
+      bool b_matched_dimension = ( true == currentMMF->isConst || false == resultMMF->isConst ) ||
         (MatrixAdaptorType::getNumRows(*(result)) == getNumRows() &&
          MatrixAdaptorType::getNumCols(*(result)) == getNumCols() );
 
