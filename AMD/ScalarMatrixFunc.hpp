@@ -117,6 +117,16 @@ namespace AMD {
       return(*this);
     }
 
+    /**
+     * @brief Print out function value and derivative value to output stream.
+     * @param[in] os  output stream to print to, 
+     *                standard output stream by default 
+     */
+   void print(std::ostream& os = std::cout) const { 
+     os << "Function value: " << functionVal.getString() << std::endl;
+     os << "Derivate value: " << derivativeVal.getString() << std::endl;
+   }
+
   }; // end ScalarMatrixFunc class definition
 
   /**
@@ -384,6 +394,23 @@ namespace AMD {
 
     return retVal;
   }
+
+  /**
+   * @brief Stream insertion operator overloading.
+   * @param MT matrix type
+   * @param ST scalar type
+   *
+   * @param[in] os  output strean to write to
+   * @param[in] smf ScalarMatrixFunc to be written to output stream
+   */
+  template <class MT, class ST>
+  std::ostream& operator<<(std::ostream& os, 
+                           const ScalarMatrixFunc<MT, ST> smf) {
+    os << "Function value: " << smf.functionVal.getString() << std::endl;
+    os << "Derivate value: " << smf.derivativeVal.getString() << std::endl;
+    return os;
+  }
+
 }  /** namespace AMD */
 
 #endif
