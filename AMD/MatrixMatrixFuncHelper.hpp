@@ -1548,6 +1548,22 @@ namespace AMD {
       return(result);
   }
 
+  /**
+   * @brief Overloaded stream insertion operator for MatrixMatrixFunc
+   *
+   * @tparam MT matrix type
+   * @tparam ST scalar type
+   *
+   * @param[in] os  output stream 
+   * @param[in] mmf MatrixMatrixFunc
+   */
+  template <class MT, class ST>
+  std::ostream& operator<<(std::ostream& os, 
+                           const MatrixMatrixFunc<MT, ST> mmf) {
+    mmf.print(os);
+    return os;
+  }
+
 } /** namespace AMD */
 
 #endif

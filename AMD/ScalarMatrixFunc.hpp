@@ -397,8 +397,8 @@ namespace AMD {
 
   /**
    * @brief Stream insertion operator overloading.
-   * @param MT matrix type
-   * @param ST scalar type
+   * @tparam MT matrix type
+   * @tparam ST scalar type
    *
    * @param[in] os  output strean to write to
    * @param[in] smf ScalarMatrixFunc to be written to output stream
@@ -406,8 +406,7 @@ namespace AMD {
   template <class MT, class ST>
   std::ostream& operator<<(std::ostream& os, 
                            const ScalarMatrixFunc<MT, ST> smf) {
-    os << "Function value: " << smf.functionVal.getString() << std::endl;
-    os << "Derivate value: " << smf.derivativeVal.getString() << std::endl;
+    smf.print(os);
     return os;
   }
 
