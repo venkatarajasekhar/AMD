@@ -16,6 +16,7 @@ namespace AMD { namespace python {
 
   using namespace boost::python;
   using namespace AMD;
+  using self_ns::str;
 
 /**
  * @brief A function template to export ScalarMatrixFunc and helper functions. 
@@ -91,7 +92,8 @@ void export_scalarmatrixfunc(std::string name, std::string docstring) {
     .def(self + self)
     .def(self - self)
     .def(self * self)
-    .def(self / self) 
+    .def(self / self)
+    .def(str(self))
     ;
 }
 
