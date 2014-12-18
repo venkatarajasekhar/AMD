@@ -16,7 +16,6 @@ out='build'
 tooldir = 'waf-extras'
 tools = [
             'boost',
-            'elemental',
             'eigen',
         ]
 
@@ -45,12 +44,10 @@ def options(ctx):
                                   'plus contrib and examples')
     general_group.add_option('--tests', action='store_true',
                              help='build all tests in AMD')
-    general_group.add_option('--python', action='store_true',
+    general_group.add_option('--use-python', action='store_true',
                              help='build python bindings in AMD')
-    general_group.add_option('--eigen', action='store_true',
+    general_group.add_option('--use-eigen', action='store_true',
                              help='build Eigen bindings in AMD')
-    general_group.add_option('--elemental', action='store_true',
-                             help='build Elemental bindings in AMD')
     general_group.add_option('--install-deps', action='store_true',
                              help='download and install required dependencies')
     general_group.add_option('--install-deps-prefix', action='store',
@@ -94,6 +91,10 @@ def options(ctx):
 
 def configure(ctx):
     from waflib.Logs import pprint
+
+    # Don't move these three lines anywhere else in this function
+    ctx.env.USE_EIGEN     = ctx.options.use_eigen
+    ctx.env.USE_PYTHON    = ctx.options.use_python
 
     pprint('CYAN', '\nC/C++ COMPILERS\n---------------')
     ctx.load('compiler_c')

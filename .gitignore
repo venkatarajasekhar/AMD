@@ -13,3 +13,4 @@ build
 *.pyc
 *.sw*
 .waf*
+.lock*

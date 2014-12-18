@@ -74,13 +74,16 @@ def install_elemental(ctx):
         tmp_path = '/tmp/elemental-0.83.tgz'
         tmp_node = ctx.root.find_node(tmp_path)
         if not tmp_node:
+            ctx.start_msg('Searching for wget')
+            ctx.find_program('wget', target='WGET')
+            ctx.end_msg('ok ' + str(ctx.env.WGET), color='GREEN')
             ctx.start_msg('Searching for curl')
             ctx.find_program('curl', target='CURL')
             ctx.end_msg('ok ' + str(ctx.env.CURL), color='GREEN')
             ctx.msg('Downloading Elemental 0.83', '...', color='YELLOW')
             tmp_node = ctx.root.make_node(tmp_path)
             tmp_node.parent.mkdir()
-            command = ctx.env.CURL + ['-L', '-o', tmp_node.abspath(),
+            command = ctx.env.WGET + ['-L', '-o', tmp_node.abspath(),
                'http://libelemental.org/pub/releases/elemental-0.83.tgz']
             call(command)
         ctx.msg('Extracting Elemental libraries', '...', color='YELLOW')
