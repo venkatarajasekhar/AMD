@@ -19,7 +19,24 @@
 
 namespace AMD {
 
+  struct SymbolicScalarMatlab;
   struct SymbolicMatrixMatlab;
+  static SymbolicScalarMatlab sqrt(const SymbolicScalarMatlab& a);
+  static SymbolicScalarMatlab operator+(const SymbolicScalarMatlab& a,
+                                        const SymbolicScalarMatlab& b);
+  static SymbolicScalarMatlab operator-(const SymbolicScalarMatlab& a,
+                                        const SymbolicScalarMatlab& b);
+  static SymbolicScalarMatlab operator-(const SymbolicScalarMatlab& a);
+  static SymbolicScalarMatlab operator*(const SymbolicScalarMatlab& a,
+                                        const SymbolicScalarMatlab& b);
+  static SymbolicScalarMatlab operator/(const SymbolicScalarMatlab& a,
+                                        const SymbolicScalarMatlab& b);
+  static SymbolicMatrixMatlab operator*(const SymbolicScalarMatlab& a,
+                                        const SymbolicMatrixMatlab& b);
+  static SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a,
+                                        const SymbolicScalarMatlab& b);
+  static SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a,
+                                        const SymbolicScalarMatlab& b);
 
   /**
    * @brief This class represents a symbolic scalar using an

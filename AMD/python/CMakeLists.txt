@@ -10,9 +10,11 @@ include_directories(
 set(AMD_SRCS
     module.cpp
     documentation.cpp
+    Exception.cpp
     SymbolicScalarMatlab.cpp
     SymbolicMatrixMatlab.cpp
     ScalarMatrixFunc.cpp
+    MatrixMatrixFunc.cpp
 )
 
 add_library(AMD.so SHARED ${AMD_SRCS})

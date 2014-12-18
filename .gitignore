@@ -10,3 +10,6 @@ build
 *.gz
 *.db
 *.vrb
+*.pyc
+*.sw*
+.waf*

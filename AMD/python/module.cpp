@@ -6,12 +6,19 @@
  */
 
 #include <boost/python.hpp>
+#include "Exception.hpp"
 
 namespace AMD { namespace python {
 
 extern void export_symbolicscalarmatlab();
 
 extern void export_symbolicmatrixmatlab();
+
+extern void export_scalarmatrixfunc();
+
+extern void export_matrixmatrixfunc();
+
+extern void export_exception();
 
 extern const char* module_docstring;
 
@@ -27,9 +34,11 @@ BOOST_PYTHON_MODULE(AMD)
   scope().attr("__copyright__") = "Copyright (C) 2014 Bloomberg";
   scope().attr("__license__") = "http://www.eclipse.org/legal/epl-v10.html";
 
-  AMD::python::export_symbolicscalarmatlab();
-  AMD::python::export_symbolicmatrixmatlab();
-
+  export_exception();
+  export_symbolicscalarmatlab();
+  export_symbolicmatrixmatlab();
+  export_scalarmatrixfunc();
+  export_matrixmatrixfunc();
 }
 
 } } /* namespace AMD::python */

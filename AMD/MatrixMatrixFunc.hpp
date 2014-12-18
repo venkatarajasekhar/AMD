@@ -369,7 +369,7 @@ namespace AMD {
      * @return The matxi associated to this node.
      */
 
-    virtual MT value() const { return(*matrixPtr); }
+    MT value() const { return(*matrixPtr); }
 
     // initial and result must point to existing MatrixTypes
     /**
@@ -413,6 +413,10 @@ namespace AMD {
         exception_generic_impl("AMD::gradientVec",
                                "Shared pointer is not valid anymore",
                                AMD_INVALID_SHARED_PTR);
+      if (b_constant_function) throw 
+        exception_generic_impl("AMD::gradientVec",
+                               "Node is not a variable function",
+                               AMD_CONSTANT_FN);
       
       /**
        * Only need to do something if the current function is not a
@@ -481,6 +485,22 @@ namespace AMD {
       AMD_CATCH_AND_RETHROW(AMD, gradientVec)
     }
   };
+
+  /**
+   * @brief Overloaded stream insertion operator for MatrixMatrixFunc
+   *
+   * @tparam MT matrix type
+   * @tparam ST scalar type
+   *
+   * @param[in] os  output stream 
+   * @param[in] mmf MatrixMatrixFunc
+   */
+  template <class MT, class ST>
+  std::ostream& operator<<(std::ostream& os, 
+                           const MatrixMatrixFunc<MT, ST> mmf) {
+    mmf.print(os);
+    return os;
+  }
 }  /** namespace AMD */
 
 #endif

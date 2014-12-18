@@ -21,7 +21,7 @@ namespace AMD {
    * @param[in] a A symbolic matrix argument.
    * @return The SymbolicScalarMatlab representation trace(a)
    */
-  SymbolicScalarMatlab trace(const SymbolicMatrixMatlab& a)  {
+  static SymbolicScalarMatlab trace(const SymbolicMatrixMatlab& a)  {
     SymbolicScalarMatlab retVal;
 
     AMD_START_TRY_BLOCK()
@@ -43,7 +43,7 @@ namespace AMD {
    * @param[in] a A symbolic matrix argument.
    * @return The SymbolicScalarMatlab representation logdet(a)
    */
-  SymbolicScalarMatlab logdet(const SymbolicMatrixMatlab& a)  {
+  static SymbolicScalarMatlab logdet(const SymbolicMatrixMatlab& a)  {
     SymbolicScalarMatlab retVal;
 
     AMD_START_TRY_BLOCK()
@@ -65,7 +65,7 @@ namespace AMD {
    * @param[in] a A symbolic matrix argument.
    * @return The SymbolicScalarMatlab representation of ||a||_F.
    */
-  SymbolicScalarMatlab fnorm(const SymbolicMatrixMatlab& a)  {
+  static SymbolicScalarMatlab fnorm(const SymbolicMatrixMatlab& a)  {
     return SymbolicScalarMatlab
               ("norm(" + detail::removeParenthesis(a.symbol) + ",'fro')");
   }
@@ -75,7 +75,7 @@ namespace AMD {
    * @param[in] a A symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of inv(a).
    */
-  SymbolicMatrixMatlab inv(const SymbolicMatrixMatlab& a) {
+  static SymbolicMatrixMatlab inv(const SymbolicMatrixMatlab& a) {
     SymbolicMatrixMatlab retVal;
 
     AMD_START_TRY_BLOCK()
@@ -98,7 +98,7 @@ namespace AMD {
    * @param[in] a A symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of a^T.
    */
-  SymbolicMatrixMatlab transpose(const SymbolicMatrixMatlab& a) {
+  static SymbolicMatrixMatlab transpose(const SymbolicMatrixMatlab& a) {
     return SymbolicMatrixMatlab(a.symbol + "'",
       a.getNumCols(),
       a.getNumRows());
@@ -111,7 +111,7 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of diag(a).
    */
 
-  SymbolicMatrixMatlab diag(const SymbolicMatrixMatlab &a) {
+  static SymbolicMatrixMatlab diag(const SymbolicMatrixMatlab &a) {
     SymbolicMatrixMatlab retVal;
 
     AMD_START_TRY_BLOCK()
@@ -136,7 +136,7 @@ namespace AMD {
    * @param[in] b Another symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of a .* b.
    */
-  SymbolicMatrixMatlab elementwiseProduct(const SymbolicMatrixMatlab& a,
+  static SymbolicMatrixMatlab elementwiseProduct(const SymbolicMatrixMatlab& a,
                                           const SymbolicMatrixMatlab& b) {
     SymbolicMatrixMatlab retVal;
 
@@ -161,7 +161,7 @@ namespace AMD {
    * @param[in] b Another symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of a + b.
    */
-  SymbolicMatrixMatlab operator+(const SymbolicMatrixMatlab& a,
+  static SymbolicMatrixMatlab operator+(const SymbolicMatrixMatlab& a,
     const SymbolicMatrixMatlab& b) {
     SymbolicMatrixMatlab retVal;
 
@@ -186,7 +186,7 @@ namespace AMD {
    * @param[in] b Another symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of a - b.
    */
-  SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a,
+  static SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a,
     const SymbolicMatrixMatlab& b) {
     SymbolicMatrixMatlab retVal;
 
@@ -209,7 +209,7 @@ namespace AMD {
    * @param[in] a A symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of -a.
    */
-  SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a) {
+  static SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a) {
     return SymbolicMatrixMatlab("(-" + a.symbol + ")",
                                 a.getNumRows(),
                                 a.getNumCols());
@@ -222,7 +222,7 @@ namespace AMD {
    * @param[in] b Another symbolic matrix argument.
    * @return The SymbolicMatrixMatlab representation of a * b.
    */
-  SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a,
+  static SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a,
     const SymbolicMatrixMatlab& b) {
     SymbolicMatrixMatlab retVal;
 
@@ -249,7 +249,7 @@ namespace AMD {
    * @param[in] b A SymbolicMatrixMatlab.
    * @return The SymbolicMatrixMatlab representation of a .* b.
    */
-  SymbolicMatrixMatlab operator*(const SymbolicScalarMatlab& a,
+  static SymbolicMatrixMatlab operator*(const SymbolicScalarMatlab& a,
     const SymbolicMatrixMatlab& b) {
     return SymbolicMatrixMatlab("(" + a.symbol + ".*" + b.symbol + ")",
       b.getNumRows(), b.getNumCols());
@@ -261,7 +261,7 @@ namespace AMD {
    * @param[in] b A SymbolicScalarMatlab.
    * @return The SymbolicMatrixMatlab representation of a .* b.
    */
-  SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a,
+  static SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a,
     const SymbolicScalarMatlab& b) {
     return SymbolicMatrixMatlab("(" + b.symbol + ".*" + a.symbol + ")",
       a.getNumRows(), a.getNumCols());
@@ -278,7 +278,7 @@ namespace AMD {
    * @param[in] b A SymbolicScalarMatlab.
    * @return The SymbolicMatrixMatlab representation of a ./ b.
    */
-  SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a,
+  static SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a,
     const SymbolicScalarMatlab& b) {
     return SymbolicMatrixMatlab("(" + a.symbol + "./" + b.symbol + ")",
       a.getNumRows(), a.getNumCols());

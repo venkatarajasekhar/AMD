@@ -45,8 +45,11 @@ namespace AMD {
      * @brief Constructor for a ScalarMatrixFunc object. The default
      * setting is a variable.
      */
-    ScalarMatrixFunc() : functionVal(), derivativeVal(), isConst(false),
-      derivativeFuncVal() { }
+    ScalarMatrixFunc() : 
+      functionVal(), 
+      derivativeVal(), 
+      derivativeFuncVal(), 
+      isConst(false) { }
 
     ~ScalarMatrixFunc() { }
 
@@ -57,9 +60,11 @@ namespace AMD {
      * @param[in] fVal ScalarType function variable.
      * @param[in] dVal MatrixType function variable.
      */
-    ScalarMatrixFunc(ST fVal, MT dVal)
-      : functionVal(fVal), derivativeVal(dVal), isConst(false),
-      derivativeFuncVal() { }
+    ScalarMatrixFunc(ST fVal, MT dVal) : 
+      functionVal(fVal), 
+      derivativeVal(dVal), 
+      derivativeFuncVal(), 
+      isConst(false) { }
 
     ScalarMatrixFunc(ST fVal, MT dVal, MMF dFuncVal)
       : functionVal(fVal), derivativeVal(dVal), isConst(false)
@@ -79,9 +84,11 @@ namespace AMD {
      * @param[in] m     Number of rows.
      * @param[in] n     Number of columns.
      */
-    ScalarMatrixFunc(ST fVal, int m, int n)
-      : functionVal(fVal), derivativeVal(MatrixAdaptorType::zeros(m, n)),
-      isConst(true), derivativeFuncVal() { }
+    ScalarMatrixFunc(ST fVal, int m, int n) : 
+      functionVal(fVal), 
+      derivativeVal(MatrixAdaptorType::zeros(m, n)),
+      derivativeFuncVal(),
+      isConst(true){ }
 
     /**
      * @brief Operator overloading for "=". rhs and lhs are
@@ -109,6 +116,16 @@ namespace AMD {
       isConst = x.isConst;
       return(*this);
     }
+
+    /**
+     * @brief Print out function value and derivative value to output stream.
+     * @param[in] os  output stream to print to, 
+     *                standard output stream by default 
+     */
+   void print(std::ostream& os = std::cout) const { 
+     os << "Function value: " << functionVal.getString() << std::endl;
+     os << "Derivate value: " << derivativeVal.getString() << std::endl;
+   }
 
   }; // end ScalarMatrixFunc class definition
 
@@ -398,6 +415,22 @@ namespace AMD {
 
     return retVal;
   }
+
+  /**
+   * @brief Stream insertion operator overloading.
+   * @tparam MT matrix type
+   * @tparam ST scalar type
+   *
+   * @param[in] os  output strean to write to
+   * @param[in] smf ScalarMatrixFunc to be written to output stream
+   */
+  template <class MT, class ST>
+  std::ostream& operator<<(std::ostream& os, 
+                           const ScalarMatrixFunc<MT, ST> smf) {
+    smf.print(os);
+    return os;
+  }
+
 }  /** namespace AMD */
 
 #endif
