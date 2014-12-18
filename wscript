@@ -22,7 +22,7 @@ tools = [
 
 # Dict to store a mapping of command line flags for building packages to the
 # paths from the root where the wscripts to build those packages can be found
-# e.g. opt_paths['bld_util'] == 'nlpgo/util'
+# e.g. opt_paths['bld_util'] == 'AMD/util'
 from collections import defaultdict
 opt_paths = defaultdict(list)
 
@@ -38,13 +38,19 @@ def options(ctx):
     # Options for various waf tools for various third party libraries
     ctx.load(tools, tooldir=tooldir)
 
-    # General options related to building NLP<Go>
-    general_group = ctx.add_option_group('General options for NLP<Go>')
+    # General options related to building AMD
+    general_group = ctx.add_option_group('General options for AMD')
     general_group.add_option('--bld-all', action='store_true',
-                             help='build all of NLP<Go>, ' +
+                             help='build all of AMD, ' +
                                   'plus contrib and examples')
     general_group.add_option('--tests', action='store_true',
-                             help='build all tests in NLP<Go>')
+                             help='build all tests in AMD')
+    general_group.add_option('--python', action='store_true',
+                             help='build python bindings in AMD')
+    general_group.add_option('--eigen', action='store_true',
+                             help='build Eigen bindings in AMD')
+    general_group.add_option('--elemental', action='store_true',
+                             help='build Elemental bindings in AMD')
     general_group.add_option('--install-deps', action='store_true',
                              help='download and install required dependencies')
     general_group.add_option('--install-deps-prefix', action='store',
@@ -83,10 +89,8 @@ def options(ctx):
             grp_group.add_option('--' + grp_opt, action='store_true',
                                  help='build all the ' + desc)
 
-    add_bld_flag_group('nlpgo',    'NLP<Go> packages', excl='contrib')
-    add_bld_flag_group('examples', 'NLP<Go> examples')
-    add_bld_flag_group('contrib', 'contributed packages', path='nlpgo/contrib')
-
+    add_bld_flag_group('AMD',   'AMD packages', excl='contrib')
+    add_bld_flag_group('tests', 'AMD examples')
 
 def configure(ctx):
     from waflib.Logs import pprint
@@ -112,7 +116,7 @@ def configure(ctx):
     ctx.env.TESTS = ctx.options.tests
 
     # Call the configure method in the wscript for all packages in BLD_PATHS
-    pprint('CYAN', '\nNLP<Go> PACKAGES\n----------------')
+    pprint('CYAN', '\nAMD PACKAGES\n----------------')
     for pkg_path in ctx.env['BLD_PATHS']:
         ctx.msg('Build ' + pkg_path, 'yes', color='GREEN')
         ctx.recurse(pkg_path)
