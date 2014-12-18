@@ -94,7 +94,6 @@ def configure(ctx):
 
     # Don't move these three lines anywhere else in this function
     ctx.env.USE_EIGEN     = ctx.options.use_eigen
-    ctx.env.USE_PYTHON    = ctx.options.use_python
 
     pprint('CYAN', '\nC/C++ COMPILERS\n---------------')
     ctx.load('compiler_c')

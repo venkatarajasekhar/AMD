@@ -59,19 +59,10 @@ namespace AMD {
     bool isConst; /**< is this a variable or a constant function */
     int numRows; /**< number of rows in matrix */
     int numCols; /**< number of cols in matrix */
-    //int varNumRows; /**< number of rows in matrix variable */
-    //int varNumCols; /**< number of cols in matrix variable */
-#if 1
     MatrixMatrixFunc* leftChild; /**< optional left child */
     MatrixMatrixFunc* rightChild; /**< optional right child */
     ScalarMatrixFunc<MT, ST>* scalarChild; /**< scalar func * matrix func. */
-#else
-    boost::shared_ptr<MatrixMatrixFunc> leftChild; /**< optional left child */
-    boost::shared_ptr<MatrixMatrixFunc> rightChild; /**< optional right child */
-    boost::shared_ptr<ScalarMatrixFunc<MT, ST> > scalarChild; /**< scalar func * matrix func. */
-#endif
 
-    // TODO think about an extra scalar value here
     /**
      * @brief This is an empty constructor that initializes all values to
      * defaults.  Create an invalid function.
@@ -91,7 +82,10 @@ namespace AMD {
      * @brief Makes an expensive copy of matrix -- avoid this constructor
      * if your matrices are large.
      */
-    MatrixMatrixFunc(const MT& matrix, bool isConst = true, MatrixType mType = kGeneral) : matrixPtr(),
+    MatrixMatrixFunc(const MT& matrix, 
+                     bool isConst = true, 
+                     MatrixType mType = kGeneral) : 
+      matrixPtr(MatrixAdaptor_t<MT>::copyConstructMatrix(matrix)),
       callBackFunc(NULL),
       opNum(NONE),
       isConst(isConst),
@@ -101,12 +95,6 @@ namespace AMD {
       leftChild(NULL),
       rightChild(NULL),
       scalarChild(NULL) {
-      //typedef MatrixAdaptor_t<MT> MatrixAdaptorType; /*Not being used*/
-
-      // Makes an deep-copy of the matrix.
-      // TODO: new MT(matrix) should really be MatrixAdaptorType::copy()
-      boost::shared_ptr<MT> copy(new MT(matrix));
-      matrixPtr = copy;
       setVariableType(isConst);
     }
 
@@ -114,7 +102,9 @@ namespace AMD {
      * @brief Constructor with a MT type variable.
      */
     MatrixMatrixFunc(boost::shared_ptr<MT> matrixPtr,
-      bool isConst = true, MatrixType mType = kGeneral) : matrixPtr(matrixPtr),
+                     bool isConst = true, 
+                     MatrixType mType = kGeneral) : 
+      matrixPtr(matrixPtr),
       callBackFunc(NULL),
       opNum(NONE),
       isConst(isConst),
@@ -143,26 +133,26 @@ namespace AMD {
      * Otherwise initialize as a constant.
      */
     void setVariableType(bool isVariable) {
-      // constant and variable matrices must be leaf nodes
       AMD_START_TRY_BLOCK()
-        if (NULL != leftChild || NULL != rightChild)
-          throw exception_generic_impl("AMD::isVariable", 
-          "Node is not a leaf", AMD_INTERNAL_NODE);
 
-        // If is constant, call the callbackfunction for constant.
-        if (isConst) {
-          callBackFunc = constOp < MT, ST > ;
-          opNum = CONST;
-          numRows = 0;
-          numCols = 0;
-        }
-        else {
-          callBackFunc = varOp < MT, ST > ;
-          opNum = VAR;
-          numRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
-          numCols = MatrixAdaptorType::getNumCols(*(matrixPtr));
-        
-        }
+      // constant and variable matrices must be leaf nodes
+      if (NULL != leftChild || NULL != rightChild)
+        throw exception_generic_impl ("AMD::isVariable", 
+                                      "Node is not a leaf node", 
+                                      AMD_INTERNAL_NODE);
+
+      numRows = MatrixAdaptorType::getNumRows(*(matrixPtr));
+      numCols = MatrixAdaptorType::getNumCols(*(matrixPtr));
+
+      // If is constant, call the callbackfunction for constant.
+      if (isConst) {
+        callBackFunc = constOp < MT, ST > ;
+        opNum = CONST;
+      } else {
+        callBackFunc = varOp < MT, ST > ;
+        opNum = VAR;
+      }
+
       AMD_END_TRY_BLOCK()
       AMD_CATCH_AND_RETHROW(AMD, isVariable)
     }
@@ -175,6 +165,7 @@ namespace AMD {
       opNum = NONE;
       numRows = 0;
       numCols = 0;
+
       // Reset its left & right child recursively.
       if (NULL != leftChild) delete leftChild;
       if (NULL != rightChild) delete rightChild;
@@ -206,7 +197,7 @@ namespace AMD {
 
     /**
      * @function
-     *     * Create a deep copy of the current MatrixMatrixFunc node. This function
+     * Create a deep copy of the current MatrixMatrixFunc node. This function
      * will create a copy of this node as well as its children nodes.
      * @param[in] other The MMFunc that we want to copy from.
      * @return Nothing
@@ -214,8 +205,10 @@ namespace AMD {
     void deepCopy(const MatrixMatrixFunc &other) {
       /* reset the current object */
       reset();
+
       /* do a shallow copy first */
       shallowCopy(other);
+
       /* if there are left or right children, recursively copy them as well */
       if (NULL != other.leftChild) {
         leftChild = new MatrixMatrixFunc < MT, ST > ;
@@ -241,7 +234,6 @@ namespace AMD {
      * @param[in] lhs The left child node.
      * @param[in] rhs The right child node.
      */
-#if 1
     void binOpSet(boost::shared_ptr<MT> resultPtr,
       OpType operatorNum,
       CallBackFuncType cbf,
@@ -249,57 +241,17 @@ namespace AMD {
       const MatrixMatrixFunc<MT, ST> &rhs) {
 
       matrixPtr = resultPtr;
-
       opNum = operatorNum;
-
       callBackFunc = cbf;
-
       isConst = lhs.isConst && rhs.isConst;
-
-    
-      if (false == isConst) {
-        numRows = MatrixAdaptorType::getNumRows(*matrixPtr);
-        numCols = MatrixAdaptorType::getNumCols(*matrixPtr);
-      }
-      else {
-        numRows = 0;
-        numCols = 0;
-      }
+      numRows = MatrixAdaptorType::getNumRows(*matrixPtr);
+      numCols = MatrixAdaptorType::getNumCols(*matrixPtr);
       
-      /** TODO: Peder, why is there a deepCopy() here? */
-      /** Because of temporaries */
       leftChild = new MatrixMatrixFunc < MT, ST > ;
       leftChild->deepCopy(lhs);
       rightChild = new MatrixMatrixFunc < MT, ST > ;
       rightChild->deepCopy(rhs);
     }
-#else
-    void binOpSet(boost::shared_ptr<MT> resultPtr,
-      OpType operatorNum,
-      CallBackFuncType cbf,
-      boost::shared_ptr<MatrixMatrixFunc<MT, ST> > lhsMMF,
-      boost::shared_ptr<MatrixMatrixFunc<MT, ST> > rhsMMF) {
-
-      matrixPtr = resultPtr;
-      opNum = operatorNum;
-      callBackFunc = cbf;
-      isConst = lhs.isConst && rhs.isConst;
-
-      
-      if (false == isConst) {
-        numRows = MatrixAdaptorType::getNumRows(*matrixPtr);
-        numCols = MatrixAdaptorType::getNumCols(*matrixPtr);
-      }
-      else {
-        numRows = 0;
-        numCols = 0;
-      }
-      
-      leftChild = lhsMMF;
-      rightChild = rhsMMF;
-    }
-
-#endif
 
     /**
      * @brief Set the unary operator for this node.
@@ -313,7 +265,7 @@ namespace AMD {
       OpType _opNum,
       CallBackFuncType cbf,
       const MatrixMatrixFunc<MT, ST> &lhs) {
-      numRows = lhs.getNumRows();  // should be 0 or a size
+      numRows = lhs.getNumRows();
       numCols = lhs.getNumCols();
       matrixPtr = resultPtr;
       opNum = _opNum;
@@ -364,15 +316,6 @@ namespace AMD {
     int getNumCols() const { return numCols; }
 
     /**
-     * @brief  Get the matrix associated to this node.
-     *
-     * @return The matxi associated to this node.
-     */
-
-    MT value() const { return(*matrixPtr); }
-
-    // initial and result must point to existing MatrixTypes
-    /**
      * @brief Traversse the computational tree in post-order. Replace the matrix
      * as moving towards the leaf nodes(Reverse Mode) by applying different
      * specific callBackFunction to each node.
@@ -387,21 +330,23 @@ namespace AMD {
      *                                If 1 the matrix is a zero matrix.
      *
      *
+     * initial and result must point to existing MatrixTypes
      */
     void gradientVec(boost::shared_ptr<MT> current,
-      boost::shared_ptr<MT> result,
-      boost::shared_ptr<MMF> currentMMF,
-      boost::shared_ptr<MMF> resultMMF,
-      int transposeFlag,
-      bool identityInitialFlag,
-      bool& zeroResultFlag) const {
+                     boost::shared_ptr<MT> result,
+                     boost::shared_ptr<MMF> currentMMF,
+                     boost::shared_ptr<MMF> resultMMF,
+                     int transposeFlag,
+                     bool identityInitialFlag,
+                     bool& zeroResultFlag) const {
 
       AMD_START_TRY_BLOCK()
       bool b_valid_shared_ptr = 
           current.use_count() >= 1 && result.use_count() >= 1;
-      bool b_matched_dimension = ( true == currentMMF->isConst || false == resultMMF->isConst ) ||
+      bool b_matched_dimension = (true == currentMMF->isConst || 
+                                  false == resultMMF->isConst ) ||
         (MatrixAdaptorType::getNumRows(*(result)) == getNumRows() &&
-         MatrixAdaptorType::getNumCols(*(result)) == getNumCols() );
+         MatrixAdaptorType::getNumCols(*(result)) == getNumCols());
 
       /* Throwing first exception found. Alternatively, we could throw the
        * most critical one instead. */
@@ -413,16 +358,12 @@ namespace AMD {
         exception_generic_impl("AMD::gradientVec",
                                "Shared pointer is not valid anymore",
                                AMD_INVALID_SHARED_PTR);
-      if (b_constant_function) throw 
-        exception_generic_impl("AMD::gradientVec",
-                               "Node is not a variable function",
-                               AMD_CONSTANT_FN);
       
       /**
        * Only need to do something if the current function is not a
        * constant
        */
-      if (!isConst) {
+      if (false == isConst) {
         /** This will be the result matrix for the left child */
         boost::shared_ptr<MT> currentLeft(new MT);
 
@@ -433,17 +374,17 @@ namespace AMD {
         boost::shared_ptr<MMF> leftMMF(new MMF);
         boost::shared_ptr<MMF> rightMMF(new MMF);
         callBackFunc(result,
-          current,
-          currentLeft,
-          currentRight,
-          resultMMF,
-          currentMMF,
-          leftMMF,
-          rightMMF,
-          this,
-          transposeFlag,
-          identityInitialFlag,
-          zeroResultFlag);
+                     current,
+                     currentLeft,
+                     currentRight,
+                     resultMMF,
+                     currentMMF,
+                     leftMMF,
+                     rightMMF,
+                     this,
+                     transposeFlag,
+                     identityInitialFlag,
+                     zeroResultFlag);
 
         /**
          * The resultPtr is shared --- both leftChild and rightChild add
@@ -470,6 +411,7 @@ namespace AMD {
             identityInitialFlag,
             zeroResultFlag);
         }
+
         if (NULL != rightChild) {
           int rightFlag = transposeFlag & 2;
           rightChild->gradientVec(currentRight,
@@ -480,7 +422,8 @@ namespace AMD {
             identityInitialFlag,
             zeroResultFlag);
         }
-      } // end if (!isConst) 
+      } 
+
       AMD_END_TRY_BLOCK()
       AMD_CATCH_AND_RETHROW(AMD, gradientVec)
     }
@@ -501,6 +444,7 @@ namespace AMD {
     mmf.print(os);
     return os;
   }
+
 }  /** namespace AMD */
 
 #endif

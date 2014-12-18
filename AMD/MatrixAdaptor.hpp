@@ -23,7 +23,11 @@ struct MatrixAdaptor_t {
   /** define matrix_type */
 
   /**
-   * 0. static int createMatrix (int m, int n, std::string name="");
+   * static boost::shared_ptr<matrix_type> defaultConstructMatrix 
+   *                            (int m, int n, std::string name="");
+   * static boost::shared_ptr<matrix_type> copyConstructMatrix 
+   *                            (const matrix_type& original);
+   *
    * Create a matrix of the requested size and name it if possible.
    * This should replace all occurences of "new MT" because that assumes
    * there is a default constructor for any matrix type we are using. In 

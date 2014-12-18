@@ -31,8 +31,14 @@ struct EigenMatrixAdaptorBase {
   typedef ScalarType value_type;
   typedef SparseOrDenseMatrixType matrix_type;
 
-  static matrix_type createMatrix (int m, int n, std::string name="") {
-    return matrix_type(m, n);
+  static boost::shared_ptr<matrix_type> defaultConstructMatrix 
+                (int m, int n, std::string name="") {
+    return boost::shared_ptr<matrix_type>(new matrix_type(m, n));
+  }
+
+  static boost::shared_ptr<matrix_type> copyConstructMatrix 
+                        (const matrix_type& original) {
+    return boost::shared_ptr<matrix_type>(new matrix_type(original));
   }
 
   static int getNumRows (const matrix_type& A) { return A.rows(); }
