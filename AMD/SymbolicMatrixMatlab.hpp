@@ -14,11 +14,15 @@
 
 #include <string>
 #include <iostream>
+#include <sstream>
 
 #include "utility.hpp"
-#include "SymbolicScalarMatlab.hpp"
 
 namespace AMD {
+
+  /** Forward declaration so we can have function prototypes */
+  struct SymbolicScalarMatlab;
+  struct SymbolicMatrixMatlab;
 
   static SymbolicScalarMatlab trace(const SymbolicMatrixMatlab& a);
   static SymbolicScalarMatlab logdet(const SymbolicMatrixMatlab& a);
@@ -41,6 +45,8 @@ namespace AMD {
                                         const SymbolicScalarMatlab& b);
   static SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a,
                                         const SymbolicScalarMatlab& b);
+  static bool operator==(const SymbolicMatrixMatlab& a,
+                         const SymbolicMatrixMatlab& b);
 
   /**
    * @brief This class represents a symbolic matrix using an internal

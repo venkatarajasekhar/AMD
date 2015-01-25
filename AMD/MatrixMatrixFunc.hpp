@@ -70,9 +70,8 @@ namespace AMD {
     MatrixMatrixFunc() : matrixPtr(),
       callBackFunc(NULL),
       opNum(NONE),
-      mType(kInvalid),
+      mType(kGeneral),
       isConst(true),
-      mType(kInvalid),
       numRows(0),
       numCols(0),
       leftChild(NULL),
@@ -89,9 +88,8 @@ namespace AMD {
       matrixPtr(MatrixAdaptor_t<MT>::copyConstructMatrix(matrix)),
       callBackFunc(NULL),
       opNum(NONE),
-      mType(kInvalid),
-      isConst(isConst),
       mType(mType),
+      isConst(isConst),
       numRows(0),
       numCols(0),
       leftChild(NULL),
@@ -109,9 +107,8 @@ namespace AMD {
       matrixPtr(matrixPtr),
       callBackFunc(NULL),
       opNum(NONE),
-      mType(kInvalid),
-      isConst(isConst),
       mType(mType),
+      isConst(isConst),
       numRows(0),
       numCols(0),
       leftChild(NULL),
@@ -168,7 +165,7 @@ namespace AMD {
       opNum = NONE;
       numRows = 0;
       numCols = 0;
-      mType = kInvalid;
+      mType = kGeneral;
       // Reset its left & right child recursively.
       if (NULL != leftChild) delete leftChild;
       if (NULL != rightChild) delete rightChild;

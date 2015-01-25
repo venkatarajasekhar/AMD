@@ -11,6 +11,8 @@
 
 #include <string>
 #include <sstream>
+
+#include "SymbolicScalarMatlab.hpp"
 #include "SymbolicMatrixMatlab.hpp"
 #include "Exception.hpp"
 
@@ -290,8 +292,8 @@ namespace AMD {
    * @param[in] b A SymbolicMatrixMatlab.
    * @return True iff a==b, false otherwise.
    */
-  bool operator==(const SymbolicMatrixMatlab& a,
-                  const SymbolicMatrixMatlab& b) {
+  static bool operator==(const SymbolicMatrixMatlab& a,
+                         const SymbolicMatrixMatlab& b) {
     return a.symbol==b.symbol;
   }
 

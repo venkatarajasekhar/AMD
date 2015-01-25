@@ -217,8 +217,8 @@ namespace AMD {
       if (node.leftChild->mType == kIdentity ) {
         AMD::SymbolicScalarMatlab one("1");
         SymbolicSMFunc retVal(one,
-                              node.leftChild->varNumRows,
-                              node.leftChild->varNumCols);
+                              node.leftChild->numRows,
+                              node.leftChild->numCols);
         node.scalarChild = &retVal;
         return &node;
       }
@@ -226,8 +226,8 @@ namespace AMD {
       if (node.leftChild->mType == kIdentity ) {
         AMD::SymbolicScalarMatlab one("0");
         SymbolicSMFunc retVal(one,
-                              node.leftChild->varNumRows,
-                              node.leftChild->varNumCols);
+                              node.leftChild->numRows,
+                              node.leftChild->numCols);
         node.scalarChild = &retVal;
         return &node;
       }
@@ -240,8 +240,8 @@ namespace AMD {
       if (node.rightChild->mType == kIdentity ) {
         AMD::SymbolicScalarMatlab one("1");
         SymbolicSMFunc retVal(one,
-                              node.rightChild->varNumRows,
-                              node.rightChild->varNumCols);
+                              node.rightChild->numRows,
+                              node.rightChild->numCols);
         node.scalarChild = &retVal;
         return &node;
       }
@@ -249,8 +249,8 @@ namespace AMD {
       if (node.rightChild->mType == kIdentity ) {
         AMD::SymbolicScalarMatlab one("0");
         SymbolicSMFunc retVal(one,
-                              node.rightChild->varNumRows,
-                              node.rightChild->varNumCols);
+                              node.rightChild->numRows,
+                              node.rightChild->numCols);
         node.scalarChild = &retVal;
         return &node;
       }
@@ -265,10 +265,10 @@ namespace AMD {
     if (node.leftChild != NULL){
       /* Case 1: If node is eye, return 1 */
       if (node.leftChild->mType == kIdentity ) {
-        AMD::SymbolicScalarMatlab one(node.leftChild->varNumCols);
+        AMD::SymbolicScalarMatlab one(node.leftChild->numCols);
         SymbolicSMFunc retVal(one,
-                              node.leftChild->varNumRows,
-                              node.leftChild->varNumCols);
+                              node.leftChild->numRows,
+                              node.leftChild->numCols);
         node.scalarChild = &retVal;
         return &node;
       }
@@ -276,8 +276,8 @@ namespace AMD {
       if (node.leftChild->mType == kIdentity ) {
         AMD::SymbolicScalarMatlab one("0");
         SymbolicSMFunc retVal(one,
-                              node.leftChild->varNumRows,
-                              node.leftChild->varNumCols);
+                              node.leftChild->numRows,
+                              node.leftChild->numCols);
         node.scalarChild = &retVal;
         return &node;
       }
@@ -287,10 +287,10 @@ namespace AMD {
     if (node.rightChild != NULL){
       
       if (node.rightChild->mType == kIdentity ) {
-        AMD::SymbolicScalarMatlab one(node.rightChild->varNumRows);
+        AMD::SymbolicScalarMatlab one(node.rightChild->numRows);
         SymbolicSMFunc retVal(one,
-                              node.rightChild->varNumRows,
-                              node.rightChild->varNumCols);
+                              node.rightChild->numRows,
+                              node.rightChild->numCols);
         node.scalarChild = &retVal;
         return &node;
       }
@@ -298,8 +298,8 @@ namespace AMD {
       if (node.rightChild->mType == kIdentity ) {
         AMD::SymbolicScalarMatlab one("0");
         SymbolicSMFunc retVal(one,
-                              node.rightChild->varNumRows,
-                              node.rightChild->varNumCols);
+                              node.rightChild->numRows,
+                              node.rightChild->numCols);
         node.scalarChild = &retVal;
         return &node;
       }

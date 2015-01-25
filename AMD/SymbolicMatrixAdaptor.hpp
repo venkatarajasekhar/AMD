@@ -11,6 +11,7 @@
  */
 
 #include <ostream>
+#include <boost/shared_ptr.hpp>
 #include "MatrixAdaptor.hpp"
 #include "SymbolicMatrixMatlab.hpp"
 #include "SymbolicMatrixMatlabHelper.hpp"
@@ -25,6 +26,22 @@ namespace AMD {
 
     /**< define the type of the matrix */
     typedef SymbolicMatrixMatlab matrix_type;
+
+    /**<
+     * -1. Generate a shared_ptr for a matric that is default constructed.
+     */                            
+    static boost::shared_ptr<matrix_type> defaultConstructMatrix 
+                                (int m, int n, std::string name="") {
+        return boost::shared_ptr<matrix_type>(new matrix_type(name, m, n));
+    }
+
+    /**<
+     * 0. Generate a shared_ptr for a matric that is default constructed.
+     */                            
+    static boost::shared_ptr<matrix_type> copyConstructMatrix 
+                               (const matrix_type& original) {
+        return boost::shared_ptr<matrix_type>(new matrix_type(original));
+    }
 
     /**
      * 1.

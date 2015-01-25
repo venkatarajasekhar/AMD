@@ -49,20 +49,20 @@ namespace AMD {
     kTranspose //transpose of a matrix
   };
 
-  std::string opName[] = { "none",
-    "const",
-    "var",
-    "+",
-    "-",
-    "-",
-    "*",
-    "*",
-    "*",
-    "elementwise",
-    "transpose",
-    "inv",
-    "diag"
-  };
+  static std::string opName[] = { "none",
+                                  "const",
+                                  "var",
+                                  "+",
+                                  "-",
+                                  "-",
+                                  "*",
+                                  "*",
+                                  "*",
+                                  "elementwise",
+                                  "transpose",
+                                  "inv",
+                                  "diag"
+                                };
 
   // forward declaration
   template <class MT, class ST> class MatrixMatrixFunc;
