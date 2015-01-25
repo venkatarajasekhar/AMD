@@ -42,6 +42,7 @@ namespace AMD {
    * case, whereas the rest are degenerate ones*/
   enum MatrixType {
     kGeneral, //general; common case
+    kNormal, //progenerate; common case
     kInvalid, //needs to be initialised
     kZero, //zero matrix
     kIdentity, //identity matrix

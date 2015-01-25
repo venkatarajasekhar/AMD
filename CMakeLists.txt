@@ -198,7 +198,6 @@ if (USE_EIGEN)
   # Use the header files in everything you use. We are not using any 
   # compiled libraries for now.
   include_directories(${EIGEN3_INCLUDE_DIR})
-
 endif (USE_EIGEN)
 
 ###############################################################################

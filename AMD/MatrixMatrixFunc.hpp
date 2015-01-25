@@ -55,7 +55,7 @@ namespace AMD {
     CallBackFuncType callBackFunc; /**< Used to compute derivative after
                                         evaluation tree is recorded */
     OpType opNum; /**< enum for the operator used at this node in the tree */
-    MatrixType mType;
+    MatrixType mType; /**< enum for the matrix type used at this node */
     bool isConst; /**< is this a variable or a constant function */
     int numRows; /**< number of rows in matrix */
     int numCols; /**< number of cols in matrix */
@@ -70,6 +70,7 @@ namespace AMD {
     MatrixMatrixFunc() : matrixPtr(),
       callBackFunc(NULL),
       opNum(NONE),
+      mType(kInvalid),
       isConst(true),
       mType(kInvalid),
       numRows(0),
@@ -88,6 +89,7 @@ namespace AMD {
       matrixPtr(MatrixAdaptor_t<MT>::copyConstructMatrix(matrix)),
       callBackFunc(NULL),
       opNum(NONE),
+      mType(kInvalid),
       isConst(isConst),
       mType(mType),
       numRows(0),
@@ -107,6 +109,7 @@ namespace AMD {
       matrixPtr(matrixPtr),
       callBackFunc(NULL),
       opNum(NONE),
+      mType(kInvalid),
       isConst(isConst),
       mType(mType),
       numRows(0),
@@ -165,7 +168,7 @@ namespace AMD {
       opNum = NONE;
       numRows = 0;
       numCols = 0;
-
+      mType = kInvalid;
       // Reset its left & right child recursively.
       if (NULL != leftChild) delete leftChild;
       if (NULL != rightChild) delete rightChild;
@@ -186,6 +189,7 @@ namespace AMD {
     void shallowCopy(const MatrixMatrixFunc &other) {
       matrixPtr = other.matrixPtr;
       opNum = other.opNum;
+      mType = other.mType;
       isConst = other.isConst;
       callBackFunc = other.callBackFunc;
       numRows = other.getNumRows();
@@ -316,7 +320,16 @@ namespace AMD {
     int getNumCols() const { return numCols; }
 
     /**
-     * @brief Traversse the computational tree in post-order. Replace the matrix
+     * @brief  Get the matrix associated to this node.
+     *
+     * @return The matrix associated with this node. Note this can only 
+     *         be used when have symbolic matrices. Else returning by 
+     *         value is ridiculuously expensive. FIXME.
+     */
+    MT value() const { return(*matrixPtr); }
+
+    /**
+     * @brief Traverse the computational tree in post-order. Replace the matrix
      * as moving towards the leaf nodes(Reverse Mode) by applying different
      * specific callBackFunction to each node.
      *

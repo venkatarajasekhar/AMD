@@ -162,7 +162,7 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of a + b.
    */
   static SymbolicMatrixMatlab operator+(const SymbolicMatrixMatlab& a,
-    const SymbolicMatrixMatlab& b) {
+                                        const SymbolicMatrixMatlab& b) {
     SymbolicMatrixMatlab retVal;
 
     AMD_START_TRY_BLOCK()
@@ -187,7 +187,7 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of a - b.
    */
   static SymbolicMatrixMatlab operator-(const SymbolicMatrixMatlab& a,
-    const SymbolicMatrixMatlab& b) {
+                                        const SymbolicMatrixMatlab& b) {
     SymbolicMatrixMatlab retVal;
 
     AMD_START_TRY_BLOCK()
@@ -223,7 +223,7 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of a * b.
    */
   static SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a,
-    const SymbolicMatrixMatlab& b) {
+                                        const SymbolicMatrixMatlab& b) {
     SymbolicMatrixMatlab retVal;
 
     AMD_START_TRY_BLOCK()
@@ -250,7 +250,7 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of a .* b.
    */
   static SymbolicMatrixMatlab operator*(const SymbolicScalarMatlab& a,
-    const SymbolicMatrixMatlab& b) {
+                                        const SymbolicMatrixMatlab& b) {
     return SymbolicMatrixMatlab("(" + a.symbol + ".*" + b.symbol + ")",
       b.getNumRows(), b.getNumCols());
   }
@@ -262,7 +262,7 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of a .* b.
    */
   static SymbolicMatrixMatlab operator*(const SymbolicMatrixMatlab& a,
-    const SymbolicScalarMatlab& b) {
+                                        const SymbolicScalarMatlab& b) {
     return SymbolicMatrixMatlab("(" + b.symbol + ".*" + a.symbol + ")",
       a.getNumRows(), a.getNumCols());
   }
@@ -279,9 +279,20 @@ namespace AMD {
    * @return The SymbolicMatrixMatlab representation of a ./ b.
    */
   static SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a,
-    const SymbolicScalarMatlab& b) {
+                                        const SymbolicScalarMatlab& b) {
     return SymbolicMatrixMatlab("(" + a.symbol + "./" + b.symbol + ")",
       a.getNumRows(), a.getNumCols());
+  }
+
+  /**
+   * Return true if a==b where a and b are matrices.
+   * @param[in] a A SymbolicMatrixMatlab.
+   * @param[in] b A SymbolicMatrixMatlab.
+   * @return True iff a==b, false otherwise.
+   */
+  bool operator==(const SymbolicMatrixMatlab& a,
+                  const SymbolicMatrixMatlab& b) {
+    return a.symbol==b.symbol;
   }
 
 } /** namespace AMD */

@@ -178,7 +178,7 @@ struct MatrixAdaptor_t {
 };
 
 }
-
+#include "MatrixMatrixFunc.hpp"
 #include "SymbolicMatrixAdaptor.hpp"
 
 #if AMD_HAVE_EIGEN

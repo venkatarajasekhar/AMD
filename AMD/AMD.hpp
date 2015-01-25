@@ -20,8 +20,6 @@
  */
 #include "AMD/config.h"
 
-//#include "AMD_Common.hpp"
-
 #include "Exception.hpp"
 
 #include "ScalarMatrixFunc.hpp"
@@ -41,5 +39,7 @@
 #include "MatrixVisitor.hpp"
 
 #include "RandomMatrices.hpp"
+
+#include "SymbolicOptimizer.hpp"
 
 #endif /** AMD_HPP */

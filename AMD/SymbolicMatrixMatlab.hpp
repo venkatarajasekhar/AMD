@@ -190,6 +190,8 @@ namespace AMD {
                                           const SymbolicScalarMatlab& b);
     friend SymbolicMatrixMatlab operator/(const SymbolicMatrixMatlab& a,
                                           const SymbolicScalarMatlab& b);
+    friend bool operator==(const SymbolicMatrixMatlab& a,
+                           const SymbolicMatrixMatlab& b);
 
     private:
     std::string symbol; /**< This is the internal string variable */
