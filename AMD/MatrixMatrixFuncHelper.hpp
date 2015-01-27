@@ -273,14 +273,16 @@ namespace AMD {
 
   template <class MT, class ST>
   static void binaryOpStandardCheck(const MatrixMatrixFunc<MT, ST> &lhs,
-    const ScalarMatrixFunc<MT, ST> &rhs,
-    const OpType& opType,
-    bool checkConst = true) {
+                                    const ScalarMatrixFunc<MT, ST> &rhs,
+                                    const OpType& opType,
+                                    bool checkConst = true) {
+#if 0
     if (false == lhs.isConst && false == rhs.isConst) {
       throw exception_generic_impl("AMD::binaryOpStandardCheck",
         "Both LHS and RHS are constant",
         AMD_CONSTANT_FN);
     }
+#endif
 
     if (MTIMESS == opType || STIMESM == opType) {
       if (NULL == lhs.leftChild) {
