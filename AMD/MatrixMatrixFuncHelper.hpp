@@ -70,10 +70,10 @@ namespace AMD {
 
   template <class MT, class ST>
   static void unaryDiffOpStandardCheck(const MatrixMatrixFunc<MT, ST>* node,
-    boost::shared_ptr<MT> current,
-    boost::shared_ptr<MT> currentLeft,
-    boost::shared_ptr<MT> currentRight,
-    const OpType& opType) {
+                                       boost::shared_ptr<MT> current,
+                                       boost::shared_ptr<MT> currentLeft,
+                                       boost::shared_ptr<MT> currentRight,
+                                       const OpType& opType) {
     /** 1. This is a unary operation --- left child valid */
     if (NULL == node) {
       throw exception_generic_impl("AMD::unaryDiffOpStandardCheck",
@@ -111,10 +111,10 @@ namespace AMD {
 
   template <class MT, class ST>
   static void binaryDiffOpStandardCheck(const MatrixMatrixFunc<MT, ST>* node,
-    boost::shared_ptr<MT> current,
-    boost::shared_ptr<MT> currentLeft,
-    boost::shared_ptr<MT> currentRight,
-    const OpType& opType) {
+                                        boost::shared_ptr<MT> current,
+                                        boost::shared_ptr<MT> currentLeft,
+                                        boost::shared_ptr<MT> currentRight,
+                                        const OpType& opType) {
     /** 1. This is a binary operation --- left and right children valid */
     if (NULL == node) {
       throw exception_generic_impl("AMD::binaryDiffOpStandardCheck",
@@ -174,33 +174,33 @@ namespace AMD {
   }
 
   template <class MT, class ST>
-  static void unaryOpStandardCheck(const MatrixMatrixFunc<MT, ST> &lhs,
-    const OpType& opType) {
+  static void unaryOpStandardCheck(const MatrixMatrixFunc<MT, ST> &mmf,
+                                   const OpType& opType) {
 
     switch (opType) {
-    case NEGATION:
-    case TRANSPOSE:
-    case DIAG:
-    case INV:
-    {
-      if (NULL == lhs.leftChild) {
-        throw exception_generic_impl(
-          "AMD::unaryOpStandardCheck",
-          "Negation of a NULL matrix",
-          AMD_INVALID_ARGUMENTS);
-      }
-    }
-      break;
-    default:
-      break;
+        case NEGATION:
+        case TRANSPOSE:
+        case DIAG:
+        case INV:
+                 {
+                   if (NULL == mmf.matrixPtr) {
+                     throw exception_generic_impl(
+                       "AMD::unaryOpStandardCheck",
+                       "Unary operation on a NULL matrix",
+                       AMD_INVALID_ARGUMENTS);
+                   }
+                 }
+                 break;
+        default:
+                 break;
     };
   }
 
   template <class MT, class ST>
   static void binaryOpStandardCheck(const MatrixMatrixFunc<MT, ST> &lhs,
-    const MatrixMatrixFunc<MT, ST> &rhs,
-    const OpType& opType,
-    bool checkConst = true) {
+                                    const MatrixMatrixFunc<MT, ST> &rhs,
+                                    const OpType& opType,
+                                    bool checkConst = true) {
     if (true == lhs.isConst && true == rhs.isConst) {
       throw exception_generic_impl("AMD::binaryOpStandardCheck",
         "Both LHS and RHS are constant",
@@ -212,7 +212,8 @@ namespace AMD {
     case MINUS:
     case ELEWISE:
     {
-      if (lhs.getNumRows() != rhs.getNumRows() && lhs.mType != kZero && rhs.mType != kZero) {
+      if (lhs.getNumRows() != rhs.getNumRows() && 
+          lhs.mType != kZero && rhs.mType != kZero) {
         throw exception_generic_impl(
           "AMD::binaryOpStandardCheck",
           "+/- Mismatched number of rows",
@@ -500,25 +501,26 @@ namespace AMD {
    */
   template <class MT, class ST>
   MatrixMatrixFunc<MT, ST> operator+ (const MatrixMatrixFunc<MT, ST> &lhs,
-    const MatrixMatrixFunc<MT, ST> &rhs) {
+                                      const MatrixMatrixFunc<MT, ST> &rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     MatrixMatrixFunc<MT, ST> result;
 
     AMD_START_TRY_BLOCK()
-      binaryOpStandardCheck(lhs, rhs, PLUS);
+    binaryOpStandardCheck(lhs, rhs, PLUS);
 
     MT lhsPlusRhs;
     // Add the matrices of currentLeft node and currentRight node.
     MatrixAdaptorType::add((*lhs.matrixPtr), (*rhs.matrixPtr), lhsPlusRhs);
-    boost::shared_ptr<MT> sumPtr(new MT(lhsPlusRhs));
+    boost::shared_ptr<MT> sumPtr = 
+                       MatrixAdaptorType::copyConstructMatrix(lhsPlusRhs);
     // Initialize the node in computational tree with the new matrix and PLUS 
     // operator.
     result.binOpSet(sumPtr, PLUS, plusOp<MT, ST>, lhs, rhs);
 
     AMD_END_TRY_BLOCK()
-      AMD_CATCH_AND_RETHROW(AMD, operatorPlus)
+    AMD_CATCH_AND_RETHROW(AMD, operatorPlus)
 
-      return(result);
+    return(result);
   }
 
   /**
@@ -553,7 +555,7 @@ namespace AMD {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
     AMD_START_TRY_BLOCK()
-      binaryDiffOpStandardCheck(node, current, currentLeft, currentRight, MINUS);
+    binaryDiffOpStandardCheck(node, current, currentLeft, currentRight, MINUS);
 
     MatrixAdaptorType::copy(*currentLeft, *current);
     currentLeftMMF->deepCopy(*currentMMF);
@@ -564,7 +566,7 @@ namespace AMD {
     }
 
     AMD_END_TRY_BLOCK()
-      AMD_CATCH_AND_RETHROW(AMD, minusOp)
+    AMD_CATCH_AND_RETHROW(AMD, minusOp)
   }
 
   /**
@@ -579,25 +581,25 @@ namespace AMD {
    */
   template <class MT, class ST>
   MatrixMatrixFunc<MT, ST> operator- (const MatrixMatrixFunc<MT, ST> &lhs,
-    const MatrixMatrixFunc<MT, ST> &rhs) {
+                                      const MatrixMatrixFunc<MT, ST> &rhs) {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     MatrixMatrixFunc<MT, ST> result;
 
     AMD_START_TRY_BLOCK()
-      binaryOpStandardCheck(lhs, rhs, MINUS);
+    binaryOpStandardCheck(lhs, rhs, MINUS);
 
     // The new node.
     MT lhsMinusRhs;
     MatrixAdaptorType::minus(*(lhs.matrixPtr), *(rhs.matrixPtr), lhsMinusRhs);
-    boost::shared_ptr<MT> diffPtr
-      (new MT(lhsMinusRhs));
+    boost::shared_ptr<MT> diffPtr = 
+                MatrixAdaptorType::copyConstructMatrix(MT(lhsMinusRhs));
     // Initialize the new node with pointers and call back functions.
     result.binOpSet(diffPtr, MINUS, minusOp<MT, ST>, lhs, rhs);
 
     AMD_END_TRY_BLOCK()
-      AMD_CATCH_AND_RETHROW(AMD, operatorMinus)
+    AMD_CATCH_AND_RETHROW(AMD, operatorMinus)
 
-      return(result);
+    return(result);
   }
 
   /**
@@ -628,14 +630,14 @@ namespace AMD {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
     AMD_START_TRY_BLOCK()
-      unaryDiffOpStandardCheck(node, current, currentLeft, currentRight, NEGATION);
+    unaryDiffOpStandardCheck(node, current, currentLeft, currentRight, NEGATION);
 
     MatrixAdaptorType::negation((*current), (*currentLeft));
     currentLeftMMF->deepCopy(-(*currentMMF));
     if (transposeFlag) transposeFlag = 3;
 
     AMD_END_TRY_BLOCK()
-      AMD_CATCH_AND_RETHROW(AMD, negationOp)
+    AMD_CATCH_AND_RETHROW(AMD, negationOp)
   }
 
   /**
@@ -653,7 +655,7 @@ namespace AMD {
     MatrixMatrixFunc<MT, ST> result;
 
     AMD_START_TRY_BLOCK()
-      unaryOpStandardCheck(lhs, NEGATION);
+    unaryOpStandardCheck(lhs, NEGATION);
 
     /** Cancel out double negation */
     if (NEGATION != lhs.opNum) {
@@ -661,16 +663,15 @@ namespace AMD {
       MatrixAdaptorType::negation(*(lhs.matrixPtr), lhsNegation);
       boost::shared_ptr<MT> negationPtr(new MT(lhsNegation));
       result.unaryOpSet(negationPtr, NEGATION, negationOp<MT, ST>, lhs);
-    }
-    else {
+    } else {
       unaryOpStandardCheck(lhs, NEGATION);
       result.deepCopy(*lhs.leftChild);
     }
 
     AMD_END_TRY_BLOCK()
-      AMD_CATCH_AND_RETHROW(AMD, operatorUnaryMinus)
+    AMD_CATCH_AND_RETHROW(AMD, operatorUnaryMinus)
 
-      return(result);
+    return(result);
   }
 
   /**
@@ -1454,7 +1455,7 @@ namespace AMD {
     ScalarMatrixFunc<MT, ST> result;
 
     AMD_START_TRY_BLOCK()
-      scalarOpDiffStandardCheck(lhs);
+    scalarOpDiffStandardCheck(lhs);
 
     const int n = MatrixAdaptorType::getNumRows(*lhs.matrixPtr);
     boost::shared_ptr<MT> initPtr(new MT);
@@ -1476,25 +1477,30 @@ namespace AMD {
      * tree reversely.
      */
     lhs.gradientVec(initPtr,
-      resPtr,
-      initMMF,
-      resultMMF,
-      false,
-      true,
-      zeroFlag);
+                    resPtr,
+                    initMMF,
+                    resultMMF,
+                    false,
+                    true,
+                    zeroFlag);
+
+    /**
+     * Compute the actual trace as well --- this is the function value 
+     */ 
     if (zeroFlag) {
       result.initWithConst(MatrixAdaptorType::trace(*lhs.matrixPtr),
-        lhs.getNumCols(), lhs.getNumCols());
+                                                    lhs.getNumCols(), 
+                                                    lhs.getNumCols());
     }
     else {
       result.initWithVariable(MatrixAdaptorType::trace(*lhs.matrixPtr),
-        *resPtr);
+                                                       *resPtr);
     }
 
     AMD_END_TRY_BLOCK()
-      AMD_CATCH_AND_RETHROW(AMD, trace)
+    AMD_CATCH_AND_RETHROW(AMD, trace)
 
-      return(result);
+    return(result);
   }
 
   /**

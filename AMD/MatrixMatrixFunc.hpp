@@ -34,8 +34,10 @@ namespace AMD {
    */
   template <class MT, class ST>
   class MatrixMatrixFunc {
+    private:
+    MatrixMatrixFunc& operator=(const MatrixMatrixFunc& other) {}
 
-  public:
+    public:
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
     typedef MatrixMatrixFunc<MT, ST> MatrixMatrixFunctionType;
     typedef MatrixMatrixFunctionType MMF;
@@ -50,7 +52,7 @@ namespace AMD {
                                     const MatrixMatrixFunc<MT, ST>*,
                                     int&, bool&, bool&);
  
-   boost::shared_ptr<MT> matrixPtr; /**< Once recorded the matrix should never
+    boost::shared_ptr<MT> matrixPtr; /**< Once recorded the matrix should never
                                           be changed - so a pointer is safe */
     CallBackFuncType callBackFunc; /**< Used to compute derivative after
                                         evaluation tree is recorded */
@@ -97,6 +99,12 @@ namespace AMD {
       scalarChild(NULL) {
       setVariableType(isConst);
     }
+
+    /**
+     * Copy construction is unfortunately necessary, but it is sufficiently
+     * lightweight to do a copy construction --- unless the tree is deep.
+     */ 
+    MatrixMatrixFunc(const MatrixMatrixFunc& other) { this->deepCopy(other); }
 
     /**
      * @brief Constructor with a MT type variable.
@@ -236,10 +244,10 @@ namespace AMD {
      * @param[in] rhs The right child node.
      */
     void binOpSet(boost::shared_ptr<MT> resultPtr,
-      OpType operatorNum,
-      CallBackFuncType cbf,
-      const MatrixMatrixFunc<MT, ST> &lhs,
-      const MatrixMatrixFunc<MT, ST> &rhs) {
+                  OpType operatorNum,
+                  CallBackFuncType cbf,
+                  const MatrixMatrixFunc<MT, ST> &lhs,
+                  const MatrixMatrixFunc<MT, ST> &rhs) {
 
       matrixPtr = resultPtr;
       opNum = operatorNum;
@@ -285,7 +293,7 @@ namespace AMD {
 
       if (NULL == leftChild && NULL == rightChild) os << ":" << opName[opNum];
       else {
-        os << "(" << opName[opNum];
+        os << "(op='" << opName[opNum] << "',";
         if (NULL != leftChild) leftChild->print(os);
         if (NULL != rightChild) { os << ","; rightChild->print(os); }
         os << ")";
@@ -450,7 +458,7 @@ namespace AMD {
    */
   template <class MT, class ST>
   std::ostream& operator<<(std::ostream& os, 
-                           const MatrixMatrixFunc<MT, ST> mmf) {
+                           const MatrixMatrixFunc<MT, ST>& mmf) {
     mmf.print(os);
     return os;
   }

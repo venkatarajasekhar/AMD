@@ -96,6 +96,14 @@ namespace AMD  {
 #define AMD_CXX_CATCH_AND_RETHROW() \
  catch (const exception& error) { error.rethrow(); }
 
+#define AMD_CATCH_AND_PRINT() \
+   catch (const ::AMD::exception& error) { \
+      std::cout << error.what() \
+                << error.trace() \
+                << error.code() \
+                << std::endl; \
+   }
+
   /**
    * Used to start of the try block
    */
