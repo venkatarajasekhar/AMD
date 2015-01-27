@@ -201,11 +201,16 @@ namespace AMD {
                                     const MatrixMatrixFunc<MT, ST> &rhs,
                                     const OpType& opType,
                                     bool checkConst = true) {
+#if 0
+    // Commenting this out since this is a correct case when running 
+    // gradientVec(). We may in fact multiply two constant matrices 
+    // together when back propogating values.
     if (true == lhs.isConst && true == rhs.isConst) {
       throw exception_generic_impl("AMD::binaryOpStandardCheck",
         "Both LHS and RHS are constant",
         AMD_CONSTANT_FN);
     }
+#endif
 
     switch (opType) {
     case PLUS:
@@ -706,7 +711,7 @@ namespace AMD {
     typedef MatrixAdaptor_t<MT> MatrixAdaptorType;
 
     AMD_START_TRY_BLOCK()
-      binaryDiffOpStandardCheck(node, current, currentLeft, currentRight, TIMES);
+    binaryDiffOpStandardCheck(node, current, currentLeft, currentRight, TIMES);
 
     if (identityCurrentFlag) { // avoid superfluous multiplication
       transposeFlag = 0;
