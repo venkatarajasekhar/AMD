@@ -1,0 +1,58 @@
+\section{Introduction}
+
+\begin{frame}
+\frametitle{Terminology}
+Classical calculus:
+\begin{itemize}
+\item \alert{scalar-scalar functions} ($\color{m1}f:\R\rightarrow\R$)
+\item scalar-vector functions ($\color{m1}f:\R^d\rightarrow\R$).  
+\end{itemize}
+Matrix calculus:
+\begin{itemize}
+\item \alert{scalar-matrix functions} ($\color{m1}f:\R^{m\times
+  n}\rightarrow\R$)
+\item \alert{matrix-matrix functions}
+($\color{m1}f:\R^{m\times
+  n}\rightarrow\R^{k\times l}$).
+\end{itemize}
+Note:
+\begin{enumerate}
+\item Scalar-matrix derivatives require matrix-matrix derivatives
+\item Matrix-matrix derivatives should be computed implicitly
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{How can we compute the derivative?}
+%
+\begin{description}
+\item[Numerical] Use finite difference formulae for differentiation (e.g.,
+%
+$\color{m1}
+f'(x) \approx \frac{f(x+h)-f(x)}{h}
+$
+%
+). These methods are simple to program, but lose half of all significant
+digits.
+%
+\item[Symbolic] Give the symbolic representation of the derivative without
+saying how best to implement the derivative; these are as accurate as they
+come.
+%
+\item[Algorithmic] Something between numeric and symbolic differentiation.
+%
+The derivative implementation is computed from the code for $\color{m1}f(x)$.
+%
+\end{description}
+%
+\end{frame}
+
+\input{numeric}
+
+\input{symbolic}
+
+\input{automatic}
+
+\input{scalar-matrix-diff}
+
+\input{matrix-matrix-diff}

@@ -1,0 +1,119 @@
+\section{Software Contributions}
+
+\begin{frame}
+\frametitle{AMD Software}
+\framesubtitle{Overview}
+%
+\begin{itemize}
+\item Implemented using templates and operator over-loading.
+\item Provides both \alert{symbolic} and \alert{algorithmic} differentiation.
+\begin{itemize}
+\item Symbolic differentiation gives results as Matlab code.
+\item Algorithmic differentiation:
+  \begin{itemize}
+  \item Elemental (dense, multi-threaded, distributed).
+  \item Eigen (dense and sparse, multi-threaded).
+  \item Easy to extend to other matrix packages.
+  \end{itemize}
+\end{itemize}
+\item Scalar-matrix: {\color{m1}trace} and {\color{m1}log-determinant}.
+\item Matrix-matrix:
+  $\color{m1}+$, $\color{m1}-$, $\color{m1}*$, $\color{m1}.*$, 
+                              {\color{m1}transpose} and {\color{m1}inverse}.
+\item Two ways to compute symbolic differentiation: 
+  \begin{itemize}
+  \item \texttt{C++} program or on the command line.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{AMD Software}
+\framesubtitle{Example AMD Program}
+Define a Scalar-Matrix function $\color{m1} \trace(\mA\mX\mB\mX)$
+\footnotesize
+\begin{lstlisting}[style=basic]
+  @{\color{red} /** Create a variable X and an identity function */}@
+  symbolic_matrix_type X("X", ROW, COL);
+  SymbolicMMFunc fX(X, false);
+  @{\color{red} 
+    /** Create constants A,B and corresponding constant functions */}@
+  symbolic_matrix_type A("A", ROW, COL);
+  symbolic_matrix_type B("B", ROW, COL);
+  SymbolicMMFunc fA(A, true);
+  SymbolicMMFunc fB(B, true);
+  @{\color{red} /** Scalar-matrix function placeholder */}@
+  SymbolicSMFunc func; 
+  func = trace(fA*fX*fB*fX);
+  std::cout << "Function Value:   " << func.functionVal.getString();
+  std::cout << "Derivative Value: " << func.derivativeVal.getString();
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{AMD Software}
+\framesubtitle{Example AMD Program}
+%
+The resulting derivative is:
+\begin{lstlisting}[style=basic]
+$ ./SymbolicSample.exe
+Function Value:   trace(((A*X)*B)*X)
+Derivative Value: (((B*X)*A)'+((A*X)*B)')
+\end{lstlisting}
+%
+\begin{center}OR\end{center}
+%
+Use the symbolic calculator:
+\begin{lstlisting}[style=basic]
+$ ./SymbolicCalculator.exe 'trace(((A*X)*B)*X)'
+Function Value: trace(((A*X)*B)*X)
+Derivative Value: (((B*X)*A)'+((A*X)*B)')
+\end{lstlisting}
+%
+\end{frame}
+
+\begin{frame}
+\frametitle{AMD Software}
+\framesubtitle{In Progress: Program Optimization}
+
+\begin{itemize}
+\item Common sub-expression elimination.
+\item Repeated application of matrix and direct-matrix identities.
+  \begin{itemize}
+  \item $\color{m1}\mI\times{}\mX=\mX$, $\color{m1}\mX+0=\mX$,
+        $\color{m1}(\mA^\top)^\top = \mA$, etc.
+  \item $\color{m1}(\mI\otimes{}\mI)\myvec(\mI)=\mI$, 
+        $\color{m1}(\mA\boxtimes{}\mB)^\top=\mB^\top\boxtimes\mA^\top$, 
+        etc.
+  \end{itemize}
+\item Critical in providing performance guarantees.
+\item Students working on this:
+\begin{itemize}
+\item Wuwei Zhang (Purdue University) 
+\item Allan Sepucaia (University of Campinas).
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{AMD Software}
+\framesubtitle{In Progress: Python Interface}
+%
+\begin{lstlisting}[style=basic]
+$ python 
+>>>import AMD
+>>>X = AMD.symMat('X')
+>>>fX = AMD.scalarMatrixFunc(X, 1);
+@\dots{}@
+\end{lstlisting}
+%
+\begin{itemize}
+\item Easy to use and prototype.
+\item Has a large user-base in machine learning.
+\item Students working on this:
+\begin{itemize}
+\item Anna Romanova (UCSD) 
+\item Gabriel Borges (University of Campinas).
+\end{itemize}
+\end{itemize}
+\end{frame}

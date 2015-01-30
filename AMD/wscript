@@ -1,0 +1,11 @@
+### SET PACKAGE CONFIGURATION PARAMETERS HERE #################################
+
+top = '..'
+out = top + '/build'
+
+int_deps = []
+ext_deps = []
+
+###############################################################################
+
+execfile('waf-extras/common-package.py')

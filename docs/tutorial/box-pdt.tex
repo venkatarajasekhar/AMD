@@ -1,0 +1,207 @@
+\subsection{The Box Product}
+
+\begin{frame}
+\frametitle{Box Product}
+\framesubtitle{Definition}
+Let $\color{m1}\mA\in\R^{m_1\times n_1}$ and
+$\color{m1}\mB\in\R^{m_2\times n_2}$
+
+\begin{definition}[Kronecker Product]
+$\color{m1}\mA\otimes\mB\in\R^{(m_1m_2)\times(n_1n_2)}$
+is defined by
+{\color{m1}$(\mA\otimes\mB)_{(i-1)m_2+j,(k-1)n_2+l}=$ $a_{i\alert{k}}b_{j\alert{l}}=$ $(\mA\otimes\mB)_{(ij)(kl)}$}.
+\end{definition}
+
+\begin{definition}[Box Product]
+$\color{m1}\mA\boxtimes\mB\in\R^{(m_1m_2)\times(n_1n_2)}$
+is defined by
+{\color{m1}
+$(\mA\boxtimes\mB)_{(i-1)m_2+j,(k-1)n_1+l}=$ $a_{i\alert{l}}b_{j\alert{k}}=$ $(\mA\boxtimes\mB)_{(ij)(kl)}$.}
+\end{definition}
+\end{frame}
+
+\begin{frame}
+\frametitle{Box Product}
+\framesubtitle{An example Kronecker and box product}
+Consider two $\color{m1}2\times 2$ matrices, $\color{m1}\mA$ and
+$\color{m1}\mB$:
+\footnotesize
+$$
+\color{m1}
+\begin{array}{cc}
+\mA\otimes\mB & \mA\boxtimes\mB\\
+\begin{pmatrix}
+{\color<5>{OliveGreen}{a_{11}}}\color<1>{OliveGreen}{b_{11}} & 
+{\color<6>{OliveGreen}{a_{11}}}\color<1>{OliveGreen}{b_{12}} & 
+{\color<5>{OliveGreen}{a_{12}}}\color<2>{OliveGreen}{b_{11}} & 
+{\color<6>{OliveGreen}{a_{12}}}\color<2>{OliveGreen}{b_{12}} \\
+%
+{\color<7>{OliveGreen}{a_{11}}}\color<1>{OliveGreen}{b_{21}} &
+{\color<8>{OliveGreen}{a_{11}}}\color<1>{OliveGreen}{b_{22}} &
+{\color<7>{OliveGreen}{a_{12}}}\color<2>{OliveGreen}{b_{21}} & 
+{\color<8>{OliveGreen}{a_{12}}}\color<2>{OliveGreen}{b_{22}} \\
+%
+{\color<5>{OliveGreen}{a_{21}}}\color<3>{OliveGreen}{b_{11}} & 
+{\color<6>{OliveGreen}{a_{21}}}\color<3>{OliveGreen}{b_{12}} & 
+{\color<5>{OliveGreen}{a_{22}}}\color<4>{OliveGreen}{b_{11}} & 
+{\color<6>{OliveGreen}{a_{22}}}\color<4>{OliveGreen}{b_{12}} \\
+%
+{\color<7>{OliveGreen}{a_{21}}}\color<3>{OliveGreen}{b_{21}} & 
+{\color<8>{OliveGreen}{a_{21}}}\color<3>{OliveGreen}{b_{22}} & 
+{\color<7>{OliveGreen}{a_{22}}}\color<4>{OliveGreen}{b_{21}} & 
+{\color<8>{OliveGreen}{a_{22}}}\color<4>{OliveGreen}{b_{22}} \\
+\end{pmatrix} 
+& 
+\begin{pmatrix}
+{\color<5>{BrickRed}{a_{11}}}\color<1>{BrickRed}{b_{11}} & 
+{\color<5>{BrickRed}{a_{12}}}\color<2>{BrickRed}{b_{11}} & 
+{\color<6>{BrickRed}{a_{11}}}\color<1>{BrickRed}{b_{12}} & 
+{\color<6>{BrickRed}{a_{12}}}\color<2>{BrickRed}{b_{12}} \\
+%
+{\color<7>{BrickRed}{a_{11}}}\color<1>{BrickRed}{b_{21}} & 
+{\color<7>{BrickRed}{a_{12}}}\color<2>{BrickRed}{b_{21}} & 
+{\color<8>{BrickRed}{a_{11}}}\color<1>{BrickRed}{b_{22}} & 
+{\color<8>{BrickRed}{a_{12}}}\color<2>{BrickRed}{b_{22}} \\
+%
+{\color<5>{BrickRed}{a_{21}}}\color<3>{BrickRed}{b_{11}} & 
+{\color<5>{BrickRed}{a_{22}}}\color<4>{BrickRed}{b_{11}} & 
+{\color<6>{BrickRed}{a_{21}}}\color<3>{BrickRed}{b_{12}} & 
+{\color<6>{BrickRed}{a_{22}}}\color<4>{BrickRed}{b_{12}} \\
+%
+{\color<7>{BrickRed}{a_{21}}}\color<3>{BrickRed}{b_{21}} & 
+{\color<7>{BrickRed}{a_{22}}}\color<4>{BrickRed}{b_{21}} & 
+{\color<8>{BrickRed}{a_{21}}}\color<3>{BrickRed}{b_{22}} & 
+{\color<8>{BrickRed}{a_{22}}}\color<4>{BrickRed}{b_{22}} \\
+%
+\end{pmatrix} 
+\end{array}
+$$
+\end{frame}
+
+\begin{frame}
+\frametitle{Box Product}
+\framesubtitle{Some Identities}
+%
+The box product behaves similarly to the Kronecker product:
+\begin{enumerate}
+\item \textbf{Vector Multiplication}:
+{\footnotesize
+$$\color{m1}
+\begin{array}{cc}
+(\mB^\top\otimes\mA)\myvec(\mX)=\myvec(\mA\mX\mB) &
+(\mB^\top\boxtimes\mA)\myvec(\mX)=\myvec(\mA\mX^{\alert{\top}}\mB)
+\end{array}
+$$}
+\item \textbf{Matrix Multiplication}:
+{\footnotesize
+$$\color{m1}
+\begin{array}{cc}
+(\mA\otimes\mB)(\mC\otimes\mD)=(\mA\mC)\otimes(\mB\mD)&
+(\mA\boxtimes\mB)(\mC\boxtimes\mD)=(\mA\alert{\mD})\alert{\otimes}(\mB\alert{\mC})
+\end{array}
+$$}
+\item \textbf{Inverse and Transpose}:
+{\footnotesize
+$$\color{m1}
+\begin{array}{cc}
+(\mA\otimes\mB)^{-1}=\mA^{-1}\otimes\mB^{-1} &
+(\mA\boxtimes\mB)^{-1}=\alert{\mB}^{-1}\boxtimes\alert{\mA}^{-1}\\
+(\mA\otimes\mB)^{\top}=\mA^{\top}\otimes\mB^{\top} &
+(\mA\boxtimes\mB)^{\top}=\alert{\mB}^{\top}\boxtimes\alert{\mA}^{\top}
+\end{array}
+$$}
+\item \textbf{Mixed Products}:
+{\footnotesize
+$$\color{m1}
+\begin{array}{cc}
+(\mA\otimes\mB)(\mC\boxtimes\mD) =
+  (\mA\alert{\mC})\boxtimes(\mB\alert{\mD}) &
+(\mA\boxtimes\mB)(\mC\otimes\mD) =
+  (\mA\alert{\mD})\boxtimes(\mB\alert{\mC})
+\end{array}
+$$}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Box Product}
+\framesubtitle{Some Identities}
+Let $\color{m1}\mA\in\R^{m_1\times n_1}$, $\color{m1}\mB\in\R^{m_2\times n_2}$ then
+\begin{itemize}
+\item \textbf{Trace:}
+{\footnotesize
+$$\color{m1}
+\trace(\mA\otimes\mB) =
+\trace(\mA)\trace(\mB)\qquad\trace(\mA\boxtimes\mB) = \trace(\mA\mB)
+$$
+}
+\item \textbf{Determinant:}  Here $m_1=n_1$ and $m_2=n_2$ is required
+{\footnotesize
+\color{m1}
+\begin{eqnarray*}
+\det(\mA\otimes\mB) &=&(\det(\mA))^{m_2}(\det(\mA))^{m_1}\\
+\det(\mA\boxtimes\mB) &=&
+\alert{(-1)^{{m_1 \choose 2}{m_2\choose 2}}}(\det(\mA))^{m_2}(\det(\mB))^{m_1}
+\end{eqnarray*}}
+\item \textbf{Associativity:}
+{\footnotesize
+$$\color{m1}
+(\mA\otimes\mB)\otimes\mC=
+\mA\otimes(\mB\otimes\mC) \qquad 
+(\mA\boxtimes\mB)\boxtimes\mC=
+\mA\boxtimes(\mB\boxtimes\mC),
+$$
+}
+but not for mixed products.  In general we have
+{\footnotesize
+$$\color{m1}
+(\mA\otimes\mB)\boxtimes\mC \alert{\neq}
+\mA\otimes(\mB\boxtimes\mC) \qquad 
+(\mA\boxtimes\mB)\otimes\mC \alert{\neq}
+\mA\boxtimes(\mB\otimes\mC).
+$$
+}
+%
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Box Product}
+\framesubtitle{Identity Box Products}
+$\color{m1}\mI_m\boxtimes\mI_n$ is permutation matrix; 
+%
+Let $\color{m1}\mA\in\R^{m_1\times n_1}$, $\color{m1}\mB\in\R^{m_2\times n_2}$:
+%
+\begin{description}
+\item[Orthonormal:]
+$\color{m1}(\mI_m\boxtimes\mI_n)^\top(\mI_m\boxtimes\mI_n)=\mI_{mn}$
+\item[Transposition:]
+$\color{m1}(\mI_{m_1}\boxtimes\mI_{n_1})\myvec(\mA) = \myvec(\mA^\top)$
+\item[Connector:]
+Converting a Kronecker product to a box product:
+$\color{m1}(\mA\otimes\mB)(\mI_{n_1}\boxtimes\mI_{n_2}) =
+\mA\boxtimes\mB$.\\
+Converting a box product to a Kronecker product:
+$\color{m1}(\mA\boxtimes\mB)(\mI_{n_2}\boxtimes\mI_{n_1}) =
+\mA\otimes\mB$.
+\end{description}
+\end{frame}
+
+\begin{frame}
+\frametitle{Box Product}
+\framesubtitle{A Wolf in Sheep's Clothing}
+\begin{itemize}
+\item Notation for identity box products is new, but:
+  \begin{itemize}
+  \item Physics: 
+    $\color{m1}\mI_m\boxtimes\mI_n \rightarrow{} \color{m1}\mT_{m,n}$
+  \item Computer Science: 
+    $\color{m1}\mI_m\boxtimes\mI_n \rightarrow{}$ \alert{stride permutation}
+  \item Statistics:
+    $\color{m1}\mI_m\boxtimes\mI_n \rightarrow{}$ \alert{perfect shuffle}
+  \end{itemize}
+\item Box-product can express complex identities compactly.
+\end{itemize}
+%
+\end{frame}

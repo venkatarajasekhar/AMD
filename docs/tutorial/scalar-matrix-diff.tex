@@ -1,0 +1,113 @@
+\subsection{Scalar-Matrix Derivatives}
+\label{subsec:scalar_matrix_diff}
+
+\begin{frame}
+\frametitle{Scalar-Matrix Derivatives}
+\framesubtitle{Definition}
+%
+\begin{center}
+\vspace{-40pt}
+\colorbox{green!10}{\vbox{
+Derivative is the rate of change of $\color{m1}f(\mX)$ w.r.t each 
+$\color{m1}x_{ij}$
+}}
+\end{center}
+
+For $\color{m1}f:\R^{m\times n}\rightarrow\R$ the scalar-matrix derivative is
+defined to be: 
+$$\color{m1}
+\frac{\partial f}{\partial \mX} \stackrel{\mathrm{def}}{=} 
+\begin{pmatrix} 
+\frac{\partial f}{\partial {x_{11}}} &
+\frac{\partial f}{\partial {x_{12}}} & \cdots & 
+\frac{\partial f}{\partial {x_{1n}}}\\
+\frac{\partial f}{\partial x_{21}} &
+\frac{\partial f}{\partial x_{22}} & \cdots & 
+\frac{\partial f}{\partial x_{2n}}\\
+\vdots & \vdots & \ddots & \vdots \\
+\frac{\partial f}{\partial x_{m1}} &
+\frac{\partial f}{\partial x_{m2}} & \cdots & 
+\frac{\partial f}{\partial x_{mn}}
+\end{pmatrix}.
+$$
+\end{frame}
+
+\begin{frame}
+\frametitle{Scalar-Matrix Derivatives}
+\framesubtitle{Derivative of $\trace \mX$}
+%
+\begin{center}
+\colorbox{green!10}{\vbox{
+Derivative is the rate of change of $\color{m1}f(\mX)$ w.r.t each 
+$\color{m1}x_{ij}$
+}}
+\end{center}
+%
+\textcolor{blue}{
+\begin{align*}
+f(\mX) &= \trace 
+\begin{pmatrix} 
+  x_{11} & x_{12} \\
+  x_{21} & x_{22} 
+\end{pmatrix}  \\
+f'(\mX) &= 
+\begin{pmatrix} 
+  \frac{\partial(x_{11}+x_{22})}{\partial x_{11}} & 
+  \frac{\partial(x_{11}+x_{22})}{\partial x_{12}}  \\
+  \frac{\partial(x_{11}+x_{22})}{\partial x_{21}} & 
+  \frac{\partial(x_{11}+x_{22})}{\partial x_{22}}  \\
+\end{pmatrix}   \\
+&=
+\begin{pmatrix} 
+  1 & 0 \\
+  0 & 1 
+\end{pmatrix} \\
+&= \mI
+\end{align*}
+} % textcolor
+\end{frame}
+
+\begin{frame}
+\frametitle{Scalar-Matrix Derivatives}
+\framesubtitle{Derivative of $\logdet \mX$}
+%
+\begin{center}
+\colorbox{green!10}{\vbox{
+Derivative is the rate of change of $\color{m1}f(\mX)$ w.r.t each 
+$\color{m1}x_{ij}$
+}}
+\vspace{-20pt}
+\end{center}
+\textcolor{blue}{
+\footnotesize
+\begin{align*}
+f(\mX) &= \logdet 
+\begin{pmatrix} 
+  x_{11} & x_{12} \\
+  x_{21} & x_{22} 
+\end{pmatrix} \\
+f'(\mX) &= 
+\begin{pmatrix} 
+  \frac{\partial (\log x_{11}x_{22}-x_{12}x_{21})}{\partial x_{11}} & 
+  \frac{\partial (\log x_{11}x_{22}-x_{12}x_{21})}{\partial x_{12}}  \\
+  \frac{\partial (\log x_{11}x_{22}-x_{12}x_{21})}{\partial x_{21}} & 
+  \frac{\partial (\log x_{11}x_{22}-x_{12}x_{21})}{\partial x_{22}}  \\
+\end{pmatrix} \\ 
+&= \frac{1}{x_{11}x_{22}-x_{12}x_{21}}
+\begin{pmatrix} 
+  \frac{\partial(x_{11}x_{22}-x_{12}x_{21})}{\partial x_{11}} & 
+  \frac{\partial(x_{11}x_{22}-x_{12}x_{21})}{\partial x_{12}}  \\
+  \frac{\partial(x_{11}x_{22}-x_{12}x_{21})}{\partial x_{21}} & 
+  \frac{\partial(x_{11}x_{22}-x_{12}x_{21})}{\partial x_{22}}  \\
+\end{pmatrix}  \\
+&= \frac{1}{\det \mX}
+\begin{pmatrix} 
+  x_{22} & -x_{21}  \\ 
+  -x_{12} &  x_{11}  \\ 
+\end{pmatrix}  \\
+&= \mX^{-\!\top}
+\end{align*}
+} % textcolor
+\normalsize
+%
+\end{frame}

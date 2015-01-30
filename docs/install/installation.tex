@@ -1,0 +1,93 @@
+\section{Installation}
+
+\textbf{AMD} is configured, compiled and installed using the Python-based
+\textbf{Waf}%
+\footnote{Waf - The meta build system - Google Project Hosting. Retrieved
+January 27, 2015, from \texttt{https://code.google.com/p/waf/}} platform.
+
+\subsection{Why Waf?}
+
+The following quote on the Black Duck Open Hub review of Waf%
+\footnote{The Waf Open Project on Open Hub. Retrieved January 27, 2015, from
+\texttt{https://www.openhub.net/p/waf}} best describes the reason why we
+decided to choose Waf:
+\begin{itemize}
+\item Waf depends on Python only which is ported on most platforms 
+\item Waf scripts are Python modules which are easier to learn and to maintain
+that custom languages 
+\item Waf license has very little constraints (BSD) and can be redistributed
+easily (all in one 100kb script) 
+\item Waf architecture is modular and can be extended easily, it relies
+on state-of-the-art algorithms 
+\item Waf provides many more features than its competitors 
+\item Waf provides many small projects and code snippets
+\end{itemize}
+
+\subsection{System requirements}
+\begin{itemize}
+\item \textbf{git} 
+\item \textbf{Python} 2.6 or 2.7
+\item \textbf{Python C libraries }(e.g., \texttt{libpython2.7})
+\item C and \Cpp{} compilers supporting \Cpp{}03 standard.
+\item \textbf{GNU make: make }in Linux,\textbf{ }or\textbf{ gnumake }in
+darwin-MacOSX 
+\item \textbf{Boost}%
+\footnote{Boost \Cpp{} Libraries. Retrieved January 29, 2015, from
+http://www.boost.org/} 
+\end{itemize}
+
+\subsection{Configure}
+
+After download, \texttt{cd} to the top-level directory, then run one
+of the following commands:
+
+\begin{itemize}
+\item To build the libraries and the examples, run: \texttt{\$ ./waf configure}
+
+\item To build the libraries only, run: \texttt{\$ ./waf configure
+-{}-bld-AMD}
+
+\item To build the examples, run:
+
+\begin{description}
+\item [{\texttt{\$}}] \texttt{./waf configure -{}-bld-examples}
+\end{description}
+\item To build the tests, run:
+
+\begin{description}
+\item [{\texttt{\$}}] \texttt{./waf configure -{}-bld-AMD -{}-tests}
+\end{description}
+
+\item To build Python bindings, run
+
+\begin{description}
+\item [{\texttt{\$}}] \texttt{./waf configure -{}-bld-python}
+\end{description}
+
+\item Individual examples, packages, and dependencies can also be configured
+to be build, and command line flags can be combined. Run the following
+command for more information about available options:
+
+\begin{description}
+\item [{\texttt{\$}}] \texttt{./waf -{}-help}
+\end{description}
+\end{itemize}
+
+\subsection{Build}
+
+To actually execute the build after running one of the configuration
+commands above, run 
+\begin{description}
+\item [{\texttt{\$}}] \texttt{./waf build}
+\end{description}
+See Appendix \ref{sec:Troubleshooting} for possible solutions in
+case the build command above does not succeed.
+
+\subsection{Installing packages}
+
+Most of the required third party dependencies can be automatically
+installed as follows. After downloading NLP<Go>, \texttt{cd} to the
+top-level directory and run the command:
+\begin{description}
+\item [{\texttt{\$}}] \texttt{./waf configure -{}-install-deps }
+\end{description}

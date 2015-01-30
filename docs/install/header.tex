@@ -1,0 +1,117 @@
+\documentclass{article}
+
+\usepackage{url}
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\setcounter{tocdepth}{3}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{color}
+%\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\usepackage{tikz,tikz-dependency}
+\def\pgfsysdriver{pgfsys-tex4ht.def}
+\usetikzlibrary{calc,arrows,backgrounds,positioning,fit,external}
+
+\tikzset{
+    png copy/.style={
+        external/system call={
+            pdflatex \tikzexternalcheckshellescape -halt-on-error -interaction=batchmode -jobname "\image" "\texsource";
+            convert -density 300 -scale 500 -transparent white "\image.pdf" "\image.png"
+        }
+    }
+}
+\tikzset{png copy}
+
+\makeatletter
+\@ifpackageloaded{tex4ht}{
+\tikzexternalize[mode=only graphics]
+\tikzset{png export/.style={/pgf/images/external info,/pgf/images/include external/.code={\includegraphics[width=\pgfexternalwidth,height=\pgfexternalheight]{##1.png}}}}
+\tikzset{png export}
+}{
+\tikzexternalize
+\tikzset{pdf export/.style={/pgf/images/external info,/pgf/images/include external/.code={\includegraphics[width=\pgfexternalwidth,height=\pgfexternalheight]{##1.pdf}}}}
+\tikzset{pdf export}
+}
+\makeatother
+
+\usepackage{listings}
+\usepackage{tikz-uml}
+\usepackage{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\geometry{a4paper,top=2cm,bottom=2cm,left=2cm,right=2cm,includehead}
+
+% Uncomment to give this out to people
+\usepackage{draftcopy}
+\draftcopyName{CONFIDENTIAL}{100}
+
+\usepackage{url}
+\urldef{\mailsa}\path|pkambadur@bloomberg.net|
+\urldef{\mailss}\path|krahman7@bloomberg.net|
+
+\newcommand{\Cpp}{C\kern-0.05em\texttt{+\kern-0.03em+}}
+\newcommand{\nlpgo}{NLP\kern-0.05em\texttt{\kern-0.06em<Go>}}
+\newcommand{\conceptCpp}{Concept\Cpp}
+\newcommand{\code}[1]{\lstinline[basicstyle=\small\sffamily]{#1}}
+\newcommand{\func}[2]{\lstinline[basicstyle=\small\sffamily]{#1(#2)}}
+\newcommand{\ConceptCpp}{ConceptC\kern-0.05em\texttt{+\kern-0.03em+}}
+%
+\lstdefinestyle{basic}{showstringspaces=false,
+                       columns=fullflexible,
+                       backgroundcolor=\color{gray!10},
+                       numbers=left,
+                       numbersep=5pt,
+                       numberstyle=\tiny,
+                       language=C++,
+                       escapechar=@,
+                       xleftmargin=0pc,%
+                       basicstyle=\small\sffamily,
+                       commentstyle=\mdseries,
+                       moredelim=**[is][\color{white}]{~}{~},
+                       belowskip=1.25em,
+                       aboveskip=1.25em,
+                       belowcaptionskip=0.1\baselineskip,
+                       abovecaptionskip=0.1\baselineskip,
+}
+\lstset{style=basic}
+
+\newcommand{\halfline}{\vspace{-1.5ex}}
+
+\tikzstyle{decision} = [diamond,
+                        draw,
+                        fill=blue!20,
+                        text width=1.5em,
+                        text badly centered,
+                        node distance=2cm,
+                        inner sep=0pt]
+\tikzstyle{block} = [rectangle,
+                     draw,
+                     fill=blue!20,
+                     text centered,
+                     rounded corners,
+                     minimum height=2em]
+\tikzstyle{line} = [draw,
+                    -latex']
+\tikzstyle{cloud} = [draw,
+                     ellipse,
+                     fill=red!20,
+                     node distance=2cm,
+                     minimum height=2em]
+
+\newcommand{\anju}[1]{{\color{red}{#1}}}
+\newcommand{\shef}[1]{{\color{blue}{#1}}}
+
+\setlength\parindent{0pt}
+
+\title{\textbf{NLP<Go>}: Getting started}
+
+%\author{Camilo Ortiz, Shefaet Rahman, and Anju Kambadur}
+
+\date{}
+
+\begin{document}
+\maketitle
+

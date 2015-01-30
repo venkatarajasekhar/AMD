@@ -1,0 +1,154 @@
+\subsection{Symbolic Differentiation}
+\label{subsec:symbolic}
+
+\begin{frame}
+\frametitle{Symbolic Differentiation}
+\framesubtitle{Introduction}
+%
+\vspace{-20pt}
+\begin{center}
+\colorbox{green!10}{\vbox{
+Calculate derivatives by symbolic manipulation of expressions.
+}}
+%
+\footnotesize
+\begin{tabular}{|c|c|}
+\hline
+Function & \textcolor{blue}{Derivative} \\
+\hline
+%
+$x^p$ & $\color{m1}px^{p-1}$ \\
+\hline
+$\sin{\theta{}}$ & $\color{m1}\cos{\theta{}}$ \\
+\hline
+$\cos{\theta{}}$ & $\color{m1}-\sin{\theta{}}$ \\
+\hline
+$\log{x}$ & $\color{m1}x^{-1}$ \\
+\hline
+$e^{x}$ & $\color{m1}e^{x}$ \\
+\hline
+$\frac{d(af(x) + bg(x))}{dx}$ & 
+      $\color{m1}a\frac{d(f(x))}{dx} + b\frac{d(g(x))}{dx}$ \\
+\hline
+$\frac{d(f(x)g(x))}{dx}$ & 
+        $\color{m1}f(x)\frac{g(x)}{dx} + g(x)\frac{d(f(x))}{dx}$ \\
+\hline
+$\frac{d(f(g(x))}{dx}$ & 
+        $\color{m1}\frac{d(f(x))}{dg}\frac{d(g(x))}{dx}$ \\
+\hline
+%
+\end{tabular}
+\normalsize
+%
+\end{center}
+%
+\vspace{-10pt}
+\begin{itemize}
+\item Minimal set of well-known functions and their derivaties.
+\item Rules for computing derivatives of compositions of functions.
+\end{itemize}
+%
+\end{frame}
+
+\begin{frame}
+\frametitle{Symbolic Scalar/Vector Differentiation}
+%\framesubtitle{Manipulation of identities} 
+%
+\centerline{$\color{m1}f(x)=x^3;\ f'(x)=3x^2;$}
+%
+\begin{center}
+\begin{minipage}{0.45\textwidth}
+\begin{tikzpicture}
+[scale=.7,transform shape,
+matrix/.style={rectangle,draw=black,fill=blue!20,thick},
+operation/.style={circle,draw=black,fill=red!20,thick},
+arrow/.style={<-,thick}]
+
+\node[matrix] (x1) {$x$};
+\node[matrix, right=2cm of x1] (x2) {$x$};
+
+\node[right=1cm of x1] (x1x2) {};
+\node[right=.5cm of x2] (x2x3) {};
+
+\node[operation, above=1.5cm of x1x2] (f1) {$\times{}$} 
+edge [arrow] (x2) edge [arrow] (x1);
+
+\node[matrix, right=3cm of f1] (x3) {$x$};
+\node[left=0.5cm of x3] (lx3) {};
+
+\node[operation, above=3cm of x2x3] (f2) {$\times{}$}
+edge [arrow] (x3) edge [arrow] (f1);
+
+\node[matrix, above=1.2cm of f2] (f) {$f(x)=x^3$} edge [arrow] (f2);
+
+\end{tikzpicture}
+\end{minipage}
+%
+\begin{minipage}{0.45\textwidth}
+\begin{tikzpicture}
+[scale=.7,transform shape,
+matrix/.style={rectangle,draw=black,fill=blue!20,thick},
+operation/.style={circle,draw=black,fill=red!20,thick},
+arrow/.style={<-,thick}]
+
+\node[matrix] (x1) {$x$};
+\node[matrix, right=2cm of x1] (x2) {$3$};
+
+\node[right=1cm of x1] (x1x2) {};
+\node[right=.5cm of x2] (x2x3) {};
+
+\node[operation, above=1.5cm of x1x2] (f1) {$\times{}$} 
+edge [arrow] (x2) edge [arrow] (x1);
+
+\node[matrix, right=3cm of f1] (x3) {$x$};
+\node[left=0.5cm of x3] (lx3) {};
+
+\node[operation, above=3cm of x2x3] (f2) {$\times{}$}
+edge [arrow] (x3) edge [arrow] (f1);
+
+\node[matrix, above=1.2cm of f2] (f) {$f'(x)=3x^2$} edge [arrow] (f2);
+
+\end{tikzpicture}
+\end{minipage}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Symbolic Differentiation}
+\framesubtitle{Drawbacks}
+%%
+%\footnotesize
+%\colorbox{green!10}{\vbox{
+%\begin{quote}
+%{\color{brown}
+%%
+%For algebraically rather {\color{blue}simple functions}, the explicit
+%derivative expressions obtained by symbolic differentiation may be readable to
+%an experienced user and thus provide an {\color{blue}extremely useful
+%extension of research} with pencil and paper. However, for functions of any
+%{\color{blue}complexity in more than three variables}, the analytic expressions
+%for gradient or Hessian tend to take up several pages and are
+%{\color{blue}unlikely to facilitate any insights}.
+%%
+%}\hfill\textbf{\alert{Andreas Grewank}}
+%\end{quote}
+%}}
+%\normalsize
+%%
+\begin{itemize}
+\item Extremely useful for simple functions.
+  \begin{itemize}
+  \item $\color{m1}f(x)=x^3$.
+  \end{itemize}
+\item Not helpful for complex functions: may be several pages.
+  \begin{itemize}
+  \item $\color{m1}
+  f(\mSigma)=-\logdet(\mSigma)-\trace(\mS\mSigma^{-1})-\|\mSigma^{-1}\|_F^2$
+  \end{itemize}
+\item Does not tell us how to compute the derivative.
+  \begin{itemize}
+  \item Especially because we can reuse computations.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+

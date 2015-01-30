@@ -1,0 +1,171 @@
+\section{Motivation}
+\label{sec:motivation}
+%
+
+\begin{frame}
+\frametitle{Covariance: A Motivating Example}
+%
+
+\begin{center}
+\colorbox{green!10}{
+$\textnormal{Gaussian pdf} = 
+    \color{m1}(2\pi{})^{\!-\frac{n}{2}}\det(\mSigma)^{\!-\frac{1}{2}}
+           e^{(\mx-\mu)^\top{}\mSigma^{-1}(\mx-\mu)}$
+}
+\end{center}
+%
+\onslide<2->{
+Tikhonov regularized maximum log-likelihood for learning the covariance
+$\color{m1}\mSigma$ given an empirical covariance $\color{m1}\mS$ is:
+%
+\begin{center}
+%
+\colorbox{green!10}{
+%
+$\color{m1}
+f(\mSigma)=-\logdet(\mSigma)-\trace(\mS\mSigma^{-1})-\|\mSigma^{-1}\|_F^2.$
+%
+}
+%
+\end{center}
+}
+\onslide<3->{
+%
+\begin{itemize}
+%
+\item To optimize $\color{m1}f(\mSigma)$, using first-order methods we need 
+      $\color{m1}f'(\mSigma)$.
+%
+\item To use second-order methods, we also need $\color{m1}f''(\mSigma)$.
+%
+\end{itemize}
+%
+\begin{center}
+%
+What are $\color{m1}f'(\mSigma)$ and $\color{m1}f''(\mSigma)$?
+%
+\end{center}
+}
+%
+\end{frame}
+
+%
+\begin{frame}
+\frametitle{Objective}
+\framesubtitle{Theoretical Aspect}
+%
+\begin{center}
+%
+Differentiation of matrix functions is still not well understood.
+%
+\end{center}
+%
+\begin{itemize}
+%
+\item No simple ``calculus'' for computing matrix derivatives.
+%
+\item Matrix derivatives of simple functions can be complicated.
+%
+\end{itemize}
+%
+\begin{center}
+%
+\textcolor{blue}{Build on known results to define a matrix-derivative
+calculus.}
+%
+\end{center}
+%
+\end{frame}
+
+\begin{frame}
+\frametitle{Objective}
+\framesubtitle{Software Aspect}
+%
+\begin{center}
+%
+\textcolor{blue}{Matrix differentiation made simple for humans and computers}
+%
+\end{center}
+%
+\begin{itemize}
+%
+\item Symbolic differentiation should be made simple.
+%
+\item Optimizing matrix valued functions should be efficient:
+%
+  \begin{itemize}
+  %
+  \item Both computation and storage.
+  %
+  \end{itemize}
+%
+\end{itemize}
+
+%
+\begin{center}
+%
+We are developing Automatic Matrix Differentiation (AMD), an open-source \Cpp{}
+library to accomplish this.  
+%
+The code can be downloaded from 
+\textcolor{blue}{\url{https://github.com/pkambadu/AMD}}
+%
+\end{center}
+%
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{AMD in Action} 
+\begin{center}
+%
+\colorbox{green!10}{
+$\color{m1}
+f(\mSigma)=-\logdet(\mSigma)-\trace(\mS\mSigma^{-1})-\|\mSigma^{-1}\|_F^2.$
+}
+\end{center}
+%
+\begin{lstlisting}[style=basic]
+$ ./SymbolicCalculator @\textcolor{blue}{'logdet(X)'}@
+Function:   log(det(X))
+Derivative: inv(X)'
+\end{lstlisting}
+%
+\begin{lstlisting}[style=basic]
+$ ./SymbolicCalculator @\textcolor{blue}{'trace(S*inv(X))'}@
+Function:   trace(S*inv(X))
+Derivative: (-(inv(X)*(S*inv(X))))'
+\end{lstlisting}
+%
+\begin{lstlisting}[style=basic]
+$ ./SymbolicCalculator @\textcolor{blue}{'trace(inv(trans(X)*X))'}@
+Function:   trace(inv(X'*X))
+Derivative: ((X*(-(inv(X'*X)*inv(X'*X))))+((-(inv(X'*X)*inv(X'*X)))*X')')
+\end{lstlisting}
+%
+\end{frame}
+
+\begin{frame}
+\frametitle{Benefits of AMD}
+\framesubtitle{In A Nutshell}
+%
+AMD can be used to optimize scalar-matrix functions: 
+%
+\begin{itemize}
+  \item Function is $\color{m1}f(\mX):\R^{d\times d}\rightarrow\R$
+  \item Gradient is 
+          $\color{m1}f'(\mX):\R^{d\times d}\rightarrow\R^{d\times d}$
+  \item Hessian is 
+          $\color{m1}f''(\mX):\R^{d\times d}\rightarrow\R^{d^2\times d^2}$
+\end{itemize}
+%
+\vspace{+10pt}
+Additionally, AMD can be used for:
+%
+\begin{itemize}
+  \item Optimizing proximal gradient methods.
+  \item Taylor expansions for sensitivity analysis.
+  \item Lots more $\dots$.
+\end{itemize}
+%
+\end{frame}
+

@@ -1,0 +1,13 @@
+### SET TASK CONFIGURATION PARAMETERS HERE ####################################
+
+# Set the top dir and the build dir
+top = '../..'
+out = top + '/build'
+
+task_name = 'simple'
+int_deps  = ['AMD']
+ext_deps  = ['BOOST.SPIRIT']
+
+###############################################################################
+
+execfile('waf-extras/common-task.py')

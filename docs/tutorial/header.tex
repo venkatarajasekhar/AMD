@@ -1,0 +1,194 @@
+% compile using 
+%   pdflatex --shell-escape
+% to enable using gnuplot
+%\documentclass[dvipsnames,colorlinks=true,urlcolor=green]{beamer}
+\documentclass[dvipsnames,colorlinks=true,urlcolor=green]{article}
+\usepackage[latin1]{inputenc}
+\usetheme{Warsaw}
+\usepackage{colortbl}
+
+%\useoutertheme{infolines}
+\useoutertheme{default}
+
+\usepackage{amsmath,amssymb,amsxtra}
+\usepackage{amsthm}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{wasysym}
+
+\usepackage{beamerfoils}
+\usepackage{pifont}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Replacing these three lines so that we can try to build html pages
+%\usepackage{tikz}
+%\usepackage{animate}
+%\usetikzlibrary{calc,arrows,backgrounds,positioning,fit}
+\usepackage{tikz,tikz-dependency}
+\def\pgfsysdriver{pgfsys-tex4ht.def}
+\usetikzlibrary{calc,arrows,backgrounds,positioning,fit,external}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Externalizing tikz-images so that we can build the documentation properly
+\tikzset{
+    png copy/.style={
+        external/system call={
+            pdflatex \tikzexternalcheckshellescape -halt-on-error -interaction=batchmode -jobname "\image" "\texsource";
+            convert -density 300 -scale 500 -transparent white "\image.pdf" "\image.png"
+        }
+    }
+}
+\tikzset{png copy}
+
+\makeatletter
+\@ifpackageloaded{tex4ht}{
+\tikzexternalize[mode=only graphics]
+\tikzset{png export/.style={/pgf/images/external info,/pgf/images/include external/.code={\includegraphics[width=\pgfexternalwidth,height=\pgfexternalheight]{##1.png}}}}
+\tikzset{png export}
+}{
+\tikzexternalize
+\tikzset{pdf export/.style={/pgf/images/external info,/pgf/images/include external/.code={\includegraphics[width=\pgfexternalwidth,height=\pgfexternalheight]{##1.pdf}}}}
+\tikzset{pdf export}
+}
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% get less space before and after equations
+\setlength{\abovedisplayskip}{5pt}
+\setlength{\belowdisplayskip}{10pt}
+\setlength{\abovedisplayshortskip}{5pt}
+\setlength{\belowdisplayshortskip}{10pt} 
+
+\newcounter{m}
+\setcounter{m}{0}
+\newcounter{c}
+\setcounter{c}{0}
+
+\mode<handout>{\usetheme{Warsaw}}
+
+\definecolor{IBMBlue}{rgb}{0,0,0.7}
+\definecolor{m1}{rgb}{0.1,0.1,0.9}
+\definecolor{m2}{rgb}{0.8,0.2,0.2}
+
+\parindent 0pt		  % sets leading space for paragraphs
+
+\def\trace{\mathop{\mathrm{trace}}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\renewcommand{\L}{\mathcal{L}}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\Tr}{\mathrm{Tr}}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\diag}{\mathrm{diag}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\dd}[1]{\;\mathrm{d#1}}
+\def\myvec{\mathrm{vec}}
+
+\def\L{{\cal L}}
+\def\adj{\mathrm{adj\;}}
+\def\det{\mathrm{det\;}}
+\def\logdet{\mathrm{log\;det}}
+\def\det{\mathop{\mathrm{det}}}
+
+\newcommand{\Cpp}{C\kern-0.05em\texttt{+\kern-0.03em+}}
+\newcommand{\code}[1]{\lstinline[basicstyle=\sffamily]{#1}}
+\newcommand{\func}[1]{\lstinline[basicstyle=\sffamily]{#1()}}
+\newcommand{\highlight}[2][yellow]{\mathchoice%
+                                  {\colorbox{#1}{$\displaystyle#2$}}%
+                                  {\colorbox{#1}{$\textstyle#2$}}%
+                                  {\colorbox{#1}{$\scriptstyle#2$}}%
+                                  {\colorbox{#1}{$\scriptscriptstyle#2$}}}%
+
+
+\def\va{\mathbf{a}}
+\def\vb{\mathbf{b}}
+\def\vg{\mathbf{g}}
+\def\vp{\mathbf{p}}
+\def\vr{\mathbf{r}}
+\def\vs{\mathbf{s}}
+\def\vv{\mathbf{v}}
+\def\vw{\mathbf{w}}
+\def\vx{\mathbf{x}}
+\def\vy{\mathbf{y}}
+\def\vz{\mathbf{z}}
+\def\vmu{\boldsymbol{\mu}}
+\def\vxi{\boldsymbol{\xi}}
+\def\vphi{\boldsymbol{\phi}}
+\def\vpsi{\boldsymbol{\psi}}
+\def\vtheta{\boldsymbol{\theta}}
+\def\mDelta{\boldsymbol{\Delta}}
+\def\mLambda{\boldsymbol{\Lambda}}
+\def\mSigma{\boldsymbol{\Sigma}}
+\def\mA{\mathbf{A}}
+\def\mB{\mathbf{B}}
+\def\mC{\mathbf{C}}
+\def\mD{\mathbf{D}}
+\def\mE{\mathbf{E}}
+\def\mF{\mathbf{F}}
+\def\mG{\mathbf{G}}
+\def\mH{\mathbf{H}}
+\def\mI{\mathbf{I}}
+\def\mK{\mathbf{K}}
+\def\mL{\mathbf{L}}
+\def\mP{\mathbf{P}}
+\def\mQ{\mathbf{Q}}
+\def\mR{\mathbf{R}}
+\def\mS{\mathbf{S}}
+\def\mT{\mathbf{T}}
+\def\mV{\mathbf{V}}
+\def\mW{\mathbf{W}}
+\def\mX{\mathbf{X}}
+\def\mx{\mathbf{x}}
+\def\mY{\mathbf{Y}}
+\def\mZ{\mathbf{Z}}
+\def\m0{\mathbf{0}}
+
+\lstdefinestyle{basic}{showstringspaces=false,
+                       columns=fullflexible,
+                       language=Java,
+                       escapechar=@,
+                       frame=single,
+                       basicstyle=\footnotesize\sffamily,
+moredelim=**[is][\color{white}]{~}{~},
+morekeywords={concept,model,require,where,reduction}
+}
+
+\title[Matrix Differentiation]{Automatic Matrix Differentiation}
+\author[Columbia University, Computer Science Seminar]{
+  \textcolor{red}{Anju Kambadur}\inst{1} and Peder A. Olsen\inst{2} \\
+}
+\institute{
+\inst{1}Bloomberg L.P., 
+\inst{2}IBM TJ Watson Research Center,
+}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{A Brief Introduction}
+%
+\begin{itemize}
+\item Work in the Knowledge Engineering group at Bloomberg.
+  \begin{itemize}
+  \item Natural language processing:
+      \begin{itemize}
+      \item {\color{m1}Sequence learning, spectral methods, and sparse models}.
+      \item {\color{m1}Numerical linear algebra/scientific computing}.
+      \item {\color{m1}Open-source initiatives}.
+      \end{itemize}
+  \item Machine translation.
+  \item Knowledge representation (ontologies).
+  \item Information extraction.
+  \end{itemize}
+\item Was at IBM Research till earlier this year.
+%\item Live close-by and often work at Columbia $\color{m1}\smiley$.
+\end{itemize}
+
+\end{frame}

@@ -1,0 +1,12 @@
+\section{Troubleshooting \label{sec:Troubleshooting}}
+
+
+\subsection{If Waf cannot find python lib}
+
+If Waf cannot find the Python lib, i.e. a message ``/usr/bin/ld:
+cannot find -lpython'' is obtained after trying to build. A possible
+solution is to create a symbolic link to the library in \texttt{/usr/lib/}.
+For example, run the command
+\begin{description}
+\item [{\texttt{\$}}] \texttt{sudo ln -s /usr/lib/x86\_64-linux-gnu/libpython2.7.so.1.0
+/usr/lib/libpython2.7.so }\end{description}

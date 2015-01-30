@@ -1,0 +1,90 @@
+\subsection{Direct Matrix Products}
+%
+\begin{frame}
+\frametitle{Direct Matrix Products}
+\framesubtitle{Derivatives of \emph{Linear} Matrix-Matrix Functions}
+%
+\begin{enumerate}
+\item A matrix--matrix derivative is a matrix outer-product:
+$$\color{m1} F(\mX) = \trace(\mA\mX)\mB,\qquad\frac{\partial
+    F}{\partial\mX} = \myvec(\mB^\top)\myvec^\top(\mA).
+$$
+\item A matrix--matrix derivative is a Kronecker product:
+$$\color{m1} F(\mX) = \mA\mX\mB,\qquad\frac{\partial
+    F}{\partial\mX} = \mA\otimes\mB^\top.
+$$
+\item A matrix--matrix derivative \alert{box product}.
+$$\color{m1} F(\mX) = \mA\mX^\top\mB,\qquad\frac{\partial
+    F}{\partial\mX} = \mA\alert{\boxtimes}\mB^\top.
+$$
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Matrix-Matrix Derivatives}
+\framesubtitle{Direct Matrix Products}
+%
+\alert{Direct Matrix Product}, $\color{m1}\mX=\mA\circledast\mB$, is
+a matrix such that:
+$$\color{m1}
+x_{(i_1i_2)(i_3i_4)}=a_{i_{\sigma(1)}i_{\sigma(2)}}b_{i_{\sigma(3)}i_{\sigma(4)}}.
+$$ 
+\vspace{-.5cm}
+
+\begin{itemize}
+\item $\color{m1}(i_1i_2)$ is shorthand for $\color{m1}i_1n_2+i_2-1$
+  where $\color{m1}i_2\in\{1,2,\ldots,n_2\}$.
+\item  $\color{m1}\sigma$ is a permutation over $\color{m1}\mathbb{Z}_4$
+\end{itemize}
+%
+\begin{center}
+  There are 24 possible permutations that can occur
+\end{center}
+%
+\end{frame}
+
+\begin{frame}
+\frametitle{Matrix-Matrix Derivatives}
+\framesubtitle{Direct Matrix Product}
+%
+\begin{itemize}
+  \item 8 can be expressed using matrix outer products.
+$$
+\scriptsize
+\color{m1}
+\begin{array}{cccc}
+  \myvec(\mA)\myvec(\mB)^\top & \myvec(\mA^\top) \myvec(\mB)^\top &
+  \myvec(\mB)\myvec(\mA)^\top & \myvec(\mB^\top) \myvec(\mA)^\top \\
+  \myvec(\mA)\myvec(\mB^\top)^\top & \myvec(\mA^\top) \myvec(\mB^\top)^\top &
+  \myvec(\mB)\myvec(\mA^\top)^\top & \myvec(\mB^\top) \myvec(\mA^\top)^\top \\
+\end{array}
+$$
+\normalsize
+  \item 8 can be expressed using Kronecker products.
+\footnotesize
+$$
+\color{m1}
+\begin{array}{cccc}
+\mA\otimes\mB     & \mA^\top\otimes\mB &
+\mA\otimes\mB^\top & \mA^\top\otimes\mB^\top \\
+\mB\otimes\mA     & \mB^\top\otimes\mA &
+\mB\otimes\mA^\top & \mB^\top\otimes\mA^\top
+\end{array}
+$$
+\normalsize
+\textcolor{red}{
+  \item Remaining 8 can be expressed using Box products.
+\footnotesize
+$$
+\begin{array}{cccc}
+\mA\boxtimes\mB     & \mA^\top\boxtimes\mB &
+\mA\boxtimes\mB^\top & \mA^\top\boxtimes\mB^\top \\
+\mB\boxtimes\mA     & \mB^\top\boxtimes\mA &
+\mB\boxtimes\mA^\top & \mB^\top\boxtimes\mA^\top
+\end{array}
+$$
+} % textcolor
+\normalsize
+\end{itemize}
+%
+\end{frame}
