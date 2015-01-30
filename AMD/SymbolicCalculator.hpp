@@ -5,30 +5,30 @@
  *       SymbolicSMFunc expression 
  *       as input and compute the derivative value of the 
  *       expression.
- * @author Allan Sapucaia Barboza
+ * @author Anju Kambadur, Allan Sapucaia Barboza
  */
 
+/* broken tests: 'trace(X*2)' , 'trace(X*trace(X*S))' - should work */ 
 
-/* broken tests:
-   'trace(X*2)' , 'trace(X*trace(X*S))' - should work
- */ 
 #include <iostream>
 #include <string>
 #include <cmath>
 #include <cstdlib>
 #include <cstdio>
 #include <cctype>
-#include <assert.h>
-#include "boost/shared_ptr.hpp"
-#include "boost/make_shared.hpp"
-#include "boost/variant.hpp"
-#include "AMD.hpp"
-#include <AMD/Exception.hpp>
 #include <stack>
 #include <vector>
+#include <assert.h>
+
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
+#include <boost/variant.hpp>
 #include <boost/assign/list_of.hpp>
 
-namespace AMD{
+#include <AMD.hpp>
+#include <AMD/Exception.hpp>
+
+namespace AMD {
 
 /* Typedef for SymbolicMatrixMatlab and SymbolicScalarMatlab. */
 typedef AMD::SymbolicMatrixMatlab symbolic_matrix_type;
@@ -37,64 +37,66 @@ typedef AMD::MatrixAdaptor_t<symbolic_matrix_type> symbolic_adaptor_type;
 typedef symbolic_adaptor_type::value_type symbolic_value_type;
 
 typedef AMD::MatrixMatrixFunc<symbolic_matrix_type,
-                      				symbolic_value_type> SymbolicMMFunc;
+                      		  symbolic_value_type> SymbolicMMFunc;
 typedef AMD::ScalarMatrixFunc<symbolic_matrix_type,
-                       				symbolic_value_type> SymbolicSMFunc;  
+                       		  symbolic_value_type> SymbolicSMFunc;  
 class Calculator {
   public:
-    /* Default constructor. */
-    //Calculator(){};
-    /* Default destructor. */
-    ~Calculator(){};
     /**
-     * @brief Construction the Calculator with an SMF
-     *        expression. Compute the derivative value
-     *        and function value of the expression.
+     * @brief Construction the Calculator with an SMF expression. Compute the
+     *        derivative value and function value of the expression.
      * @param expr the SMF expression.
      * @param row  matrix row.
      * @param col  matrix col.
+     *
+     * Symbolic matrices should have a size, but should they have default 4x4?
      */
-    Calculator(int row=4, int col=4) :
-      row(row), col(col) {
-      if(row <= 0 || col <= 0) {
-        throw exception_generic_impl("AMD::Calculator",
-                                     "Invalid matrix dimensions",
-                                     AMD_INVALID_DIMENSIONS);
-      }
+    Calculator(int row=4, int col=4) : row(row), col(col) 
+    {
+        if (row <= 0 || col <= 0) {
+            throw exception_generic_impl("AMD::Calculator",
+                                         "Invalid matrix dimensions",
+                                         AMD_INVALID_DIMENSIONS);
+        }
       
-      AMD_START_TRY_BLOCK()
-      std::vector<boost::shared_ptr<symbolic_matrix_type> > matrices;/* Create matrix_type for the variables and constant matrices */
-      char identifier[2];/* one letter identifier */
-      identifier[1] = 0;/* end of string character */
+        AMD_START_TRY_BLOCK()
 
-      
-      matrices.resize('Z'-'A'+1);
-      matrixFuncs.resize('Z'-'A'+1);
+        /* Create matrix_type for the variables and constant matrices */
+        std::vector<boost::shared_ptr<symbolic_matrix_type> > matrices;
 
-      /* create matrix types */
-      for(char c = 'A'; c < 'Z';c++) {
-        identifier[0] = c;
-        /* identity,zero and X are created separately */
-        if(c == 'I' || c == 'X')
-          continue;
-        matrices[c-'A'] = boost::shared_ptr<symbolic_matrix_type>(new symbolic_matrix_type(identifier,row,col));
-        matrixFuncs[c-'A'] = boost::shared_ptr<SymbolicMMFunc>
-          (new SymbolicMMFunc(matrices[c-'A'],true));
-      }
-      /* create X's MMF */
-      matrices['X'-'A'] = boost::shared_ptr<symbolic_matrix_type>(new symbolic_matrix_type("X",row,col));
-      matrixFuncs['X'-'A'] = boost::shared_ptr<SymbolicMMFunc>
-        (new SymbolicMMFunc(matrices['X'-'A'], false));
-      /* create I's MMF */
-      matrixFuncs['I'-'A'] = boost::shared_ptr<SymbolicMMFunc>
-        (new SymbolicMMFunc (symbolic_adaptor_type::eye(row), true));
-      /* create Z's MMF */
-      matrixFuncs['Z'-'A'] = boost::shared_ptr<SymbolicMMFunc>
-        (new SymbolicMMFunc (symbolic_adaptor_type::zeros(row,col), true, kZero));
- 
+        char identifier[2];/* one letter identifier */
+        identifier[1] = 0;/* end of string character */
+        
+        matrices.resize('Z'-'A'+1);
+        matrixFuncs.resize('Z'-'A'+1);
+        
+        /* create matri types */
+        for(char c = 'A'; c < 'Z';c++) {
+          identifier[0] = c;
+          /* identity,zero and X are created separately */
+          if(c == 'I' || c == 'X')
+            continue;
+          matrices[c-'A'] = boost::shared_ptr<symbolic_matrix_type>(new symbolic_matrix_type(identifier,row,col));
+          matrixFuncs[c-'A'] = boost::shared_ptr<SymbolicMMFunc>
+            (new SymbolicMMFunc(matrices[c-'A'],true));
+        }
 
-      AMD_END_TRY_BLOCK()
-      AMD_CATCH_AND_RETHROW(SymbolicCalculator,SymbolicCalculator)
+        /* create X's MMF */
+        matrices['X'-'A'] = 
+        boost::shared_ptr<symbolic_matrix_type>(new symbolic_matrix_type("X",row,col));
+        matrixFuncs['X'-'A'] = boost::shared_ptr<SymbolicMMFunc>
+          (new SymbolicMMFunc(matrices['X'-'A'], false));
+
+        /* create I's MMF */
+        matrixFuncs['I'-'A'] = boost::shared_ptr<SymbolicMMFunc>
+          (new SymbolicMMFunc (symbolic_adaptor_type::eye(row), true));
+
+        /* create Z's MMF */
+        matrixFuncs['Z'-'A'] = boost::shared_ptr<SymbolicMMFunc>
+          (new SymbolicMMFunc (symbolic_adaptor_type::zeros(row,col), true, kZero));
+        
+        AMD_END_TRY_BLOCK()
+        AMD_CATCH_AND_RETHROW(SymbolicCalculator,SymbolicCalculator)
     }
 
     /**
@@ -153,6 +155,7 @@ class Calculator {
   boost::shared_ptr<SymbolicSMFunc> getComputationalTree() {
     return func;
   }
+
   private:
     int row;  /**< row number of matrices. */
     int col;  /**< colume number of matrices. */ 
