@@ -190,7 +190,7 @@ endif (USE_ELEMENTAL)
 
 ###############################################################################
 
-option (USE_EIGEN "Build with Eigen Matrix support" ON)
+option (USE_EIGEN "Build with Eigen Matrix support" OFF)
 if (USE_EIGEN)
   # Find the Eigen package 
   find_package(Eigen3 REQUIRED)
@@ -237,7 +237,7 @@ endif (BUILD_EXAMPLES)
 ###############################################################################
 
 # Perf tests
-option (BUILD_TESTS "Whether to build tests" OFF)
+option (BUILD_TESTS "Whether to build tests" ON)
 if (BUILD_TESTS)
   add_subdirectory (tests)
 endif (BUILD_TESTS)

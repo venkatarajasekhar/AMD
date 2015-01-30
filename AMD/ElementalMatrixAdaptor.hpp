@@ -17,15 +17,16 @@ struct MatrixAdaptor_t<elem::Matrix<T> > {
   /**< typedef the matrix so that we can reuse it */
   typedef elem::Matrix<T> matrix_type;
 
-  /**
-   * 0. 
-   * @brief Create a matrix of the requested size and name it if possible.
-   * @param[in] m The number of rows
-   * @param[in] n The number of cols
-   * @return A matrix of dimension (m,n)
-   */
-  static int createMatrix (int m, int n, std::string name="") {
-    return matrix_type (m,n);
+  /**< Default construct a matrix for us */
+  static boost::shared_ptr<matrix_type> defaultConstructMatrix 
+                (int m, int n, std::string name="") {
+    return boost::shared_ptr<matrix_type>(new matrix_type(m, n));
+  }
+
+  /**< Copy construct a matrix for us */
+  static boost::shared_ptr<matrix_type> copyConstructMatrix 
+                        (const matrix_type& original) {
+    return boost::shared_ptr<matrix_type>(new matrix_type(original));
   }
 
   /**

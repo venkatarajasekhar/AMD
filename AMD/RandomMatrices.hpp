@@ -20,6 +20,51 @@ struct rand_psd_t {
    */ 
 };
 
+#if AMD_HAVE_ELEMENTAL==1
+
+#include <elemental.hpp>
+
+template <>
+struct rand_psd_t<elem::DistMatrix<double> > {
+  typedef elem::DistMatrix<double> MatrixType;
+  typedef boost::shared_ptr<MatrixType> MatrixPtrType;
+
+  /** A functor that adds n to each diagonal element */
+  struct nI_plus_A_t {
+    double n;
+
+    nI_plus_A_t (double n) : n(n) {}
+
+    void apply (MatrixPtrType A, 
+                int i, 
+                int j, 
+                int i_lcl, 
+                int j_lcl) {
+      if (i==j) A->SetLocal(i_lcl,j_lcl,A->GetLocal(i_lcl,j_lcl)+n);
+    }
+  };
+
+
+  static MatrixPtrType apply(int n) {
+    /** 1. Generate a uniformly random ([0,1]) matrix A */
+    MatrixPtrType A = MatrixPtrType(new MatrixType(n,n));
+    MatrixPtrType A_trans = MatrixPtrType(new MatrixType(n,n));
+    elem::MakeUniform(*A, 0., 1.);
+
+    /** 2. Compute A = A+A^T, which makes A symmetric  */
+    elem::Transpose (*A, *A_trans);
+    elem::Axpy(1.0, *A_trans, *A);
+
+    /** 3. As A(i,j) is originally (0,1), we can add n*I to make it PSD */ 
+    nI_plus_A_t nI_plus_A(n);
+    matrix_visitor_t<MatrixType,nI_plus_A_t>::apply(A, nI_plus_A);
+
+    return A;
+  }
+};
+
+#endif /** AMD_HAVE_ELEMENTAL==1 */
+
 #if AMD_HAVE_EIGEN==1
 
 template <>

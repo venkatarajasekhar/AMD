@@ -99,7 +99,8 @@ public EigenMatrixAdaptorBase<T, Eigen::Matrix<T,
   typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> matrix_type;
   typedef EigenMatrixAdaptorBase<value_type, matrix_type> base_type;
 
-  using base_type::createMatrix;
+  using base_type::defaultConstructMatrix;
+  using base_type::copyConstructMatrix;
   using base_type::getNumRows;
   using base_type::getNumCols;
   using base_type::add;
@@ -169,7 +170,8 @@ struct MatrixAdaptor_t<Eigen::SparseMatrix<T> > :
   typedef Eigen::SparseMatrix<T> matrix_type;
   typedef EigenMatrixAdaptorBase<value_type, matrix_type> base_type;
 
-  using base_type::createMatrix;
+  using base_type::defaultConstructMatrix;
+  using base_type::copyConstructMatrix;
   using base_type::getNumRows;
   using base_type::getNumCols;
   using base_type::add;
@@ -214,7 +216,7 @@ struct MatrixAdaptor_t<Eigen::SparseMatrix<T> > :
    * @return Identity matrix of the required size.
    */
   static matrix_type eye(int n) { 
-    matrix_type A = createMatrix(n,n);
+    matrix_type A = *(defaultConstructMatrix(n,n));
     A.setIdentity();
     return A;
   }

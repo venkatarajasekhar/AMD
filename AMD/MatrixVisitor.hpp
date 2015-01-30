@@ -19,6 +19,35 @@ struct matrix_visitor_t {
    */ 
 };
 
+#if AMD_HAVE_ELEMENTAL==1
+
+#include <elemental.hpp>
+
+template <typename FunctorType>
+struct matrix_visitor_t <elem::DistMatrix<double>, FunctorType> {
+  typedef elem::DistMatrix<double> MatrixType;
+  typedef boost::shared_ptr<MatrixType> MatrixPtrType;
+
+  static void apply (MatrixPtrType A, 
+                     FunctorType& functor) {
+    const int j_max = A->LocalWidth();
+    const int i_max = A->LocalHeight();
+    const int r_shift = A->RowShift();
+    const int r_stride = A->RowStride();
+    const int c_shift = A->ColShift();
+    const int c_stride = A->ColStride();
+    for (int j_lcl=0; j_lcl<j_max; ++j_lcl) {
+      const int j = r_shift + r_stride*j_lcl;
+      for(int i_lcl=0; i_lcl<i_max; ++i_lcl) {
+        const int i = c_shift + c_stride*i_lcl;
+        functor.apply (A, i, j, i_lcl, j_lcl);
+      }
+    }
+  }
+};
+
+#endif /** AMD_HAVE_ELEMENTAL */
+
 #if AMD_HAVE_EIGEN==1
 
 #include <Eigen/Dense>

@@ -22,6 +22,11 @@ else (CMAKE_SYSTEM MATCHES "Linux")
   set (AMD_WINDOWS 1)
 endif (CMAKE_SYSTEM MATCHES "Linux")
 
+# Set AMD_HAVE_ELEMENTAL 
+if (Elemental_FOUND)
+  set(AMD_HAVE_ELEMENTAL 1)
+endif(Elemental_FOUND)
+
 # Set AMD_HAVE_EIGEN when we find the include directory
 if (EIGEN3_INCLUDE_DIR)
   set(AMD_HAVE_EIGEN 1)
