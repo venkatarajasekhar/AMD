@@ -1,7 +1,7 @@
 ### SET TASK CONFIGURATION PARAMETERS HERE ####################################
 
 # Set the top dir and the build dir
-top = '../..'
+top = '../../..'
 out = top + '/build'
 
 task_name = 'simple'

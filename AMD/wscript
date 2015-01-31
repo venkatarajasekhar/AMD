@@ -4,7 +4,7 @@ top = '..'
 out = top + '/build'
 
 int_deps = []
-ext_deps = []
+ext_deps = ['BOOST.SPIRIT', 'BOOST.TEST']
 
 ###############################################################################
 
