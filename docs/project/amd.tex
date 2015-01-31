@@ -1,0 +1,197 @@
+\input{header}
+
+\section{Introduction}
+\begin{frame}
+\frametitle{Covariance: A Motivating Example}
+%
+
+\begin{center}
+\colorbox{green!10}{
+$\textnormal{Gaussian pdf} = 
+    \color{m1}(2\pi{})^{\!-\frac{n}{2}}\det(\mSigma)^{\!-\frac{1}{2}}
+           e^{(\mx-\mu)^\top{}\mSigma^{-1}(\mx-\mu)}$
+}
+\end{center}
+%
+Tikhonov regularized maximum log-likelihood for learning the covariance
+$\color{m1}\mSigma$ given an empirical covariance $\color{m1}\mS$ is:
+%
+\begin{center}
+%
+\colorbox{green!10}{
+%
+$\color{m1}
+f(\mSigma)=-\logdet(\mSigma)-\trace(\mS\mSigma^{-1})-\|\mSigma^{-1}\|_F^2.$
+%
+}
+%
+\end{center}
+%
+\begin{itemize}
+%
+\item To optimize $\color{m1}f(\mSigma)$, using first-order methods we need 
+      $\color{m1}f'(\mSigma)$.
+%
+\item To use second-order methods, we also need $\color{m1}f''(\mSigma)$.
+%
+\end{itemize}
+%
+\begin{center}
+%
+What are $\color{m1}f'(\mSigma)$ and $\color{m1}f''(\mSigma)$?
+%
+\end{center}
+%
+\end{frame}
+
+%
+\begin{frame}
+\frametitle{Objective}
+\framesubtitle{Theoretical Aspect}
+%
+\begin{center}
+%
+Differentiation of matrix functions is still not well understood.
+%
+\end{center}
+%
+\begin{itemize}
+%
+\item No simple ``calculus'' for computing matrix derivatives.
+%
+\item Matrix derivatives of simple functions can be complicated.
+%
+\end{itemize}
+%
+\begin{center}
+%
+\textcolor{blue}{Build on known results to define a matrix-derivative
+calculus.}
+%
+\end{center}
+%
+\end{frame}
+
+\begin{frame}
+\frametitle{Objective}
+\framesubtitle{Software Aspect}
+%
+\begin{center}
+\textcolor{blue}{Matrix differentiation made simple for humans and computers}
+\end{center}
+%
+\begin{itemize}
+\item Symbolic differentiation should be made simple.
+\item Optimizing matrix valued functions should be efficient:
+  \begin{itemize}
+  \item Both computation and storage.
+  \end{itemize}
+\end{itemize}
+
+%
+\begin{center}
+We are developing Automatic Matrix Differentiation (AMD), an open-source \Cpp{}
+library to accomplish this.  The code can be downloaded from
+\textcolor{blue}{\url{https://github.com/pkambadu/AMD}}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Description}
+\begin{center}
+\textcolor{blue}{Re-design AMD from ground up}
+\end{center}
+
+\begin{itemize}
+\item Previous implementation led to key insights.
+\item Rewriting from scratch better than fixing existing design.
+    \begin{itemize}
+    \item Easy creation of matrix-matrix functions.
+    \item Optimization of abstract syntax trees.
+    \item Advanced logging and exception handling.
+    \item Parallel evaluation on several matrix types.
+    \item Python bindings.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Expected \Cpp{} Interface}
+
+\begin{lstlisting}[style=basic]
+@{\color{red} /** Associate matrices with symbols */}@
+std::map<std::string, boost::shared_ptr<MatrixType> > symbolTable;
+symbolTable["A"] = ...; symbolTable["X"] = ...;
+
+@{\color{red} /** Create an expression and evaluate it */}@
+AMD::Expression fX("trace(A*(I+X)");
+AMD::evaluate(fX, symbolTable);
+
+@{\color{red} /** Evaluate the derivative */}@
+AMD::Expression fX_prime = AMD::gradient(fX);
+AMD::evaluate(fX_prime, symbolTable);
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+\frametitle{Creating Expression Trees}
+%
+\begin{center}
+\textcolor{blue}{Accept a well-formed matrix op-string and return an AST"}
+\end{center}
+%
+\begin{itemize}
+\item Use \texttt{Boost.Spirit}.
+\item Matrix-matrix functions: +, -, *, .*, ',\textunderscore{}
+\item Scalar-Matrix functions: \code{trace}, \code{logdet}.
+\item Obey precedence and associativity (include parantheses).
+\end{itemize}
+%
+\end{frame}
+
+\begin{frame}
+\frametitle{Optimizing Expression Trees}
+%
+\begin{center}
+\textcolor{blue}{Reduce computational complexity by rewriting the AST}
+\end{center}
+%
+\begin{itemize}
+\item Use all known matrix identities.
+\item \code{(A')' = A}, \code{(A_)_ = A}
+\item \code{I*A = A*I = A}, \code{0+A = A+0 = A}
+\item Common sub-expression elimination
+\item $\ldots{}$
+\end{itemize}
+%
+\end{frame}
+
+\begin{frame}
+\frametitle{Derivatives Of Scalar-Matrix Functions}
+%
+\begin{center}
+\textcolor{blue}{Compute the derivative using reverse mode}
+\end{center}
+%
+\begin{itemize}
+\item Apply the rules from the AMD paper.
+\item Apply optimizations post-derivation.
+\end{itemize}
+%
+\end{frame}
+
+\begin{frame}
+\frametitle{Evaluation Expression Trees}
+%
+\begin{center}
+\textcolor{blue}{Evaluate the AST in parallel}
+\end{center}
+%
+\begin{itemize}
+\item Identify parallelism (topological sort).
+\item Evaluation on a symbol table.
+\end{itemize}
+%
+\end{frame}
+
+\input{footer}
