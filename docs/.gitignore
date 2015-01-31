@@ -22,3 +22,7 @@ main.pdf
 *-figure*
 *.auxlock
 *png
+*.nav
+*.pdf
+*.snm
+*.vrb

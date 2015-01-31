@@ -194,4 +194,31 @@ AMD::evaluate(fX_prime, symbolTable);
 %
 \end{frame}
 
+\begin{frame}[fragile]
+\frametitle{Operator Associativity}
+%
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Operator & Associativity & Priority \\ \hline
+$( )$    &      ---      &    1  \\ \hline
+$',\_$    &      left     &    2  \\ \hline
+unary $+,-$ &   left     &    3  \\ \hline
+$*,.*$    &     left     &    4  \\ \hline
+$+,-$     &     left     &    5  \\ \hline
+\end{tabular}
+\end{center}
+%
+\begin{itemize}
+\item \hyperref[http://www.boost.org/doc/libs/1_57_0/libs/spirit/doc/html/index.html]{Boost.Spirit}
+\item References for calculator:
+    \begin{itemize}
+    \item \hyperref[http://stackoverflow.com/questions/13056893/building-a-custom-expression-tree-in-spiritqi-without-utree-or-boostvariant/13060402]{Building a Custom Expression Tree in Spirit:Qi}
+    \item \hyperref[http://stackoverflow.com/questions/8464969/boostspirit-expression-parser/8468822]{Boost::Spirit Expression Parser}
+    \item \hyperref[http://stackoverflow.com/questions/9453712/compilation-error-with-a-boostspirit-parser/9458029]{Compilation error with a boost::spirit parser}
+    \end{itemize}
+\end{itemize}
+%
+\end{frame}
+
 \input{footer}
