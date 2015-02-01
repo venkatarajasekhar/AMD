@@ -25,7 +25,18 @@ typedef boost::spirit::utree Expression;
 
 Expression generateExpression(const std::string& exprString);
 ///< The main method of the file that takes in a string and tries to parse it.
-/// CHETAN TODO. ADD MORE DOCUMENTATION.
+/// @param[in] exprString This is a string that represents a matrix expression
+/// @code
+/// 
+///  std::string str = '-A*B'';
+///  try {
+///     AMD::Expression myExpr = AMD::generateExpression(str);
+///     std::cout << "Parsing succeeded: " << myExpr << "\n";
+///     } 
+///  catch (const std::exception& e) {
+///     std::cout << e.what() << std::endl;
+///     }
+/// @endcode
 
 } // namespace AMD
 
