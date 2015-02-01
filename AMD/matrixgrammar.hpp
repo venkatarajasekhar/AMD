@@ -19,6 +19,10 @@ namespace spirit = boost::spirit;
 /// inverse, transpose, and negation on matrices
 struct UnaryOp
 {
+    /// @brief A structure that is used to provide information about the 
+    ///        return type of the void function
+    /// @tparam T1 Used by boost::spirit
+    /// @tparam T2 Used by boost::spirit2
     template <typename T1, typename T2 = void>
     struct result { 
         typedef void type; 
@@ -53,6 +57,10 @@ static boost::phoenix::function<UnaryOp> const inv = UnaryOp('_');
 /// two matrices, supports addition, subtraction, multiplication, division
 struct BinaryOp
 {
+    /// @brief A structure that is used to provide information about the 
+    ///        return type of the void function
+    /// @tparam T1 Used by boost::spirit
+    /// @tparam T2 Used by boost::spirit2
     template <typename T1, typename T2 = void>
     struct result { 
         typedef void type; 
