@@ -14,9 +14,29 @@ Tree::~Tree()
 
 }
 
-bool Tree::operator=(const Tree& other) const
+void swap(Tree& other)
+{
+
+}
+
+std::string Tree::info() const
+{
+    return this->d_info;
+}
+
+void Tree::setInfo(const std::string& info)
+{
+    this->d_info = info;
+}
+
+bool Tree::operator==(const Tree& other) const
 {
     return false;
+}
+
+bool Tree::operator!=(const Tree& other) const
+{
+    return true;
 }
 
 } } // namespace AMD::detail
