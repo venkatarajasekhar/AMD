@@ -80,17 +80,30 @@ struct MatrixGrammar : qi::grammar<Iterator,
                                    ascii::space_type, 
                                    spirit::utree()>
 {
+    private:
+    qi::rule<Iterator, ascii::space_type, spirit::utree()> d_expression;
+    ///< Rule to handle main return type of matrix grammar composed of one
+    ///  or more terms in sequence
+    
+    qi::rule<Iterator, ascii::space_type, spirit::utree()> d_term;
+    ///< Rule to handle a constant or matrix factor that multiplies or divides
+    ///  something in an expression
 
+    qi::rule<Iterator, ascii::space_type, spirit::utree()> d_factor;
+    ///< Creates a rule for a factor defined as an upper case letter 
+    ///  representing a matrix or a double representing a constant
+    ///  or a parenthetical expression or a series of factors
+    ///  or a negated factor
+
+    qi::rule<Iterator, ascii::space_type, spirit::utree()> d_invtran;
+    ///< Defines a rule for inverse and/or transpose operators 
+
+    public:
     MatrixGrammar();
     ///< The parser grammar is defined as follows: 
     ///  expression = term | term + term | term - term
     ///  term = invtran | invtran * invtran | invtran / invtran
     ///  factor = qi::upper | qi::double | (expression) | -factor | +factor   
-
-    qi::rule<Iterator, ascii::space_type, spirit::utree()> d_expression, 
-                                                           d_term, 
-                                                           d_factor,
-                                                           d_invtran;
 
 };
 
@@ -104,8 +117,6 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
             |   ('-' >> d_term            [minus(qi::_val, qi::_1)])
             )
         ;
-    ///< Rule to handle main return type of matrix grammar composed of one
-    ///  or more terms in sequence
     
     d_term =
         d_invtran                          [qi::_val = qi::_1]
@@ -113,8 +124,6 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
             |   ('/' >> d_invtran          [divide(qi::_val, qi::_1)])
             )
         ;
-    ///< Rule to handle a constant or matrix factor that multiplies or divides
-    ///  something in an expression
     
     // FIXME
     // Consider "A'_'", which means trans(inv(trans(A)))
@@ -125,7 +134,6 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
        |  (d_factor [inv(qi::_val, qi::_1)]   >> '_')    
        |  d_factor             [qi::_val = qi::_1]
       ;
-    ///< Defines a rule for inverse and/or transpose operators 
 
     // FIXME
     // Consider "-A'", which means -(trans(A)). The current 
@@ -137,10 +145,6 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
       |   ('-' >> d_factor                    [neg(qi::_val, qi::_1)])
       |   ('+' >> d_factor                    [qi::_val = qi::_1])
       ;
-    ///< Creates a rule for a factor defined as an upper case letter 
-    ///  representing a matrix or a double representing a constant
-    ///  or a parenthetical expression or a series of factors
-    ///  or a negated factor
         
     BOOST_SPIRIT_DEBUG_NODE(d_expression);
     BOOST_SPIRIT_DEBUG_NODE(d_term);
