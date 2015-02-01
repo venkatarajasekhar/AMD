@@ -32,8 +32,8 @@ class Tree {
 
   public:
     explicit Tree (const std::string& info, 
-                   const Tree& left, 
-                   const Tree& right);
+                   const boost::shared_ptr<Tree>& left, 
+                   const boost::shared_ptr<Tree>& right);
     ///< Construct a new tree by combining the left and the right trees and
     ///  store the information in the std::string as the reason for the join.
     ///
@@ -42,16 +42,23 @@ class Tree {
     ///        cannot join left["A"] and right["B"] with "C"! You can 
     ///        only join using one of the functions.
     ///
-    /// @param[in]  info 
-    /// @param[in]  left  
-    /// @param[in]  right
+    /// @param[in]  info  This is the information that is stored in this node.
+    /// @param[in]  left  The left child shared pointer
+    /// @param[in]  right The right child shared pointer
                    
     virtual ~Tree();
     ///< Recursively destroy this tree and everything under it
 
     template <typename OSTREAM>
     virtual OSTREAM& print(OSTREAM& os);
+    ///< Print the tree recursively using 
+    ///
+    /// @param[inout] os The output stream to print everything to.
 
+    bool operator=(const Tree& other) const;
+    ///< Check if the current tree is equal to the other tree. For two trees
+    ///  to be equal, they should have the exact same structure and the same
+    ///  information at each of the nodes.
 };
 
 #endif // AMD_TREE_HPP
