@@ -6,7 +6,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-namespace AMD {
+namespace AMD { namespace detail {
 
 /// This class represents the symbolic binary expression tree that we parse
 /// store within AMD after parsing the string. 
@@ -50,9 +50,10 @@ class Tree {
     ///< Recursively destroy this tree and everything under it
 
     template <typename OSTREAM>
-    virtual OSTREAM& print(OSTREAM& os);
+    OSTREAM& print(OSTREAM& os);
     ///< Print the tree recursively using 
     ///
+    //  @ tparam OSTREAM The output stream type
     /// @param[inout] os The output stream to print everything to.
 
     bool operator=(const Tree& other) const;
@@ -60,5 +61,13 @@ class Tree {
     ///  to be equal, they should have the exact same structure and the same
     ///  information at each of the nodes.
 };
+
+template <typename OSTREAM>
+OSTREAM& Tree::print(OSTREAM& os)
+{
+    // Implementation of the recursive print function
+}
+
+} }  // namespace AMD::detail
 
 #endif // AMD_TREE_HPP

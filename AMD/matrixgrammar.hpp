@@ -6,6 +6,9 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix.hpp>
 
+// Uncomment the define if you want debug messages for the grammar
+// #define BOOST_SPIRIT_DEBUG
+
 namespace AMD {
 
 namespace detail {

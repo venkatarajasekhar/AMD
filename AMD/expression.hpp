@@ -4,8 +4,6 @@
 #ifndef AMD_EXPRESSION_HPP
 #define AMD_EXPRESSION_HPP
 
-#define BOOST_SPIRIT_DEBUG
-
 #include <string>
 #include <stdexcept>
 
