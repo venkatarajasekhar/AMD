@@ -18,8 +18,8 @@ int main()
             break;
 
         try {
-            AMD::expression my_expr = AMD::parse(str);
-            std::cout << "Parsing succeeded: " << my_expr << "\n";
+            AMD::Expression myExpr = AMD::generateExpression(str);
+            std::cout << "Parsing succeeded: " << myExpr << "\n";
         } catch (const std::exception& e) {
             std::cout << e.what() << std::endl;
         }
