@@ -15,12 +15,17 @@ namespace ascii = boost::spirit::ascii;
 namespace spirit = boost::spirit;
 // namespace definitions for boost spirit library parser tools
 
+/// Struct for handling unary operator expressions including 
+/// inverse, transpose, and negation on matrices
 struct UnaryOp
 {
     template <typename T1, typename T2 = void>
-    struct result { typedef void type; };
-    ///< The result of the unary operation. Will be void.
-    /// Needed for Boost to typecheck when called
+    struct result { 
+        typedef void type; 
+        ///< The result of the unary operation. Will be void.
+        /// Needed for Boost to typecheck when called
+    };
+    
     
     char const d_op;
     ///< Stores the character representation of the current operation.
@@ -36,8 +41,7 @@ struct UnaryOp
     ///  @param[in] parent the current lhs of the tree
     ///  @param[in] rhs    the current rhs of the tree
 };
-///<Struct for handling unary operator expressions including 
-///inverse, transpose, and negation on matrices
+
 
 static boost::phoenix::function<UnaryOp> const neg = UnaryOp('-');
 static boost::phoenix::function<UnaryOp> const trans = UnaryOp('\'');
@@ -45,12 +49,17 @@ static boost::phoenix::function<UnaryOp> const inv = UnaryOp('_');
 ///< Unary operation functions called by the parser's grammar rules
 ///  Phoenix validates the typing for boost which calls these functions
 
-
+/// This struct represents a binary operation that works on 
+/// two matrices, supports addition, subtraction, multiplication, division
 struct BinaryOp
 {
     template <typename T1, typename T2 = void>
-    struct result { typedef void type; };
-    ///< The result of the binary operation. Will be void.
+    struct result { 
+        typedef void type; 
+        ///< The result of the binary operation. Will be void.
+        /// Needed for Boost to typecheck when called
+    };
+    
     char const d_op;
     ///< Stores the character representation of the current operation.
 
@@ -65,15 +74,13 @@ struct BinaryOp
     ///  @param[in] parent the current lhs of the tree
     ///  @param[in] rhs    the current rhs of the tree
 };
-///< This struct represents a binary operation that works on 
-/// two matrices, supports addition, subtraction, multiplication, division
 
 static boost::phoenix::function<BinaryOp> const plus = BinaryOp('+');
 static boost::phoenix::function<BinaryOp> const minus = BinaryOp('-');
 static boost::phoenix::function<BinaryOp> const times = BinaryOp('*');
 static boost::phoenix::function<BinaryOp> const divide = BinaryOp('/');
-///<Binary operation functions called during parsing of matrix expressions
-///Phoenix validates the typing for boost which calls these functions
+///< Binary operation functions called during parsing of matrix expressions
+///  Phoenix validates the typing for boost which calls these functions
 
 template <typename Iterator>
 struct MatrixGrammar : qi::grammar<Iterator, 
@@ -106,6 +113,19 @@ struct MatrixGrammar : qi::grammar<Iterator,
     ///  factor = qi::upper | qi::double | (expression) | -factor | +factor   
 
 };
+///< Parser that can iterate over a string of matrix expressions while skipping 
+/// intermediary spaces and will create a tree of nodes representing the 
+/// parsed matrix expression. 
+/// Supports the following matrix operations: 
+/// Addition(+) 
+/// Subtraction(-)
+/// Multiplication(*)
+/// Division(/) 
+/// Element-Wise Multiplication(o)
+/// Negation(-)
+/// Transpose(')
+/// Inverse(_)
+
 
 template <typename Iterator>
 MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression)
