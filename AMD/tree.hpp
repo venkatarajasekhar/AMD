@@ -5,6 +5,7 @@
 #define AMD_TREE_HPP
 
 #include <boost/shared_ptr.hpp>
+#include <iostream>
 
 namespace AMD { namespace detail {
 
@@ -29,6 +30,8 @@ class Tree {
     ///< A pointer to the left sub-tree. In the case that the operation is 
     ///  a unary operation, the left-subtree is valid and the right sub-tree
     ///  should be empty.
+
+    std::string printHelper(Tree& tree, std::string indentation);
 
   public:
     explicit Tree (const std::string& info, 
@@ -84,7 +87,10 @@ template <typename OSTREAM>
 OSTREAM& Tree::print(OSTREAM& os)
 {
     // Implementation of the recursive print function
+    os << printHelper(*this, "");
+    return os;
 }
+
 
 } }  // namespace AMD::detail
 
