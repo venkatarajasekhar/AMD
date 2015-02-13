@@ -12,7 +12,7 @@ namespace AMD { namespace detail {
 /// This class represents the symbolic binary expression tree that we parse
 /// store within AMD after parsing the string. 
 class Tree {
-  private:
+  protected:
     // DATA
     std::string d_info;
     ///< Information present in this node: for AMD, this is either a matrix,

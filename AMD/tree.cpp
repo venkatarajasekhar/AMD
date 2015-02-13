@@ -14,11 +14,6 @@ Tree::Tree (const std::string& info,
                    
 Tree::~Tree()
 {
-    // Memory errors with this approach
-    // if (this->d_left) 
-        // delete this->d_left.get(); 
-    // if (this->d_right)
-    //     delete this->d_right.get();
 }
 
 std::string Tree::printHelper(Tree& tree, std::string indentation) 

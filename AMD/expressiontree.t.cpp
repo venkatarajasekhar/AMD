@@ -1,4 +1,6 @@
 #include <AMD/expressiontree.hpp>
+#include <AMD/exception.hpp>
+
 
 #define BOOST_TEST_MODULE TreeTest
 #include <boost/test/unit_test.hpp>
@@ -9,19 +11,42 @@ BOOST_AUTO_TEST_CASE ( Constructor )
 {
     typedef class AMD::detail::ExpressionTree ExprTree;
     boost::shared_ptr<ExprTree> nil;
+    AMD_START_TRY_BLOCK()
     boost::shared_ptr<ExprTree> nodeC = boost::make_shared<ExprTree>("C",nil,nil);
-    boost::shared_ptr<ExprTree> nodeB = boost::make_shared<ExprTree>("B",nodeC,nil);
-    boost::shared_ptr<ExprTree> nodeA = boost::make_shared<ExprTree>("A",nodeB,nil);
-    boost::shared_ptr<ExprTree> nodeY = boost::make_shared<ExprTree>("Y",nil,nil);
-    boost::shared_ptr<ExprTree> nodeZ = boost::make_shared<ExprTree>("Z",nil,nodeY);
-    (*nodeA.get()).swap(*nodeZ.get());
+    boost::shared_ptr<ExprTree> nodeA = boost::make_shared<ExprTree>("A",nil,nil);
+    boost::shared_ptr<ExprTree> nodeB = boost::make_shared<ExprTree>("'",nodeC,nodeA);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_PRINT()
 
-    //   this        other
-    //    a            z 
-    //   b     <->      y
-    //  c
+    AMD_START_TRY_BLOCK()
+    boost::shared_ptr<ExprTree> nodeX = boost::make_shared<ExprTree>("C",nil,nil);
+    boost::shared_ptr<ExprTree> nodeY = boost::make_shared<ExprTree>("tr",nil,nodeX);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_PRINT()
 
-    BOOST_CHECK (nodeA.get()->info() == "Z");
-    BOOST_CHECK (nodeZ.get()->info() == "A");
+    AMD_START_TRY_BLOCK()
+    boost::shared_ptr<ExprTree> nodeX = boost::make_shared<ExprTree>("C",nil,nil);
+    boost::shared_ptr<ExprTree> nodeY = boost::make_shared<ExprTree>("-",nil,nodeX);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_PRINT()
+
+    AMD_START_TRY_BLOCK()
+    boost::shared_ptr<ExprTree> nodeX = boost::make_shared<ExprTree>("C",nil,nil);
+    boost::shared_ptr<ExprTree> nodeY = boost::make_shared<ExprTree>("+",nodeX,nil);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_PRINT()
+
+    AMD_START_TRY_BLOCK()
+    boost::shared_ptr<ExprTree> nodeX = boost::make_shared<ExprTree>("*",nil,nil);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_PRINT()
+
+    AMD_START_TRY_BLOCK()
+    boost::shared_ptr<ExprTree> nodeC = boost::make_shared<ExprTree>("C",nil,nil);
+    boost::shared_ptr<ExprTree> nodeA = boost::make_shared<ExprTree>("A",nil,nil);
+    boost::shared_ptr<ExprTree> nodeY = boost::make_shared<ExprTree>("Y",nodeC,nodeA);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_PRINT()
+
 }
 
