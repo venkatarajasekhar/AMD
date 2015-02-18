@@ -55,7 +55,7 @@ bool Tree::operator==(const Tree& other) const
          || (!(other.d_left) && this->d_left)
          || (other.d_left && !(this->d_left))) return false;
 
-    if (!other.d_right && !other.d_right) 
+    if (!other.d_right && !this->d_right) 
         return *(other.d_left) == *(this->d_left);
     else if (!other.d_left && !this->d_left) 
         return *(other.d_right) == *(this->d_right);
