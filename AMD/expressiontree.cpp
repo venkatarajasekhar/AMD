@@ -1,7 +1,8 @@
 #include <AMD/expressiontree.hpp>
 #include <AMD/exception.hpp>
 
-#include <stdio.h>
+#include <set>
+#include <tr1/unordered_set>
 
 namespace AMD { namespace detail {
 
@@ -10,7 +11,18 @@ ExpressionTree::ExpressionTree (const std::string& info,
                                 const boost::shared_ptr<Tree>& right) :
                                 Tree(info, left, right)
 {
-    if (info == "+" || info == "*" || info == "o") {
+    std::tr1::unordered_set<std::string> binaryOp;
+    binaryOp.insert("+");
+    binaryOp.insert("-");
+    binaryOp.insert("o");
+
+    std::tr1::unordered_set<std::string> unaryOp;
+    unaryOp.insert("'");
+    unaryOp.insert("_");
+    unaryOp.insert("tr");
+    unaryOp.insert("lgdt");
+
+    if (binaryOp.count(info)) {
         // binary op check
         if (!(left) || !(right)) {
             throw AMD::ExceptionImpl(
@@ -18,7 +30,7 @@ ExpressionTree::ExpressionTree (const std::string& info,
                 "Incorrect use of binary operator",
                 AMD_INVALID_EXPRESSION);
         }
-    } else if (info == "'" || info == "_" || info == "tr" || info == "lgdt") {
+    } else if (unaryOp.count(info)) {
         // unary op check
         if (!(left) || (right)) {
             throw AMD::ExceptionImpl(
