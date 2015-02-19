@@ -93,3 +93,19 @@ BOOST_AUTO_TEST_CASE ( notEqual )
     BOOST_CHECK (!(*node8 != *node7));
     // Deeper trees.  Different children pointers with same values
 }
+
+
+BOOST_AUTO_TEST_CASE ( MirrorEqual )
+{
+    // Ensures the base level tree does not support mirror equality
+    typedef class AMD::detail::Tree Tree;
+    boost::shared_ptr<Tree> nil;
+    boost::shared_ptr<Tree> node1 = boost::make_shared<Tree>("N",nil,nil);
+    boost::shared_ptr<Tree> node2 = boost::make_shared<Tree>("M",nil,nil);
+
+    boost::shared_ptr<Tree> node4 = boost::make_shared<Tree>("O",node1,node2);
+    boost::shared_ptr<Tree> node5 = boost::make_shared<Tree>("O",node2,node1);
+
+    BOOST_CHECK (!(*node4 == *node5));
+
+}

@@ -50,3 +50,24 @@ BOOST_AUTO_TEST_CASE ( Constructor )
 
 }
 
+
+BOOST_AUTO_TEST_CASE ( MirrorEqual )
+{
+    // Ensures that the expression tree supports mirror equality for
+    // commutative operations
+
+    typedef class AMD::detail::Tree Tree;
+    boost::shared_ptr<Tree> nil;
+    boost::shared_ptr<Tree> node1 = boost::make_shared<Tree>("N",nil,nil);
+    boost::shared_ptr<Tree> node2 = boost::make_shared<Tree>("M",nil,nil);
+
+    boost::shared_ptr<Tree> node4 = boost::make_shared<Tree>("+",node1,node2);
+    boost::shared_ptr<Tree> node5 = boost::make_shared<Tree>("+",node2,node1);
+
+    boost::shared_ptr<Tree> node6 = boost::make_shared<Tree>("*",node1,node2);
+    boost::shared_ptr<Tree> node7 = boost::make_shared<Tree>("*",node2,node1);
+
+    BOOST_CHECK ((*node4 == *node5));
+    BOOST_CHECK (!(*node6 == *node7));
+
+}
