@@ -55,19 +55,31 @@ BOOST_AUTO_TEST_CASE ( MirrorEqual )
 {
     // Ensures that the expression tree supports mirror equality for
     // commutative operations
+    std::string commutative = "+-"; // TODO add more ops
+    std::string non_commutative = "*/"; // TODO add more ops
 
     typedef class AMD::detail::Tree Tree;
     boost::shared_ptr<Tree> nil;
     boost::shared_ptr<Tree> node1 = boost::make_shared<Tree>("N",nil,nil);
     boost::shared_ptr<Tree> node2 = boost::make_shared<Tree>("M",nil,nil);
 
-    boost::shared_ptr<Tree> node4 = boost::make_shared<Tree>("+",node1,node2);
-    boost::shared_ptr<Tree> node5 = boost::make_shared<Tree>("+",node2,node1);
+    // The roots of the two mirror trees
+    boost::shared_ptr<Tree> node4;
+    boost::shared_ptr<Tree> node5;
 
-    boost::shared_ptr<Tree> node6 = boost::make_shared<Tree>("*",node1,node2);
-    boost::shared_ptr<Tree> node7 = boost::make_shared<Tree>("*",node2,node1);
+    for(std::string::iterator op = commutative.begin();
+        op != commutative.end(); ++op) {
+        node4 = boost::make_shared<Tree>(std::string(1,*op),node1,node2);
+        node5 = boost::make_shared<Tree>(std::string(1,*op),node2,node1);
+        BOOST_CHECK (*node4 == *node5);
+    }
 
-    BOOST_CHECK ((*node4 == *node5));
-    BOOST_CHECK (!(*node6 == *node7));
+    for(std::string::iterator op = non_commutative.begin();
+        op != non_commutative.end(); ++op) {
+        node4 = boost::make_shared<Tree>(std::string(1,*op),node1,node2);
+        node5 = boost::make_shared<Tree>(std::string(1,*op),node2,node1);
+        BOOST_CHECK (!(*node4 == *node5));
+    }
+
 
 }
