@@ -6,23 +6,35 @@
 
 namespace AMD { namespace detail {
 
+class Operations
+{
+    public:
+    std::tr1::unordered_set<std::string> bOp;
+    std::tr1::unordered_set<std::string> uOp;
+
+    Operations()
+    {
+        bOp.insert("+");
+        bOp.insert("-");
+        bOp.insert("o");
+        uOp.insert("'");
+        uOp.insert("_");
+        uOp.insert("tr");
+        uOp.insert("lgdt");
+    }
+
+     // provide some way to get at letters_
+};
+
+static Operations operations; 
+
 ExpressionTree::ExpressionTree (const std::string& info, 
                                 const boost::shared_ptr<Tree>& left, 
                                 const boost::shared_ptr<Tree>& right) :
                                 Tree(info, left, right)
 {
-    std::tr1::unordered_set<std::string> binaryOp;
-    binaryOp.insert("+");
-    binaryOp.insert("-");
-    binaryOp.insert("o");
 
-    std::tr1::unordered_set<std::string> unaryOp;
-    unaryOp.insert("'");
-    unaryOp.insert("_");
-    unaryOp.insert("tr");
-    unaryOp.insert("lgdt");
-
-    if (binaryOp.count(info)) {
+    if (operations.bOp.count(info)) {
         // binary op check
         if (!(left) || !(right)) {
             throw AMD::ExceptionImpl(
@@ -30,7 +42,7 @@ ExpressionTree::ExpressionTree (const std::string& info,
                 "Incorrect use of binary operator",
                 AMD_INVALID_EXPRESSION);
         }
-    } else if (unaryOp.count(info)) {
+    } else if (operations.uOp.count(info)) {
         // unary op check
         if (!(left) || (right)) {
             throw AMD::ExceptionImpl(
