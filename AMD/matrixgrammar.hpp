@@ -6,6 +6,8 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix.hpp>
 
+#include <AMD/expressiontree.hpp>
+
 // Uncomment the define if you want debug messages for the grammar
 // #define BOOST_SPIRIT_DEBUG
 
@@ -17,6 +19,7 @@ namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 namespace spirit = boost::spirit;
 // namespace definitions for boost spirit library parser tools
+
 
 /// Struct for handling unary operator expressions including 
 /// inverse, transpose, and negation on matrices
@@ -41,7 +44,7 @@ struct UnaryOp
     ///< Constructs a new unary operation.
     /// @param[in] op unary operation symbol
 
-    void operator()(spirit::utree& parent, spirit::utree const& rhs) const;
+    void operator()(boost::shared_ptr<ExpressionTree>& parent, boost::shared_ptr<ExpressionTree> const& rhs) const;
     ///< Modifies the tree such that the passed in parent becomes the operator
     ///  and the child is the right hand side
     /// 
@@ -78,7 +81,7 @@ struct BinaryOp
     ///< Constructs a new binary operation.
     /// @param[in] op binary operation symbol
 
-    void operator()(spirit::utree& parent, spirit::utree const& rhs) const;
+    void operator()(boost::shared_ptr<ExpressionTree>& parent, boost::shared_ptr<ExpressionTree> const& rhs) const;
     ///< Modifies the tree such that the passed in parent becomes the left 
     ///  hand node and the operation becomes the parent
     /// 
@@ -96,24 +99,24 @@ static boost::phoenix::function<BinaryOp> const divide = BinaryOp('/');
 template <typename Iterator>
 struct MatrixGrammar : qi::grammar<Iterator, 
                                    ascii::space_type, 
-                                   spirit::utree()>
+                                   boost::shared_ptr<ExpressionTree> >
 {
     private:
-    qi::rule<Iterator, ascii::space_type, spirit::utree()> d_expression;
+    qi::rule<Iterator, ascii::space_type, boost::shared_ptr<ExpressionTree> > d_expression;
     ///< Rule to handle main return type of matrix grammar composed of one
     ///  or more terms in sequence
     
-    qi::rule<Iterator, ascii::space_type, spirit::utree()> d_term;
+    qi::rule<Iterator, ascii::space_type, boost::shared_ptr<ExpressionTree> > d_term;
     ///< Rule to handle a constant or matrix factor that multiplies or divides
     ///  something in an expression
 
-    qi::rule<Iterator, ascii::space_type, spirit::utree()> d_factor;
+    qi::rule<Iterator, ascii::space_type, boost::shared_ptr<ExpressionTree> > d_factor;
     ///< Creates a rule for a factor defined as an upper case letter 
     ///  representing a matrix or a double representing a constant
     ///  or a parenthetical expression or a series of factors
     ///  or a negated factor
 
-    qi::rule<Iterator, ascii::space_type, spirit::utree()> d_invtran;
+    qi::rule<Iterator, ascii::space_type, boost::shared_ptr<ExpressionTree> > d_invtran;
     ///< Defines a rule for inverse and/or transpose operators 
 
     public:
@@ -121,6 +124,7 @@ struct MatrixGrammar : qi::grammar<Iterator,
     ///< The parser grammar is defined as follows: 
     ///  expression = term | term + term | term - term
     ///  term = invtran | invtran * invtran | invtran / invtran
+    ///  invtran = factor' | factor_ | factor
     ///  factor = qi::upper | qi::double | (expression) | -factor | +factor   
 
 };

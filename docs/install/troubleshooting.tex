@@ -10,3 +10,17 @@ For example, run the command
 \begin{description}
 \item [{\texttt{\$}}] \texttt{sudo ln -s /usr/lib/x86\_64-linux-gnu/libpython2.7.so.1.0
 /usr/lib/libpython2.7.so }\end{description}
+
+\subsection{If library not loaded correctly}
+
+If a library from boost could not be loaded correctly, it is because the dylib 
+file could not be found.
+%
+This may occur even if  `waf configure` passed all tests. 
+%
+Change your \texttt{DYLD\_LIBRARY\_PATH} if you are using Mac OS X. 
+%
+Change your \texttt{LD\_LIBRARY\_PATH} if you are using Linux.
+%
+For example, add export \texttt{DYLD\_LIBRARY\_PATH=/path/to/AMD/deps/lib} to 
+the end of your .bashrc file.

@@ -5,13 +5,14 @@
 #define AMD_TREE_HPP
 
 #include <boost/shared_ptr.hpp>
+#include <iostream>
 
 namespace AMD { namespace detail {
 
 /// This class represents the symbolic binary expression tree that we parse
 /// store within AMD after parsing the string. 
 class Tree {
-  private:
+  protected:
     // DATA
     std::string d_info;
     ///< Information present in this node: for AMD, this is either a matrix,
@@ -29,6 +30,8 @@ class Tree {
     ///< A pointer to the left sub-tree. In the case that the operation is 
     ///  a unary operation, the left-subtree is valid and the right sub-tree
     ///  should be empty.
+
+    std::string printHelper(Tree& tree, std::string indentation);
 
   public:
     explicit Tree (const std::string& info, 
@@ -71,6 +74,14 @@ class Tree {
     ///< Set the d_info to be info.
     ///  @param[in] info The information we want to set to.
 
+    void setLeftChild (const boost::shared_ptr<Tree>& l);
+    ///< Set d_left to be l
+    /// @param[in] l The tree we want to make the left child
+
+    void setRightChild (const boost::shared_ptr<Tree>& r);
+    ///< Set d_right to be r
+    /// @param[in] r The tree we want to make the right child
+
     template <typename OSTREAM>
     OSTREAM& print(OSTREAM& os);
     ///< Print the tree recursively using 
@@ -84,7 +95,10 @@ template <typename OSTREAM>
 OSTREAM& Tree::print(OSTREAM& os)
 {
     // Implementation of the recursive print function
+    os << printHelper(*this, "");
+    return os;
 }
+
 
 } }  // namespace AMD::detail
 
