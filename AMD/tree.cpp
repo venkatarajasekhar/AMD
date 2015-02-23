@@ -1,5 +1,5 @@
+#include <AMD/log.hpp>
 #include <AMD/tree.hpp>
-#include <stdio.h>
 
 namespace AMD { namespace detail {
 
@@ -7,6 +7,7 @@ Tree::Tree (const std::string& info,
             const boost::shared_ptr<Tree>& left, 
             const boost::shared_ptr<Tree>& right)
 {
+    LOG_INFO << "Constructing new Tree from " << info;
     this->d_info = info;
     this->d_left = left;
     this->d_right = right;
@@ -27,6 +28,7 @@ std::string Tree::printHelper(Tree& tree, std::string indentation)
 
 void Tree::swap(Tree& other)
 {
+    LOG_INFO << "Swapping with another node";
     if (&other == NULL) return;
     std::swap(other.d_info, this->d_info);
     std::swap(other.d_left, this->d_left);

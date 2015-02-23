@@ -15,7 +15,7 @@ out='build'
 tooldir = 'waf-extras'
 tools = [
             'boost',
-            'pyheaders',
+            'pythondev',
             'common-tool',
         ]
 
@@ -102,6 +102,17 @@ def configure(ctx):
     if 'clang++' in ctx.env.CXX[0]:
         ctx.env.append_unique('CXXFLAGS', ['-Wno-c++11-extensions',
                                            '-fcolor-diagnostics',])
+
+    # From the install-deps-prefix, store DEPS_INCLUDE, DEPS_LIB, DEPS_SRC,
+    # and DEPS_DOWNLOAD variables
+    ctx.env.DEPS_PREFIX    = ctx.options.install_deps_prefix
+    ctx.env.DEPS_INCLUDE   = ctx.options.install_deps_prefix + '/include'
+    ctx.env.DEPS_LIB       = ctx.options.install_deps_prefix + '/lib'
+    ctx.env.DEPS_SRC       = ctx.options.install_deps_prefix + '/src'
+    ctx.env.DEPS_DOWNLOADS = ctx.options.install_deps_prefix + '/download'
+
+    # Store whether the user wants use to auto-install dependencies
+    ctx.env.INSTALL_DEPS  = ctx.options.install_deps
 
     # Add the paths to packages that were requested on the command line to the
     # 'BLD_PATHS' environment variable. If no bld flags were explicitly

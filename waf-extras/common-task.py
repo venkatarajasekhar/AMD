@@ -1,54 +1,57 @@
 #!/usr/bin/env python
 # encoding utf-8
 #
+# Author: Shefaet Rahman
 
-from waflib import Task, Logs, Utils, Errors
-import re
 
 def options(ctx):
   pass
 
 
 def configure(ctx):
-  # Turn on all the dependencies for this pacakge
-  if Logs.verbose:
-    if int_deps:
-        Logs.pprint('YELLOW', 'INTERNAL-deps:' + ' '.join(int_deps).upper())
-    if ext_deps:
-        Logs.pprint('YELLOW', 'EXTERNAL-deps:' + ' '.join(ext_deps).upper())
+    # Add internal dependencies to the list of paths to be built
+    for dep in int_deps:
+        ctx.env.append_unique('BLD_PATHS', dep)
 
-  for dep in int_deps:
-    ctx.env.append_unique('BLD_PATHS', dep)
-
-  for dep in ext_deps:
-    if dep.upper().startswith('BOOST.'):
-        ctx.env["USE_BOOST"] = True
-        ctx.env.append_unique('BOOST_PKGS', dep.split('.')[1].lower());
-    else:
-        ctx.env["USE_" + dep.upper()] = True
+    # Add 'USE_*' variables for external dependencies
+    for dep in ext_deps:
+        # Boost libraries are given as 'BOOST.*'
+        # Put all the needed Boost packages in BOOST_PKGS
+        if dep.upper().startswith('BOOST.'):
+            ctx.env.append_unique('BOOST_PKGS', dep.split('.')[1].lower());
+            ctx.env['USE_BOOST'] = True
+        else:
+            ctx.env['USE_' + dep.upper()] = True
 
 
 def build(ctx):
-  # 1. Get the list of all the source files
-  sources = [x for x in
-             ctx.path.ant_glob(incl=['**/*.cc','**/*.cpp','**/*.c'],
-                               excl=['**/*.t.cpp', '**/.#*.cpp'])
-             if not x.is_bld()]
+    # Get the list of all the source files
+    sources = ctx.path.ant_glob(incl=['**/*.cc','**/*.cpp','**/*.c'],
+                                excl=['**/*.t.cpp', '**/.#*.cpp'])
 
-  use_string = ' '.join(int_deps) + ' ' +  ' '.join(ext_deps).upper()
-  if ctx.env.BOOST_PKGS: use_string += ' ' + 'BOOST'
+    # int_deps (of the form 'nlpgo/util') and ext_deps ('CLD2') are defined
+    # in the calling wscripts for each package
+    use_libs  = int_deps
+    use_libs += [dep.upper() for dep in ext_deps
+                             if not dep.upper().startswith('BOOST')]
+    if ctx.env.USE_BOOST: use_libs += ['BOOST']
 
-  linkflags = ''
-  from waflib.Utils import unversioned_sys_platform
-  platform = unversioned_sys_platform()
-  if platform == 'darwin':
-    linkflags = '-all_load'
+    linkflags = ''
+    from waflib.Utils import unversioned_sys_platform
+    if unversioned_sys_platform() == 'darwin':
+        linkflags = '-all_load' # Needed for serialization macros to work
 
-  ctx.program(
-    source=sources,
-    includes=[top, '.'],
-    target=task_name,
-    use=use_string,
-    linkflags=linkflags,
-    export_includes='.',
-  )
+    includes = [top, '.']
+    rpath = [node.abspath()
+             for node in ctx.path.find_node(top)
+                                 .get_bld()
+                                 .ant_glob('nlpgo/', maxdepth=1, dir=True)]
+    ctx.program(
+        source          = sources,
+        includes        = includes,
+        target          = task_name,
+        use             = use_libs,
+        linkflags       = linkflags,
+        rpath           = rpath,
+        export_includes = '.'
+    )
