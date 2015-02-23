@@ -43,12 +43,12 @@ void Tree::setInfo(const std::string& info)
     this->d_info = info;
 }
 
-void Tree::setLeftChild(const boost::shared_ptr<Tree>& l)
+void Tree::setLeftChild(const boost::shared_ptr<Tree>& left)
 {
     this->d_left = left;
 }
 
-void Tree::setRightChild(const boost::shared_ptr<Tree>& r)
+void Tree::setRightChild(const boost::shared_ptr<Tree>& right)
 {
     this->d_right = right;
 }

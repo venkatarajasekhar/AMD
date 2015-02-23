@@ -1,15 +1,15 @@
+#include <set>
+
 #include <AMD/expressiontree.hpp>
 #include <AMD/exception.hpp>
-
-#include <tr1/unordered_set>
 
 namespace AMD { namespace detail {
 
 class Operations
 {
     public:
-    std::tr1::unordered_set<std::string> bOp;
-    std::tr1::unordered_set<std::string> uOp;
+    std::set<std::string> bOp;
+    std::set<std::string> uOp;
 
     Operations()
     {
