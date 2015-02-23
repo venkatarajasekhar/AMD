@@ -74,6 +74,14 @@ class Tree {
     ///< Set the d_info to be info.
     ///  @param[in] info The information we want to set to.
 
+    void setLeftChild (const boost::shared_ptr<Tree>& l);
+    ///< Set d_left to be l
+    /// @param[in] l The tree we want to make the left child
+
+    void setRightChild (const boost::shared_ptr<Tree>& r);
+    ///< Set d_right to be r
+    /// @param[in] r The tree we want to make the right child
+
     template <typename OSTREAM>
     OSTREAM& print(OSTREAM& os);
     ///< Print the tree recursively using 

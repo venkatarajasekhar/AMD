@@ -43,6 +43,16 @@ void Tree::setInfo(const std::string& info)
     this->d_info = info;
 }
 
+void Tree::setLeftChild(const boost::shared_ptr<Tree>& l)
+{
+    this->d_left = left;
+}
+
+void Tree::setRightChild(const boost::shared_ptr<Tree>& r)
+{
+    this->d_right = right;
+}
+
 bool Tree::operator==(const Tree& other) const
 {
     if (other.d_info != this->d_info) return false;

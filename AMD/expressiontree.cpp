@@ -1,7 +1,6 @@
 #include <AMD/expressiontree.hpp>
 #include <AMD/exception.hpp>
 
-#include <set>
 #include <tr1/unordered_set>
 
 namespace AMD { namespace detail {
