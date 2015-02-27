@@ -1,10 +1,12 @@
 #ifndef AMD_MATRIX_GRAMMAR_HPP
 #define AMD_MATRIX_GRAMMAR_HPP
 
+#include <boost/lexical_cast.hpp>
 #include <boost/config/warning_disable.hpp>
-#include <boost/spirit/include/support_utree.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix.hpp>
+
+#include <AMD/expressiontree.hpp>
 
 // Uncomment the define if you want debug messages for the grammar
 // #define BOOST_SPIRIT_DEBUG
@@ -17,6 +19,7 @@ namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 namespace spirit = boost::spirit;
 // namespace definitions for boost spirit library parser tools
+
 
 /// Struct for handling unary operator expressions including 
 /// inverse, transpose, and negation on matrices
@@ -41,7 +44,7 @@ struct UnaryOp
     ///< Constructs a new unary operation.
     /// @param[in] op unary operation symbol
 
-    void operator()(spirit::utree& parent, spirit::utree const& rhs) const;
+    void operator()(boost::shared_ptr<ExpressionTree>& parent, boost::shared_ptr<ExpressionTree> const& rhs) const;
     ///< Modifies the tree such that the passed in parent becomes the operator
     ///  and the child is the right hand side
     /// 
@@ -78,7 +81,7 @@ struct BinaryOp
     ///< Constructs a new binary operation.
     /// @param[in] op binary operation symbol
 
-    void operator()(spirit::utree& parent, spirit::utree const& rhs) const;
+    void operator()(boost::shared_ptr<ExpressionTree>& parent, boost::shared_ptr<ExpressionTree> const& rhs) const;
     ///< Modifies the tree such that the passed in parent becomes the left 
     ///  hand node and the operation becomes the parent
     /// 
@@ -92,28 +95,77 @@ static boost::phoenix::function<BinaryOp> const times = BinaryOp('*');
 static boost::phoenix::function<BinaryOp> const divide = BinaryOp('/');
 ///< Binary operation functions called during parsing of matrix expressions
 ///  Phoenix validates the typing for boost which calls these functions
+//
+
+template <typename T>
+struct LeafOp
+{
+    /// @brief A structure that is used to provide information about the 
+    ///        return type of the void function
+    /// @tparam T1 Used by boost::spirit
+    /// @tparam T2 Used by boost::spirit2
+    template <typename T1, typename T2 = void>
+    struct result { 
+        typedef void type; 
+        ///< The result of the binary operation. Will be void.
+        /// Needed for Boost to typecheck when called
+    };
+    
+    ///  Creates an ExpressionTree from an upper case character
+    /// 
+    ///  @param[in] parent qi::_val
+    ///  @param[in] rhs    a matrix character that was parsed
+    ///  @tparam    T      any terminal (char or double)
+    void operator()(boost::shared_ptr<ExpressionTree>& parent, 
+                    const T& rhs) const;
+};
+
+/// Cannot move this function to the cpp file because we have a template T
+template <typename T>
+void LeafOp<T>::operator()(boost::shared_ptr<ExpressionTree>& parent, 
+                           const T& rhs) const
+{
+    const std::string leafVal = boost::lexical_cast<std::string>(rhs);
+    parent = boost::shared_ptr<ExpressionTree> 
+                 (new ExpressionTree(leafVal, 
+                                     boost::shared_ptr<ExpressionTree>(),
+                                     boost::shared_ptr<ExpressionTree>()));
+}
+
+static boost::phoenix::function<LeafOp<char> > const charLeafOp = 
+                                                               LeafOp<char>();
+static boost::phoenix::function<LeafOp<double> > const doubleLeafOp = 
+                                                             LeafOp<double>();
 
 template <typename Iterator>
 struct MatrixGrammar : qi::grammar<Iterator, 
                                    ascii::space_type, 
-                                   spirit::utree()>
+                                   boost::shared_ptr<ExpressionTree>() >
 {
     private:
-    qi::rule<Iterator, ascii::space_type, spirit::utree()> d_expression;
+    qi::rule<Iterator, 
+             ascii::space_type, 
+             boost::shared_ptr<ExpressionTree>() > d_expression;
     ///< Rule to handle main return type of matrix grammar composed of one
     ///  or more terms in sequence
     
-    qi::rule<Iterator, ascii::space_type, spirit::utree()> d_term;
+    qi::rule<Iterator, 
+             ascii::space_type, 
+             boost::shared_ptr<ExpressionTree>() > d_term;
     ///< Rule to handle a constant or matrix factor that multiplies or divides
     ///  something in an expression
 
-    qi::rule<Iterator, ascii::space_type, spirit::utree()> d_factor;
+    qi::rule<Iterator, 
+             ascii::space_type, 
+             boost::shared_ptr<ExpressionTree>() > d_factor;
     ///< Creates a rule for a factor defined as an upper case letter 
     ///  representing a matrix or a double representing a constant
     ///  or a parenthetical expression or a series of factors
     ///  or a negated factor
 
-    qi::rule<Iterator, ascii::space_type, spirit::utree()> d_invtran;
+    qi::rule<Iterator, 
+             ascii::space_type, 
+             boost::shared_ptr<ExpressionTree>() > d_invtran;
     ///< Defines a rule for inverse and/or transpose operators 
 
     public:
@@ -121,6 +173,7 @@ struct MatrixGrammar : qi::grammar<Iterator,
     ///< The parser grammar is defined as follows: 
     ///  expression = term | term + term | term - term
     ///  term = invtran | invtran * invtran | invtran / invtran
+    ///  invtran = factor' | factor_ | factor
     ///  factor = qi::upper | qi::double | (expression) | -factor | +factor   
 
 };
@@ -170,11 +223,11 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
     // Consider "-A'", which means -(trans(A)). The current 
     // construction parses this as trans(-A), which is incorrect.
     d_factor =
-      qi::upper                             [qi::_val = qi::_1]
-      |   qi::double_                       [qi::_val = qi::_1]
-      |   '(' >> d_expression                 [qi::_val = qi::_1] >> ')'
-      |   ('-' >> d_factor                    [neg(qi::_val, qi::_1)])
-      |   ('+' >> d_factor                    [qi::_val = qi::_1])
+      qi::upper                             [charLeafOp(qi::_val, qi::_1)]
+      |   qi::double_                       [doubleLeafOp(qi::_val,qi::_1)]
+      |   '(' >> d_expression               [qi::_val = qi::_1] >> ')'
+      |   ('-' >> d_factor                  [neg(qi::_val, qi::_1)])
+      |   ('+' >> d_factor                  [qi::_val = qi::_1])
       ;
         
     BOOST_SPIRIT_DEBUG_NODE(d_expression);

@@ -7,9 +7,9 @@
 #include <string>
 #include <stdexcept>
 
-#include <boost/spirit/include/support_utree.hpp>
 #include <boost/spirit/include/qi.hpp>
 
+#include <AMD/expressiontree.hpp>
 #include <AMD/matrixgrammar.hpp>
 
 namespace AMD {
@@ -17,7 +17,8 @@ namespace AMD {
 
 // Define the expression type to be utree for now.
 // FIXME: This has to change to an actual tree with nodes
-typedef boost::spirit::utree Expression;
+//typedef boost::spirit::utree Expression;
+typedef boost::shared_ptr<detail::ExpressionTree> Expression;
 ///< typedef for the expression tree that is parsed by Parser
 
 

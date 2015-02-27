@@ -1,78 +1,75 @@
 #!/usr/bin/env python
 # encoding utf-8
 #
-
-# Set the top dir and the build dir
-
-use_libs = ' '.join(int_deps) + ' ' + ' '.join(ext_deps).upper()
-
-from waflib import Task, Logs, Utils, Errors
-import re
-
+# Author: Shefaet Rahman
 
 def options(ctx):
-  pass
+    pass
 
 
+from waflib import Logs
 def configure(ctx):
-  # Turn on all the dependencies for this pacakge
-  if Logs.verbose:
-    Logs.pprint('YELLOW', 'Internal deps:' + ' '.join(int_deps).upper())
+    # Add internal dependencies to the list of paths to be built
+    for dep in int_deps:
+        ctx.env.append_unique('BLD_PATHS', dep)
+
+    # Add 'USE_*' variables for external dependencies
+    for dep in ext_deps:
+        # Boost libraries are given as 'BOOST.*'
+        # Put all the needed Boost packages in BOOST_PKGS
+        if dep.upper().startswith('BOOST.'):
+            ctx.env.append_unique('BOOST_PKGS', dep.split('.')[1].lower());
+            ctx.env['USE_BOOST'] = True
+        else:
+            ctx.env['USE_' + dep.upper()] = True
+
+    # BOOST unit test framework needed for tests
     if ctx.env.TESTS:
-      Logs.pprint('YELLOW', 'BOOST-deps:TEST')
+        ctx.env.append_unique('BOOST_PKGS', 'test');
+        ctx.env['USE_BOOST'] = True
 
-  # BOOST needed for tests
-  if ctx.env.TESTS:
-    ctx.env["USE_BOOST"] = True
-    ctx.env.append_unique('BOOST_PKGS', 'test');
-
-  for dep in int_deps:
-    ctx.env.append_unique('BLD_PATHS', dep)
-
-  for dep in ext_deps:
-    if dep.upper().startswith('BOOST.'):
-        ctx.env["USE_BOOST"] = True
-        ctx.env.append_unique('BOOST_PKGS', dep.split('.')[1].lower());
-    else:
-        ctx.env["USE_" + dep.upper()] = True
 
 
 def build(ctx):
-  # 1. Get the list of all the source files
-  sources = [x for x in
-             ctx.path.ant_glob(incl=['**/*.cc','**/*.cpp','**/*.c'],
-                               excl=['**/*.t.cpp', '**/.#*.cpp'])
-             if not x.is_bld()]
+    # Get the list of all the source files
+    sources = ctx.path.ant_glob(incl=['**/*.cc','**/*.cpp','**/*.c'],
+                                excl=['**/*.t.cpp', '**/.#*.cpp'])
 
-  package_path = ctx.path.path_from(ctx.path.ctx.launch_node())
-  paths = []
-  paths.append(top)
-  if 'shared' == ctx.env.LIBRARY_TYPE:
-    ctx.shlib(source=sources,
-              includes=paths,
-              target=package_path.replace('/', ''),
-              name=package_path,
-              use=use_libs + ' BOOST',
-              export_includes='.')
-  else:
-    ctx.stlib(source=sources,
-              includes=paths,
-              target=package_path.replace('/', ''),
-              name=package_path,
-              use=use_libs + ' BOOST',
-              cxxflags='-fPIC',
-              export_includes='.')
+    # int_deps (of the form 'nlpgo/util') and ext_deps ('CLD2') are defined
+    # in the calling wscripts for each package
+    use_libs  = int_deps
+    use_libs += [dep.upper() for dep in ext_deps
+                             if not dep.upper().startswith('BOOST')]
+    if ctx.env.USE_BOOST: use_libs += ['BOOST']
 
-  if ctx.env.TESTS:
-    # 2. Get the list of all the test files
-    tests = [x for x in ctx.path.ant_glob(incl=['*.t.cpp'])
-             if not x.is_bld()]
-    if tests:
-      for test in tests:
-        test_file_name = test.abspath()[test.abspath().rfind('/')+1:]
-        test_target_name = re.sub('.t.cpp','', test_file_name)
-        ctx.program(source='%s'%(test_file_name),
-                    includes=paths,
-                    target='%s'%(test_target_name),
-                    use=package_path + ' ' + use_libs + ' BOOST',
-                    defines=['BOOST_TEST_DYN_LINK'])
+    # If building the sources in 'nlpgo/core' the resulting library will be
+    # libnlpgo_core.{so, a}
+    package_path = ctx.path.path_from(ctx.path.ctx.launch_node())
+
+    includes = [top]
+    if ctx.env.STATIC:
+        ctx.stlib(source          = sources,
+                  includes        = includes,
+                  target          = package_path.replace('/', '_'),
+                  name            = package_path,
+                  use             = use_libs,
+                  cxxflags        = ['-fPIC'],
+                  export_includes =  '.')
+    else:
+        ctx.shlib(source          = sources,
+                  includes        = includes,
+                  target          = package_path.replace('/', '_'),
+                  name            = package_path,
+                  use             = use_libs,
+                  export_includes =  '.')
+
+    if ctx.env.TESTS:
+        test_sources = ctx.path.ant_glob(incl=['*.t.cpp'])
+        for test_source in test_sources:
+            from os.path import basename
+            target = basename(test_source.abspath()).replace('.t.cpp','_test')
+            ctx.program(source   = basename(test_source.abspath()),
+                        includes = includes,
+                        target   = target,
+                        use      = package_path + ' ' + ' '.join(use_libs),
+                        defines  = ['BOOST_TEST_DYN_LINK'])
