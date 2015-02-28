@@ -43,12 +43,12 @@ ExpressionTree::ExpressionTree (const std::string& info,
         }
     } else if (operations.uOp.count(info)) {
         // unary op check
-        if (!(left) || (right)) {
-            throw AMD::ExceptionImpl(
-                APPEND_LOCATION("from ExpressionTree constructor"),
-                "Incorrect use of unary operator",
-                AMD_INVALID_EXPRESSION);
-        }
+        // if (!(left) || (right)) {
+        //     throw AMD::ExceptionImpl(
+        //         APPEND_LOCATION("from ExpressionTree constructor"),
+        //         "Incorrect use of unary operator",
+        //         AMD_INVALID_EXPRESSION);
+        // }
     } else if (info == "-") {
         // negation or minus case
         if (!(left)) {

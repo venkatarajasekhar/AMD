@@ -5,6 +5,7 @@
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix.hpp>
+#include <boost/make_shared.hpp>
 
 #include <AMD/expressiontree.hpp>
 

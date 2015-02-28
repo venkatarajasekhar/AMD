@@ -20,6 +20,7 @@ int main()
         try {
             AMD::Expression myExpr = AMD::generateExpression(str);
             std::cout << "Parsing succeeded: " << myExpr << "\n";
+            ((AMD::detail::Tree)*myExpr).print(std::cout);
         } catch (const std::exception& e) {
             std::cout << e.what() << std::endl;
         }
