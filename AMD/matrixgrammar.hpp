@@ -219,6 +219,7 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
     d_invtran = // order of the specification is important
          (d_factor [trans(qi::_val, qi::_1)] >> '\'' )   
       |  (d_factor [inv(qi::_val, qi::_1)]   >> '_'  )    
+     // |  (d_factor [neg(qi::_val, qi::_1)]   >> '-'  )
       |  d_factor  [qi::_val = qi::_1]
       ;
 

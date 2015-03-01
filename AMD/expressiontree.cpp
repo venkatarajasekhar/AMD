@@ -15,9 +15,10 @@ class ValidOperations
     public:
     std::set<std::string> bOp;
     std::set<std::string> uOp;
-
+    std::set<std::string> commOp; 
     ValidOperations()
     {
+        LOG_TRACE << "Valid operations initialization start"; 
         bOp.insert("+");
         bOp.insert("-");
         bOp.insert("*");
@@ -27,6 +28,9 @@ class ValidOperations
         uOp.insert("_");
         uOp.insert("tr");
         uOp.insert("lgdt");
+        commOp.insert("o");
+        commOp.insert("+");
+        LOG_TRACE << "Valid operations initialization complete";
     }
 
      // provide some way to get at letters_
@@ -84,6 +88,49 @@ ExpressionTree::ExpressionTree (const std::string& info,
     this->d_info = info;
     this->d_left = left;
     this->d_right = right;
+}
+
+bool ExpressionTree::operator==(const ExpressionTree& other) const
+{
+    if (other.d_info != this->d_info) { return false; }
+    
+    int isCommutative = validOps.commOp.count(other.d_info);
+    
+    if ((other.d_right == this->d_right) && (other.d_left == this->d_left)
+        || isCommutative &&
+        (other.d_right == this->d_left) && (other.d_left == this->d_right))
+        {
+            return true;
+        }
+
+    //TODO: Modify logic to count the number of null instances
+    // and check for discrepancy
+    if ((!(other.d_right) && this->d_right) 
+         || (other.d_right && !(this->d_right))
+         || (!(other.d_left) && this->d_left)
+         || (other.d_left && !(this->d_left)))
+    {
+        return false;
+    }
+    if (!other.d_right && !this->d_right) {
+        return *(other.d_left) == *(this->d_left);
+    }
+    else if (!other.d_left && !this->d_left) {
+        return *(other.d_right) == *(this->d_right);
+    }
+    else
+    {
+        return (*(other.d_right) == *(this->d_right))
+           && (*(other.d_left) == *(this->d_left)) ||
+           isCommutative && 
+           *(other.d_right) == *(this->d_left)
+           && (*(other.d_left) == *(this->d_right));
+    }
+}
+
+bool ExpressionTree::operator!=(const ExpressionTree& other) const
+{  
+    return !(*this == other);
 }
 
 ExpressionTree::~ExpressionTree()

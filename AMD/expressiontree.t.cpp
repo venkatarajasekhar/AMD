@@ -12,39 +12,52 @@ BOOST_AUTO_TEST_CASE ( Constructor )
     typedef class AMD::detail::ExpressionTree ExprTree;
     boost::shared_ptr<ExprTree> nil;
     AMD_START_TRY_BLOCK()
-    boost::shared_ptr<ExprTree> nodeC = boost::make_shared<ExprTree>("C",nil,nil);
-    boost::shared_ptr<ExprTree> nodeA = boost::make_shared<ExprTree>("A",nil,nil);
-    boost::shared_ptr<ExprTree> nodeB = boost::make_shared<ExprTree>("'",nodeC,nodeA);
+    boost::shared_ptr<ExprTree> nodeC = 
+                boost::make_shared<ExprTree>("C",nil,nil);
+    boost::shared_ptr<ExprTree> nodeA = 
+                boost::make_shared<ExprTree>("A",nil,nil);
+    boost::shared_ptr<ExprTree> nodeB = 
+                boost::make_shared<ExprTree>("'",nodeC,nodeA);
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_PRINT()
 
     AMD_START_TRY_BLOCK()
-    boost::shared_ptr<ExprTree> nodeX = boost::make_shared<ExprTree>("C",nil,nil);
-    boost::shared_ptr<ExprTree> nodeY = boost::make_shared<ExprTree>("tr",nil,nodeX);
+    boost::shared_ptr<ExprTree> nodeX = 
+                boost::make_shared<ExprTree>("C",nil,nil);
+    boost::shared_ptr<ExprTree> nodeY = 
+                boost::make_shared<ExprTree>("tr",nil,nodeX);
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_PRINT()
 
     AMD_START_TRY_BLOCK()
-    boost::shared_ptr<ExprTree> nodeX = boost::make_shared<ExprTree>("C",nil,nil);
-    boost::shared_ptr<ExprTree> nodeY = boost::make_shared<ExprTree>("-",nil,nodeX);
+    boost::shared_ptr<ExprTree> nodeX = 
+                boost::make_shared<ExprTree>("C",nil,nil);
+    boost::shared_ptr<ExprTree> nodeY = 
+                boost::make_shared<ExprTree>("-",nil,nodeX);
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_PRINT()
 
     AMD_START_TRY_BLOCK()
-    boost::shared_ptr<ExprTree> nodeX = boost::make_shared<ExprTree>("C",nil,nil);
-    boost::shared_ptr<ExprTree> nodeY = boost::make_shared<ExprTree>("+",nodeX,nil);
+    boost::shared_ptr<ExprTree> nodeX = 
+                boost::make_shared<ExprTree>("C",nil,nil);
+    boost::shared_ptr<ExprTree> nodeY = 
+                boost::make_shared<ExprTree>("+",nodeX,nil);
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_PRINT()
 
     AMD_START_TRY_BLOCK()
-    boost::shared_ptr<ExprTree> nodeX = boost::make_shared<ExprTree>("*",nil,nil);
+    boost::shared_ptr<ExprTree> nodeX = 
+                boost::make_shared<ExprTree>("*",nil,nil);
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_PRINT()
 
     AMD_START_TRY_BLOCK()
-    boost::shared_ptr<ExprTree> nodeC = boost::make_shared<ExprTree>("C",nil,nil);
-    boost::shared_ptr<ExprTree> nodeA = boost::make_shared<ExprTree>("A",nil,nil);
-    boost::shared_ptr<ExprTree> nodeY = boost::make_shared<ExprTree>("Y",nodeC,nodeA);
+    boost::shared_ptr<ExprTree> nodeC = 
+                boost::make_shared<ExprTree>("C",nil,nil);
+    boost::shared_ptr<ExprTree> nodeA = 
+                boost::make_shared<ExprTree>("A",nil,nil);
+    boost::shared_ptr<ExprTree> nodeY = 
+                boost::make_shared<ExprTree>("Y",nodeC,nodeA);
     AMD_END_TRY_BLOCK()
     AMD_CATCH_AND_PRINT()
 
@@ -55,13 +68,15 @@ BOOST_AUTO_TEST_CASE ( MirrorEqual )
 {
     // Ensures that the expression tree supports mirror equality for
     // commutative operations
-    std::string commutative = "+-"; // TODO add more ops
+    std::string commutative = "+-o"; // TODO add more ops
     std::string non_commutative = "*/"; // TODO add more ops
 
     typedef class AMD::detail::Tree Tree;
     boost::shared_ptr<Tree> nil;
-    boost::shared_ptr<Tree> node1 = boost::make_shared<Tree>("N",nil,nil);
-    boost::shared_ptr<Tree> node2 = boost::make_shared<Tree>("M",nil,nil);
+    boost::shared_ptr<Tree> node1 = 
+                boost::make_shared<Tree>("N",nil,nil);
+    boost::shared_ptr<Tree> node2 = 
+                boost::make_shared<Tree>("M",nil,nil);
 
     // The roots of the two mirror trees
     boost::shared_ptr<Tree> node4;

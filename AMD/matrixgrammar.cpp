@@ -18,6 +18,7 @@ void UnaryOp::operator()(boost::shared_ptr<ExpressionTree>& expr,
                          boost::shared_ptr<ExpressionTree> const& rhs) const
 {
     LOG_INFO << "Processing UnaryOp of type " << d_op;
+    
     if(!expr){
         boost::shared_ptr<ExpressionTree> nil;
         expr = boost::make_shared<ExpressionTree>(d_op,nil,nil);
