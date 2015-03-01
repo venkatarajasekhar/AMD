@@ -16,11 +16,13 @@ namespace AMD {
 
 
 // Define the expression type to be utree for now.
-// FIXME: This has to change to an actual tree with nodes
-//typedef boost::spirit::utree Expression;
 typedef boost::shared_ptr<detail::ExpressionTree> Expression;
 ///< typedef for the expression tree that is parsed by Parser
 
+std::ostream& operator<<(std::ostream& os, const Expression& e);
+///< print an Expression to an output stream
+/// @param[in] os   output stream such as std::cout
+/// @param[in] e    that which we need to print
 
 Expression generateExpression(const std::string& exprString);
 ///< The main method of the file that takes in a string and tries to parse it.

@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 # encoding: utf-8
 #
-# Author: Shefaet Rahman
 
 from waflib.Configure import conf
 from waflib.Errors    import ConfigurationError

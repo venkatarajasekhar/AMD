@@ -8,6 +8,7 @@
 #include <boost/make_shared.hpp>
 
 #include <AMD/expressiontree.hpp>
+#include <AMD/log.hpp>
 
 // Uncomment the define if you want debug messages for the grammar
 // #define BOOST_SPIRIT_DEBUG
@@ -19,8 +20,6 @@ namespace detail {
 namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 namespace spirit = boost::spirit;
-// namespace definitions for boost spirit library parser tools
-
 
 /// Struct for handling unary operator expressions including 
 /// inverse, transpose, and negation on matrices
@@ -38,14 +37,15 @@ struct UnaryOp
     };
     
     
-    char const d_op;
+    const std::string d_op;
     ///< Stores the character representation of the current operation.
 
-    UnaryOp(char op) : d_op(op) {}
+    UnaryOp(const std::string& op) : d_op(op) {}
     ///< Constructs a new unary operation.
     /// @param[in] op unary operation symbol
 
-    void operator()(boost::shared_ptr<ExpressionTree>& parent, boost::shared_ptr<ExpressionTree> const& rhs) const;
+    void operator()(boost::shared_ptr<ExpressionTree>& parent, 
+                    boost::shared_ptr<ExpressionTree> const& rhs) const;
     ///< Modifies the tree such that the passed in parent becomes the operator
     ///  and the child is the right hand side
     /// 
@@ -54,9 +54,9 @@ struct UnaryOp
 };
 
 
-static boost::phoenix::function<UnaryOp> const neg = UnaryOp('-');
-static boost::phoenix::function<UnaryOp> const trans = UnaryOp('\'');
-static boost::phoenix::function<UnaryOp> const inv = UnaryOp('_');
+static boost::phoenix::function<UnaryOp> const neg = UnaryOp("-");
+static boost::phoenix::function<UnaryOp> const trans = UnaryOp("\'");
+static boost::phoenix::function<UnaryOp> const inv = UnaryOp("_");
 ///< Unary operation functions called by the parser's grammar rules
 ///  Phoenix validates the typing for boost which calls these functions
 
@@ -75,14 +75,15 @@ struct BinaryOp
         /// Needed for Boost to typecheck when called
     };
     
-    char const d_op;
+    const std::string d_op;
     ///< Stores the character representation of the current operation.
 
-    BinaryOp(char op) : d_op(op) {}
+    BinaryOp(const std::string& op) : d_op(op) {}
     ///< Constructs a new binary operation.
     /// @param[in] op binary operation symbol
 
-    void operator()(boost::shared_ptr<ExpressionTree>& parent, boost::shared_ptr<ExpressionTree> const& rhs) const;
+    void operator()(boost::shared_ptr<ExpressionTree>& parent, 
+                    boost::shared_ptr<ExpressionTree> const& rhs) const;
     ///< Modifies the tree such that the passed in parent becomes the left 
     ///  hand node and the operation becomes the parent
     /// 
@@ -90,10 +91,10 @@ struct BinaryOp
     ///  @param[in] rhs    the current rhs of the tree
 };
 
-static boost::phoenix::function<BinaryOp> const plus = BinaryOp('+');
-static boost::phoenix::function<BinaryOp> const minus = BinaryOp('-');
-static boost::phoenix::function<BinaryOp> const times = BinaryOp('*');
-static boost::phoenix::function<BinaryOp> const divide = BinaryOp('/');
+static boost::phoenix::function<BinaryOp> const plus = BinaryOp("+");
+static boost::phoenix::function<BinaryOp> const minus = BinaryOp("-");
+static boost::phoenix::function<BinaryOp> const times = BinaryOp("*");
+static boost::phoenix::function<BinaryOp> const divide = BinaryOp("/");
 ///< Binary operation functions called during parsing of matrix expressions
 ///  Phoenix validates the typing for boost which calls these functions
 //
@@ -126,9 +127,10 @@ template <typename T>
 void LeafOp<T>::operator()(boost::shared_ptr<ExpressionTree>& parent, 
                            const T& rhs) const
 {
+    LOG_INFO << "Processing leaf: " << rhs;
     const std::string leafVal = boost::lexical_cast<std::string>(rhs);
     parent = boost::shared_ptr<ExpressionTree> 
-                 (new ExpressionTree(leafVal, 
+                 (new ExpressionTree(leafVal,
                                      boost::shared_ptr<ExpressionTree>(),
                                      boost::shared_ptr<ExpressionTree>()));
 }
@@ -215,9 +217,9 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
     // "A" is a invtran, which is followed by construction 
     // of multiple unary operations around it.
     d_invtran = // order of the specification is important
-          (d_factor [trans(qi::_val, qi::_1)] >> '\'')   
-       |  (d_factor [inv(qi::_val, qi::_1)]   >> '_')    
-       |  d_factor             [qi::_val = qi::_1]
+         (d_factor [trans(qi::_val, qi::_1)] >> '\'' )   
+      |  (d_factor [inv(qi::_val, qi::_1)]   >> '_'  )    
+      |  d_factor  [qi::_val = qi::_1]
       ;
 
     // FIXME
@@ -233,8 +235,8 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
         
     BOOST_SPIRIT_DEBUG_NODE(d_expression);
     BOOST_SPIRIT_DEBUG_NODE(d_term);
-    BOOST_SPIRIT_DEBUG_NODE(d_factor);
     BOOST_SPIRIT_DEBUG_NODE(d_invtran);
+    BOOST_SPIRIT_DEBUG_NODE(d_factor);
     ///< Code for debugging the grammar and seeing what was attempted
 }
 
