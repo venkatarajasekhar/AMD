@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # encoding utf-8
 #
-# Author: Shefaet Rahman
-
 
 def options(ctx):
   pass
@@ -51,6 +49,7 @@ def build(ctx):
         includes        = includes,
         target          = task_name,
         use             = use_libs,
+        cxxflags        = ctx.env.GLOBAL_CXXFLAGS,
         linkflags       = linkflags,
         rpath           = rpath,
         export_includes = '.'

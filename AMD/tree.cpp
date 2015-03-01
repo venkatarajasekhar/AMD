@@ -7,7 +7,7 @@ Tree::Tree (const std::string& info,
             const boost::shared_ptr<Tree>& left, 
             const boost::shared_ptr<Tree>& right)
 {
-    LOG_INFO << "Constructing new Tree from " << info;
+    LOG_INFO << "Constructing Tree from " << info;
     this->d_info = info;
     this->d_left = left;
     this->d_right = right;
@@ -15,15 +15,6 @@ Tree::Tree (const std::string& info,
                    
 Tree::~Tree()
 {
-}
-
-std::string Tree::printHelper(Tree& tree, std::string indentation) 
-{
-    if (&tree == NULL) return "";
-    std::string tree_string = indentation + tree.d_info + "\n";
-    tree_string += printHelper(*tree.d_left.get(),  indentation + "--");
-    tree_string += printHelper(*tree.d_right.get(), indentation + "--");
-    return tree_string;
 }
 
 void Tree::swap(Tree& other)
@@ -81,6 +72,12 @@ bool Tree::operator==(const Tree& other) const
 bool Tree::operator!=(const Tree& other) const
 {
     return !(*this == other);
+}
+
+std::ostream& operator<<(std::ostream& os, const Tree& tree)
+{
+    tree.print(os);
+    return os;
 }
 
 } } // namespace AMD::detail

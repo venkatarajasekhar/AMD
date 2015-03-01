@@ -54,6 +54,9 @@ def options(ctx):
                              default=ctx.path.abspath() + '/deps',
                              help='prefix to download and install ' +
                                   'any required dependencies')
+    general_group.add_option('--mode', action='store',
+                             help='choose from release or debug',
+                             default='release')
 
     def add_bld_flag_group(name, desc, excl='', path='', in_bld_default=True):
         '''Add command line build flags for the the package group `name`.
@@ -113,6 +116,7 @@ def configure(ctx):
 
     # Store whether the user wants use to auto-install dependencies
     ctx.env.INSTALL_DEPS  = ctx.options.install_deps
+    if 'debug' == ctx.options.mode: ctx.env.GLOBAL_CXXFLAGS = ['-g']
 
     # Add the paths to packages that were requested on the command line to the
     # 'BLD_PATHS' environment variable. If no bld flags were explicitly

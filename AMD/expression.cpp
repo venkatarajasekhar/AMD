@@ -25,4 +25,11 @@ Expression generateExpression(const std::string& exprString)
     return myExpr;
 }
 
+std::ostream& operator<<(std::ostream& os, const Expression& e)
+{
+    std::cout << "Here" << std::endl;
+    e->print(os);
+    return os;
+}
+
 } // namespace AMD

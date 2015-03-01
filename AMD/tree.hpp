@@ -31,8 +31,6 @@ class Tree {
     ///  a unary operation, the left-subtree is valid and the right sub-tree
     ///  should be empty.
 
-    std::string printHelper(Tree& tree, std::string indentation);
-
   public:
     explicit Tree (const std::string& info, 
                    const boost::shared_ptr<Tree>& left, 
@@ -83,22 +81,39 @@ class Tree {
     /// @param[in] r The tree we want to make the right child
 
     template <typename OSTREAM>
-    OSTREAM& print(OSTREAM& os);
+    void print(OSTREAM& os) const;
     ///< Print the tree recursively using 
     ///
-    /// @ tparam OSTREAM The output stream type
+    /// @tparam OSTREAM The output stream type
     /// @param[inout] os The output stream to print everything to.
 
 };
 
 template <typename OSTREAM>
-OSTREAM& Tree::print(OSTREAM& os)
+void Tree::print(OSTREAM& os) const
 {
-    // Implementation of the recursive print function
-    os << printHelper(*this, "");
-    return os;
+    if (!(d_left) || !(d_right)) {
+        //< If I am a leaf node, print straight up
+        os << "\"" << d_info << "\"";
+    } else {
+        //< I must be an operator of some sort, so print me and recurse
+        os << "(" << d_info;
+        if (d_left) {
+            os << " ";
+            d_left->print(os);
+            if (d_right) {
+                os << " ";
+                d_right->print(os);
+            }
+        }
+        os << ")";
+    }
 }
 
+std::ostream& operator<<(std::ostream& os, const Tree& tree);
+///< print a tree to an output stream
+/// @param[in] os   output stream such as std::cout
+/// @param[in] tree that which we need to print
 
 } }  // namespace AMD::detail
 

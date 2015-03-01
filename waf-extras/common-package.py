@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # encoding utf-8
 #
-# Author: Shefaet Rahman
 
 def options(ctx):
     pass
@@ -28,8 +27,6 @@ def configure(ctx):
         ctx.env.append_unique('BOOST_PKGS', 'test');
         ctx.env['USE_BOOST'] = True
 
-
-
 def build(ctx):
     # Get the list of all the source files
     sources = ctx.path.ant_glob(incl=['**/*.cc','**/*.cpp','**/*.c'],
@@ -53,7 +50,7 @@ def build(ctx):
                   target          = package_path.replace('/', '_'),
                   name            = package_path,
                   use             = use_libs,
-                  cxxflags        = ['-fPIC'],
+                  cxxflags        = ['-fPIC'] + ctx.env.GLOBAL_CXXFLAGS,
                   export_includes =  '.')
     else:
         ctx.shlib(source          = sources,
@@ -61,6 +58,7 @@ def build(ctx):
                   target          = package_path.replace('/', '_'),
                   name            = package_path,
                   use             = use_libs,
+                  cxxflags        = ctx.env.GLOBAL_CXXFLAGS,
                   export_includes =  '.')
 
     if ctx.env.TESTS:
@@ -72,4 +70,5 @@ def build(ctx):
                         includes = includes,
                         target   = target,
                         use      = package_path + ' ' + ' '.join(use_libs),
+                        cxxflags = ctx.env.GLOBAL_CXXFLAGS,
                         defines  = ['BOOST_TEST_DYN_LINK'])
