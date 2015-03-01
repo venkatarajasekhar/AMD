@@ -14,18 +14,18 @@ void BinaryOp::operator()(boost::shared_ptr<ExpressionTree>& parent,
     lhs.swap(parent);
 }
 
-void UnaryOp::operator()(boost::shared_ptr<ExpressionTree>& expr, 
+void UnaryOp::operator()(boost::shared_ptr<ExpressionTree>& parent, 
                          boost::shared_ptr<ExpressionTree> const& rhs) const
 {
     LOG_INFO << "Processing UnaryOp of type " << d_op;
-    if(!expr){
+    if(!parent){
         boost::shared_ptr<ExpressionTree> nil;
-        expr = boost::make_shared<ExpressionTree>(d_op,nil,nil);
+        parent = boost::make_shared<ExpressionTree>(d_op, rhs, nil);
+    } else {
+        parent->setInfo(d_op);
+        parent->setLeftChild(rhs);
+        parent->setRightChild(nil);
     }
-
-    expr->setInfo(d_op);
-    expr->setLeftChild(rhs);
-    expr->setRightChild(nil);
 }
 
 } // namespace detail
