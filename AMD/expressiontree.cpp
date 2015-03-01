@@ -43,10 +43,6 @@ ExpressionTree::ExpressionTree (const std::string& info,
                                 const boost::shared_ptr<Tree>& right) :
                                 Tree(info, left, right)
 {
-    LOG_TRACE << "Expression constructor: ";
-    LOG_TRACE << info;
-    if (left)  LOG_TRACE << left;  else LOG_TRACE << "NULL";
-    if (right) LOG_TRACE << right; else LOG_TRACE << "NULL";
 
     if (validOps.bOp.count(info)) {
         // binary op check. we don't check for errors for "-" because it 
@@ -85,9 +81,16 @@ ExpressionTree::ExpressionTree (const std::string& info,
 #endif
     }
 
-    this->d_info = info;
-    this->d_left = left;
+    this->d_info  = info;
+    this->d_left  = left;
     this->d_right = right;
+
+    LOG_TRACE << "Expression constructed: ";
+    LOG_TRACE << "INFO  = " << d_info;
+    if (d_left ) LOG_TRACE << "LEFT  = " << *(this->d_left) ; 
+    else LOG_TRACE << "LEFT  = NULL";
+    if (d_right) LOG_TRACE << "RIGHT = " << *(this->d_right); 
+    else LOG_TRACE << "RIGHT = NULL";
 }
 
 bool ExpressionTree::operator==(const ExpressionTree& other) const
