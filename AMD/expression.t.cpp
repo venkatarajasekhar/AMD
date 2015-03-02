@@ -19,8 +19,8 @@ BOOST_AUTO_TEST_CASE ( generateExpression )
     // we fix this, we will no longer fail this test
     BOOST_CHECK_NO_THROW ((testExpression = AMD::generateExpression("A o B")));
 
-    BOOST_CHECK(AMD::compareExpectedExpressions("A", "A") == 1);
-    BOOST_CHECK(AMD::compareExpectedExpressions("A+B", "(+ A B ") == 1); 
+    BOOST_CHECK(AMD::compareExpectedExpressions("A", "\"A\"") == 1);
+    BOOST_CHECK(AMD::compareExpectedExpressions("A+B", "(+ \"A\" \"B\")") == 1); 
 
 
     // This should generate an exception as we do not implement tr(A). When
