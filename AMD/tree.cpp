@@ -31,6 +31,16 @@ std::string Tree::info() const
     return this->d_info;
 }
 
+boost::shared_ptr<Tree> Tree::left () const 
+{
+    return this->d_left;
+}
+
+boost::shared_ptr<Tree> Tree::right () const 
+{
+    return this->d_right;
+}
+
 void Tree::setInfo(const std::string& info)
 {
     this->d_info = info;

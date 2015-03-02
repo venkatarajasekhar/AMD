@@ -68,6 +68,14 @@ class Tree {
     ///< Return the information stored in this node
     ///  @retval d_info
 
+    boost::shared_ptr<Tree> left () const;
+    ///< Return the left child stored in this node
+    ///  @retval d_left
+
+    boost::shared_ptr<Tree> right () const;
+    ///< Return the right child stored in this node
+    ///  @retval d_right
+
     void setInfo (const std::string& info);
     ///< Set the d_info to be info.
     ///  @param[in] info The information we want to set to.
@@ -92,7 +100,7 @@ class Tree {
 template <typename OSTREAM>
 void Tree::print(OSTREAM& os) const
 {
-    if (!(d_left) || !(d_right)) {
+    if (!(d_left) && !(d_right)) {
         //< If I am a leaf node, print straight up
         os << "\"" << d_info << "\"";
     } else {
