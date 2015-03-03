@@ -145,6 +145,7 @@ def configure(ctx):
     ctx.load(deps, tooldir=tooldir)
     print ''
 
+    ctx.env.LIB += ['pthread']
     # Write out a config.h for anyone who needs to access the defines
     # This header is written in the build directory, not the source dir.
     ctx.write_config_header('config.h')
