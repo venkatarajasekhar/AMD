@@ -4,7 +4,8 @@
 #include <AMD/exception.hpp>
 #include <AMD/log.hpp>
 
-#define USE_BOOST_SPIRIT 1
+#include <stdio.h>
+
 
 namespace AMD { namespace detail {
 
@@ -37,6 +38,8 @@ class ValidOperations
 };
 
 static ValidOperations validOps; 
+static bool logging_enabled = 
+    blg::core::get()->blg::core::get_logging_enabled();
 
 ExpressionTree::ExpressionTree (const std::string& info, 
                                 const boost::shared_ptr<Tree>& left, 
@@ -44,41 +47,57 @@ ExpressionTree::ExpressionTree (const std::string& info,
                                 Tree(info, left, right)
 {
 
-    if (validOps.bOp.count(info)) {
+    if (validOps.bOp.count(info)) 
+    {
         // binary op check. we don't check for errors for "-" because it 
         // might be a unary minus op. this is checked for below.
-        if (("-"!=info) && (!(left) || !(right))) {
-#if USE_BOOST_SPIRIT==1
-            LOG_ERROR <<  "Incorrect use of binary operator";
-#else
-            throw AMD::ExceptionImpl(
-                APPEND_LOCATION("from ExpressionTree constructor"),
-                "Incorrect use of binary operator",
-                AMD_INVALID_EXPRESSION);
-#endif
+        if (("-"!=info) && (!(left) || !(right))) 
+        {
+            if (logging_enabled) 
+            {
+                LOG_ERROR <<  "Incorrect use of binary operator";
+            }
+            else
+            {
+                throw AMD::ExceptionImpl(
+                    APPEND_LOCATION("from ExpressionTree constructor"),
+                    "Incorrect use of binary operator",
+                    AMD_INVALID_EXPRESSION);
+            }
         }
-    } else if (validOps.uOp.count(info)) {
+    } 
+    else if (validOps.uOp.count(info)) 
+    {
         // unary op check
-        if (!(left) || (right)) {
-#if USE_BOOST_SPIRIT==1
-            LOG_ERROR <<  "Incorrect use of unary operator";
-#else
+        if (!(left) || (right)) 
+        {
+            if (logging_enabled)
+            {
+                LOG_ERROR <<  "Incorrect use of unary operator";
+            }
+            else
+            {
+                throw AMD::ExceptionImpl(
+                    APPEND_LOCATION("from ExpressionTree constructor"),
+                    "Incorrect use of unary operator",
+                    AMD_INVALID_EXPRESSION);
+            }
+        }
+    } 
+    else if (left || right) 
+    {
+        // leaf node
+        if (logging_enabled)
+        {    
+            LOG_ERROR << "Not an operator, matrix, or float";
+        }
+        else
+        {
             throw AMD::ExceptionImpl(
                 APPEND_LOCATION("from ExpressionTree constructor"),
-                "Incorrect use of unary operator",
+                "Not an operator, matrix, or float",
                 AMD_INVALID_EXPRESSION);
-#endif
         }
-    } else if (left || right) {
-        // leaf node
-#if USE_BOOST_SPIRIT==1
-        LOG_ERROR << "Not an operator, matrix, or float";
-#else
-        throw AMD::ExceptionImpl(
-            APPEND_LOCATION("from ExpressionTree constructor"),
-            "Not an operator, matrix, or float",
-            AMD_INVALID_EXPRESSION);
-#endif
     }
 
     this->d_info  = info;
