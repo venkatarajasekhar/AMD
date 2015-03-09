@@ -9,6 +9,7 @@
 
 #include <boost/spirit/include/qi.hpp>
 
+#include <AMD/exception.hpp>
 #include <AMD/expressiontree.hpp>
 #include <AMD/matrixgrammar.hpp>
 #include <AMD/log.hpp>

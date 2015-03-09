@@ -8,12 +8,11 @@ bool compareExpectedExpressions(const std::string& exprString,
                                 const std::string& trueParsedString)
 {
     std::ostringstream stream;
-    try {
-        AMD::Expression myExpr = AMD::generateExpression(exprString);
-        stream << *myExpr;
-    } catch (const std::exception& e) {
-        LOG_ERROR << e.what() << std::endl;
-    }
+    AMD_START_TRY_BLOCK()
+    AMD::Expression myExpr = AMD::generateExpression(exprString);
+    stream << *myExpr;
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_PRINT()
     std::string parsedString = stream.str();
     return !(parsedString.compare(trueParsedString));
 }
