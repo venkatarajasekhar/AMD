@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 
+#define ENABLE_EXCEPTIONS true
 
 namespace AMD { namespace detail {
 
@@ -38,8 +39,6 @@ class ValidOperations
 };
 
 static ValidOperations validOps; 
-static bool logging_enabled = 
-    blg::core::get()->blg::core::get_logging_enabled();
 
 ExpressionTree::ExpressionTree (const std::string& info, 
                                 const boost::shared_ptr<Tree>& left, 
@@ -47,18 +46,19 @@ ExpressionTree::ExpressionTree (const std::string& info,
                                 Tree(info, left, right)
 {
 
+
     if (validOps.bOp.count(info)) 
     {
         // binary op check. we don't check for errors for "-" because it 
         // might be a unary minus op. this is checked for below.
         if (("-"!=info) && (!(left) || !(right))) 
         {
-            if (logging_enabled) 
+           
+            LOG_ERROR <<  "Incorrect use of binary operator";
+
+            if(ENABLE_EXCEPTIONS)
             {
-                LOG_ERROR <<  "Incorrect use of binary operator";
-            }
-            else
-            {
+
                 throw AMD::ExceptionImpl(
                     APPEND_LOCATION("from ExpressionTree constructor"),
                     "Incorrect use of binary operator",
@@ -71,11 +71,9 @@ ExpressionTree::ExpressionTree (const std::string& info,
         // unary op check
         if (!(left) || (right)) 
         {
-            if (logging_enabled)
-            {
-                LOG_ERROR <<  "Incorrect use of unary operator";
-            }
-            else
+            LOG_ERROR <<  "Incorrect use of unary operator";
+            
+            if(ENABLE_EXCEPTIONS)
             {
                 throw AMD::ExceptionImpl(
                     APPEND_LOCATION("from ExpressionTree constructor"),
@@ -87,11 +85,9 @@ ExpressionTree::ExpressionTree (const std::string& info,
     else if (left || right) 
     {
         // leaf node
-        if (logging_enabled)
-        {    
-            LOG_ERROR << "Not an operator, matrix, or float";
-        }
-        else
+        LOG_ERROR << "Not an operator, matrix, or float";
+        
+        if(ENABLE_EXCEPTIONS)
         {
             throw AMD::ExceptionImpl(
                 APPEND_LOCATION("from ExpressionTree constructor"),

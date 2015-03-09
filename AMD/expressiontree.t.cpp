@@ -10,12 +10,8 @@
 
 BOOST_AUTO_TEST_CASE ( Constructor )
 {
-    // Disable logging for testing purposes 
-    blg::core::get()->blg::core::set_logging_enabled(false);
-
     typedef class AMD::detail::ExpressionTree ExprTree;
     boost::shared_ptr<ExprTree> nil;
-
 
     /// Invalid construction using non operator
     AMD_START_TRY_BLOCK()
