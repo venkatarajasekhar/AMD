@@ -3,6 +3,21 @@
 #define BOOST_TEST_MODULE ExpressionTest
 #include <boost/test/unit_test.hpp>
 
+
+bool compareExpectedExpressions(const std::string& exprString, 
+                                const std::string& trueParsedString)
+{
+    std::ostringstream stream;
+    try {
+        AMD::Expression myExpr = AMD::generateExpression(exprString);
+        stream << *myExpr;
+    } catch (const std::exception& e) {
+        LOG_ERROR << e.what() << std::endl;
+    }
+    std::string parsedString = stream.str();
+    return !(parsedString.compare(trueParsedString));
+}
+
 //Do we still need this if we have the regression test?
 BOOST_AUTO_TEST_CASE ( generateExpression )
 {
@@ -40,44 +55,44 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
 { 
     
     //single matrix test
-    BOOST_CHECK(AMD::compareExpectedExpressions("A", "\"A\"") == 1);
+    BOOST_CHECK(compareExpectedExpressions("A", "\"A\"") == 1);
     
     //binary op expressions
-    BOOST_CHECK(AMD::compareExpectedExpressions("A+B", "(+ \"A\" \"B\")")); 
-    BOOST_CHECK(AMD::compareExpectedExpressions("A-B", "(- \"A\" \"B\")")); 
-    BOOST_CHECK(AMD::compareExpectedExpressions("A*B", "(* \"A\" \"B\")")); 
-    BOOST_CHECK(AMD::compareExpectedExpressions("AoB", "(o \"A\" \"B\")")); 
-    BOOST_CHECK(AMD::compareExpectedExpressions("A/B", "(/ \"A\" \"B\")")); 
+    BOOST_CHECK(compareExpectedExpressions("A+B", "(+ \"A\" \"B\")")); 
+    BOOST_CHECK(compareExpectedExpressions("A-B", "(- \"A\" \"B\")")); 
+    BOOST_CHECK(compareExpectedExpressions("A*B", "(* \"A\" \"B\")")); 
+    BOOST_CHECK(compareExpectedExpressions("AoB", "(o \"A\" \"B\")")); 
+    BOOST_CHECK(compareExpectedExpressions("A/B", "(/ \"A\" \"B\")")); 
     
     //multiple expressions
-    BOOST_CHECK(AMD::compareExpectedExpressions("A-B+C", 
+    BOOST_CHECK(compareExpectedExpressions("A-B+C", 
             "(+ (- \"A\" \"B\") \"C\")")); 
     
     //unary op expressions
-    BOOST_CHECK(AMD::compareExpectedExpressions("tr(B)", "(tr \"B\")"));     
-    BOOST_CHECK(AMD::compareExpectedExpressions("lgdt(B)", "(lgdt \"B\")"));     
-    BOOST_CHECK(AMD::compareExpectedExpressions("B'", "(' \"B\")"));     
-    BOOST_CHECK(AMD::compareExpectedExpressions("B_", "(_ \"B\")"));     
+    BOOST_CHECK(compareExpectedExpressions("tr(B)", "(tr \"B\")"));     
+    BOOST_CHECK(compareExpectedExpressions("lgdt(B)", "(lgdt \"B\")"));     
+    BOOST_CHECK(compareExpectedExpressions("B'", "(' \"B\")"));     
+    BOOST_CHECK(compareExpectedExpressions("B_", "(_ \"B\")"));     
    
 
     //tricky unary op combinations
-    BOOST_CHECK(AMD::compareExpectedExpressions("-B'", "(- (' \"B\"))") == 1);     
-    BOOST_CHECK(AMD::compareExpectedExpressions("B''", "(' (' \"B\"))"));     
-    BOOST_CHECK(AMD::compareExpectedExpressions("-B'_", "(- (_ (' \"B\")))"));     
+    BOOST_CHECK(compareExpectedExpressions("-B'", "(- (' \"B\"))") == 1);     
+    BOOST_CHECK(compareExpectedExpressions("B''", "(' (' \"B\"))"));     
+    BOOST_CHECK(compareExpectedExpressions("-B'_", "(- (_ (' \"B\")))"));     
    
     
     //combination of binary and unary op expressions
-    BOOST_CHECK(AMD::compareExpectedExpressions("A'+B'", 
+    BOOST_CHECK(compareExpectedExpressions("A'+B'", 
             "(+ (' \"A\") (' \"B\"))"));     
-    BOOST_CHECK(AMD::compareExpectedExpressions("A+B'", "(+ \"A\" (' \"B\"))"));     
-    BOOST_CHECK(AMD::compareExpectedExpressions("A'+B'", 
+    BOOST_CHECK(compareExpectedExpressions("A+B'", "(+ \"A\" (' \"B\"))"));     
+    BOOST_CHECK(compareExpectedExpressions("A'+B'", 
             "(+ (' \"A\") (' \"B\"))"));     
-    BOOST_CHECK(AMD::compareExpectedExpressions("-A'/-B'", 
+    BOOST_CHECK(compareExpectedExpressions("-A'/-B'", 
             "(/ (- (\' \"A\")) (- (\' \"B\")))"));     
     
     //complex tr expressions
-    BOOST_CHECK(AMD::compareExpectedExpressions("tr(A)*tr(B)", 
+    BOOST_CHECK(compareExpectedExpressions("tr(A)*tr(B)", 
             "(* (tr \"A\") (tr \"B\"))")); 
-    BOOST_CHECK(AMD::compareExpectedExpressions("tr(A)*tr(B)+7*4*A", 
+    BOOST_CHECK(compareExpectedExpressions("tr(A)*tr(B)+7*4*A", 
             "(+ (* (tr \"A\") (tr \"B\")) (* (* \"7\" \"4\") \"A\"))"));  
 } 

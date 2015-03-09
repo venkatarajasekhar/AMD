@@ -1,6 +1,8 @@
-#include <AMD/expression.hpp>
 #include <sstream>
 #include <string.h>
+
+#include <AMD/expression.hpp>
+
 namespace AMD {
 
 Expression generateExpression(const std::string& exprString)
@@ -26,24 +28,9 @@ Expression generateExpression(const std::string& exprString)
     return myExpr;
 }
 
-bool compareExpectedExpressions(const std::string& exprString, 
-                                const std::string& trueParsedString)
-{
-    std::ostringstream stream;
-    try {
-        AMD::Expression myExpr = AMD::generateExpression(exprString);
-        stream << *myExpr;
-    } catch (const std::exception& e) {
-        std::cout << e.what() << std::endl;
-    }
-    std::string parsedString = stream.str();
-    return !(parsedString.compare(trueParsedString));
-}
-
-
 std::ostream& operator<<(std::ostream& os, const Expression& e)
 {
-    std::cout << "Here" << std::endl;
+    LOG_TRACE << "Printing Expression";
     e->print(os);
     return os;
 }

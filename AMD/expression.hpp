@@ -11,6 +11,7 @@
 
 #include <AMD/expressiontree.hpp>
 #include <AMD/matrixgrammar.hpp>
+#include <AMD/log.hpp>
 
 namespace AMD {
 
