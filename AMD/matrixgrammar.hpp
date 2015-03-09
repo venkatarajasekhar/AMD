@@ -172,10 +172,11 @@ struct MatrixGrammar : qi::grammar<Iterator,
              boost::shared_ptr<ExpressionTree>() > d_invtran;
     ///< Defines a rule for inverse and/or transpose operators 
 
-    qi::rule<Iterator, 
+  /*  qi::rule<Iterator, 
              ascii::space_type, 
              boost::shared_ptr<ExpressionTree>() > d_basis;
-    /// FIXME TODO documentation
+    */
+  /// FIXME TODO documentation
 
     public:
     MatrixGrammar();
@@ -210,19 +211,25 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
             |   ('-' >> d_term            [minus(qi::_val, qi::_1)])
             )
         ;
-    
     d_term =
+        d_invtran                        [qi::_val = qi::_1]
+        >> *(   ('*' >> d_invtran         [times(qi::_val, qi::_1)])
+            |   ('/' >> d_invtran         [divide(qi::_val, qi::_1)])
+            )
+        ;
+    
+   /* d_term =
         d_factor                          [qi::_val = qi::_1]
         >> *(   ('*' >> d_factor         [times(qi::_val, qi::_1)])
             |   ('/' >> d_factor         [divide(qi::_val, qi::_1)])
             )
         ;
-    
+    */
     // // FIXME
     // // Consider "A'_'", which means trans(inv(trans(A)))
     // // "A" is a invtran, which is followed by construction 
     // // of multiple unary operations around it.
-    /* d_invtran = // order of the specification is important
+     d_invtran = // order of the specification is important
           (d_factor [trans(qi::_val, qi::_1)] >> '\'')
        |  (d_factor [inv  (qi::_val, qi::_1)] >> '_' )    
        |  d_factor  [qi::_val = qi::_1]
@@ -238,10 +245,10 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
        |   ('-' >> d_factor                  [neg(qi::_val, qi::_1)])
        |   ('+' >> d_factor                  [qi::_val = qi::_1])
        ;
-    */
+    
     // factor should be + or -,
     // invtran should be (), \', _, upper, double
-    d_factor =
+   /* d_factor =
         ('-' >> d_factor                       [neg(qi::_val, qi::_1)])
         | ('+' >> d_factor                     [qi::_val = qi::_1])
         | d_invtran                            [qi::_val = qi::_1]
@@ -259,11 +266,12 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
         |   qi::double_                        [doubleLeafOp(qi::_val,qi::_1)]
         |'(' >> d_expression                    [qi::_val = qi::_1] >> ')'
         ;
-
+*/
     BOOST_SPIRIT_DEBUG_NODE(d_expression);
     BOOST_SPIRIT_DEBUG_NODE(d_term);
     BOOST_SPIRIT_DEBUG_NODE(d_invtran);
     BOOST_SPIRIT_DEBUG_NODE(d_factor);
+  
     ///< Code for debugging the grammar and seeing what was attempted
 }
 
