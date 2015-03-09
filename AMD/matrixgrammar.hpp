@@ -222,23 +222,23 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
     // // Consider "A'_'", which means trans(inv(trans(A)))
     // // "A" is a invtran, which is followed by construction 
     // // of multiple unary operations around it.
-    // d_invtran = // order of the specification is important
-    //      (d_factor [trans(qi::_val, qi::_1)] >> '\'')
-    //   |  (d_factor [inv  (qi::_val, qi::_1)] >> '_' )    
-    //   |  d_factor  [qi::_val = qi::_1]
-    //   ;
+    /* d_invtran = // order of the specification is important
+          (d_factor [trans(qi::_val, qi::_1)] >> '\'')
+       |  (d_factor [inv  (qi::_val, qi::_1)] >> '_' )    
+       |  d_factor  [qi::_val = qi::_1]
+       ;
 
     // // FIXME
     // // Consider "-A'", which means -(trans(A)). The current 
     // // construction parses this as trans(-A), which is incorrect.
-    // d_factor =
-    //   qi::upper                             [charLeafOp(qi::_val, qi::_1)]
-    //   |   qi::double_                       [doubleLeafOp(qi::_val,qi::_1)]
-    //   |   '(' >> d_expression               [qi::_val = qi::_1] >> ')'
-    //   |   ('-' >> d_factor                  [neg(qi::_val, qi::_1)])
-    //   |   ('+' >> d_factor                  [qi::_val = qi::_1])
-    //   ;
-
+     d_factor =
+       qi::upper                             [charLeafOp(qi::_val, qi::_1)]
+       |   qi::double_                       [doubleLeafOp(qi::_val,qi::_1)]
+       |   '(' >> d_expression               [qi::_val = qi::_1] >> ')'
+       |   ('-' >> d_factor                  [neg(qi::_val, qi::_1)])
+       |   ('+' >> d_factor                  [qi::_val = qi::_1])
+       ;
+    */
     // factor should be + or -,
     // invtran should be (), \', _, upper, double
     d_factor =
