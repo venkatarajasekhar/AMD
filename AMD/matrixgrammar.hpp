@@ -95,6 +95,7 @@ static boost::phoenix::function<BinaryOp> const plus = BinaryOp("+");
 static boost::phoenix::function<BinaryOp> const minus = BinaryOp("-");
 static boost::phoenix::function<BinaryOp> const times = BinaryOp("*");
 static boost::phoenix::function<BinaryOp> const divide = BinaryOp("/");
+static boost::phoenix::function<BinaryOp> const elem_wise_times = BinaryOp("o");
 ///< Binary operation functions called during parsing of matrix expressions
 ///  Phoenix validates the typing for boost which calls these functions
 //
@@ -214,6 +215,7 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
         d_invtran                         [qi::_val = qi::_1]
         >> *(   ('*' >> d_invtran         [times(qi::_val, qi::_1)])
             |   ('/' >> d_invtran         [divide(qi::_val, qi::_1)])
+            |   ('o' >> d_invtran         [elem_wise_times(qi::_val, qi::_1)])
             )
         ;
     
