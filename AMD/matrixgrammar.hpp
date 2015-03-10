@@ -21,6 +21,43 @@ namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 namespace spirit = boost::spirit;
 
+
+/// Struct for handling matrix to scalar expressions including tr, lgdt
+struct MatToScal
+{
+    /// @brief A structure that is used to provide information about the 
+    ///        return type of the void function
+    /// @tparam T1 Used by boost::spirit
+    /// @tparam T2 Used by boost::spirit2
+    template <typename T1, typename T2 = void>
+    struct result { 
+        typedef void type; 
+        ///< The result of the MatToScal operation. Will be void.
+        /// Needed for Boost to typecheck when called
+    };
+    
+    
+    const std::string d_op;
+    ///< Stores the character representation of the current operation.
+
+    MatToScal(const std::string& op) : d_op(op) {}
+    ///< Constructs a new unary operation.
+    /// @param[in] op unary operation symbol
+
+    void operator()(boost::shared_ptr<ExpressionTree>& parent, 
+                    boost::shared_ptr<ExpressionTree> const& rhs) const;
+    ///< Modifies the tree such that the passed in parent becomes the operator
+    ///  and the child is the right hand side
+    /// 
+    ///  @param[in] parent the current lhs of the tree
+    ///  @param[in] rhs    the current rhs of the tree
+};
+
+static boost::phoenix::function<MatToScal> const trace = MatToScal("tr");
+static boost::phoenix::function<MatToScal> const lgdt = MatToScal("lgdt");
+///< MatToScal functions called by the parser's grammar rules
+///  Phoenix validates the typing for boost which calls these functions
+
 /// Struct for handling unary operator expressions including 
 /// inverse, transpose, and negation on matrices
 struct UnaryOp
