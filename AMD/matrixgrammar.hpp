@@ -270,10 +270,12 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
     // // Consider "-A'", which means -(trans(A)). The current 
     // // construction parses this as trans(-A), which is incorrect.
      d_factor =
-            d_literal                         [qi::_val = qi::_1]
+            d_literal                        [qi::_val = qi::_1]
        |   '(' >> d_expression               [qi::_val = qi::_1] >> ')'
        |   ('-' >> d_factor                  [neg(qi::_val, qi::_1)])
        |   ('+' >> d_factor                  [qi::_val = qi::_1])
+       |   ("tr(" >> d_factor                [trace(qi::_val, qi::_1)] >> ')')
+       |   ("lgdt(" >> d_factor              [lgdt(qi::_val, qi::_1)] >> ')')
        ;
 
      d_literal =
