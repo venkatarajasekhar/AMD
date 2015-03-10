@@ -28,10 +28,10 @@ void UnaryOp::operator()(boost::shared_ptr<ExpressionTree>& parent,
     }
 }
 
-void MatToScal::operator()(boost::shared_ptr<ExpressionTree>& parent, 
+void MatToScalOp::operator()(boost::shared_ptr<ExpressionTree>& parent, 
                          boost::shared_ptr<ExpressionTree> const& rhs) const
 {
-    LOG_INFO << "Processing MatToScal of type " << d_op; 
+    LOG_INFO << "Processing MatToScalOp of type " << d_op; 
     if(!parent){
         boost::shared_ptr<ExpressionTree> nil;
         parent = boost::make_shared<ExpressionTree>(d_op, rhs, nil);

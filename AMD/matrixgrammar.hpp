@@ -23,7 +23,7 @@ namespace spirit = boost::spirit;
 
 
 /// Struct for handling matrix to scalar expressions including tr, lgdt
-struct MatToScal
+struct MatToScalOp
 {
     /// @brief A structure that is used to provide information about the 
     ///        return type of the void function
@@ -40,7 +40,7 @@ struct MatToScal
     const std::string d_op;
     ///< Stores the character representation of the current operation.
 
-    MatToScal(const std::string& op) : d_op(op) {}
+    MatToScalOp(const std::string& op) : d_op(op) {}
     ///< Constructs a new unary operation.
     /// @param[in] op unary operation symbol
 
@@ -53,8 +53,8 @@ struct MatToScal
     ///  @param[in] rhs    the current rhs of the tree
 };
 
-static boost::phoenix::function<MatToScal> const trace = MatToScal("tr");
-static boost::phoenix::function<MatToScal> const lgdt = MatToScal("lgdt");
+static boost::phoenix::function<MatToScalOp> const trace = MatToScalOp("tr");
+static boost::phoenix::function<MatToScalOp> const lgdt = MatToScalOp("lgdt");
 ///< MatToScal functions called by the parser's grammar rules
 ///  Phoenix validates the typing for boost which calls these functions
 
