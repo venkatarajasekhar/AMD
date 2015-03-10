@@ -172,10 +172,9 @@ struct MatrixGrammar : qi::grammar<Iterator,
              boost::shared_ptr<ExpressionTree>() > d_invtran;
     ///< Defines a rule for inverse and/or transpose operators 
 
-  /*  qi::rule<Iterator, 
+    qi::rule<Iterator, 
              ascii::space_type, 
-             boost::shared_ptr<ExpressionTree>() > d_basis;
-    */
+             boost::shared_ptr<ExpressionTree>() > d_literal;
   /// FIXME TODO documentation
 
     public:
@@ -212,19 +211,12 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
             )
         ;
     d_term =
-        d_invtran                        [qi::_val = qi::_1]
+        d_invtran                         [qi::_val = qi::_1]
         >> *(   ('*' >> d_invtran         [times(qi::_val, qi::_1)])
             |   ('/' >> d_invtran         [divide(qi::_val, qi::_1)])
             )
         ;
     
-   /* d_term =
-        d_factor                          [qi::_val = qi::_1]
-        >> *(   ('*' >> d_factor         [times(qi::_val, qi::_1)])
-            |   ('/' >> d_factor         [divide(qi::_val, qi::_1)])
-            )
-        ;
-    */
     // // FIXME
     // // Consider "A'_'", which means trans(inv(trans(A)))
     // // "A" is a invtran, which is followed by construction 
@@ -239,38 +231,23 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
     // // Consider "-A'", which means -(trans(A)). The current 
     // // construction parses this as trans(-A), which is incorrect.
      d_factor =
-       qi::upper                             [charLeafOp(qi::_val, qi::_1)]
-       |   qi::double_                       [doubleLeafOp(qi::_val,qi::_1)]
+            d_literal                         [qi::_val = qi::_1]
        |   '(' >> d_expression               [qi::_val = qi::_1] >> ')'
        |   ('-' >> d_factor                  [neg(qi::_val, qi::_1)])
        |   ('+' >> d_factor                  [qi::_val = qi::_1])
        ;
+
+     d_literal =
+       qi::upper                             [charLeafOp(qi::_val, qi::_1)]
+       |   qi::double_                       [doubleLeafOp(qi::_val,qi::_1)]
+       ;
     
-    // factor should be + or -,
-    // invtran should be (), \', _, upper, double
-   /* d_factor =
-        ('-' >> d_factor                       [neg(qi::_val, qi::_1)])
-        | ('+' >> d_factor                     [qi::_val = qi::_1])
-        | d_invtran                            [qi::_val = qi::_1]
-        ;
 
-
-    d_invtran = 
-            (d_invtran                           [trans(qi::_val, qi::_1)] >> '\'')
-        |   (d_invtran                           [inv  (qi::_val, qi::_1)] >> '_')
-        |   d_basis                              [qi::_val = qi::_1]
-        ;
-
-    d_basis = 
-        qi::upper                          [charLeafOp(qi::_val, qi::_1)]
-        |   qi::double_                        [doubleLeafOp(qi::_val,qi::_1)]
-        |'(' >> d_expression                    [qi::_val = qi::_1] >> ')'
-        ;
-*/
     BOOST_SPIRIT_DEBUG_NODE(d_expression);
     BOOST_SPIRIT_DEBUG_NODE(d_term);
     BOOST_SPIRIT_DEBUG_NODE(d_invtran);
     BOOST_SPIRIT_DEBUG_NODE(d_factor);
+    BOOST_SPIRIT_DEBUG_NODE(d_literal);
   
     ///< Code for debugging the grammar and seeing what was attempted
 }
