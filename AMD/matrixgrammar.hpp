@@ -274,8 +274,8 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
        |   '(' >> d_expression               [qi::_val = qi::_1] >> ')'
        |   ('-' >> d_factor                  [neg(qi::_val, qi::_1)])
        |   ('+' >> d_factor                  [qi::_val = qi::_1])
-       |   ("tr(" >> d_factor                [trace(qi::_val, qi::_1)] >> ')')
-       |   ("lgdt(" >> d_factor              [lgdt(qi::_val, qi::_1)] >> ')')
+       |   ("tr(" >> d_expression            [trace(qi::_val, qi::_1)] >> ')')
+       |   ("lgdt(" >> d_expression          [lgdt(qi::_val, qi::_1)] >> ')')
        ;
 
      d_literal =
