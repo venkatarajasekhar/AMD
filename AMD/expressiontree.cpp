@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 
-#define ENABLE_EXCEPTIONS true
+#define ENABLE_EXCEPTIONS false
 
 namespace AMD { namespace detail {
 
