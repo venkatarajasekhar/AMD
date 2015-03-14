@@ -40,6 +40,11 @@ Expression generateExpression(const std::string& exprString);
 ///     std::cout << e.what() << std::endl;
 ///     }
 /// @endcode
+
+std::string toRightRecursiveRep(const std::string& exprString);
+
+int findMatchingParen(const std::string& exprString, int index);
+
 bool compareExpectedExpressions(const std::string& exprString, 
                                 const std::string& trueParsedString);
 ///< Takes in a string, attempts to parse it, then compares
