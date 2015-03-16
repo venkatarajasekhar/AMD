@@ -77,7 +77,8 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
     //tricky unary op combinations
     BOOST_CHECK(compareExpectedExpressions("-B'", "(- (' \"B\"))") == 1);     
     BOOST_CHECK(compareExpectedExpressions("B''", "(' (' \"B\"))"));     
-    BOOST_CHECK(compareExpectedExpressions("-B'_", "(- (_ (' \"B\")))"));     
+    BOOST_CHECK(compareExpectedExpressions("-B'_", "(- (_ (' \"B\")))"));
+    BOOST_CHECK(compareExpectedExpressions("-+-A", "(- (- \"A\"))"));   
    
     
     //combination of binary and unary op expressions

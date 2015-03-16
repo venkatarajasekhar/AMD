@@ -110,6 +110,7 @@ ExpressionTree::ExpressionTree (const std::string& info,
 
 bool ExpressionTree::operator==(const ExpressionTree& other) const
 {
+    LOG_TRACE << "Checking ExpressionTree equality";
     if (other.d_info != this->d_info) { return false; }
     
     int isCommutative = validOps.commOp.count(other.d_info);

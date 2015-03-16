@@ -213,7 +213,7 @@ struct MatrixGrammar : qi::grammar<Iterator,
     qi::rule<Iterator, 
              ascii::space_type, 
              boost::shared_ptr<ExpressionTree>() > d_literal;
-  /// FIXME TODO documentation
+    ///< Defines the basic unit of expression: an uppercase character or double
 
     public:
     MatrixGrammar();
@@ -256,19 +256,12 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
             )
         ;
     
-    // // FIXME
-    // // Consider "A'_'", which means trans(inv(trans(A)))
-    // // "A" is a invtran, which is followed by construction 
-    // // of multiple unary operations around it.
-     d_invtran = // order of the specification is important
+     d_invtran = 
           ("trans(" >> d_expression [trans(qi::_val, qi::_1)] >> ')')
        |  ("inv(" >> d_expression  [inv  (qi::_val, qi::_1)] >> ')')
        |  d_factor  [qi::_val = qi::_1]
        ;
 
-    // // FIXME
-    // // Consider "-A'", which means -(trans(A)). The current 
-    // // construction parses this as trans(-A), which is incorrect.
      d_factor =
             d_literal                        [qi::_val = qi::_1]
        |   '(' >> d_expression               [qi::_val = qi::_1] >> ')'
