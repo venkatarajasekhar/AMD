@@ -236,6 +236,8 @@ struct MatrixGrammar : qi::grammar<Iterator,
 /// Negation(-)
 /// Transpose(')
 /// Inverse(_)
+/// Trace (tr())
+/// Log Determinant (lgdt())
 
 
 template <typename Iterator>
@@ -282,7 +284,6 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
     BOOST_SPIRIT_DEBUG_NODE(d_invtran);
     BOOST_SPIRIT_DEBUG_NODE(d_factor);
     BOOST_SPIRIT_DEBUG_NODE(d_literal);
-  
     ///< Code for debugging the grammar and seeing what was attempted
 }
 
