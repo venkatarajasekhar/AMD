@@ -21,6 +21,43 @@ namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 namespace spirit = boost::spirit;
 
+
+/// Struct for handling matrix to scalar expressions including tr, lgdt
+struct MatToScalOp
+{
+    /// @brief A structure that is used to provide information about the 
+    ///        return type of the void function
+    /// @tparam T1 Used by boost::spirit
+    /// @tparam T2 Used by boost::spirit2
+    template <typename T1, typename T2 = void>
+    struct result { 
+        typedef void type; 
+        ///< The result of the MatToScal operation. Will be void.
+        /// Needed for Boost to typecheck when called
+    };
+    
+    
+    const std::string d_op;
+    ///< Stores the character representation of the current operation.
+
+    MatToScalOp(const std::string& op) : d_op(op) {}
+    ///< Constructs a new unary operation.
+    /// @param[in] op unary operation symbol
+
+    void operator()(boost::shared_ptr<ExpressionTree>& parent, 
+                    boost::shared_ptr<ExpressionTree> const& rhs) const;
+    ///< Modifies the tree such that the passed in parent becomes the operator
+    ///  and the child is the right hand side
+    /// 
+    ///  @param[in] parent the current lhs of the tree
+    ///  @param[in] rhs    the current rhs of the tree
+};
+
+static boost::phoenix::function<MatToScalOp> const trace = MatToScalOp("tr");
+static boost::phoenix::function<MatToScalOp> const lgdt = MatToScalOp("lgdt");
+///< MatToScal functions called by the parser's grammar rules
+///  Phoenix validates the typing for boost which calls these functions
+
 /// Struct for handling unary operator expressions including 
 /// inverse, transpose, and negation on matrices
 struct UnaryOp
@@ -95,6 +132,7 @@ static boost::phoenix::function<BinaryOp> const plus = BinaryOp("+");
 static boost::phoenix::function<BinaryOp> const minus = BinaryOp("-");
 static boost::phoenix::function<BinaryOp> const times = BinaryOp("*");
 static boost::phoenix::function<BinaryOp> const divide = BinaryOp("/");
+static boost::phoenix::function<BinaryOp> const elem_wise_times = BinaryOp("o");
 ///< Binary operation functions called during parsing of matrix expressions
 ///  Phoenix validates the typing for boost which calls these functions
 //
@@ -172,11 +210,10 @@ struct MatrixGrammar : qi::grammar<Iterator,
              boost::shared_ptr<ExpressionTree>() > d_invtran;
     ///< Defines a rule for inverse and/or transpose operators 
 
-  /*  qi::rule<Iterator, 
+    qi::rule<Iterator, 
              ascii::space_type, 
-             boost::shared_ptr<ExpressionTree>() > d_basis;
-    */
-  /// FIXME TODO documentation
+             boost::shared_ptr<ExpressionTree>() > d_literal;
+    ///< Defines the basic unit of expression: an uppercase character or double
 
     public:
     MatrixGrammar();
@@ -212,65 +249,39 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
             )
         ;
     d_term =
-        d_invtran                        [qi::_val = qi::_1]
+        d_invtran                         [qi::_val = qi::_1]
         >> *(   ('*' >> d_invtran         [times(qi::_val, qi::_1)])
             |   ('/' >> d_invtran         [divide(qi::_val, qi::_1)])
+            |   ('o' >> d_invtran         [elem_wise_times(qi::_val, qi::_1)])
             )
         ;
     
-   /* d_term =
-        d_factor                          [qi::_val = qi::_1]
-        >> *(   ('*' >> d_factor         [times(qi::_val, qi::_1)])
-            |   ('/' >> d_factor         [divide(qi::_val, qi::_1)])
-            )
-        ;
-    */
-    // // FIXME
-    // // Consider "A'_'", which means trans(inv(trans(A)))
-    // // "A" is a invtran, which is followed by construction 
-    // // of multiple unary operations around it.
-     d_invtran = // order of the specification is important
-          (d_factor [trans(qi::_val, qi::_1)] >> '\'')
-       |  (d_factor [inv  (qi::_val, qi::_1)] >> '_' )    
+     d_invtran = 
+          ("trans(" >> d_expression [trans(qi::_val, qi::_1)] >> ')')
+       |  ("inv(" >> d_expression  [inv  (qi::_val, qi::_1)] >> ')')
        |  d_factor  [qi::_val = qi::_1]
        ;
 
-    // // FIXME
-    // // Consider "-A'", which means -(trans(A)). The current 
-    // // construction parses this as trans(-A), which is incorrect.
      d_factor =
+            d_literal                        [qi::_val = qi::_1]
+       |   '(' >> d_expression               [qi::_val = qi::_1] >> ')'
+       |   ('-' >> d_expression                  [neg(qi::_val, qi::_1)])
+       |   ('+' >> d_expression                  [qi::_val = qi::_1])
+       |   ("tr(" >> d_expression            [trace(qi::_val, qi::_1)] >> ')')
+       |   ("lgdt(" >> d_expression          [lgdt(qi::_val, qi::_1)] >> ')')
+       ;
+
+     d_literal =
        qi::upper                             [charLeafOp(qi::_val, qi::_1)]
        |   qi::double_                       [doubleLeafOp(qi::_val,qi::_1)]
-       |   '(' >> d_expression               [qi::_val = qi::_1] >> ')'
-       |   ('-' >> d_factor                  [neg(qi::_val, qi::_1)])
-       |   ('+' >> d_factor                  [qi::_val = qi::_1])
        ;
     
-    // factor should be + or -,
-    // invtran should be (), \', _, upper, double
-   /* d_factor =
-        ('-' >> d_factor                       [neg(qi::_val, qi::_1)])
-        | ('+' >> d_factor                     [qi::_val = qi::_1])
-        | d_invtran                            [qi::_val = qi::_1]
-        ;
 
-
-    d_invtran = 
-            (d_invtran                           [trans(qi::_val, qi::_1)] >> '\'')
-        |   (d_invtran                           [inv  (qi::_val, qi::_1)] >> '_')
-        |   d_basis                              [qi::_val = qi::_1]
-        ;
-
-    d_basis = 
-        qi::upper                          [charLeafOp(qi::_val, qi::_1)]
-        |   qi::double_                        [doubleLeafOp(qi::_val,qi::_1)]
-        |'(' >> d_expression                    [qi::_val = qi::_1] >> ')'
-        ;
-*/
     BOOST_SPIRIT_DEBUG_NODE(d_expression);
     BOOST_SPIRIT_DEBUG_NODE(d_term);
     BOOST_SPIRIT_DEBUG_NODE(d_invtran);
     BOOST_SPIRIT_DEBUG_NODE(d_factor);
+    BOOST_SPIRIT_DEBUG_NODE(d_literal);
   
     ///< Code for debugging the grammar and seeing what was attempted
 }

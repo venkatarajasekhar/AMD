@@ -77,7 +77,8 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
     //tricky unary op combinations
     BOOST_CHECK(compareExpectedExpressions("-B'", "(- (' \"B\"))") == 1);     
     BOOST_CHECK(compareExpectedExpressions("B''", "(' (' \"B\"))"));     
-    BOOST_CHECK(compareExpectedExpressions("-B'_", "(- (_ (' \"B\")))"));     
+    BOOST_CHECK(compareExpectedExpressions("-B'_", "(- (_ (' \"B\")))"));
+    BOOST_CHECK(compareExpectedExpressions("-+-A", "(- (- \"A\"))"));   
    
     
     //combination of binary and unary op expressions
@@ -97,19 +98,20 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
     
     //testing negation priority  
     BOOST_CHECK(compareExpectedExpressions("-A'+tr(lgdt(A*B/C))", 
-            "(+ (- (' \"A\") (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));  
-    
-    //testing negation priority  
+            "(+ (- (' \"A\") (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));   
     BOOST_CHECK(compareExpectedExpressions("-A'+tr(lgdt(A*B/C))", 
             "(+ (- (' \"A\") (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));
-    
     BOOST_CHECK(compareExpectedExpressions("--A'+tr(lgdt(A*B/C))", 
             "(+ ( - (- (' \"A\")) (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));
-    
     BOOST_CHECK(compareExpectedExpressions("-B*C'", 
             "(* (- \"B\") (' \"C\"))"));
-
     BOOST_CHECK(compareExpectedExpressions("-(tr(B)*tr(B)+-tr(B))", 
             "(- (+ (* (tr \"B\") (tr \"B\")) (- (tr \"B\"))))"));
+    BOOST_CHECK(compareExpectedExpressions("-A'*(B+((C)))", 
+            "(* (- (' \"A\")) (+ \"B\" \"C\"))")); 
+    BOOST_CHECK(compareExpectedExpressions("-(-A+-B)", 
+            "(- (+ (- \"A\") (- \"B\")))")); 
+   
+    
 
 } 
