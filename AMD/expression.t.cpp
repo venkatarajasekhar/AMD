@@ -101,6 +101,8 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
             "(+ (- (' \"A\") (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));   
     BOOST_CHECK(compareExpectedExpressions("-A'+tr(lgdt(A*B/C))", 
             "(+ (- (' \"A\") (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));
+
+    //TODO: Confirm division supported as well as associativity of ops
     BOOST_CHECK(compareExpectedExpressions("--A'+tr(lgdt(A*B/C))", 
             "(+ ( - (- (' \"A\")) (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));
     BOOST_CHECK(compareExpectedExpressions("-B*C'", 
@@ -112,6 +114,9 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
     BOOST_CHECK(compareExpectedExpressions("-(-A+-B)", 
             "(- (+ (- \"A\") (- \"B\")))")); 
    
-    
-
+    //check associativity of subtraction
+    BOOST_CHECK(compareExpectedExpressions("A+B-C", 
+            "(+ \"A\" (- \"B\" \"C\"))")); 
+    BOOST_CHECK(compareExpectedExpressions("A+B-C-D-E", 
+            "(+ \"A\" (- \"B\" (- \"C\" (- \"D\" \"E\"))))")); 
 } 
