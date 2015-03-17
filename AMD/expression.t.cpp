@@ -93,5 +93,23 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
     BOOST_CHECK(compareExpectedExpressions("tr(A)*tr(B)", 
             "(* (tr \"A\") (tr \"B\"))")); 
     BOOST_CHECK(compareExpectedExpressions("tr(A)*tr(B)+7*4*A", 
-            "(+ (* (tr \"A\") (tr \"B\")) (* (* \"7\" \"4\") \"A\"))"));  
+            "(+ (* (tr \"A\") (tr \"B\")) (* (* \"7\" \"4\") \"A\"))"));
+    
+    //testing negation priority  
+    BOOST_CHECK(compareExpectedExpressions("-A'+tr(lgdt(A*B/C))", 
+            "(+ (- (' \"A\") (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));  
+    
+    //testing negation priority  
+    BOOST_CHECK(compareExpectedExpressions("-A'+tr(lgdt(A*B/C))", 
+            "(+ (- (' \"A\") (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));
+    
+    BOOST_CHECK(compareExpectedExpressions("--A'+tr(lgdt(A*B/C))", 
+            "(+ ( - (- (' \"A\")) (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));
+    
+    BOOST_CHECK(compareExpectedExpressions("-B*C'", 
+            "(* (- \"B\") (' \"C\"))"));
+
+    BOOST_CHECK(compareExpectedExpressions("-(tr(B)*tr(B)+-tr(B))", 
+            "(- (+ (* (tr \"B\") (tr \"B\")) (- (tr \"B\"))))"));
+
 } 
