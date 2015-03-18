@@ -34,6 +34,8 @@ export PS1="\n$YELLOW\w$LIGHTYELLOW\$(__git_ps1) $ENDCOLOR\n$LIGHTGRAY$ $ENDCOLO
 export HISTCONTROL=ignoreboth
 export EDITOR="vim"
 export VISUAL="vim"
+export LD_LIBRARY_PATH=""
+
 
 # ls colors
 export LS_COLORS='fi=37:di=32:ln=36:ex=31:*.o=35'

@@ -77,7 +77,8 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
     //tricky unary op combinations
     BOOST_CHECK(compareExpectedExpressions("-B'", "(- (' \"B\"))") == 1);     
     BOOST_CHECK(compareExpectedExpressions("B''", "(' (' \"B\"))"));     
-    BOOST_CHECK(compareExpectedExpressions("-B'_", "(- (_ (' \"B\")))"));     
+    BOOST_CHECK(compareExpectedExpressions("-B'_", "(- (_ (' \"B\")))"));
+    BOOST_CHECK(compareExpectedExpressions("-+-A", "(- (- \"A\"))"));   
    
     
     //combination of binary and unary op expressions
@@ -93,5 +94,29 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
     BOOST_CHECK(compareExpectedExpressions("tr(A)*tr(B)", 
             "(* (tr \"A\") (tr \"B\"))")); 
     BOOST_CHECK(compareExpectedExpressions("tr(A)*tr(B)+7*4*A", 
-            "(+ (* (tr \"A\") (tr \"B\")) (* (* \"7\" \"4\") \"A\"))"));  
+            "(+ (* (tr \"A\") (tr \"B\")) (* (* \"7\" \"4\") \"A\"))"));
+    
+    //testing negation priority  
+    BOOST_CHECK(compareExpectedExpressions("-A'+tr(lgdt(A*B/C))", 
+            "(+ (- (' \"A\") (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));   
+    BOOST_CHECK(compareExpectedExpressions("-A'+tr(lgdt(A*B/C))", 
+            "(+ (- (' \"A\") (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));
+
+    //TODO: Confirm division supported as well as associativity of ops
+    BOOST_CHECK(compareExpectedExpressions("--A'+tr(lgdt(A*B/C))", 
+            "(+ ( - (- (' \"A\")) (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));
+    BOOST_CHECK(compareExpectedExpressions("-B*C'", 
+            "(* (- \"B\") (' \"C\"))"));
+    BOOST_CHECK(compareExpectedExpressions("-(tr(B)*tr(B)+-tr(B))", 
+            "(- (+ (* (tr \"B\") (tr \"B\")) (- (tr \"B\"))))"));
+    BOOST_CHECK(compareExpectedExpressions("-A'*(B+((C)))", 
+            "(* (- (' \"A\")) (+ \"B\" \"C\"))")); 
+    BOOST_CHECK(compareExpectedExpressions("-(-A+-B)", 
+            "(- (+ (- \"A\") (- \"B\")))")); 
+   
+    //check associativity of subtraction
+    BOOST_CHECK(compareExpectedExpressions("A+B-C", 
+            "(+ \"A\" (- \"B\" \"C\"))")); 
+    BOOST_CHECK(compareExpectedExpressions("A+B-C-D-E", 
+            "(+ \"A\" (- \"B\" (- \"C\" (- \"D\" \"E\"))))")); 
 } 
