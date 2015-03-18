@@ -9,8 +9,10 @@
 
 #include <boost/spirit/include/qi.hpp>
 
+#include <AMD/exception.hpp>
 #include <AMD/expressiontree.hpp>
 #include <AMD/matrixgrammar.hpp>
+#include <AMD/log.hpp>
 
 namespace AMD {
 
@@ -38,6 +40,16 @@ Expression generateExpression(const std::string& exprString);
 ///     std::cout << e.what() << std::endl;
 ///     }
 /// @endcode
+
+std::string toRightRecursiveRep(const std::string& exprString);
+
+int findMatchingParen(const std::string& exprString, int index);
+
+bool compareExpectedExpressions(const std::string& exprString, 
+                                const std::string& trueParsedString);
+///< Takes in a string, attempts to parse it, then compares
+///  printed output to what is the true parsed string value
+///  to determine if parsing works correctly on given exprString
 
 } // namespace AMD
 
