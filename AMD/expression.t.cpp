@@ -119,4 +119,6 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
             "(+ \"A\" (- \"B\" \"C\"))")); 
     BOOST_CHECK(compareExpectedExpressions("A+B-C-D-E", 
             "(+ \"A\" (- \"B\" (- \"C\" (- \"D\" \"E\"))))")); 
+
+    BOOST_CHECK(compareExpectedExpressions("-A'+A","(+ (- (' \"A\")) \"A\")"));
 } 
