@@ -98,13 +98,12 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
     
     //testing negation priority  
     BOOST_CHECK(compareExpectedExpressions("-A'+tr(lgdt(A*B/C))", 
-            "(+ (- (' \"A\") (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));   
-    BOOST_CHECK(compareExpectedExpressions("-A'+tr(lgdt(A*B/C))", 
-            "(+ (- (' \"A\") (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));
+            "(+ (- (' \"A\")) (tr (lgdt (/ (* \"A\" \"B\") \"C\"))))"));
+    BOOST_CHECK(compareExpectedExpressions("-A'+A","(+ (- (' \"A\")) \"A\")")); 
 
     //TODO: Confirm division supported as well as associativity of ops
     BOOST_CHECK(compareExpectedExpressions("--A'+tr(lgdt(A*B/C))", 
-            "(+ ( - (- (' \"A\")) (tr (lgdt (/ (* \"B\" \"C\") \"D\")))))"));
+            "(+ (- (- (' \"A\"))) (tr (lgdt (/ (* \"A\" \"B\") \"C\"))))"));
     BOOST_CHECK(compareExpectedExpressions("-B*C'", 
             "(* (- \"B\") (' \"C\"))"));
     BOOST_CHECK(compareExpectedExpressions("-(tr(B)*tr(B)+-tr(B))", 
@@ -116,9 +115,7 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
    
     //check associativity of subtraction
     BOOST_CHECK(compareExpectedExpressions("A+B-C", 
-            "(+ \"A\" (- \"B\" \"C\"))")); 
+            "(- (+ \"A\" \"B\") \"C\")")); 
     BOOST_CHECK(compareExpectedExpressions("A+B-C-D-E", 
-            "(+ \"A\" (- \"B\" (- \"C\" (- \"D\" \"E\"))))")); 
-
-    BOOST_CHECK(compareExpectedExpressions("-A'+A","(+ (- (' \"A\")) \"A\")"));
+            "(- (- (- (+ \"A\" \"B\") \"C\") \"D\") \"E\")")); 
 } 
