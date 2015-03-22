@@ -40,6 +40,8 @@ Expression generateExpression(const std::string& exprString)
 std::string toRightRecursiveRep(const std::string& exprString)
 {
 
+    
+    LOG_TRACE << "Preprocessing exprString " << __LINE__ << " "<< __FILE__;
     std::size_t first_inv = exprString.find("_");
     std::size_t first_trans = exprString.find("\'");
 
@@ -68,26 +70,32 @@ std::string toRightRecursiveRep(const std::string& exprString)
         return toRightRecursiveRep(prefix + op_str + suffix);
     }
     else{
+        LOG_TRACE << "Preprocessing exprString returning base case" << 
+            __LINE__ << " "<< __FILE__;
         return exprString;
     }
 }
 
 int findMatchingParen(const std::string& exprString, int index)
 {
+    LOG_TRACE << "finding Matching Parenthesis " << __LINE__ << " "<< __FILE__;
     int matching = -1;
     int open_paren_count = 0;
     int close_paren_count = 1;
+
+    // Start from the close parenthesis and scan to the left
     for(int i = index - 1; i >= 0; i--){
         if(exprString[i] == ')')
             close_paren_count += 1;
         else if(exprString[i] == '(')
             open_paren_count += 1;
-        if(open_paren_count - close_paren_count == 0){
+        if(open_paren_count - close_paren_count == 0){ // arrived at the match
             matching = i;
             break;
         }
     }
     if(matching == -1){
+        // If no match is found throw an exception
         throw AMD::ExceptionImpl(
                     APPEND_LOCATION("from ExpressionTree findMatchingParen"),
                     "Expression has unmatched parentheses",

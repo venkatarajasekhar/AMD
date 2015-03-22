@@ -119,3 +119,83 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
     BOOST_CHECK(compareExpectedExpressions("A+B-C-D-E", 
             "(- (- (- (+ \"A\" \"B\") \"C\") \"D\") \"E\")")); 
 } 
+
+bool RRTestHelper(const std::string& inputString, 
+                  const std::string& expectedString)
+{
+    // toRightRecursiveRep test helper
+
+    bool ret = false;
+    AMD_START_TRY_BLOCK()
+    ret = AMD::toRightRecursiveRep(inputString) == expectedString;
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_PRINT()
+    return ret;
+}
+
+BOOST_AUTO_TEST_CASE ( toRightRecursiveRep )
+{
+
+    // Same string excpected
+    BOOST_CHECK(RRTestHelper("", ""));
+    BOOST_CHECK(RRTestHelper("A+B", "A+B"));
+
+    // one transformation expected
+    BOOST_CHECK(RRTestHelper("A'", "(trans(A))"));
+    BOOST_CHECK(RRTestHelper("A_", "(inv(A))"));
+
+    // one transformation expected on right term
+    BOOST_CHECK(RRTestHelper("A+B'", "A+(trans(B))"));
+    BOOST_CHECK(RRTestHelper("A+B_", "A+(inv(B))"));
+
+    // one transformation expected on whole expr
+    BOOST_CHECK(RRTestHelper("(A+B)'", "(trans((A+B)))"));
+    BOOST_CHECK(RRTestHelper("(A+B)_", "(inv((A+B)))"));
+
+    // double transformation expected on right term
+    BOOST_CHECK(RRTestHelper("A+B'_", "A+(inv((trans(B))))"));
+    BOOST_CHECK(RRTestHelper("A+B_'", "A+(trans((inv(B))))"));
+
+    // double transformation expected on whole expr
+    BOOST_CHECK(RRTestHelper("(A+B)'_", "(inv((trans((A+B)))))"));
+    BOOST_CHECK(RRTestHelper("(A+B)_'", "(trans((inv((A+B)))))"));
+
+    // Expect an exception printed to output
+    BOOST_CHECK(!RRTestHelper("A+B)'", "???"));
+
+}
+
+bool MPTestHelper(const std::string& inputString,
+                  int inputIndex,
+                  int expectedOutput)
+{
+    // findMatchingParen test helper
+
+    bool ret = false;
+    AMD_START_TRY_BLOCK()
+    ret = AMD::findMatchingParen(inputString, inputIndex) == expectedOutput;
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_PRINT()
+    return ret;
+}
+
+BOOST_AUTO_TEST_CASE ( findMatchingParen )
+{
+
+    // Simple
+    BOOST_CHECK(MPTestHelper("()", 1, 0));
+    BOOST_CHECK(MPTestHelper("(A)", 2, 0));
+    BOOST_CHECK(MPTestHelper("B+(A)", 4, 2));
+
+    // Nested Structure
+    BOOST_CHECK(MPTestHelper("(((((-(A+B))))))", 15, 0));
+    BOOST_CHECK(MPTestHelper("(((((-(A+B))))))", 14, 1));
+    BOOST_CHECK(MPTestHelper("(((((-(A+B))))))", 13, 2));
+    BOOST_CHECK(MPTestHelper("(((((-(A+B))))))", 12, 3));
+    BOOST_CHECK(MPTestHelper("(((((-(A+B))))))", 11, 4));
+
+    // Degenrate structure
+    // Expect an exception printed to output
+    BOOST_CHECK(!MPTestHelper("A_ + B)))))", 10, 0));
+
+}

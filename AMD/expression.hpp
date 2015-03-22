@@ -42,8 +42,14 @@ Expression generateExpression(const std::string& exprString);
 /// @endcode
 
 std::string toRightRecursiveRep(const std::string& exprString);
+///< transfroms an exprString from containing the operator shorthands ' and _
+/// into an equivalent expression using the notation (trans( )) (inv( )).
+/// ex: "-(A+B)' + A_"  -> -(trans(A+B)) + (inv(A))
 
 int findMatchingParen(const std::string& exprString, int index);
+///< given that the character of exprString an index is a close parenthesis
+/// the output will be the index of the matching open parenthesis or an 
+/// exception will be thrown if no match exists.
 
 bool compareExpectedExpressions(const std::string& exprString, 
                                 const std::string& trueParsedString);
