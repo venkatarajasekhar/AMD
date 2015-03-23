@@ -10,6 +10,8 @@ Expression generateExpression(const std::string& exprString)
     detail::MatrixGrammar<std::string::const_iterator> myParser;
     Expression myExpr;
 
+    LOG_INFO << "Generating expression from " << exprString;
+
     // Expression string with right recursive grammar
     std::string exprStringRR = toRightRecursiveRep(exprString);
     
@@ -22,17 +24,21 @@ Expression generateExpression(const std::string& exprString)
                                myExpr);
 
     if (!result) {
+        LOG_ERROR << "Parsing failed";
         throw AMD::ExceptionImpl(
                     APPEND_LOCATION("from ExpressionTree constructor"),
                     "Parsing failed",
                     AMD_INVALID_EXPRESSION);
 
     } else if (iter != end) {
+        LOG_ERROR << ("Parsing failed at: " + std::string(iter, end));
         throw AMD::ExceptionImpl(
                     APPEND_LOCATION("from ExpressionTree constructor"),
                     ("Parsing failed at: " + std::string(iter, end)).c_str(),
                     AMD_INVALID_EXPRESSION);
     }
+
+    LOG_TRACE << "Finished generating expression";
 
     return myExpr;
 }

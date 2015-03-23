@@ -58,6 +58,7 @@ void Tree::setRightChild(const boost::shared_ptr<Tree>& right)
 
 bool Tree::operator==(const Tree& other) const
 {
+    LOG_TRACE << "Checking Tree Equality";
     if (other.d_info != this->d_info) return false;
 
     if ((other.d_right == this->d_right) && (other.d_left == this->d_left))
@@ -86,6 +87,7 @@ bool Tree::operator!=(const Tree& other) const
 
 std::ostream& operator<<(std::ostream& os, const Tree& tree)
 {
+    LOG_TRACE << "Printing Tree";
     tree.print(os);
     return os;
 }
