@@ -46,7 +46,7 @@ ExpressionTree::ExpressionTree (const std::string& info,
                                 Tree(info, left, right)
 {
 
-
+    LOG_TRACE << "Initializing ExpressionTree";
     if (validOps.bOp.count(info)) 
     {
         // binary op check. we don't check for errors for "-" because it 
