@@ -1,5 +1,8 @@
 #include <sstream>
 #include <string.h>
+#include <ctype.h>
+#include <utility>  
+
 
 #include <AMD/expression.hpp>
 
@@ -22,25 +25,62 @@ Expression generateExpression(const std::string& exprString)
                                myParser, 
                                boost::spirit::ascii::space, 
                                myExpr);
+    char post_process_result = validateExpr(myExpr);
 
     if (!result) {
         LOG_ERROR << "Parsing failed";
         throw AMD::ExceptionImpl(
-                    APPEND_LOCATION("from ExpressionTree constructor"),
+                    APPEND_LOCATION("from generateExpression"),
                     "Parsing failed",
                     AMD_INVALID_EXPRESSION);
 
     } else if (iter != end) {
         LOG_ERROR << ("Parsing failed at: " + std::string(iter, end));
         throw AMD::ExceptionImpl(
-                    APPEND_LOCATION("from ExpressionTree constructor"),
+                    APPEND_LOCATION("from generateExpression"),
                     ("Parsing failed at: " + std::string(iter, end)).c_str(),
+                    AMD_INVALID_EXPRESSION);
+    } else if (post_process_result == 'I'){
+        LOG_ERROR << "Parsing failed, Invalid operand dimensions";
+        throw AMD::ExceptionImpl(
+                    APPEND_LOCATION("from generateExpression"),
+                    "Parsing failed, Invalid operand dimensions",
                     AMD_INVALID_EXPRESSION);
     }
 
     LOG_TRACE << "Finished generating expression";
 
     return myExpr;
+}
+
+char validateExpr(boost::shared_ptr<detail::Tree> myExpr)
+{
+    detail::Tree root = *myExpr;
+
+    // leaf node
+    if(!root.left() && !root.right()){ 
+        return (isupper(root.info().c_str()[0]) ? 'M' : 'S');
+    }
+    // unary op (+, -, tr, lgdt, _, '')
+    else if(root.left() && !root.right()){ 
+        // validate left
+        char left_ret = validateExpr(root.left());
+
+        if(root.info() == "+" or root.info() == "-")
+            return left_ret;
+        else if(root.info() == "tr" or root.info() == "ldgt")
+            return (left_ret == 'M' ? 'S' : 'I');
+        else if(root.info() == "_" or root.info() == "'")
+            return (left_ret == 'M' ? 'M' : 'I');
+    }
+    // binary op (+, -, o)
+    else if(root.left() && root.right()){
+        // validate left and right
+        char left_ret = validateExpr(root.left());
+        char right_ret = validateExpr(root.right());
+
+        return ((left_ret == right_ret) && (left_ret != 'I') ? left_ret : 'I');
+    }
 }
 
 std::string toRightRecursiveRep(const std::string& exprString)
