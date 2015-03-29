@@ -93,17 +93,17 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
     //complex tr expressions
     BOOST_CHECK(compareExpectedExpressions("tr(A)*tr(B)", 
             "(* (tr \"A\") (tr \"B\"))")); 
-    BOOST_CHECK(compareExpectedExpressions("tr(A)*tr(B)+7*4*A", 
-            "(+ (* (tr \"A\") (tr \"B\")) (* (* \"7\" \"4\") \"A\"))"));
+    // BOOST_CHECK(compareExpectedExpressions("tr(A)*tr(B)+7*4*A", 
+    //         "(+ (* (tr \"A\") (tr \"B\")) (* (* \"7\" \"4\") \"A\"))"));
     
     //testing negation priority  
-    BOOST_CHECK(compareExpectedExpressions("-A'+tr(lgdt(A*B/C))", 
-            "(+ (- (' \"A\")) (tr (lgdt (/ (* \"A\" \"B\") \"C\"))))"));
+    // BOOST_CHECK(compareExpectedExpressions("-A'+tr(lgdt(A*B/C))", 
+    //         "(+ (- (' \"A\")) (tr (lgdt (/ (* \"A\" \"B\") \"C\"))))"));
     BOOST_CHECK(compareExpectedExpressions("-A'+A","(+ (- (' \"A\")) \"A\")")); 
 
     //TODO: Confirm division supported as well as associativity of ops
-    BOOST_CHECK(compareExpectedExpressions("--A'+tr(lgdt(A*B/C))", 
-            "(+ (- (- (' \"A\"))) (tr (lgdt (/ (* \"A\" \"B\") \"C\"))))"));
+    // BOOST_CHECK(compareExpectedExpressions("--A'+tr(lgdt(A*B/C))", 
+    //         "(+ (- (- (' \"A\"))) (tr (lgdt (/ (* \"A\" \"B\") \"C\"))))"));
     BOOST_CHECK(compareExpectedExpressions("-B*C'", 
             "(* (- \"B\") (' \"C\"))"));
     BOOST_CHECK(compareExpectedExpressions("-(tr(B)*tr(B)+-tr(B))", 
@@ -197,5 +197,61 @@ BOOST_AUTO_TEST_CASE ( findMatchingParen )
     // Degenrate structure
     // Expect an exception printed to output
     BOOST_CHECK(!MPTestHelper("A_ + B)))))", 10, 0));
+
+}
+
+bool validateExprTestHelper(const std::string& exprString, char expectedOutput)
+{
+    char post_process_result;
+    AMD::detail::MatrixGrammar<std::string::const_iterator> myParser;
+    AMD::Expression myExpr;
+    AMD_START_TRY_BLOCK()
+    std::string exprStringRR = AMD::toRightRecursiveRep(exprString);
+    
+    std::string::const_iterator iter = exprStringRR.begin();
+    std::string::const_iterator end  = exprStringRR.end();
+    bool result = phrase_parse(iter, 
+                               end, 
+                               myParser, 
+                               boost::spirit::ascii::space, 
+                               myExpr);
+    post_process_result = AMD::validateExpr(myExpr);
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_PRINT()
+    return (post_process_result  == expectedOutput);
+}
+
+BOOST_AUTO_TEST_CASE ( validateExpr )
+{
+
+    // Matrix Expressions
+    BOOST_CHECK(validateExprTestHelper("X", 'M'));
+    BOOST_CHECK(validateExprTestHelper("X + A", 'M'));
+    BOOST_CHECK(validateExprTestHelper("X * lgdt(A)", 'M'));
+    BOOST_CHECK(validateExprTestHelper("X * tr(A)", 'M'));
+    BOOST_CHECK(validateExprTestHelper("X o A", 'M'));
+    BOOST_CHECK(validateExprTestHelper("X'_", 'M'));
+    BOOST_CHECK(validateExprTestHelper("X_'", 'M'));
+    BOOST_CHECK(validateExprTestHelper("X'_ * lgdt(A_')", 'M'));
+
+    // Scalar Expressions
+    BOOST_CHECK(validateExprTestHelper("1.2", 'S'));
+    BOOST_CHECK(validateExprTestHelper("1.2 + 3.14", 'S'));
+    BOOST_CHECK(validateExprTestHelper("1.2 * 3.14", 'S'));
+    BOOST_CHECK(validateExprTestHelper("1.2 / 3.14", 'S'));
+    BOOST_CHECK(validateExprTestHelper("-1.2 - 3.14", 'S'));
+    BOOST_CHECK(validateExprTestHelper("-1.2 - tr(-A)", 'S'));
+    BOOST_CHECK(validateExprTestHelper("-1.2 * tr(A'_) / lgdt(X_)", 'S'));
+
+    // Invalid Expressions
+    BOOST_CHECK(validateExprTestHelper("1.2 + M", 'I'));
+    BOOST_CHECK(validateExprTestHelper("tr(1.2)", 'I'));
+    BOOST_CHECK(validateExprTestHelper("lgdt(-3.14)", 'I'));
+    BOOST_CHECK(validateExprTestHelper("tr(tr(X))", 'I'));
+    BOOST_CHECK(validateExprTestHelper("tr(lgdt(X))", 'I'));
+    BOOST_CHECK(validateExprTestHelper("lgdt(tr(X))", 'I'));
+    BOOST_CHECK(validateExprTestHelper("lgdt(lgdt(X))", 'I'));
+    BOOST_CHECK(validateExprTestHelper("tr(M) + M", 'I'));
+    BOOST_CHECK(validateExprTestHelper("tr(M) o M", 'I'));
 
 }

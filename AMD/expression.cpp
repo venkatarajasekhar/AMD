@@ -64,22 +64,28 @@ char validateExpr(boost::shared_ptr<detail::Tree> myExpr)
     // unary op (+, -, tr, lgdt, _, '')
     else if(root.left() && !root.right()){ 
         // validate left
-        char left_ret = validateExpr(root.left());
+        char L = validateExpr(root.left());
 
-        if(root.info() == "+" or root.info() == "-")
-            return left_ret;
-        else if(root.info() == "tr" or root.info() == "ldgt")
-            return (left_ret == 'M' ? 'S' : 'I');
-        else if(root.info() == "_" or root.info() == "'")
-            return (left_ret == 'M' ? 'M' : 'I');
+        if(root.info() == "+" || root.info() == "-")
+            return L;
+        else if(root.info() == "tr" || root.info() == "lgdt")
+            return (L == 'M' ? 'S' : 'I');
+        else if(root.info() == "_" || root.info() == "'")
+            return (L == 'M' ? 'M' : 'I');
     }
-    // binary op (+, -, o)
+    // binary op (+, -, o, *, /)
     else if(root.left() && root.right()){
         // validate left and right
-        char left_ret = validateExpr(root.left());
-        char right_ret = validateExpr(root.right());
-
-        return ((left_ret == right_ret) && (left_ret != 'I') ? left_ret : 'I');
+        char L = validateExpr(root.left());
+        char R = validateExpr(root.right());
+        if(root.info() == "+" || root.info() == "-" || root.info() == "o")
+            return (L == R && L != 'I' ? L : 'I');
+        else if(root.info() == "*" || root.info() == "/") // FIXME: case S/M
+            return (R != 'I' && L != 'I' ? (R == 'M' || L == 'M' ? 'M' : 'S')
+                    : 'I');
+    }
+    else{
+         LOG_ERROR << "Postprocessing failed, Invalid tree";
     }
 }
 
@@ -143,7 +149,7 @@ int findMatchingParen(const std::string& exprString, int index)
     if(matching == -1){
         // If no match is found throw an exception
         throw AMD::ExceptionImpl(
-                    APPEND_LOCATION("from ExpressionTree findMatchingParen"),
+                    APPEND_LOCATION("from findMatchingParen"),
                     "Expression has unmatched parentheses",
                     AMD_INVALID_EXPRESSION);
     }
