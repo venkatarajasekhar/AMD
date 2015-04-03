@@ -61,7 +61,6 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
     BOOST_CHECK(compareExpectedExpressions("A-B", "(- \"A\" \"B\")")); 
     BOOST_CHECK(compareExpectedExpressions("A*B", "(* \"A\" \"B\")")); 
     BOOST_CHECK(compareExpectedExpressions("AoB", "(o \"A\" \"B\")")); 
-    BOOST_CHECK(compareExpectedExpressions("A/B", "(/ \"A\" \"B\")")); 
     
     //multiple expressions
     BOOST_CHECK(compareExpectedExpressions("A-B+C", 
@@ -87,8 +86,8 @@ BOOST_AUTO_TEST_CASE ( parseExpression )
     BOOST_CHECK(compareExpectedExpressions("A+B'", "(+ \"A\" (' \"B\"))"));     
     BOOST_CHECK(compareExpectedExpressions("A'+B'", 
             "(+ (' \"A\") (' \"B\"))"));     
-    BOOST_CHECK(compareExpectedExpressions("-A'/-B'", 
-            "(/ (- (\' \"A\")) (- (\' \"B\")))"));     
+    BOOST_CHECK(compareExpectedExpressions("-A'*-B'", 
+            "(* (- (\' \"A\")) (- (\' \"B\")))"));     
     
     //complex tr expressions
     BOOST_CHECK(compareExpectedExpressions("tr(A)*tr(B)", 
@@ -200,12 +199,12 @@ BOOST_AUTO_TEST_CASE ( findMatchingParen )
 
 }
 
-bool validateExprTestHelper(const std::string& exprString, char expectedOutput)
+bool validateExprTestHelper(const std::string& exprString, 
+                            AMD::ExpressionType expectedOutput)
 {
-    char post_process_result;
+    AMD::ExpressionType validateResult;
     AMD::detail::MatrixGrammar<std::string::const_iterator> myParser;
     AMD::Expression myExpr;
-    AMD_START_TRY_BLOCK()
     std::string exprStringRR = AMD::toRightRecursiveRep(exprString);
     
     std::string::const_iterator iter = exprStringRR.begin();
@@ -215,43 +214,41 @@ bool validateExprTestHelper(const std::string& exprString, char expectedOutput)
                                myParser, 
                                boost::spirit::ascii::space, 
                                myExpr);
-    post_process_result = AMD::validateExpr(myExpr);
-    AMD_END_TRY_BLOCK()
-    AMD_CATCH_AND_PRINT()
-    return (post_process_result  == expectedOutput);
+    validateResult = AMD::validateExpr(myExpr);
+
+    return (validateResult  == expectedOutput);
 }
 
 BOOST_AUTO_TEST_CASE ( validateExpr )
 {
 
     // Matrix Expressions
-    BOOST_CHECK(validateExprTestHelper("X", 'M'));
-    BOOST_CHECK(validateExprTestHelper("X + A", 'M'));
-    BOOST_CHECK(validateExprTestHelper("X * lgdt(A)", 'M'));
-    BOOST_CHECK(validateExprTestHelper("X * tr(A)", 'M'));
-    BOOST_CHECK(validateExprTestHelper("X o A", 'M'));
-    BOOST_CHECK(validateExprTestHelper("X'_", 'M'));
-    BOOST_CHECK(validateExprTestHelper("X_'", 'M'));
-    BOOST_CHECK(validateExprTestHelper("X'_ * lgdt(A_')", 'M'));
+    BOOST_CHECK(validateExprTestHelper("X", AMD::MATRIX));
+    BOOST_CHECK(validateExprTestHelper("X + A", AMD::MATRIX));
+    BOOST_CHECK(validateExprTestHelper("X * lgdt(A)", AMD::MATRIX));
+    BOOST_CHECK(validateExprTestHelper("X * tr(A)", AMD::MATRIX));
+    BOOST_CHECK(validateExprTestHelper("X o A", AMD::MATRIX));
+    BOOST_CHECK(validateExprTestHelper("X'_", AMD::MATRIX));
+    BOOST_CHECK(validateExprTestHelper("X_'", AMD::MATRIX));
+    BOOST_CHECK(validateExprTestHelper("X'_ * lgdt(A_')", AMD::MATRIX));
 
     // Scalar Expressions
-    BOOST_CHECK(validateExprTestHelper("1.2", 'S'));
-    BOOST_CHECK(validateExprTestHelper("1.2 + 3.14", 'S'));
-    BOOST_CHECK(validateExprTestHelper("1.2 * 3.14", 'S'));
-    BOOST_CHECK(validateExprTestHelper("1.2 / 3.14", 'S'));
-    BOOST_CHECK(validateExprTestHelper("-1.2 - 3.14", 'S'));
-    BOOST_CHECK(validateExprTestHelper("-1.2 - tr(-A)", 'S'));
-    BOOST_CHECK(validateExprTestHelper("-1.2 * tr(A'_) / lgdt(X_)", 'S'));
+    BOOST_CHECK(validateExprTestHelper("1.2", AMD::SCALAR));
+    BOOST_CHECK(validateExprTestHelper("1.2 + 3.14", AMD::SCALAR));
+    BOOST_CHECK(validateExprTestHelper("1.2 * 3.14", AMD::SCALAR));
+    BOOST_CHECK(validateExprTestHelper("1.2 / 3.14", AMD::SCALAR));
+    BOOST_CHECK(validateExprTestHelper("-1.2 - 3.14",AMD::SCALAR));
+    BOOST_CHECK(validateExprTestHelper("-1.2 - tr(-A)", AMD::SCALAR));
+    BOOST_CHECK(validateExprTestHelper("-1.2 * tr(A'_) * lgdt(X_)", AMD::SCALAR));
 
     // Invalid Expressions
-    BOOST_CHECK(validateExprTestHelper("1.2 + M", 'I'));
-    BOOST_CHECK(validateExprTestHelper("tr(1.2)", 'I'));
-    BOOST_CHECK(validateExprTestHelper("lgdt(-3.14)", 'I'));
-    BOOST_CHECK(validateExprTestHelper("tr(tr(X))", 'I'));
-    BOOST_CHECK(validateExprTestHelper("tr(lgdt(X))", 'I'));
-    BOOST_CHECK(validateExprTestHelper("lgdt(tr(X))", 'I'));
-    BOOST_CHECK(validateExprTestHelper("lgdt(lgdt(X))", 'I'));
-    BOOST_CHECK(validateExprTestHelper("tr(M) + M", 'I'));
-    BOOST_CHECK(validateExprTestHelper("tr(M) o M", 'I'));
-
+    BOOST_CHECK_THROW(validateExprTestHelper("1.2 + M", AMD::INVALID), AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("tr(1.2)", AMD::INVALID), AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("lgdt(-3.14)", AMD::INVALID), AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("tr(tr(X))", AMD::INVALID), AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("tr(lgdt(X))", AMD::INVALID), AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("lgdt(tr(X))", AMD::INVALID), AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("lgdt(lgdt(X))", AMD::INVALID), AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("tr(M) + M", AMD::INVALID), AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("tr(M) o M", AMD::INVALID), AMD::Exception);
 }

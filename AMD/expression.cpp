@@ -3,7 +3,6 @@
 #include <ctype.h>
 #include <utility>  
 
-
 #include <AMD/expression.hpp>
 
 namespace AMD {
@@ -11,11 +10,10 @@ namespace AMD {
 Expression generateExpression(const std::string& exprString)
 {
     detail::MatrixGrammar<std::string::const_iterator> myParser;
-    Expression myExpr;
+    Expression expr;
 
     LOG_INFO << "Generating expression from " << exprString;
 
-    // Expression string with right recursive grammar
     std::string exprStringRR = toRightRecursiveRep(exprString);
     
     std::string::const_iterator iter = exprStringRR.begin();
@@ -24,10 +22,9 @@ Expression generateExpression(const std::string& exprString)
                                end, 
                                myParser, 
                                boost::spirit::ascii::space, 
-                               myExpr);
-    char post_process_result = validateExpr(myExpr);
+                               expr);
 
-    if (!result) {
+    if (false == result) {
         LOG_ERROR << "Parsing failed";
         throw AMD::ExceptionImpl(
                     APPEND_LOCATION("from generateExpression"),
@@ -40,75 +37,116 @@ Expression generateExpression(const std::string& exprString)
                     APPEND_LOCATION("from generateExpression"),
                     ("Parsing failed at: " + std::string(iter, end)).c_str(),
                     AMD_INVALID_EXPRESSION);
-    } else if (post_process_result == 'I'){
-        LOG_ERROR << "Parsing failed, Invalid operand dimensions";
-        throw AMD::ExceptionImpl(
-                    APPEND_LOCATION("from generateExpression"),
-                    "Parsing failed, Invalid operand dimensions",
-                    AMD_INVALID_EXPRESSION);
-    }
+    } 
+    
+    ExpressionType exprType = validateExpr(expr);
 
     LOG_TRACE << "Finished generating expression";
 
-    return myExpr;
+    return expr;
 }
 
-char validateExpr(boost::shared_ptr<detail::Tree> myExpr)
+ExpressionType validateExpr(const boost::shared_ptr<detail::Tree>& expr)
 {
-    detail::Tree root = *myExpr;
+    const detail::Tree& root = *expr;
 
-    // leaf node
-    if(!root.left() && !root.right()){ 
-        return (isupper(root.info().c_str()[0]) ? 'M' : 'S');
+    // 1. Base case: If leaf node, then it has to be matrix or scalar
+    if (false==root.left() && false==root.right()) { 
+        LOG_INFO << "Found leaf node";
+
+        if (std::string::npos!=root.info().find_first_of("0123456789")) {
+            return SCALAR;
+        }
+
+        if (std::string::npos != 
+            root.info().find_first_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ")) {
+            return MATRIX;
+        }
+
+        LOG_ERROR << "Leaf node is neither a number nor an alphabet";
+        throw AMD::ExceptionImpl(
+                    APPEND_LOCATION("from validateExpr"),
+                    "Invalid leaf node",
+                    AMD_INVALID_EXPRESSION);
     }
+
     // unary op (+, -, tr, lgdt, _, '')
-    else if(root.left() && !root.right()){ 
-        // validate left
-        char L = validateExpr(root.left());
+    if (root.left() && false==root.right()) { 
+        LOG_INFO << "Found unary operation";
 
-        if(root.info() == "+" || root.info() == "-")
-            return L;
-        else if(root.info() == "tr" || root.info() == "lgdt")
-            return (L == 'M' ? 'S' : 'I');
-        else if(root.info() == "_" || root.info() == "'")
-            return (L == 'M' ? 'M' : 'I');
+        ExpressionType exprType = validateExpr(root.left());
+        if ("+" == root.info() || "-" == root.info()) {
+            return exprType;
+        }
+
+        if("tr" == root.info() || "lgdt" == root.info()) {
+            if (MATRIX == exprType) return SCALAR;
+            throw AMD::ExceptionImpl(
+                        APPEND_LOCATION("from validateExpr"),
+                        "Invalid operand to tr/lgdt",
+                        AMD_INVALID_EXPRESSION);
+        }
+
+        if("_" == root.info() || "\'" == root.info()) {
+            if (MATRIX == exprType) return MATRIX;
+            throw AMD::ExceptionImpl(
+                        APPEND_LOCATION("from validateExpr"),
+                        "Invalid operand to transpose/inverse",
+                        AMD_INVALID_EXPRESSION);
+        }
     }
-    // binary op (+, -, o, *, /)
-    else if(root.left() && root.right()){
-        // validate left and right
-        char L = validateExpr(root.left());
-        char R = validateExpr(root.right());
-        if(root.info() == "+" || root.info() == "-" || root.info() == "o")
-            return (L == R && L != 'I' ? L : 'I');
-        else if(root.info() == "*" || root.info() == "/") // FIXME: case S/M
-            return (R != 'I' && L != 'I' ? (R == 'M' || L == 'M' ? 'M' : 'S')
-                    : 'I');
+
+    // binary op (+, -, o, *)
+    if(root.left() && root.right()){
+        LOG_INFO << "Found binary operation";
+
+        ExpressionType leftExprType  = validateExpr(root.left());
+        ExpressionType rightExprType = validateExpr(root.right());
+
+        if("+" == root.info() || "-" == root.info() || "o" == root.info()) {
+            if (leftExprType == rightExprType) return leftExprType;
+            throw AMD::ExceptionImpl(
+                        APPEND_LOCATION("from validateExpr"),
+                        "Different type operands to +,-,o",
+                        AMD_INVALID_EXPRESSION);
+        }
+
+        if ("*" == root.info()) {
+            if (leftExprType == rightExprType) return leftExprType;
+
+            if ((MATRIX==leftExprType && SCALAR==rightExprType) || 
+                (SCALAR==leftExprType && MATRIX==rightExprType)) {
+                return MATRIX;
+            }
+
+            throw AMD::ExceptionImpl(
+                        APPEND_LOCATION("from validateExpr"),
+                        "Weird input to matrix multiplication",
+                        AMD_INVALID_EXPRESSION);
+        }
     }
-    else{
-         LOG_ERROR << "Postprocessing failed, Invalid tree";
-    }
+
+    LOG_ERROR << "Postprocessing failed, Invalid tree";
 }
 
 std::string toRightRecursiveRep(const std::string& exprString)
 {
-
-    
-    LOG_TRACE << "Preprocessing exprString " << __LINE__ << " "<< __FILE__;
-    std::size_t first_inv = exprString.find("_");
+    LOG_TRACE << "Preprocessing exprString " << __LINE__ << " " << __FILE__;
+    std::size_t first_inv   = exprString.find("_");
     std::size_t first_trans = exprString.find("\'");
 
-    if(first_inv != std::string::npos || first_trans != std::string::npos)
-    {
+    if(first_inv != std::string::npos || first_trans != std::string::npos) {
         // The index of the first operator
         int first = std::min(first_inv, first_trans);
 
         // get begin and end indices of the operand substring
         int begin;
         int end = first;
-        if(exprString[first - 1] == ')')
+        if(exprString[first - 1] == ')') {
             begin = findMatchingParen(exprString, first - 1);
-        else
+        } else {
             begin = first - 1;
+        }
 
         std::string op_str;
         if(exprString[first] == '\'')
@@ -120,10 +158,9 @@ std::string toRightRecursiveRep(const std::string& exprString)
         std::string suffix = exprString.substr(end + 1, std::string::npos);
 
         return toRightRecursiveRep(prefix + op_str + suffix);
-    }
-    else{
-        LOG_TRACE << "Preprocessing exprString returning base case" << 
-            __LINE__ << " "<< __FILE__;
+    } else {
+        LOG_TRACE << "Preprocessing exprString returning base case" 
+                  << __LINE__ << " "<< __FILE__;
         return exprString;
     }
 }
@@ -146,7 +183,8 @@ int findMatchingParen(const std::string& exprString, int index)
             break;
         }
     }
-    if(matching == -1){
+
+    if (-1 == matching) {
         // If no match is found throw an exception
         throw AMD::ExceptionImpl(
                     APPEND_LOCATION("from findMatchingParen"),
