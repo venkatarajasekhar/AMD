@@ -1,5 +1,8 @@
 #include <sstream>
 #include <string.h>
+#include <ctype.h>
+#include <utility>  
+
 
 #include <AMD/expression.hpp>
 
@@ -22,25 +25,68 @@ Expression generateExpression(const std::string& exprString)
                                myParser, 
                                boost::spirit::ascii::space, 
                                myExpr);
+    char post_process_result = validateExpr(myExpr);
 
     if (!result) {
         LOG_ERROR << "Parsing failed";
         throw AMD::ExceptionImpl(
-                    APPEND_LOCATION("from ExpressionTree constructor"),
+                    APPEND_LOCATION("from generateExpression"),
                     "Parsing failed",
                     AMD_INVALID_EXPRESSION);
 
     } else if (iter != end) {
         LOG_ERROR << ("Parsing failed at: " + std::string(iter, end));
         throw AMD::ExceptionImpl(
-                    APPEND_LOCATION("from ExpressionTree constructor"),
+                    APPEND_LOCATION("from generateExpression"),
                     ("Parsing failed at: " + std::string(iter, end)).c_str(),
+                    AMD_INVALID_EXPRESSION);
+    } else if (post_process_result == 'I'){
+        LOG_ERROR << "Parsing failed, Invalid operand dimensions";
+        throw AMD::ExceptionImpl(
+                    APPEND_LOCATION("from generateExpression"),
+                    "Parsing failed, Invalid operand dimensions",
                     AMD_INVALID_EXPRESSION);
     }
 
     LOG_TRACE << "Finished generating expression";
 
     return myExpr;
+}
+
+char validateExpr(boost::shared_ptr<detail::Tree> myExpr)
+{
+    detail::Tree root = *myExpr;
+
+    // leaf node
+    if(!root.left() && !root.right()){ 
+        return (isupper(root.info().c_str()[0]) ? 'M' : 'S');
+    }
+    // unary op (+, -, tr, lgdt, _, '')
+    else if(root.left() && !root.right()){ 
+        // validate left
+        char L = validateExpr(root.left());
+
+        if(root.info() == "+" || root.info() == "-")
+            return L;
+        else if(root.info() == "tr" || root.info() == "lgdt")
+            return (L == 'M' ? 'S' : 'I');
+        else if(root.info() == "_" || root.info() == "'")
+            return (L == 'M' ? 'M' : 'I');
+    }
+    // binary op (+, -, o, *, /)
+    else if(root.left() && root.right()){
+        // validate left and right
+        char L = validateExpr(root.left());
+        char R = validateExpr(root.right());
+        if(root.info() == "+" || root.info() == "-" || root.info() == "o")
+            return (L == R && L != 'I' ? L : 'I');
+        else if(root.info() == "*" || root.info() == "/") // FIXME: case S/M
+            return (R != 'I' && L != 'I' ? (R == 'M' || L == 'M' ? 'M' : 'S')
+                    : 'I');
+    }
+    else{
+         LOG_ERROR << "Postprocessing failed, Invalid tree";
+    }
 }
 
 std::string toRightRecursiveRep(const std::string& exprString)
@@ -103,7 +149,7 @@ int findMatchingParen(const std::string& exprString, int index)
     if(matching == -1){
         // If no match is found throw an exception
         throw AMD::ExceptionImpl(
-                    APPEND_LOCATION("from ExpressionTree findMatchingParen"),
+                    APPEND_LOCATION("from findMatchingParen"),
                     "Expression has unmatched parentheses",
                     AMD_INVALID_EXPRESSION);
     }

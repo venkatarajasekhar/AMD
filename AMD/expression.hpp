@@ -41,6 +41,14 @@ Expression generateExpression(const std::string& exprString);
 ///     }
 /// @endcode
 
+char validateExpr(boost::shared_ptr<detail::Tree> myExpr);
+///< Given and Expression will check the validity of the types of the operands
+/// so that expressions that try to incorrectly combine matricies and scalars
+/// can be identified.
+/// @param[in] myExpr The Expression representing the matrix expression tree
+/// returned by the parser
+/// @param[out] char 'M' for Matrix, 'S' for scalar, 'I' for invalid expression
+
 std::string toRightRecursiveRep(const std::string& exprString);
 ///< transfroms an exprString from containing the operator shorthands ' and _
 /// into an equivalent expression using the notation (trans( )) (inv( )).
