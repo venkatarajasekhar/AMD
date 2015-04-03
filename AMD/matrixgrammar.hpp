@@ -177,6 +177,9 @@ static boost::phoenix::function<LeafOp<char> > const charLeafOp =
                                                                LeafOp<char>();
 static boost::phoenix::function<LeafOp<double> > const doubleLeafOp = 
                                                              LeafOp<double>();
+///< Literal operation functions called during parsing of matrix expressions
+///  Phoenix validates the typing for boost which calls these functions
+//
 
 template <typename Iterator>
 struct MatrixGrammar : qi::grammar<Iterator, 
@@ -250,6 +253,9 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
             |   ('-' >> d_term            [minus(qi::_val, qi::_1)])
             )
         ;
+    ///< Rule corresponding to parsing one or more terms joined by binary
+    //   operations such as addition or subtraction
+
     d_term =
         d_invtran                         [qi::_val = qi::_1]
         >> *(   ('*' >> d_invtran         [times(qi::_val, qi::_1)])
@@ -257,13 +263,19 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
             |   ('o' >> d_invtran         [elem_wise_times(qi::_val, qi::_1)])
             )
         ;
-    
+    ///< Rule corresponding to parsing a potential binary op including
+    //   multiplication, division, or elemwise multiplication of one or more 
+    //   terms, where a term can be a factor or a invtran applied to an 
+    //   expression as defined below
+
      d_invtran = 
           ("trans(" >> d_expression [trans(qi::_val, qi::_1)] >> ')')
        |  ("inv(" >> d_expression  [inv  (qi::_val, qi::_1)] >> ')')
        |  d_factor  [qi::_val = qi::_1]
        ;
-
+    ///< Rule corresponding to parsing either an inv or transpose applied to
+    // an expression, or a factor which is defined below
+     
      d_factor =
             d_literal                        [qi::_val = qi::_1]
        |   '(' >> d_expression               [qi::_val = qi::_1] >> ')'
@@ -272,12 +284,17 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
        |   ("tr(" >> d_expression            [trace(qi::_val, qi::_1)] >> ')')
        |   ("lgdt(" >> d_expression          [lgdt(qi::_val, qi::_1)] >> ')')
        ;
-
+   ///<Rule corresponding to parsing a literal, or a parenthetical expression
+   // a negation of another factor/invtran operation expression,
+   // a sum of another invtran expression(includes factors)
+   // or a trace/logdet operation applied to an expression
+    
      d_literal =
        qi::upper                             [charLeafOp(qi::_val, qi::_1)]
        |   qi::double_                       [doubleLeafOp(qi::_val,qi::_1)]
        ;
-    
+   ///< Rule corresponding to parsing literals, ie Matrix like A, B, or a 
+   //   double value like 1, 2, 3.5, 3.14 
 
     BOOST_SPIRIT_DEBUG_NODE(d_expression);
     BOOST_SPIRIT_DEBUG_NODE(d_term);
