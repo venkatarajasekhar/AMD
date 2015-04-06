@@ -50,8 +50,14 @@ ExpressionType validateExpr(const boost::shared_ptr<detail::Tree>& expr);
 ///                 returned by the parser
 /// @return SCALAR, MATRIX, or INVALID.
 
+void postProcess(const boost::shared_ptr<detail::Tree>& expr);
+///< Check that this expression is a valid expression (correct types of 
+/// operands, scalar tr() or ldgt() function)
+/// @param[in] expr The expression representing the matrix expression tree
+///                 returned by the parser          
+
 std::string toRightRecursiveRep(const std::string& exprString);
-///< Transfroms an exprString from containing the operator shorthands ' and _
+///< Transforms an exprString from containing the operator shorthands ' and _
 /// into an equivalent expression using the notation (trans( )) (inv( )).
 ///
 /// @param[in] exprString This is a string that represents a matrix expression
@@ -69,6 +75,16 @@ int findMatchingParen(const std::string& exprString, int index);
 /// @param[in] index An integer representing the index of a closed parenthesis
 ///                  inside the string input exprString
 /// @return The index of the matching open parenthesis if it exists
+
+std::string preProcess(const std::string& exprString);
+///< Performs preprocessing on exprString.
+/// Transforms an exprString from containing the operator shorthands ' and _
+/// into an equivalent expression using the notation (trans( )) (inv( )).
+///
+/// @param[in] exprString This is a string that represents a matrix expression
+/// @return A string which has been preprocessed to wrap all transpose inverse 
+///         operations explicitly with parenthesis
+///         eg: "-(A+B)' + A_"  -> -(trans(A+B)) + (inv(A)) 
 
 bool compareExpectedExpressions(const std::string& exprString, 
                                 const std::string& trueParsedString);
