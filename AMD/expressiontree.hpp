@@ -32,6 +32,11 @@ public:
     bool operator!=(const ExpressionTree& other) const; 
     ///< Ensures that inequality is using the overridden == function
 
+    const boost::shared_ptr<ExpressionTree> deepCopy 
+    (const boost::shared_ptr<ExpressionTree>& oldTree);
+    ///< Makes a sort of deep copy boost shared pointer to a copy
+    //   expressiontree of the old tree
+
     virtual ~ExpressionTree();
     ///< Virtual destructor
 };
