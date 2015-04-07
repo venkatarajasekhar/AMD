@@ -108,11 +108,11 @@ ExpressionTree::ExpressionTree (const std::string& info,
     else LOG_TRACE << "RIGHT = NULL";
 }
 
-const boost::shared_ptr<ExpressionTree> ExpressionTree::deepCopy 
+static boost::shared_ptr<ExpressionTree> ExpressionTree::deepCopy 
 (const boost::shared_ptr<ExpressionTree>& oldTree)
 {
     boost::shared_ptr<ExpressionTree> newTree(
-    new ExpressionTree(oldTree.info(), oldTree.left(), oldTree.right()));
+    new ExpressionTree(*oldTree.info(), *oldTree.left(), *oldTree.right()));
     return newTree
 }
 

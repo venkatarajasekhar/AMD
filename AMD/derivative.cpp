@@ -39,8 +39,8 @@ boost::shared_ptr<ExpressionTree> generateDerivativeExpression(
         //element wise multiplication, copy over accumulator
         case "o":
             boost::shared_ptr<ExpressionTree> leftAcc = acc;
-            boost::shared_ptr<ExpressionTree> rightAcc = acc;
-            
+            boost::shared_ptr<ExpressionTree> rightAcc = 
+            ExpressionTree::deepCopy(acc);           
             break;
         //inverse match, derivative unknown, for now apply identity
         case "_":
