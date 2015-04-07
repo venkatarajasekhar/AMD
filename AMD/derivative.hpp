@@ -3,6 +3,7 @@
 
 #ifndef AMD_DERIVATIVE_HPP
 #define AMD_DERIVATIVE_HPP
+#endif
 
 #include <string>
 #include <stdexcept>
@@ -17,9 +18,9 @@
 namespace AMD {
 
 
-boost::shared_ptr<ExpressionTree> generateDerivativeExpression(
-                           boost::shared_ptr<ExpressionTree> expr, 
-                           boost::shared_ptr<ExpressionTree> acc,
+Expression generateDerivativeExpression(
+                           Expression expr, 
+                           Expression acc,
                            const char targetMatrix);
 ///<Recursive function to generate the derivative expression tree for a given
 // expression tree
@@ -38,9 +39,9 @@ boost::shared_ptr<ExpressionTree> generateDerivativeExpression(
 //  taking the derivative with respect to, used to determine which matrices
 //  are considered a constant matrix and which are considered variables
 
-boost::shared_ptr<ExpressionTree> addExpr(
-            boost::shared_ptr<ExpressionTree> left, 
-            boost::shared_ptr<ExpressionTree> right);
+Expression addExpr(
+            Expression left, 
+            Expression right);
 ///< Joins the left and right expression accumulations with a plus operation
 /// @param[in] left The ExpressionTree representing the left accumulator
 /// @param[in] right The ExpressionTree representing the right accumulator
