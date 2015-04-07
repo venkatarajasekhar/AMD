@@ -6,15 +6,61 @@
 #include <AMD/expression.hpp>
 #include <AMD/derivative.hpp>
 
+
 namespace AMD {
+
+static boost::shared_ptr<ExpressionTree> nil;
+static boost::shared_ptr<ExpressionTree> identity(new ExpressionTree(
+                       "I", nil, nil));
 
 boost::shared_ptr<ExpressionTree> generateDerivativeExpression(
                            boost::shared_ptr<ExpressionTree> expr, 
                            boost::shared_ptr<ExpressionTree> acc,
                            const char targetMatrix)
 {
-
+    switch(expr.info()){
+        //tr, apply identity matrix
+        case "tr":
+            boost::shared_ptr<ExpressionTree> leftAcc(new ExpressionTree(
+            "*", acc, identity));
+            boost::shared_ptr<ExpressionTree> rightAcc = nil;
+            break;
+        //lgdt, apply inverse transpose of left child
+        case "lgdt":
+            boost::shared_ptr<ExpressionTree> tempLeftAcc(new ExpressionTree(
+            "_", acc, nil));
+            boost::shared_ptr<ExpressionTree> leftAcc(new ExpressionTree(
+            "'", tempLeftAcc, nil));
+            boost::shared_ptr<ExpressionTree> rightAcc = nil;
+            break;
+        //multiplication, apply acc*right' + left'*acc
+        case "*":
+            break;
+        //element wise multiplication, copy over accumulator
+        case "o":
+            boost::shared_ptr<ExpressionTree> leftAcc = acc;
+            boost::shared_ptr<ExpressionTree> rightAcc = acc;
+            
+            break;
+        //inverse match, derivative unknown, for now apply identity
+        case "_":
+            break;
+        //transpose match, apply transpose
+        case "'":
+            break;
+        //negation match, copy over accumulator after negating
+        case "-":
+            break;
+        //its a leaf node match with our target matrix, return accumulator
+        case targetMatrix:
+            break;
+        //must be a constant expression, ie either a double or a constant
+        //matrix which can be ignored, hence return null
+        default:
+            break;
+    }
 }
+
 ///<Recursive function to generate the derivative expression tree for a given
 // expression tree
 // Essentially evaluates current node to determine which derivative rule to
@@ -31,31 +77,6 @@ boost::shared_ptr<ExpressionTree> generateDerivativeExpression(
 /// @param[in] targetMatrix Char value representing what we're 
 //  taking the derivative with respect to, used to determine which matrices
 //  are considered a constant matrix and which are considered variables
-
-boost::shared_ptr<ExpressionTree> generateNewAccumulator(
-                    boost::shared_ptr<ExpressionTree> prevAcc, 
-                    boost::shared_ptr<ExpressionTree> left, 
-                    boost::shared_ptr<ExpressionTree> right, 
-                    boost::shared_ptr<ExpressionTree> current, 
-                    int side)
-{
-    
-
-
-}
-///< Method that takes in current execution state and determines what the new
-//   accumulator value should be by using a switch statement to evaluate which
-     rule to apply
-/// @param[in] prevAcc ExpressionTree for previous accumulator
-/// @param[in] left ExpressionTree for left child
-/// @param[in] right ExpressionTree for right child
-/// @param[in] current ExpressionTree for current node, used to check which
-//  rule should be applied
-/// @param[in] side used to determine which side's accumulator value should
-//   be calculated, the left child's or right child's
-/// @return ExpressionTree representing new accumulator
-
-
 
 boost::shared_ptr<ExpressionTree> addExpr(
             boost::shared_ptr<ExpressionTree> left, 

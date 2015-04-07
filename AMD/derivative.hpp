@@ -38,25 +38,6 @@ boost::shared_ptr<ExpressionTree> generateDerivativeExpression(
 //  taking the derivative with respect to, used to determine which matrices
 //  are considered a constant matrix and which are considered variables
 
-boost::shared_ptr<ExpressionTree> generateNewAccumulator(
-                    boost::shared_ptr<ExpressionTree> prevAcc, 
-                    boost::shared_ptr<ExpressionTree> left, 
-                    boost::shared_ptr<ExpressionTree> right, 
-                    boost::shared_ptr<ExpressionTree> current, 
-                    int side);
-///< Method that takes in current execution state and determines what the new
-//   accumulator value should be by using a switch statement to evaluate which
-//   rule to apply
-/// @param[in] prevAcc ExpressionTree for previous accumulator
-/// @param[in] left ExpressionTree for left child
-/// @param[in] right ExpressionTree for right child
-/// @param[in] current ExpressionTree for current node, used to check which
-//  rule should be applied
-/// @param[in] side used to determine which side's accumulator value should
-//   be calculated, the left child's or right child's
-/// @return ExpressionTree representing new accumulator
-
-
 boost::shared_ptr<ExpressionTree> addExpr(
             boost::shared_ptr<ExpressionTree> left, 
             boost::shared_ptr<ExpressionTree> right);
