@@ -76,8 +76,7 @@ static Expression generateDerivativeExpression(
         //negation match, copy over accumulator after negating
         case "-":
             if (*expr.right()) {
-                Expression leftAcc = 
-                ExpressionTree::deepCopy(acc);
+                Expression leftAcc = acc;
                 Expression rightAcc(new ExpressionTree(
                 "-", acc, nil));
             Expression left =

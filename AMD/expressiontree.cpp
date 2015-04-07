@@ -108,14 +108,6 @@ ExpressionTree::ExpressionTree (const std::string& info,
     else LOG_TRACE << "RIGHT = NULL";
 }
 
-static boost::shared_ptr<ExpressionTree> ExpressionTree::deepCopy 
-(const boost::shared_ptr<ExpressionTree>& oldTree)
-{
-    boost::shared_ptr<ExpressionTree> newTree(
-    new ExpressionTree(*oldTree.info(), *oldTree.left(), *oldTree.right()));
-    return newTree
-}
-
 bool ExpressionTree::operator==(const ExpressionTree& other) const
 {
     LOG_TRACE << "Checking ExpressionTree equality";
