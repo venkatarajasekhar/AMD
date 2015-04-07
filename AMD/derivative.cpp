@@ -13,7 +13,7 @@ static boost::shared_ptr<ExpressionTree> nil;
 static boost::shared_ptr<ExpressionTree> identity(new ExpressionTree(
                        "I", nil, nil));
 
-boost::shared_ptr<ExpressionTree> generateDerivativeExpression(
+static boost::shared_ptr<ExpressionTree> generateDerivativeExpression(
                            boost::shared_ptr<ExpressionTree> expr, 
                            boost::shared_ptr<ExpressionTree> acc,
                            const char targetMatrix)
@@ -23,7 +23,8 @@ boost::shared_ptr<ExpressionTree> generateDerivativeExpression(
         case "tr":
             boost::shared_ptr<ExpressionTree> leftAcc(new ExpressionTree(
             "*", acc, identity));
-            boost::shared_ptr<ExpressionTree> rightAcc = nil;
+            boost::shared_ptr<ExpressionTree> left = 
+            return generateDerivativeExpression(left, leftAcc, targetMatrix); 
             break;
         //lgdt, apply inverse transpose of left child
         case "lgdt":
@@ -31,32 +32,74 @@ boost::shared_ptr<ExpressionTree> generateDerivativeExpression(
             "_", acc, nil));
             boost::shared_ptr<ExpressionTree> leftAcc(new ExpressionTree(
             "'", tempLeftAcc, nil));
-            boost::shared_ptr<ExpressionTree> rightAcc = nil;
+            return generateDerivativeExpression(left, leftAcc, targetMatrix); 
             break;
         //multiplication, apply acc*right' + left'*acc
         case "*":
+            boost::shared_ptr<ExpressionTree> tempLeftAcc(new ExpressionTree(
+            "'", right, nil));
+            boost::shared_ptr<ExpressionTree> tempRightAcc(new ExpressionTree(
+            "'", left, nil));
+            boost::shared_ptr<ExpressionTree> leftAcc(new ExpressionTree(
+            "*", acc, tempLeftAcc));
+            boost::shared_ptr<ExpressionTree> rightAcc(new ExpressionTree(
+            "*", tempRightAcc, acc)); 
+            boost::shared_ptr<ExpressionTree> left =
+             generateDerivativeExpression(left, leftAcc, targetMatrix); 
+            boost::shared_ptr<ExpressionTree> right =
+             generateDerivativeExpression(left, leftAcc, targetMatrix); 
+            return addExpr(left, right) 
             break;
         //element wise multiplication, copy over accumulator
         case "o":
-            boost::shared_ptr<ExpressionTree> leftAcc = acc;
-            boost::shared_ptr<ExpressionTree> rightAcc = 
-            ExpressionTree::deepCopy(acc);           
+            boost::shared_ptr<ExpressionTree> leftAcc(new ExpressionTree(
+            "o", right, acc));
+            boost::shared_ptr<ExpressionTree> rightAcc(new ExpressionTree(
+            "o", acc, left));
+            boost::shared_ptr<ExpressionTree> left =
+             generateDerivativeExpression(left, leftAcc, targetMatrix); 
+            boost::shared_ptr<ExpressionTree> right =
+             generateDerivativeExpression(left, leftAcc, targetMatrix); 
+            return addExpr(left, right) 
             break;
         //inverse match, derivative unknown, for now apply identity
         case "_":
+            boost::shared_ptr<ExpressionTree> leftAcc = acc;
+            return generateDerivativeExpression(left, leftAcc, targetMatrix); 
             break;
         //transpose match, apply transpose
         case "'":
+            boost::shared_ptr<ExpressionTree> leftAcc(new ExpressionTree(
+            "'", acc, nil));
+            return generateDerivativeExpression(left, leftAcc, targetMatrix); 
             break;
         //negation match, copy over accumulator after negating
         case "-":
+            if (*expr.right()) {
+                boost::shared_ptr<ExpressionTree> leftAcc = 
+                ExpressionTree::deepCopy(acc);
+                boost::shared_ptr<ExpressionTree> rightAcc(new ExpressionTree(
+                "-", acc, nil));
+            boost::shared_ptr<ExpressionTree> left =
+             generateDerivativeExpression(left, leftAcc, targetMatrix); 
+            boost::shared_ptr<ExpressionTree> right =
+             generateDerivativeExpression(left, leftAcc, targetMatrix); 
+            return addExpr(left, right) 
+            }
+            else {
+                boost::shared_ptr<ExpressionTree> leftAcc(new ExpressionTree(
+                "-", acc, nil));
+            return generateDerivativeExpression(left, leftAcc, targetMatrix); 
+            }
             break;
         //its a leaf node match with our target matrix, return accumulator
         case targetMatrix:
+            return acc; 
             break;
         //must be a constant expression, ie either a double or a constant
         //matrix which can be ignored, hence return null
         default:
+            return nil;
             break;
     }
 }
