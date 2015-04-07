@@ -1,26 +1,20 @@
-/// @file derivative.hpp
-/// Contains AMD::Derivative
+#include <sstream>
+#include <string.h>
+#include <ctype.h>
+#include <utility>  
 
-#ifndef AMD_DERIVATIVE_HPP
-#define AMD_DERIVATIVE_HPP
-
-#include <string>
-#include <stdexcept>
-
-#include <boost/spirit/include/qi.hpp>
-
-#include <AMD/exception.hpp>
-#include <AMD/expressiontree.hpp>
-#include <AMD/matrixgrammar.hpp>
-#include <AMD/log.hpp>
+#include <AMD/expression.hpp>
+#include <AMD/derivative.hpp>
 
 namespace AMD {
-
 
 boost::shared_ptr<ExpressionTree> generateDerivativeExpression(
                            boost::shared_ptr<ExpressionTree> expr, 
                            boost::shared_ptr<ExpressionTree> acc,
-                           const char targetMatrix);
+                           const char targetMatrix)
+{
+
+}
 ///<Recursive function to generate the derivative expression tree for a given
 // expression tree
 // Essentially evaluates current node to determine which derivative rule to
@@ -43,10 +37,15 @@ boost::shared_ptr<ExpressionTree> generateNewAccumulator(
                     boost::shared_ptr<ExpressionTree> left, 
                     boost::shared_ptr<ExpressionTree> right, 
                     boost::shared_ptr<ExpressionTree> current, 
-                    int side);
+                    int side)
+{
+    
+
+
+}
 ///< Method that takes in current execution state and determines what the new
 //   accumulator value should be by using a switch statement to evaluate which
-//   rule to apply
+     rule to apply
 /// @param[in] prevAcc ExpressionTree for previous accumulator
 /// @param[in] left ExpressionTree for left child
 /// @param[in] right ExpressionTree for right child
@@ -57,14 +56,19 @@ boost::shared_ptr<ExpressionTree> generateNewAccumulator(
 /// @return ExpressionTree representing new accumulator
 
 
+
 boost::shared_ptr<ExpressionTree> addExpr(
             boost::shared_ptr<ExpressionTree> left, 
-            boost::shared_ptr<ExpressionTree> right);
+            boost::shared_ptr<ExpressionTree> right)
+{
+    boost::shared_ptr<ExpressionTree> parent(
+                       new ExpressionTree("+",left,right));
+    return parent;
+}
 ///< Joins the left and right expression accumulations with a plus operation
 /// @param[in] left The ExpressionTree representing the left accumulator
 /// @param[in] right The ExpressionTree representing the right accumulator
 //  @return An expressionTree composed of the two inputs combined with a 
 //  plus operation node
 
-
-}//End AMD namespace
+} //End namespace
