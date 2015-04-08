@@ -14,7 +14,7 @@ Expression generateExpression(const std::string& exprString)
 
     LOG_INFO << "Generating expression from " << exprString;
 
-    std::string exprStringRR = toRightRecursiveRep(exprString);
+    std::string exprStringRR = preProcess(exprString);
     
     std::string::const_iterator iter = exprStringRR.begin();
     std::string::const_iterator end  = exprStringRR.end();
@@ -39,7 +39,7 @@ Expression generateExpression(const std::string& exprString)
                     AMD_INVALID_EXPRESSION);
     } 
     
-    ExpressionType exprType = validateExpr(expr);
+    postProcess(expr);
 
     LOG_TRACE << "Finished generating expression";
 
@@ -129,6 +129,23 @@ ExpressionType validateExpr(const boost::shared_ptr<detail::Tree>& expr)
     LOG_ERROR << "Postprocessing failed, Invalid tree";
 }
 
+void postProcess(const boost::shared_ptr<detail::Tree>& expr)
+{
+    LOG_INFO << "Begin post-processing";
+
+    if (("tr" != (*expr).info()) && ("lgdt" != (*expr).info()))
+    {
+        LOG_ERROR << "Postprocessing failed, must be tr() or lgdt() function";
+        throw AMD::ExceptionImpl(
+                        APPEND_LOCATION("from postProcess"),
+                        "Not tr() or lgdt() function",
+                        AMD_INVALID_EXPRESSION);
+    }
+    ExpressionType exprType = validateExpr(expr);
+
+    LOG_INFO << "Post-processing Succeeded";
+}
+
 std::string toRightRecursiveRep(const std::string& exprString)
 {
     LOG_TRACE << "Preprocessing exprString " << __LINE__ << " " << __FILE__;
@@ -192,6 +209,11 @@ int findMatchingParen(const std::string& exprString, int index)
                     AMD_INVALID_EXPRESSION);
     }
     return matching;
+}
+
+std::string preProcess(const std::string& exprString)
+{
+    return toRightRecursiveRep(exprString);
 }
 
 std::ostream& operator<<(std::ostream& os, const Expression& e)
