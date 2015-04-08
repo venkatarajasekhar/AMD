@@ -20,16 +20,19 @@ Expression2 generateDerivativeExpression(
                            const std::string targetMatrix)
 {
     AMD::detail::Tree tree = *expr;
+    //Trace: tr(G(X)) = F(G(X))
+    //R = I
     if (tree.info() == "tr") {
         return generateDerivativeExpressionHelper(
             tree.left(), identity, targetMatrix); 
     }
-    //lgdt, apply inverse transpose of left child
+    //Log Determinant: lgdt(G(X)) = F(G(X))
+    //R = G(X)'_
     else if (tree.info() ==  "lgdt"){
-        Expression2 tempLeftAcc(new ExpressionTree("_", tree.left(), nil));
-        Expression2 leftAcc(new ExpressionTree("'", tempLeftAcc, nil));
+        Expression2 Gtranspose(new ExpressionTree("_", tree.left(), nil));
+        Expression2 R(new ExpressionTree("'", Gtranspose, nil));
         return generateDerivativeExpressionHelper(
-            tree.left(), leftAcc, targetMatrix); 
+            tree.left(), R, targetMatrix); 
     }
     else {
         //Should throw error as expression did not start with tr or lgdt
@@ -40,80 +43,96 @@ Expression2 generateDerivativeExpression(
 
 Expression2 generateDerivativeExpressionHelper(
                            const Expression2& expr, 
-                           const Expression2& acc,
+                           const Expression2& Z,
                            const std::string targetMatrix)
 {
         AMD::detail::Tree tree = *expr;
-        //tr, apply identity matrix
+        //Trace: tr(G(X)) = F(G(X))
+        //R = I
         if (tree.info() == "tr") {
-            Expression2 leftAcc(new ExpressionTree("*", acc, identity));
+            Expression2 R(new ExpressionTree("*", identity, Z));
             return generateDerivativeExpressionHelper(
-                tree.left(), leftAcc, targetMatrix); 
-       }
-        //lgdt, apply inverse transpose of left child
-       else if (tree.info() ==  "lgdt"){
-            Expression2 tempLeftAcc(new ExpressionTree("_", acc, nil));
-            Expression2 leftAcc(new ExpressionTree("'", tempLeftAcc, nil));
+                tree.left(), R, targetMatrix); 
+        }
+        //Log Determinant: lgdt(G(X)) = F(G(X))
+        //R = G(X)'_
+        else if (tree.info() ==  "lgdt"){
+            Expression2 Zinverse(new ExpressionTree("_", Z, nil));
+            Expression2 R(new ExpressionTree("'", Zinverse, nil));
             return generateDerivativeExpressionHelper(
-                tree.left(), leftAcc, targetMatrix); 
+                tree.left(), R, targetMatrix); 
         }
-        //multiplication, apply acc*right' + left'*acc
-       else if (tree.info() ==  "*"){
-            Expression2 tempLeftAcc(new ExpressionTree("'", tree.right(), nil));
-            Expression2 tempRightAcc(new ExpressionTree("'", tree.left(), nil));
-            Expression2 leftAcc(new ExpressionTree("*", acc, tempLeftAcc));
-            Expression2 rightAcc(new ExpressionTree("*", tempRightAcc, acc)); 
-            Expression2 left = generateDerivativeExpressionHelper(
-                tree.left(), leftAcc, targetMatrix); 
-            Expression2 right = generateDerivativeExpressionHelper(
-                tree.right(), rightAcc, targetMatrix); 
-            return addExpr(left, right);
+        //Matrix Multiplication: H(X)*G(X) = F(G(X))
+        //RLeft = Z*G(X)' 
+        //RRight = H(X)'*Z
+        else if (tree.info() ==  "*"){
+            Expression2 Htranspose(new ExpressionTree("'", tree.right(), nil));
+            Expression2 Gtranspose(new ExpressionTree("'", tree.left(), nil));
+            Expression2 RLeft(new ExpressionTree("*", Z, Htranspose));
+            Expression2 RRight(new ExpressionTree("*", Gtranspose, Z)); 
+            Expression2 leftAcc = generateDerivativeExpressionHelper(
+                tree.left(), RLeft, targetMatrix); 
+            Expression2 rightAcc = generateDerivativeExpressionHelper(
+                tree.right(), RRight, targetMatrix); 
+            return addExpr(leftAcc, rightAcc);
         }
-        //element wise multiply,element wise multiply opposite child by acc
+        //Element wise multiplication: H(X)oG(X) = F(G(X))
+        //RLeft = G(X)oZ
+        //RRight = H(X)oZ
         else if (tree.info() == "o"){
-            Expression2 leftAcc(new ExpressionTree("o", tree.right(), acc));
-            Expression2 rightAcc(new ExpressionTree("o", tree.left(), acc));
-            Expression2 left = generateDerivativeExpressionHelper(
-                tree.left(), leftAcc, targetMatrix); 
-            Expression2 right = generateDerivativeExpressionHelper(
-                tree.right(), rightAcc, targetMatrix); 
-            return addExpr(left, right); 
+            Expression2 RLeft(new ExpressionTree("o", tree.right(), Z));
+            Expression2 RRight(new ExpressionTree("o", tree.left(), Z));
+            Expression2 leftAcc = generateDerivativeExpressionHelper(
+                tree.left(), RLeft, targetMatrix); 
+            Expression2 rightAcc = generateDerivativeExpressionHelper(
+                tree.right(), RRight, targetMatrix); 
+            return addExpr(leftAcc, rightAcc);
         }
-        //inverse match, derivative unknown, for now apply identity
+        //Inverse: G(X)_ = F(G(X)
+        //R = -Z*F(G(X)'*Z
         else if (tree.info() ==  "_") {
-            Expression2 leftAcc = acc;
+            Expression2 FGXtranspose(new ExpressionTree("'", expr, nil));
+            Expression2 B(new ExpressionTree("*", Z, FGXtranspose));
+            Expression2 C(new ExpressionTree("*", B, Z));
+            Expression2 R(new ExpressionTree("-", C, nil));
             return generateDerivativeExpressionHelper(
-                tree.left(), leftAcc, targetMatrix); 
+                tree.left(), R, targetMatrix); 
         }
-        //transpose match, apply transpose
-       else if (tree.info() == "'"){
-            Expression2 leftAcc(new ExpressionTree("'", acc, nil));
+        //Transpose: G(X)' = F(G(X))
+        //R = Z'
+        else if (tree.info() == "'"){
+            Expression2 R(new ExpressionTree("'", Z, nil));
             return generateDerivativeExpressionHelper(
-                tree.left(), leftAcc, targetMatrix); 
-       }
-        //negation match, check unary/binary, negate/copy + negate respectively
-       else if (tree.info() == "-"){
+                tree.left(), R, targetMatrix); 
+        }
+        else if (tree.info() == "-"){
+            //Binary Negation: H(X) - G(X)
+            //RLeft = Z
+            //RRight = -Z
             if (tree.right()) {
-                Expression2 leftAcc = acc;
-                Expression2 rightAcc(new ExpressionTree("-", acc, nil));
-                Expression2 left = generateDerivativeExpressionHelper(
-                    tree.left(), leftAcc, targetMatrix); 
-                Expression2 right = generateDerivativeExpressionHelper(
-                    tree.right(), rightAcc, targetMatrix); 
-                return addExpr(left, right); 
+                Expression2 RLeft = Z;
+                Expression2 RRight(new ExpressionTree("-", Z, nil));
+                Expression2 leftAcc = generateDerivativeExpressionHelper(
+                    tree.left(), RLeft, targetMatrix); 
+                Expression2 rightAcc = generateDerivativeExpressionHelper(
+                    tree.right(), RRight, targetMatrix); 
+                return addExpr(leftAcc, rightAcc); 
             }
+            //Unary Negation: -G(X) = F(G(X))
+            //R = -Z 
             else {
-                Expression2 leftAcc(new ExpressionTree("-", acc, nil));
+                Expression2 R(new ExpressionTree("-", Z, nil));
                 return generateDerivativeExpressionHelper(
-                    tree.left(), leftAcc, targetMatrix); 
+                    tree.left(), R, targetMatrix); 
             }
         }
-        //its a leaf node match with our target matrix, return accumulator
+        //Leaf Node (Target Matrix): X = F(G(X))
+        //R = Z
         else if (tree.info() == targetMatrix){
-            return acc; 
+            return Z; 
         }
-        //must be a constant expression, ie either a double or a constant
-        //matrix which can be ignored, hence return zero
+        //Leaf Node (Constant double or matrix): c = F(G(X))
+        //R = 0.0
         else {
             return zero;
         }
