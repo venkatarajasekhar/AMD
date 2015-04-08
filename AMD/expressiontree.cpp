@@ -152,14 +152,14 @@ bool ExpressionTree::operator!=(const ExpressionTree& other) const
     return !(*this == other);
 }
 
-boost::shared_ptr<ExpressionTree> ExpressionTree::left () const 
+const boost::shared_ptr<ExpressionTree> ExpressionTree::left () const 
 {
     return this->d_left;
 }
 
 const boost::shared_ptr<ExpressionTree> ExpressionTree::right () const 
 {
-    return (const boost::shared_ptr<ExpressionTree>)this->d_right;
+    return this->d_right;
 }
 
 

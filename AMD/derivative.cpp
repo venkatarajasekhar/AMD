@@ -62,7 +62,7 @@ static Expression generateDerivativeExpression(
             Expression leftAcc(new ExpressionTree(
             "o", tree.right(), acc));
             Expression rightAcc(new ExpressionTree(
-            "o", acc, tree.left()));
+            "o", tree.left(), acc));
             Expression left =
              generateDerivativeExpression(tree.left(), leftAcc, targetMatrix); 
             Expression right =

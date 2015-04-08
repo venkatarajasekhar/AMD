@@ -11,7 +11,7 @@
 
 int main()
 {
-    Expression identity(new AMD::detail::ExpressionTree(
+    AMD::Expression identity(new AMD::detail::ExpressionTree(
                        "I", nil, nil));
     std::cout << "/////////////////////////////////////////////////////////\n";
     std::cout << "Expression parser...\n";
