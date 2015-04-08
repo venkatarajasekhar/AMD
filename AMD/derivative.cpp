@@ -17,9 +17,9 @@ static Expression identity(new ExpressionTree(
 
 
 static Expression generateDerivativeExpression(
-                           Expression expr, 
-                           Expression acc,
-                           const char targetMatrix)
+                           Expression& expr, 
+                           Expression& acc,
+                           const std::string targetMatrix)
 {
    // switch((*expr).info()){
         //tr, apply identity matrix
@@ -40,9 +40,9 @@ static Expression generateDerivativeExpression(
         //multiplication, apply acc*right' + left'*acc
        else if (tree.info() ==  "*"){
             Expression tempLeftAcc(new ExpressionTree(
-            "'", right, nil));
+            "'", tree.right(), nil));
             Expression tempRightAcc(new ExpressionTree(
-            "'", left, nil));
+            "'", tree.left(), nil));
             Expression leftAcc(new ExpressionTree(
             "*", acc, tempLeftAcc));
             Expression rightAcc(new ExpressionTree(
@@ -56,9 +56,9 @@ static Expression generateDerivativeExpression(
         //element wise multiplication, copy over accumulator
         else if (tree.info() == "o"){
             Expression leftAcc(new ExpressionTree(
-            "o", right, acc));
+            "o", tree.right(), acc));
             Expression rightAcc(new ExpressionTree(
-            "o", acc, left));
+            "o", acc, tree.left()));
             Expression left =
              generateDerivativeExpression(tree.left(), leftAcc, targetMatrix); 
             Expression right =
@@ -78,7 +78,7 @@ static Expression generateDerivativeExpression(
        }  //   break;
         //negation match, copy over accumulator after negating
        else if (tree.info() == "-"){
-            if (*expr.right()) {
+            if (tree.right()) {
                 Expression leftAcc = acc;
                 Expression rightAcc(new ExpressionTree(
                 "-", acc, nil));
@@ -127,8 +127,8 @@ static Expression generateDerivativeExpression(
 //  are considered a constant matrix and which are considered variables
 
 static Expression addExpr(
-            Expression left, 
-            Expression right)
+            Expression& left, 
+            Expression& right)
 {
     Expression parent(
                        new ExpressionTree("+",left,right));

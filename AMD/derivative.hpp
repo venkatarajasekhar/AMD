@@ -19,9 +19,9 @@ namespace AMD {
 
 
 static Expression generateDerivativeExpression(
-                           Expression expr, 
-                           Expression acc,
-                           const char targetMatrix);
+                           Expression& expr, 
+                           Expression& acc,
+                           const std::string targetMatrix);
 ///<Recursive function to generate the derivative expression tree for a given
 // expression tree
 // Essentially evaluates current node to determine which derivative rule to
@@ -40,8 +40,8 @@ static Expression generateDerivativeExpression(
 //  are considered a constant matrix and which are considered variables
 
 static Expression addExpr(
-            Expression left, 
-            Expression right);
+            Expression& left, 
+            Expression& right);
 ///< Joins the left and right expression accumulations with a plus operation
 /// @param[in] left The ExpressionTree representing the left accumulator
 /// @param[in] right The ExpressionTree representing the right accumulator
