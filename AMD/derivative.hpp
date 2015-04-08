@@ -18,6 +18,9 @@
 namespace AMD {
 
 typedef boost::shared_ptr<AMD::detail::Tree> Expression2;
+static Expression nil;
+static Expression zero(new AMD::detail::ExpressionTree("0.0", nil, nil));
+static Expression one(new AMD::detail::ExpressionTree("1.0", nil, nil));
 
 Expression2 generateDerivativeExpression(
                            const Expression2& expr, 

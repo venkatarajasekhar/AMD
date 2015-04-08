@@ -12,9 +12,7 @@ namespace AMD {
 typedef detail::ExpressionTree ExpressionTree;
 
 
-static Expression nil;
-static Expression identity(new ExpressionTree(
-                       "I", nil, nil));
+static Expression identity(new ExpressionTree("I", nil, nil));
 
 Expression2 generateDerivativeExpression(
                            const Expression2& expr, 
@@ -93,7 +91,7 @@ Expression2 generateDerivativeExpression(
         //must be a constant expression, ie either a double or a constant
         //matrix which can be ignored, hence return null
         else {
-            return nil;
+            return zero;
         }
 }
 
