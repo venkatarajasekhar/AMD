@@ -10,6 +10,8 @@
 namespace AMD {
 
 typedef detail::ExpressionTree ExpressionTree;
+//typedef boost::shared_ptr<AMD::detail::Tree> Expression2;
+
 
 
 
@@ -29,7 +31,7 @@ static Expression generateDerivativeExpression(
         if (tree.info() == "tr") {
             Expression leftAcc(new ExpressionTree(
             "*", acc, identity));
-            return generateDerivativeExpression((boost::shared_ptr<ExpressionTree>)tree.left(), leftAcc, targetMatrix); 
+            return generateDerivativeExpression(tree.left(), leftAcc, targetMatrix); 
        } //    break;
         //lgdt, apply inverse transpose of left child
        else if (tree.info() ==  "lgdt"){
