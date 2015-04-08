@@ -10,82 +10,78 @@
 namespace AMD {
 
 typedef detail::ExpressionTree ExpressionTree;
-//typedef boost::shared_ptr<AMD::detail::Tree> Expression2;
-
-
 
 
 static Expression nil;
 static Expression identity(new ExpressionTree(
                        "I", nil, nil));
 
-
-static Expression generateDerivativeExpression(
-                           Expression expr, 
-                           Expression acc,
+Expression2 generateDerivativeExpression(
+                           const Expression2& expr, 
+                           const Expression2& acc,
                            const std::string targetMatrix)
 {
-        ExpressionTree tree = *expr;
+        AMD::detail::Tree tree = *expr;
         //tr, apply identity matrix
         if (tree.info() == "tr") {
-            Expression leftAcc(new ExpressionTree("*", acc, identity));
+            Expression2 leftAcc(new ExpressionTree("*", acc, identity));
             return generateDerivativeExpression(
                 tree.left(), leftAcc, targetMatrix); 
        }
         //lgdt, apply inverse transpose of left child
        else if (tree.info() ==  "lgdt"){
-            Expression tempLeftAcc(new ExpressionTree("_", acc, nil));
-            Expression leftAcc(new ExpressionTree("'", tempLeftAcc, nil));
+            Expression2 tempLeftAcc(new ExpressionTree("_", acc, nil));
+            Expression2 leftAcc(new ExpressionTree("'", tempLeftAcc, nil));
             return generateDerivativeExpression(
                 tree.left(), leftAcc, targetMatrix); 
         }
         //multiplication, apply acc*right' + left'*acc
        else if (tree.info() ==  "*"){
-            Expression tempLeftAcc(new ExpressionTree("'", tree.right(), nil));
-            Expression tempRightAcc(new ExpressionTree("'", tree.left(), nil));
-            Expression leftAcc(new ExpressionTree("*", acc, tempLeftAcc));
-            Expression rightAcc(new ExpressionTree("*", tempRightAcc, acc)); 
-            Expression left = generateDerivativeExpression(
+            Expression2 tempLeftAcc(new ExpressionTree("'", tree.right(), nil));
+            Expression2 tempRightAcc(new ExpressionTree("'", tree.left(), nil));
+            Expression2 leftAcc(new ExpressionTree("*", acc, tempLeftAcc));
+            Expression2 rightAcc(new ExpressionTree("*", tempRightAcc, acc)); 
+            Expression2 left = generateDerivativeExpression(
                 tree.left(), leftAcc, targetMatrix); 
-            Expression right = generateDerivativeExpression(
+            Expression2 right = generateDerivativeExpression(
                 tree.right(), rightAcc, targetMatrix); 
             return addExpr(left, right);
         }
         //element wise multiply,element wise multiply opposite child by acc
         else if (tree.info() == "o"){
-            Expression leftAcc(new ExpressionTree("o", tree.right(), acc));
-            Expression rightAcc(new ExpressionTree("o", tree.left(), acc));
-            Expression left = generateDerivativeExpression(
+            Expression2 leftAcc(new ExpressionTree("o", tree.right(), acc));
+            Expression2 rightAcc(new ExpressionTree("o", tree.left(), acc));
+            Expression2 left = generateDerivativeExpression(
                 tree.left(), leftAcc, targetMatrix); 
-            Expression right = generateDerivativeExpression(
+            Expression2 right = generateDerivativeExpression(
                 tree.right(), rightAcc, targetMatrix); 
             return addExpr(left, right); 
         }
         //inverse match, derivative unknown, for now apply identity
         else if (tree.info() ==  "_") {
-            Expression leftAcc = acc;
+            Expression2 leftAcc = acc;
             return generateDerivativeExpression(
                 tree.left(), leftAcc, targetMatrix); 
         }
         //transpose match, apply transpose
        else if (tree.info() == "'"){
-            Expression leftAcc(new ExpressionTree("'", acc, nil));
+            Expression2 leftAcc(new ExpressionTree("'", acc, nil));
             return generateDerivativeExpression(
                 tree.left(), leftAcc, targetMatrix); 
        }
         //negation match, check unary/binary, negate/copy + negate respectively
        else if (tree.info() == "-"){
             if (tree.right()) {
-                Expression leftAcc = acc;
-                Expression rightAcc(new ExpressionTree("-", acc, nil));
-                Expression left = generateDerivativeExpression(
+                Expression2 leftAcc = acc;
+                Expression2 rightAcc(new ExpressionTree("-", acc, nil));
+                Expression2 left = generateDerivativeExpression(
                     tree.left(), leftAcc, targetMatrix); 
-                Expression right = generateDerivativeExpression(
+                Expression2 right = generateDerivativeExpression(
                     tree.right(), rightAcc, targetMatrix); 
                 return addExpr(left, right); 
             }
             else {
-                Expression leftAcc(new ExpressionTree("-", acc, nil));
+                Expression2 leftAcc(new ExpressionTree("-", acc, nil));
                 return generateDerivativeExpression(
                     tree.left(), leftAcc, targetMatrix); 
             }
@@ -118,11 +114,11 @@ static Expression generateDerivativeExpression(
 //  taking the derivative with respect to, used to determine which matrices
 //  are considered a constant matrix and which are considered variables
 
-static Expression addExpr(
-            Expression& left, 
-            Expression& right)
+static Expression2 addExpr(
+            Expression2& left, 
+            Expression2& right)
 {
-    Expression parent(
+    Expression2 parent(
                        new ExpressionTree("+",left,right));
     return parent;
 }

@@ -30,13 +30,13 @@ int main()
      #   if (str.empty() || str[0] == 'q' || str[0] == 'Q')
             break;
 */
-    str = "A*B+A*C+A*B";
+    str = "tr(A*B)";
         LOG_DEBUG << "Entered string is : " << str;
 
         try {
             AMD::Expression myExpr = AMD::generateExpression(str);
             std::cout << "Parsing succeeded: " << *myExpr << "\n";
-            AMD::Expression derivative = AMD::generateDerivativeExpression(myExpr, identity, "A");
+            AMD::Expression2 derivative = AMD::generateDerivativeExpression(myExpr, identity, "A");
             std::cout << "Differentiation succeeded: " << *derivative << "\n";
         } catch (const std::exception& e) {
             std::cout << e.what() << std::endl;

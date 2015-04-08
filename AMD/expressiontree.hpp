@@ -18,8 +18,8 @@ class ExpressionTree : public Tree
 {
 public:
     explicit ExpressionTree (const std::string& info, 
-                             const boost::shared_ptr<ExpressionTree>& left, 
-                             const boost::shared_ptr<ExpressionTree>& right);
+                             const boost::shared_ptr<Tree>& left, 
+                             const boost::shared_ptr<Tree>& right);
     ///< Construct an expression tree that holds not only a Tree structure
     ///  but also an info string, which we strongly suggest is one 
     ///  of the operations (+,-,*,',_, tr, lgdt) or A-Z or a double value.
@@ -32,11 +32,11 @@ public:
     bool operator!=(const ExpressionTree& other) const; 
     ///< Ensures that inequality is using the overridden == function
     
-    const boost::shared_ptr<ExpressionTree> left () const;
+    //const boost::shared_ptr<ExpressionTree> left () const;
     ///< Return the left child stored in this node
     ///  @retval d_left
 
-    const boost::shared_ptr<ExpressionTree> right () const;
+   // const boost::shared_ptr<ExpressionTree> right () const;
     ///< Return the right child stored in this node
     ///  @retval d_right
 

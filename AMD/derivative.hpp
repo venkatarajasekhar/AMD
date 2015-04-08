@@ -17,10 +17,11 @@
 
 namespace AMD {
 
+typedef boost::shared_ptr<AMD::detail::Tree> Expression2;
 
-static Expression generateDerivativeExpression(
-                           Expression expr, 
-                           Expression acc,
+Expression2 generateDerivativeExpression(
+                           const Expression2& expr, 
+                           const Expression2& acc,
                            const std::string targetMatrix);
 ///<Recursive function to generate the derivative expression tree for a given
 // expression tree
@@ -39,9 +40,9 @@ static Expression generateDerivativeExpression(
 //  taking the derivative with respect to, used to determine which matrices
 //  are considered a constant matrix and which are considered variables
 
-static Expression addExpr(
-            Expression& left, 
-            Expression& right);
+static Expression2 addExpr(
+            Expression2& left, 
+            Expression2& right);
 ///< Joins the left and right expression accumulations with a plus operation
 /// @param[in] left The ExpressionTree representing the left accumulator
 /// @param[in] right The ExpressionTree representing the right accumulator
