@@ -18,7 +18,7 @@
 namespace AMD {
 
 
-Expression generateDerivativeExpression(
+static Expression generateDerivativeExpression(
                            Expression expr, 
                            Expression acc,
                            const char targetMatrix);
@@ -39,7 +39,7 @@ Expression generateDerivativeExpression(
 //  taking the derivative with respect to, used to determine which matrices
 //  are considered a constant matrix and which are considered variables
 
-Expression addExpr(
+static Expression addExpr(
             Expression left, 
             Expression right);
 ///< Joins the left and right expression accumulations with a plus operation
