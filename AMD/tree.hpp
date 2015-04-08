@@ -117,7 +117,38 @@ void Tree::print(OSTREAM& os) const
         os << ")";
     }
 }
-
+/* print method that prints the tree as a string expression
+ * rather than as a string representing the structure of the tree
+ *
+void Tree::print(OSTREAM& os) const
+{
+    if (!(d_left) && !(d_right)) {
+        //< If I am a leaf node, print straight up
+        //os << "\"" << d_info << "\"";
+        os << d_info;
+    } else {
+        //< I must be an operator of some sort, so print me and recurse
+        bool isTrace = false;
+        if (d_info == "tr")
+            isTrace = true;
+        if (isTrace)
+            os << "tr(";
+        else 
+            os << "(";
+        if (d_left) {
+           // os << " ";
+            d_left->print(os);
+            if (!isTrace)
+                os << d_info;
+            if (d_right) {
+                //os << " ";
+                d_right->print(os);
+            }
+        }
+        os << ")";
+    }
+}
+*/
 std::ostream& operator<<(std::ostream& os, const Tree& tree);
 ///< print a tree to an output stream
 /// @param[in] os   output stream such as std::cout
