@@ -35,7 +35,7 @@ int main()
         try {
             AMD::Expression myExpr = AMD::generateExpression(str);
             std::cout << "Parsing succeeded: " << *myExpr << "\n";
-            AMD::Expression2 derivative = AMD::generateDerivativeExpression(myExpr, one, "A");
+            AMD::Expression2 derivative = AMD::generateDerivativeExpression(myExpr, "A");
             std::cout << "Differentiation succeeded: " << *derivative << "\n";
         } catch (const std::exception& e) {
             std::cout << e.what() << std::endl;

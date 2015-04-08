@@ -18,11 +18,18 @@
 namespace AMD {
 
 typedef boost::shared_ptr<AMD::detail::Tree> Expression2;
-static Expression nil;
-static Expression zero(new AMD::detail::ExpressionTree("0.0", nil, nil));
-static Expression one(new AMD::detail::ExpressionTree("1.0", nil, nil));
 
 Expression2 generateDerivativeExpression(
+                           const Expression2& expr, 
+                           const std::string targetMatrix);
+///< Harness for differentiation, takes in an expression and sets up
+//   initial prior depending on whether it's a trace or lgdt expression
+//   Then calls the recursive helper method to kickoff differentiation
+//   @param[in] expr The expression to be differentiated
+//   @param[in] targetMatrix The matrix to differentiate with respect to
+//   @return A boost shared_ptr to a Tree representing the derivative expr
+
+Expression2 generateDerivativeExpressionHelper(
                            const Expression2& expr, 
                            const Expression2& acc,
                            const std::string targetMatrix);
@@ -42,6 +49,7 @@ Expression2 generateDerivativeExpression(
 /// @param[in] targetMatrix Char value representing what we're 
 //  taking the derivative with respect to, used to determine which matrices
 //  are considered a constant matrix and which are considered variables
+//  @return a shared_ptr to a Tree representing the accumulated derivative
 
 static Expression2 addExpr(
             Expression2& left, 
@@ -49,8 +57,8 @@ static Expression2 addExpr(
 ///< Joins the left and right expression accumulations with a plus operation
 /// @param[in] left The ExpressionTree representing the left accumulator
 /// @param[in] right The ExpressionTree representing the right accumulator
-//  @return An expressionTree composed of the two inputs combined with a 
-//  plus operation node
+//  @return A shared pointer to a tree composed of the two inputs combined with 
+//  a plus operation node
 
 
 }//End AMD namespace
