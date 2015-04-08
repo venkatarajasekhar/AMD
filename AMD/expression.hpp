@@ -50,8 +50,14 @@ ExpressionType validateExpr(const boost::shared_ptr<detail::Tree>& expr);
 ///                 returned by the parser
 /// @return SCALAR, MATRIX, or INVALID.
 
+void postProcess(const boost::shared_ptr<detail::Tree>& expr);
+///< Check that this expression is a valid expression (correct types of 
+/// operands, scalar tr() or ldgt() function)
+/// @param[in] expr The expression representing the matrix expression tree
+///                 returned by the parser          
+
 std::string toRightRecursiveRep(const std::string& exprString);
-///< Transfroms an exprString from containing the operator shorthands ' and _
+///< Transforms an exprString from containing the operator shorthands ' and _
 /// into an equivalent expression using the notation (trans( )) (inv( )).
 ///
 /// @param[in] exprString This is a string that represents a matrix expression
@@ -70,21 +76,16 @@ int findMatchingParen(const std::string& exprString, int index);
 ///                  inside the string input exprString
 /// @return The index of the matching open parenthesis if it exists
 
-bool compareExpectedExpressions(const std::string& exprString, 
-                                const std::string& trueParsedString);
-///< Takes in a string, attempts to parse it, then compares
-///  printed output to what is the true parsed string value
-///  to determine if parsing works correctly on given exprString
+std::string preProcess(const std::string& exprString);
+///< Performs preprocessing on exprString.
+/// Transforms an exprString from containing the operator shorthands ' and _
+/// into an equivalent expression using the notation (trans( )) (inv( )).
 ///
-///  @param[in] exprString        A string representing a matrix expression to 
-///                               be parsed as a test of the parser.
-///  @param[in] trueParsedString The string representation of the
-///                              expressionTree which represents the correct 
-///                              parsed value of the matrix expression
-///
-///  @return A boolean value representing whether the parser correctly
-///          parsed the exprString and had results exactly the same as the 
-///          trueParsedString
+/// @param[in] exprString This is a string that represents a matrix expression
+/// @return A string which has been preprocessed to wrap all transpose inverse 
+///         operations explicitly with parenthesis
+///         eg: "-(A+B)' + A_"  -> -(trans(A+B)) + (inv(A)) 
+
 
 } // namespace AMD
 

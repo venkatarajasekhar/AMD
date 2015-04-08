@@ -9,6 +9,7 @@
 
 #include <AMD/expressiontree.hpp>
 #include <AMD/log.hpp>
+#include <AMD/expression.hpp>
 
 // Uncomment the define if you want debug messages for the grammar
 // #define BOOST_SPIRIT_DEBUG
@@ -303,6 +304,22 @@ MatrixGrammar<Iterator>::MatrixGrammar() : MatrixGrammar::base_type(d_expression
 }
 
 }   // namespace detail
+
+bool compareExpectedExpressions(const std::string& exprString, 
+                                const std::string& trueParsedString);
+///< Takes in a string, attempts to parse it, then compares
+///  printed output to what is the true parsed string value
+///  to determine if parsing works correctly on given exprString
+///
+///  @param[in] exprString        A string representing a matrix expression to 
+///                               be parsed as a test of the parser.
+///  @param[in] trueParsedString The string representation of the
+///                              expressionTree which represents the correct 
+///                              parsed value of the matrix expression
+///
+///  @return A boolean value representing whether the parser correctly
+///          parsed the exprString and had results exactly the same as the 
+///          trueParsedString
 
 }   // namespace AMD
 
