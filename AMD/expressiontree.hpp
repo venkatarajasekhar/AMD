@@ -31,6 +31,14 @@ public:
     
     bool operator!=(const ExpressionTree& other) const; 
     ///< Ensures that inequality is using the overridden == function
+    
+    boost::shared_ptr<ExpressionTree> left () const;
+    ///< Return the left child stored in this node
+    ///  @retval d_left
+
+    boost::shared_ptr<ExpressionTree> right () const;
+    ///< Return the right child stored in this node
+    ///  @retval d_right
 
     virtual ~ExpressionTree();
     ///< Virtual destructor

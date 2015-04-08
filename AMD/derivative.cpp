@@ -11,14 +11,16 @@ namespace AMD {
 
 typedef detail::ExpressionTree ExpressionTree;
 
+
+
 static Expression nil;
 static Expression identity(new ExpressionTree(
                        "I", nil, nil));
 
 
 static Expression generateDerivativeExpression(
-                           Expression& expr, 
-                           Expression& acc,
+                           Expression expr, 
+                           Expression acc,
                            const std::string targetMatrix)
 {
    // switch((*expr).info()){
@@ -27,7 +29,7 @@ static Expression generateDerivativeExpression(
         if (tree.info() == "tr") {
             Expression leftAcc(new ExpressionTree(
             "*", acc, identity));
-            return generateDerivativeExpression(tree.left(), leftAcc, targetMatrix); 
+            return generateDerivativeExpression((boost::shared_ptr<ExpressionTree>)tree.left(), leftAcc, targetMatrix); 
        } //    break;
         //lgdt, apply inverse transpose of left child
        else if (tree.info() ==  "lgdt"){

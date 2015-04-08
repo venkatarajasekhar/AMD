@@ -19,8 +19,8 @@ namespace AMD {
 
 
 static Expression generateDerivativeExpression(
-                           Expression& expr, 
-                           Expression& acc,
+                           Expression expr, 
+                           Expression acc,
                            const std::string targetMatrix);
 ///<Recursive function to generate the derivative expression tree for a given
 // expression tree
