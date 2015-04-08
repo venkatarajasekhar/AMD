@@ -54,7 +54,7 @@ static Expression generateDerivativeExpression(
             Expression left =
              generateDerivativeExpression(tree.left(), leftAcc, targetMatrix); 
             Expression right =
-             generateDerivativeExpression(tree.right(), leftAcc, targetMatrix); 
+             generateDerivativeExpression(tree.right(), rightAcc, targetMatrix); 
             return addExpr(left, right);
         }//    break;
         //element wise multiplication, copy over accumulator
@@ -66,7 +66,7 @@ static Expression generateDerivativeExpression(
             Expression left =
              generateDerivativeExpression(tree.left(), leftAcc, targetMatrix); 
             Expression right =
-             generateDerivativeExpression(tree.right(), leftAcc, targetMatrix); 
+             generateDerivativeExpression(tree.right(), rightAcc, targetMatrix); 
             return addExpr(left, right); 
         } //    break;
         //inverse match, derivative unknown, for now apply identity
@@ -89,7 +89,7 @@ static Expression generateDerivativeExpression(
                 Expression left =
                 generateDerivativeExpression(tree.left(), leftAcc, targetMatrix); 
                 Expression right =
-                generateDerivativeExpression(tree.right(), leftAcc, targetMatrix); 
+                generateDerivativeExpression(tree.right(), rightAcc, targetMatrix); 
                 return addExpr(left, right); 
             }
             else {
