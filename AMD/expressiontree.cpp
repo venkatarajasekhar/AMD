@@ -41,8 +41,8 @@ class ValidOperations
 static ValidOperations validOps; 
 
 ExpressionTree::ExpressionTree (const std::string& info, 
-                                const boost::shared_ptr<Tree>& left, 
-                                const boost::shared_ptr<Tree>& right) :
+                                const boost::shared_ptr<ExpressionTree>& left, 
+                                const boost::shared_ptr<ExpressionTree>& right) :
                                 Tree(info, left, right)
 {
 
@@ -151,6 +151,17 @@ bool ExpressionTree::operator!=(const ExpressionTree& other) const
 {  
     return !(*this == other);
 }
+
+boost::shared_ptr<ExpressionTree> ExpressionTree::left () const 
+{
+    return this->d_left;
+}
+
+const boost::shared_ptr<ExpressionTree> ExpressionTree::right () const 
+{
+    return (const boost::shared_ptr<ExpressionTree>)this->d_right;
+}
+
 
 ExpressionTree::~ExpressionTree()
 {
