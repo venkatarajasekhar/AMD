@@ -5,7 +5,7 @@
 
 #include <AMD/expression.hpp>
 #include <AMD/derivative.hpp>
-
+#include <AMD/expressiontree.hpp>
 
 namespace AMD {
 
@@ -18,24 +18,24 @@ static Expression generateDerivativeExpression(
                            Expression acc,
                            const char targetMatrix)
 {
-    switch(expr.info()){
+   // switch((*expr).info()){
         //tr, apply identity matrix
-        case "tr":
+        ExpressionTree tree = *expr;
+        if (tree.info() == "tr") {
             Expression leftAcc(new ExpressionTree(
             "*", acc, identity));
-            Expression left = 
             return generateDerivativeExpression(left, leftAcc, targetMatrix); 
-            break;
+       } //    break;
         //lgdt, apply inverse transpose of left child
-        case "lgdt":
+       else if (tree.info() ==  "lgdt"){
             Expression tempLeftAcc(new ExpressionTree(
             "_", acc, nil));
             Expression leftAcc(new ExpressionTree(
             "'", tempLeftAcc, nil));
             return generateDerivativeExpression(left, leftAcc, targetMatrix); 
-            break;
+        } //   break;
         //multiplication, apply acc*right' + left'*acc
-        case "*":
+       else if (tree.info() ==  "*"){
             Expression tempLeftAcc(new ExpressionTree(
             "'", right, nil));
             Expression tempRightAcc(new ExpressionTree(
@@ -48,10 +48,10 @@ static Expression generateDerivativeExpression(
              generateDerivativeExpression(left, leftAcc, targetMatrix); 
             Expression right =
              generateDerivativeExpression(left, leftAcc, targetMatrix); 
-            return addExpr(left, right) 
-            break;
+            return addExpr(left, right);
+        }//    break;
         //element wise multiplication, copy over accumulator
-        case "o":
+        else if (tree.info() == "o"){
             Expression leftAcc(new ExpressionTree(
             "o", right, acc));
             Expression rightAcc(new ExpressionTree(
@@ -60,47 +60,50 @@ static Expression generateDerivativeExpression(
              generateDerivativeExpression(left, leftAcc, targetMatrix); 
             Expression right =
              generateDerivativeExpression(left, leftAcc, targetMatrix); 
-            return addExpr(left, right) 
-            break;
+            return addExpr(left, right); 
+        } //    break;
         //inverse match, derivative unknown, for now apply identity
-        case "_":
+        else if (tree.info() ==  "_") {
             Expression leftAcc = acc;
             return generateDerivativeExpression(left, leftAcc, targetMatrix); 
-            break;
+        } //   break;
         //transpose match, apply transpose
-        case "'":
+       else if (tree.info() == "'"){
             Expression leftAcc(new ExpressionTree(
             "'", acc, nil));
             return generateDerivativeExpression(left, leftAcc, targetMatrix); 
-            break;
+       }  //   break;
         //negation match, copy over accumulator after negating
-        case "-":
+       else if (tree.info() == "-"){
             if (*expr.right()) {
                 Expression leftAcc = acc;
                 Expression rightAcc(new ExpressionTree(
                 "-", acc, nil));
-            Expression left =
-             generateDerivativeExpression(left, leftAcc, targetMatrix); 
-            Expression right =
-             generateDerivativeExpression(left, leftAcc, targetMatrix); 
-            return addExpr(left, right) 
+                Expression left =
+                generateDerivativeExpression(left, leftAcc, targetMatrix); 
+                Expression right =
+                generateDerivativeExpression(left, leftAcc, targetMatrix); 
+                return addExpr(left, right); 
             }
             else {
                 Expression leftAcc(new ExpressionTree(
                 "-", acc, nil));
-            return generateDerivativeExpression(left, leftAcc, targetMatrix); 
+                return generateDerivativeExpression(left, leftAcc, targetMatrix); 
             }
-            break;
+        }
+         //   break;
         //its a leaf node match with our target matrix, return accumulator
-        case targetMatrix:
+    else if (tree.info() == targetMatrix){
             return acc; 
-            break;
+    }
+          //  break;
         //must be a constant expression, ie either a double or a constant
         //matrix which can be ignored, hence return null
-        default:
-            return nil;
-            break;
-    }
+      //  default:
+     else {
+                return nil;
+       } //    break;
+    //}
 }
 
 ///<Recursive function to generate the derivative expression tree for a given
