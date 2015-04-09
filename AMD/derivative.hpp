@@ -17,6 +17,10 @@
 
 namespace AMD {
 
+static int derivativeOptimizationLevel;
+///< A flag that is used to keep track of what level of optimization
+//   should be used when computing derivatives
+
 Expression generateDerivativeExpression(
                            const Expression& expr, 
                            const std::string targetMatrix);
@@ -48,6 +52,33 @@ Expression generateDerivativeExpressionHelper(
 //  taking the derivative with respect to, used to determine which matrices
 //  are considered a constant matrix and which are considered variables
 //  @return a shared_ptr to a Tree representing the accumulated derivative
+
+Expression calcNegationDerivative(Expression expr,
+                                  Expression Z,
+                                  const std::string variable);
+
+Expression calcTransposeDerivative(Expression expr,
+                                   Expression Z,
+                                   const std::string variable);
+
+Expression calcProductDerivative(Expression expr,
+                                 Expression Z,
+                                 const std::string variable);
+
+Expression calcElemProductDerivative(Expression expr,
+                                     Expression Z,
+                                     const std::string variable);
+
+Expression calcTraceDerivative(Expression expr,
+                               const std::string variable);
+
+Expression calcLogDetDerivative(Expression expr,
+                                const std::string variable);
+
+Expression calcInverseDerivative(Expression expr,
+                                 Expression Z,
+                                 const std::string variable);
+
 
 static Expression addExpr(Expression& left, Expression& right);
 ///< Joins the left and right expression accumulations with a plus operation
