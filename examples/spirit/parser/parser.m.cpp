@@ -62,7 +62,7 @@ int main()
                     }
                     else {
                         try {
-                            AMD::Expression2 derivative = AMD::generateDerivativeExpression(myExpr, "A");
+                            AMD::Expression derivative = AMD::generateDerivativeExpression(myExpr, "A");
                             std::cout << "Differentiation succeeded: " << *derivative << "\n";
                         } catch (const std::exception& e) {
                             std::cout << e.what() << std::endl;
