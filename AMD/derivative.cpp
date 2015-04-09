@@ -43,6 +43,20 @@ Expression calcTransposeDerivative(Expression expr,
     return generateDerivativeExpressionHelper(tree.left(), R, variable); 
 }
 
+Expression calcAdditionDerivative(Expression expr,
+                                  Expression Z,
+                                  const std::string variable)
+{
+    const ExpressionTree& tree = *expr;
+    Expression RLeft = Z;
+    Expression RRight = Z;
+    Expression leftAcc = generateDerivativeExpressionHelper(
+        tree.left(), RLeft, variable);
+    Expression rightAcc = generateDerivativeExpressionHelper(
+        tree.right(), RRight, variable);
+    return addExpr(leftAcc, rightAcc);
+}
+
 Expression calcNegationDerivative(Expression expr, 
                                   Expression Z,
                                   const std::string variable)
@@ -141,47 +155,64 @@ Expression generateDerivativeExpressionHelper(const Expression& expr,
     //Trace: tr(G(X)) = F(G(X))
     //R = I
     if (tree.info() == "tr") {
-        LOG_INFO << "Calculating trace derivative (with Z = " << Z << ") on expresion: " << expr;
+        LOG_INFO << "Calculating trace derivative (with Z = " 
+            << Z << ") on expresion: " << expr;
         return calcTraceDerivative(expr, variable);
     }
     //Log Determinant: lgdt(G(X)) = F(G(X))
     //R = G(X)'_
-    else if (tree.info() ==  "lgdt"){
-        LOG_INFO << "Calculating log det derivative (with Z = " << Z << ") on expresion: " << expr;
+    else if (tree.info() ==  "lgdt") {
+        LOG_INFO << "Calculating log det derivative (with Z = " 
+            << Z << ") on expresion: " << expr;
         return calcLogDetDerivative(expr, variable);
     }
     //Matrix Multiplication: H(X)*G(X) = F(G(X))
     //RLeft = Z*G(X)' 
     //RRight = H(X)'*Z
-    else if (tree.info() ==  "*"){
-        LOG_INFO << "Calculating product derivative (with Z = " << Z << ") on expresion: " << expr;
+    else if (tree.info() ==  "*") {
+        LOG_INFO << "Calculating product derivative (with Z = " 
+            << Z << ") on expresion: " << expr;
         return calcProductDerivative(expr, Z, variable);
     }
     //Element wise multiplication: H(X)oG(X) = F(G(X))
     //RLeft = G(X)oZ
     //RRight = H(X)oZ
-    else if (tree.info() == "o"){
-        LOG_INFO << "Calculating element-wise product derivative (with Z = " << Z << ") on expresion: " << expr;
+    else if (tree.info() == "o") {
+        LOG_INFO << "Calculating element-wise product derivative (with Z = " 
+            << Z << ") on expresion: " << expr;
         return calcElemProductDerivative(expr, Z, variable);
     }
     //Inverse: G(X)_ = F(G(X)
     //R = -Z*F(G(X)'*Z
     else if (tree.info() ==  "_") {
-        LOG_INFO << "Calculating inverse derivative (with Z = " << Z << ") on expresion: " << expr;
+        LOG_INFO << "Calculating inverse derivative (with Z = " 
+            << Z << ") on expresion: " << expr;
         return calcInverseDerivative(expr, Z, variable);
     }
     //Transpose: G(X)' = F(G(X))
     //R = Z'
-    else if (tree.info() == "'"){
-        LOG_INFO << "Calculating transpose derivative (with Z = " << Z << ") on expresion: " << expr;
+    else if (tree.info() == "'") {
+        LOG_INFO << "Calculating transpose derivative (with Z = " 
+            << Z << ") on expresion: " << expr;
         return calcTransposeDerivative(expr, Z, variable);
     }
-    else if (tree.info() == "-"){
+    //Addition:
+    //RLeft = Z
+    //RRight = Z
+    else if (tree.info() == "+") {
+        LOG_INFO << "Calculating addition derivative (with Z = " 
+            << Z << ") on expresion: " << expr;
+        return calcAdditionDerivative(expr, Z, variable);
+    }
+    //Negation: Depends on if it is unary or binary (see calcNegationDerivative)
+    else if (tree.info() == "-") {
+        LOG_INFO << "Calculating negation derivative (with Z = " 
+            << Z << ") on expresion: " << expr;
         return calcNegationDerivative(expr, Z, variable);
     }
     //Leaf Node (Target Matrix): X = F(G(X))
     //R = Z
-    else if (tree.info() == variable){
+    else if (tree.info() == variable) {
         LOG_TRACE << "Reached leaf node variable";
         LOG_INFO << "Returning Z as " << Z;
         return Z; 
