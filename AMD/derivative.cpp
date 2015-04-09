@@ -141,33 +141,39 @@ Expression generateDerivativeExpressionHelper(const Expression& expr,
     //Trace: tr(G(X)) = F(G(X))
     //R = I
     if (tree.info() == "tr") {
+        LOG_INFO << "Calculating trace derivative (with Z = " << Z << ") on expresion: " << expr;
         return calcTraceDerivative(expr, variable);
     }
     //Log Determinant: lgdt(G(X)) = F(G(X))
     //R = G(X)'_
     else if (tree.info() ==  "lgdt"){
+        LOG_INFO << "Calculating log det derivative (with Z = " << Z << ") on expresion: " << expr;
         return calcLogDetDerivative(expr, variable);
     }
     //Matrix Multiplication: H(X)*G(X) = F(G(X))
     //RLeft = Z*G(X)' 
     //RRight = H(X)'*Z
     else if (tree.info() ==  "*"){
+        LOG_INFO << "Calculating product derivative (with Z = " << Z << ") on expresion: " << expr;
         return calcProductDerivative(expr, Z, variable);
     }
     //Element wise multiplication: H(X)oG(X) = F(G(X))
     //RLeft = G(X)oZ
     //RRight = H(X)oZ
     else if (tree.info() == "o"){
+        LOG_INFO << "Calculating element-wise product derivative (with Z = " << Z << ") on expresion: " << expr;
         return calcElemProductDerivative(expr, Z, variable);
     }
     //Inverse: G(X)_ = F(G(X)
     //R = -Z*F(G(X)'*Z
     else if (tree.info() ==  "_") {
+        LOG_INFO << "Calculating inverse derivative (with Z = " << Z << ") on expresion: " << expr;
         return calcInverseDerivative(expr, Z, variable);
     }
     //Transpose: G(X)' = F(G(X))
     //R = Z'
     else if (tree.info() == "'"){
+        LOG_INFO << "Calculating transpose derivative (with Z = " << Z << ") on expresion: " << expr;
         return calcTransposeDerivative(expr, Z, variable);
     }
     else if (tree.info() == "-"){
@@ -176,11 +182,14 @@ Expression generateDerivativeExpressionHelper(const Expression& expr,
     //Leaf Node (Target Matrix): X = F(G(X))
     //R = Z
     else if (tree.info() == variable){
+        LOG_TRACE << "Reached leaf node variable";
+        LOG_INFO << "Returning Z as " << Z;
         return Z; 
     }
     //Leaf Node (Constant double or matrix): c = F(G(X))
     //R = 0.0
     else {
+        LOG_TRACE << "Reached leaf node constant";
         return ZERO;
     }
 }
