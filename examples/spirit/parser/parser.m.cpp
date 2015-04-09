@@ -39,17 +39,28 @@ int main()
         }
         if (!parsed) 
             continue;
-        std::cout << "Differentiate parsed expression? Enter y/n:\n";
+        std::cout << "Differentiate parsed expression? Enter y/n:\n" <<
+                     "Note differentiation is done with respect to X\n";
 
         while (std::getline(std::cin, differentiate))
         {
             LOG_DEBUG << "Differentiation decision is : " << differentiate;
 
-            if (differentiate[0] == 'N' || differentiate[0] == 'n')
+            if (differentiate[0] != 'Y' && differentiate[0] != 'y')
                 break;
-            else if(differentiate[0] == 'Y' || differentiate[0] == 'y')
+            else
             {
-                std::cout << "Enter target matrix to " <<
+                try {
+                    //default target matrix is X
+                    AMD::Expression derivative = AMD::generateDerivativeExpression(myExpr, "X");
+                    std::cout << "Differentiation succeeded: " << *derivative << "\n";
+                } catch (const std::exception& e) {
+                    std::cout << e.what() << std::endl;
+                } 
+                /* Commented code contains ability to set target matrix 
+                 * for differentiation
+                 * 
+                 * std::cout << "Enter target matrix to " <<
                 "differentiate expression with respect to:\n";
              
                 while (std::getline(std::cin, matrix))
@@ -62,7 +73,8 @@ int main()
                     }
                     else {
                         try {
-                            AMD::Expression derivative = AMD::generateDerivativeExpression(myExpr, "A");
+                            //default target matrix is X
+                            AMD::Expression derivative = AMD::generateDerivativeExpression(myExpr, "X");
                             std::cout << "Differentiation succeeded: " << *derivative << "\n";
                         } catch (const std::exception& e) {
                             std::cout << e.what() << std::endl;
@@ -70,7 +82,8 @@ int main()
                         break;
                     }
                 }
-                break;   
+                */  
+                break; 
             }
         }
         std::cout << "Type an expression...or [q or Q] to quit\n\n";
