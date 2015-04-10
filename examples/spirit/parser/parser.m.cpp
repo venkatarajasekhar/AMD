@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <exception>
-
+#include <cctype>
 #include <boost/lexical_cast.hpp>
 
 #include <AMD/expression.hpp>
@@ -11,8 +11,6 @@
 
 int main()
 {
-    Expression identity(new AMD::detail::ExpressionTree(
-                       "I", nil, nil));
     std::cout << "/////////////////////////////////////////////////////////\n";
     std::cout << "Expression parser...\n";
     std::cout << "/////////////////////////////////////////////////////////\n";
@@ -23,24 +21,73 @@ int main()
     AMD::setLogLevel(boost::lexical_cast<int>(logLevel));
 
     std::cout << "Type an expression...or [q or Q] to quit\n\n";
-    std::string str;
-    /*while (std::getline(std::cin, str))
-    #{
-     #   if (str.empty() || str[0] == 'q' || str[0] == 'Q')
+    std::string str, differentiate, matrix;
+    while (std::getline(std::cin, str))
+    {
+        if (str.empty() || str[0] == 'q' || str[0] == 'Q')
             break;
-*/
-    str = "A*B+A*C+A*B";
-        LOG_DEBUG << "Entered string is : " << str;
 
+        LOG_DEBUG << "Entered string is : " << str;
+        AMD::Expression myExpr;
+        bool parsed = false;
         try {
-            AMD::Expression myExpr = AMD::generateExpression(str);
+            myExpr = AMD::generateExpression(str);
             std::cout << "Parsing succeeded: " << *myExpr << "\n";
-            AMD::Expression derivative = AMD::generateDerivativeExpression(myExpr, identity, "A");
-            std::cout << "Differentiation succeeded: " << *derivative << "\n";
+            parsed = true;
         } catch (const std::exception& e) {
             std::cout << e.what() << std::endl;
         }
-  //  }
+        if (!parsed) 
+            continue;
+        std::cout << "Differentiate parsed expression? Enter y/n:\n" <<
+                     "Note differentiation is done with respect to X\n";
+
+        while (std::getline(std::cin, differentiate))
+        {
+            LOG_DEBUG << "Differentiation decision is : " << differentiate;
+
+            if (differentiate[0] != 'Y' && differentiate[0] != 'y')
+                break;
+            else
+            {
+                try {
+                    //default target matrix is X
+                    AMD::Expression derivative = AMD::generateDerivativeExpression(myExpr, "X");
+                    std::cout << "Differentiation succeeded: " << *derivative << "\n";
+                } catch (const std::exception& e) {
+                    std::cout << e.what() << std::endl;
+                } 
+                /* Commented code contains ability to set target matrix 
+                 * for differentiation
+                 * 
+                 * std::cout << "Enter target matrix to " <<
+                "differentiate expression with respect to:\n";
+             
+                while (std::getline(std::cin, matrix))
+                { 
+                    LOG_DEBUG << "Entered target matrix is : " << matrix;
+                    
+                    if (matrix.length() != 1 || isupper(matrix[0]) == 0){
+                        std::cout << "Improper target matrix entered\n";
+                        break;
+                    }
+                    else {
+                        try {
+                            //default target matrix is X
+                            AMD::Expression derivative = AMD::generateDerivativeExpression(myExpr, "X");
+                            std::cout << "Differentiation succeeded: " << *derivative << "\n";
+                        } catch (const std::exception& e) {
+                            std::cout << e.what() << std::endl;
+                        }
+                        break;
+                    }
+                }
+                */  
+                break; 
+            }
+        }
+        std::cout << "Type an expression...or [q or Q] to quit\n\n";
+    }
 
     std::cout << "Bye... :-) \n\n";
     return 0;

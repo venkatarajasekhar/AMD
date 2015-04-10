@@ -17,10 +17,23 @@
 
 namespace AMD {
 
+static int derivativeOptimizationLevel;
+///< A flag that is used to keep track of what level of optimization
+//   should be used when computing derivatives
 
-static Expression generateDerivativeExpression(
-                           Expression expr, 
-                           Expression acc,
+Expression generateDerivativeExpression(
+                           const Expression& expr, 
+                           const std::string targetMatrix);
+///< Harness for differentiation, takes in an expression and sets up
+//   initial prior depending on whether it's a trace or lgdt expression
+//   Then calls the recursive helper method to kickoff differentiation
+//   @param[in] expr The expression to be differentiated
+//   @param[in] targetMatrix The matrix to differentiate with respect to
+//   @return A boost shared_ptr to a Tree representing the derivative expr
+
+Expression generateDerivativeExpressionHelper(
+                           const Expression& expr, 
+                           const Expression& acc,
                            const std::string targetMatrix);
 ///<Recursive function to generate the derivative expression tree for a given
 // expression tree
@@ -38,15 +51,41 @@ static Expression generateDerivativeExpression(
 /// @param[in] targetMatrix Char value representing what we're 
 //  taking the derivative with respect to, used to determine which matrices
 //  are considered a constant matrix and which are considered variables
+//  @return a shared_ptr to a Tree representing the accumulated derivative
 
-static Expression addExpr(
-            Expression& left, 
-            Expression& right);
+Expression calcNegationDerivative(Expression expr,
+                                  Expression Z,
+                                  const std::string variable);
+
+Expression calcTransposeDerivative(Expression expr,
+                                   Expression Z,
+                                   const std::string variable);
+
+Expression calcProductDerivative(Expression expr,
+                                 Expression Z,
+                                 const std::string variable);
+
+Expression calcElemProductDerivative(Expression expr,
+                                     Expression Z,
+                                     const std::string variable);
+
+Expression calcTraceDerivative(Expression expr,
+                               const std::string variable);
+
+Expression calcLogDetDerivative(Expression expr,
+                                const std::string variable);
+
+Expression calcInverseDerivative(Expression expr,
+                                 Expression Z,
+                                 const std::string variable);
+
+
+static Expression addExpr(Expression& left, Expression& right);
 ///< Joins the left and right expression accumulations with a plus operation
 /// @param[in] left The ExpressionTree representing the left accumulator
 /// @param[in] right The ExpressionTree representing the right accumulator
-//  @return An expressionTree composed of the two inputs combined with a 
-//  plus operation node
+//  @return A shared pointer to a tree composed of the two inputs combined with 
+//  a plus operation node
 
 
 }//End AMD namespace

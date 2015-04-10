@@ -154,12 +154,16 @@ bool ExpressionTree::operator!=(const ExpressionTree& other) const
 
 boost::shared_ptr<ExpressionTree> ExpressionTree::left () const 
 {
-    return this->d_left;
+    boost::shared_ptr<ExpressionTree> retVal = 
+    boost::static_pointer_cast<ExpressionTree>(this->d_left);
+    return retVal;
 }
 
-const boost::shared_ptr<ExpressionTree> ExpressionTree::right () const 
+boost::shared_ptr<ExpressionTree> ExpressionTree::right () const 
 {
-    return (const boost::shared_ptr<ExpressionTree>)this->d_right;
+    boost::shared_ptr<ExpressionTree> retVal = 
+    boost::static_pointer_cast<ExpressionTree>(this->d_right);
+    return retVal;
 }
 
 
