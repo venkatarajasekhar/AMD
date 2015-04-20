@@ -25,7 +25,7 @@
 #include <boost/variant.hpp>
 #include <boost/assign/list_of.hpp>
 
-#include <AMD.hpp>
+#include <AMD/AMD.hpp>
 #include <AMD/Exception.hpp>
 
 namespace AMD {
