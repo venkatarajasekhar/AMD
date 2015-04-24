@@ -19,7 +19,7 @@ namespace AMD {
 enum ExpressionType { INVALID=-1, SCALAR, MATRIX };
 ///< An enumeration that tells us the type of expression that was input
 
-// Define the expression type to be utree for now.
+// Define the expression type.
 typedef boost::shared_ptr<detail::ExpressionTree> Expression;
 ///<Typedef for the expression tree that is parsed by Parser
 
@@ -86,6 +86,19 @@ std::string preProcess(const std::string& exprString);
 ///         operations explicitly with parenthesis
 ///         eg: "-(A+B)' + A_"  -> -(trans(A+B)) + (inv(A)) 
 
+template <typename MatrixType>
+void evaluate(const Expression& expr, 
+              std::map<std::string, boost::shared_ptr<MatrixType>& matMap);
+///< Evaluates the expression denoted by expr, where the values of the matrices
+///  are given by 'matMap'.
+///  @param[in]    expr    A parsed valid expression that needs to be evaluated.
+///  @param[inout] matMap  A map from 'A' to the matrix that represents 'A'.
+///
+///  Note that the value is returned within the map itself. The way this works
+///  is the following:
+///  What we have in 'expr' is an expression where the leaf nodes are either 
+///  scalars or matrices. 'matMap' allows us to access the "values" of the 
+///  matrices in the 'expr'. 
 
 } // namespace AMD
 
