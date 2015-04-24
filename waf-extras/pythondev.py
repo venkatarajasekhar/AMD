@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
 #
-# Author: Shefaet Rahman
 
 """
 Module that is used to find where, if at all, the PYTHONDEV library is present.

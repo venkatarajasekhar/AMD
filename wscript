@@ -17,6 +17,7 @@ tools = [
             'boost',
             'pythondev',
             'common-tool',
+            'eigen',
         ]
 
 # Dict to store a mapping of command line flags for building packages to the

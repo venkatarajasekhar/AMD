@@ -1,0 +1,13 @@
+### SET TASK CONFIGURATION PARAMETERS HERE ####################################
+
+# Set the top dir and the build dir
+top = '../..'
+out = top + '/build'
+
+task_name = 'eigen'
+int_deps  = ['AMD']
+ext_deps  = ['BOOST.PROGRAM_OPTIONS']
+
+###############################################################################
+
+execfile('waf-extras/common-task.py')
