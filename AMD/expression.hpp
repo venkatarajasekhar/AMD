@@ -6,6 +6,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <map>
 
 #include <boost/spirit/include/qi.hpp>
 
