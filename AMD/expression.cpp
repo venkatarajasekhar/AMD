@@ -49,8 +49,11 @@ Expression generateExpression(const std::string& exprString)
 template <typename MatrixType>
 void evaluate(const Expression& expr, 
               std::map<std::string, 
-              boost::variant<double, boost::shared_ptr<MatrixType> > >& matMap){
-        const detail::Tree& root = *expr;
+              boost::variant<double, boost::shared_ptr<MatrixType> > >& matMap){    
+    const detail::Tree& root = *expr;
+    std::ostringstream stream;
+    stream << root;
+    std::string key = stream.str();
 
     // 1. Base case: If leaf node, then it has to be matrix or scalar
     if (false==root.left() && false==root.right()) { 
@@ -64,21 +67,21 @@ void evaluate(const Expression& expr,
             root.info().find_first_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ")) {
             // Matrix
         }
-
     }
 
     // unary op (+, -, tr, lgdt, _, '')
     if (root.left() && false==root.right()) { 
+        LOG_INFO << "Found unary operation";
+
         evaluate(root.left(), matMap);
 
-        std::ostringstream stream;
-
+        stream.str("");
         stream << *root.left();
         boost::variant<double, boost::shared_ptr<MatrixType> > val = 
             matMap[stream.str()];
 
         if ("+" == root.info()) {
-            
+            matMap[key] = val;
         }
 
         else if ("-" == root.info()) { }
@@ -94,6 +97,8 @@ void evaluate(const Expression& expr,
 
     // binary op (+, -, o, *)
     if(root.left() && root.right()){
+        LOG_INFO << "Found binary operation";
+
         std::ostringstream stream;
 
         stream << *root.left();
@@ -116,7 +121,7 @@ void evaluate(const Expression& expr,
 
     }
 
-    LOG_ERROR << "Vvaluate failed, Invalid tree";
+    LOG_ERROR << "Evaluate failed, Invalid tree";
 
 }
 
