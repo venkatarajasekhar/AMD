@@ -56,9 +56,9 @@ void evaluate(const Expression& expr,
     if (false==root.left() && false==root.right()) { 
         LOG_INFO << "Found leaf node";
 
-        if (std::string::npos!=root.info().find_first_of("0123456789")) {
-            // Scalar
-        }
+        // if (std::string::npos!=root.info().find_first_of("0123456789")) {
+        //     // Scalar
+        // }
 
         if (std::string::npos != 
             root.info().find_first_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ")) {
@@ -69,17 +69,55 @@ void evaluate(const Expression& expr,
 
     // unary op (+, -, tr, lgdt, _, '')
     if (root.left() && false==root.right()) { 
-      
+        evaluate(root.left(), matMap);
+
+        std::ostringstream stream;
+
+        stream << *root.left();
+        boost::variant<double, boost::shared_ptr<MatrixType> > val = 
+            matMap[stream.str()];
+
+        if ("+" == root.info()) {
+            
+        }
+
+        else if ("-" == root.info()) { }
+
+        else if ("tr" == root.info()) { }
+
+        else if ("lgdt" == root.info()) { }
+
+        else if ("_" == root.info()) { }
+
+        else if ("\'" == root.info()) { }
     }
 
     // binary op (+, -, o, *)
     if(root.left() && root.right()){
-       
+        std::ostringstream stream;
+
+        stream << *root.left();
+        boost::variant<double, boost::shared_ptr<MatrixType> > leftVal = 
+            matMap[stream.str()];
+
+        stream.str("");
+
+        stream << *root.right();
+        boost::variant<double, boost::shared_ptr<MatrixType> > rightVal = 
+            matMap[stream.str()];
+
+        if ("+" == root.info()) { }
+
+        else if ("-" == root.info()) { }
+
+        else if ("o" == root.info()) { }
+
+        else if ("*" == root.info()) { }
+
     }
 
-    LOG_ERROR << "Postprocessing failed, Invalid tree";
+    LOG_ERROR << "Vvaluate failed, Invalid tree";
 
-    
 }
 
 ExpressionType validateExpr(const boost::shared_ptr<detail::Tree>& expr)
