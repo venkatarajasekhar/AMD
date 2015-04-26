@@ -46,6 +46,42 @@ Expression generateExpression(const std::string& exprString)
     return expr;
 }
 
+template <typename MatrixType>
+void evaluate(const Expression& expr, 
+              std::map<std::string, 
+              boost::variant<double, boost::shared_ptr<MatrixType> > >& matMap){
+        const detail::Tree& root = *expr;
+
+    // 1. Base case: If leaf node, then it has to be matrix or scalar
+    if (false==root.left() && false==root.right()) { 
+        LOG_INFO << "Found leaf node";
+
+        if (std::string::npos!=root.info().find_first_of("0123456789")) {
+            // Scalar
+        }
+
+        if (std::string::npos != 
+            root.info().find_first_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ")) {
+            // Matrix
+        }
+
+    }
+
+    // unary op (+, -, tr, lgdt, _, '')
+    if (root.left() && false==root.right()) { 
+      
+    }
+
+    // binary op (+, -, o, *)
+    if(root.left() && root.right()){
+       
+    }
+
+    LOG_ERROR << "Postprocessing failed, Invalid tree";
+
+    
+}
+
 ExpressionType validateExpr(const boost::shared_ptr<detail::Tree>& expr)
 {
     const detail::Tree& root = *expr;

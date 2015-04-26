@@ -9,6 +9,7 @@
 #include <map>
 
 #include <boost/spirit/include/qi.hpp>
+#include <boost/variant.hpp>
 
 #include <AMD/exception.hpp>
 #include <AMD/expressiontree.hpp>
@@ -89,7 +90,8 @@ std::string preProcess(const std::string& exprString);
 
 template <typename MatrixType>
 void evaluate(const Expression& expr, 
-              std::map<std::string, boost::shared_ptr<MatrixType> >& matMap);
+              std::map<std::string, 
+              boost::variant<double, boost::shared_ptr<MatrixType> > >& matMap);
 ///< Evaluates the expression denoted by expr, where the values of the matrices
 ///  are given by 'matMap'.
 ///  @param[in]    expr    A parsed valid expression that needs to be evaluated.
