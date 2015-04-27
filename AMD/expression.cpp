@@ -46,6 +46,85 @@ Expression generateExpression(const std::string& exprString)
     return expr;
 }
 
+template <typename MatrixType>
+void evaluate(const Expression& expr, 
+              std::map<std::string, 
+              boost::variant<double, boost::shared_ptr<MatrixType> > >& matMap){    
+    const detail::Tree& root = *expr;
+    std::ostringstream stream;
+    stream << root;
+    std::string key = stream.str();
+
+    // 1. Base case: If leaf node, then it has to be matrix or scalar
+    if (false==root.left() && false==root.right()) { 
+        LOG_INFO << "Found leaf node";
+
+        // if (std::string::npos!=root.info().find_first_of("0123456789")) {
+        //     // Scalar
+        // }
+
+        if (std::string::npos != 
+            root.info().find_first_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ")) {
+            // Matrix
+        }
+    }
+
+    // unary op (+, -, tr, lgdt, _, '')
+    if (root.left() && false==root.right()) { 
+        LOG_INFO << "Found unary operation";
+
+        evaluate(root.left(), matMap);
+
+        stream.str("");
+        stream << *root.left();
+        boost::variant<double, boost::shared_ptr<MatrixType> > val = 
+            matMap[stream.str()];
+
+        if ("+" == root.info()) {
+            matMap[key] = val;
+        }
+
+        else if ("-" == root.info()) { }
+
+        else if ("tr" == root.info()) { }
+
+        else if ("lgdt" == root.info()) { }
+
+        else if ("_" == root.info()) { }
+
+        else if ("\'" == root.info()) { }
+    }
+
+    // binary op (+, -, o, *)
+    if(root.left() && root.right()){
+        LOG_INFO << "Found binary operation";
+
+        std::ostringstream stream;
+
+        stream << *root.left();
+        boost::variant<double, boost::shared_ptr<MatrixType> > leftVal = 
+            matMap[stream.str()];
+
+        stream.str("");
+
+        stream << *root.right();
+        boost::variant<double, boost::shared_ptr<MatrixType> > rightVal = 
+            matMap[stream.str()];
+
+        if ("+" == root.info()) { }
+
+        else if ("-" == root.info()) { }
+
+        else if ("o" == root.info()) { }
+
+        else if ("*" == root.info()) { }
+
+    }
+
+    LOG_ERROR << "Evaluate failed, Invalid tree";
+
+}
+
 ExpressionType validateExpr(const boost::shared_ptr<detail::Tree>& expr)
 {
     const detail::Tree& root = *expr;
