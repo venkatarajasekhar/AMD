@@ -59,6 +59,10 @@
 	float: left !important;
 }
 
+.column-75 {
+	width: 75%;
+}
+
 /* full sized */
 .column-1 {
 	width: 100%;
