@@ -66,17 +66,26 @@ void evaluate(const Expression& expr,
         if (std::string::npos != 
             root.info().find_first_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ")) {
             // Matrix
+            if(matMap.find(key) == matMap.end()) {
+                LOG_ERROR << "Evaluate failed, Undefined Matrix: " 
+                    << root.info();
+            }
+
         }
     }
 
     // unary op (+, -, tr, lgdt, _, '')
     if (root.left() && false==root.right()) { 
-        LOG_INFO << "Found unary operation";
+        LOG_INFO << "Found unary operation: " << root.info();
 
         evaluate(root.left(), matMap);
 
         stream.str("");
         stream << *root.left();
+        if(matMap.find(stream.str()) == matMap.end()) {
+            LOG_ERROR << "Evaluate failed, Undefined Expression: " 
+                    << stream.str();
+        }
         boost::variant<double, boost::shared_ptr<MatrixType> > val = 
             matMap[stream.str()];
 
@@ -97,17 +106,25 @@ void evaluate(const Expression& expr,
 
     // binary op (+, -, o, *)
     if(root.left() && root.right()){
-        LOG_INFO << "Found binary operation";
+        LOG_INFO << "Found binary operation: " << root.info();
 
         std::ostringstream stream;
 
         stream << *root.left();
+        if(matMap.find(stream.str()) == matMap.end()) {
+            LOG_ERROR << "Evaluate failed, Undefined Expression: " 
+                    << stream.str();
+        }
         boost::variant<double, boost::shared_ptr<MatrixType> > leftVal = 
             matMap[stream.str()];
 
         stream.str("");
 
         stream << *root.right();
+        if(matMap.find(stream.str()) == matMap.end()) {
+            LOG_ERROR << "Evaluate failed, Undefined Expression: " 
+                    << stream.str();
+        }
         boost::variant<double, boost::shared_ptr<MatrixType> > rightVal = 
             matMap[stream.str()];
 

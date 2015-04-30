@@ -96,6 +96,9 @@ void evaluate(const Expression& expr,
 ///  are given by 'matMap'.
 ///  @param[in]    expr    A parsed valid expression that needs to be evaluated.
 ///  @param[inout] matMap  A map from 'A' to the matrix that represents 'A'.
+///                             Gets populated with the str representations of
+///                             expresions as keys that map to matricies or 
+///                             doubles.
 ///
 ///  Note that the value is returned within the map itself. The way this works
 ///  is the following:
