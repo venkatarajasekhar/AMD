@@ -102,6 +102,7 @@ nav ul li a:hover {
     font-family: "merriweatherlight";
     color: #ffffff;
     font-size: 2rem;
+    text-decoration: none;
 }
 
 /* Code */
