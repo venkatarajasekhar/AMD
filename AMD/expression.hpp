@@ -11,6 +11,7 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/variant.hpp>
 
+#include <AMD/matrixadaptor.hpp>
 #include <AMD/exception.hpp>
 #include <AMD/expressiontree.hpp>
 #include <AMD/matrixgrammar.hpp>

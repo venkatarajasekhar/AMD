@@ -49,7 +49,10 @@ Expression generateExpression(const std::string& exprString)
 template <typename MatrixType>
 void evaluate(const Expression& expr, 
               std::map<std::string, 
-              boost::variant<double, boost::shared_ptr<MatrixType> > >& matMap){    
+              boost::variant<double, boost::shared_ptr<MatrixType> > >& matMap){
+    typedef boost::shared_ptr<MatrixType> MatrixPtrType;
+    typedef AMD::MatrixAdaptor_t<MatrixType> MatrixAdaptorType;
+
     const detail::Tree& root = *expr;
     std::ostringstream stream;
     stream << root;
@@ -128,7 +131,20 @@ void evaluate(const Expression& expr,
         boost::variant<double, boost::shared_ptr<MatrixType> > rightVal = 
             matMap[stream.str()];
 
-        if ("+" == root.info()) { }
+        if ("+" == root.info()) { 
+
+            if(leftVal.which() == 0){ 
+                // Operands are doubles
+                matMap[key] = *leftVal + *rightVal;
+            }
+            else{
+                // Operands are matrices
+                MatrixPtrType result;
+                MatrixAdaptorType::add(*leftVal, *rightVal, result);
+                matMap[key] = result;
+            }
+
+        }
 
         else if ("-" == root.info()) { }
 
