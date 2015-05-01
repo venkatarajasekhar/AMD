@@ -1,7 +1,64 @@
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+
 #include <AMD/expression.hpp>
+#include <AMD/randommatrices.hpp>
+#include <AMD/eigenmatrixadaptor.hpp>
 
 #define BOOST_TEST_MODULE ExpressionTest
 #include <boost/test/unit_test.hpp>
+
+
+void evaluateTestHelper(const std::string& exprString, AMD::Expression expr)
+{
+    AMD::ExpressionType validateResult;
+    AMD::detail::MatrixGrammar<std::string::const_iterator> myParser;
+    AMD::Expression myExpr;
+    std::string exprStringRR = AMD::toRightRecursiveRep(exprString);
+    
+    std::string::const_iterator iter = exprStringRR.begin();
+    std::string::const_iterator end  = exprStringRR.end();
+    bool result = phrase_parse(iter, 
+                               end, 
+                               myParser, 
+                               boost::spirit::ascii::space, 
+                               myExpr);
+    validateResult = AMD::validateExpr(myExpr);
+    expr = myExpr;
+}
+
+BOOST_AUTO_TEST_CASE ( evaluate )
+{
+    AMD_START_TRY_BLOCK()
+
+    // Create some convenient typedefs 
+    typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> 
+                                                  DenseMatrixType;
+    typedef boost::shared_ptr<DenseMatrixType> DenseMatrixPtrType;
+    typedef AMD::MatrixAdaptor_t<DenseMatrixType> MatrixAdaptorType;
+    typedef std::map<std::string, boost::variant<double, 
+        DenseMatrixPtrType > > MatMapType;
+
+    // Create two random symmetric positive semi-definite matrices.
+    DenseMatrixPtrType A=AMD::rand_psd_t<DenseMatrixType>::apply(10, 10);
+    DenseMatrixPtrType B=AMD::rand_psd_t<DenseMatrixType>::apply(10, 10);
+
+    std::map<std::string, 
+      boost::variant<double, boost::shared_ptr<DenseMatrixType> > > matMap;
+
+    // MatMapType matMap;
+    matMap["A"] = A;
+    matMap["B"] = B;
+
+    AMD::Expression myExpr;
+    evaluateTestHelper("A+B", myExpr);
+
+    // AMD::evaluate<DenseMatrixType>(myExpr, matMap);
+    // std::cout << matMap["A+B"];
+
+    AMD_END_TRY_BLOCK()
+    AMD_CATCH_AND_PRINT()
+}
 
 bool RRTestHelper(const std::string& inputString, 
                   const std::string& expectedString)
@@ -123,16 +180,26 @@ BOOST_AUTO_TEST_CASE ( validateExpr )
     BOOST_CHECK(validateExprTestHelper("1.2 / 3.14", AMD::SCALAR));
     BOOST_CHECK(validateExprTestHelper("-1.2 - 3.14",AMD::SCALAR));
     BOOST_CHECK(validateExprTestHelper("-1.2 - tr(-A)", AMD::SCALAR));
-    BOOST_CHECK(validateExprTestHelper("-1.2 * tr(A'_) * lgdt(X_)", AMD::SCALAR));
+    BOOST_CHECK(validateExprTestHelper("-1.2 * tr(A'_) * lgdt(X_)", 
+        AMD::SCALAR));
 
     // Invalid Expressions
-    BOOST_CHECK_THROW(validateExprTestHelper("1.2 + M", AMD::INVALID), AMD::Exception);
-    BOOST_CHECK_THROW(validateExprTestHelper("tr(1.2)", AMD::INVALID), AMD::Exception);
-    BOOST_CHECK_THROW(validateExprTestHelper("lgdt(-3.14)", AMD::INVALID), AMD::Exception);
-    BOOST_CHECK_THROW(validateExprTestHelper("tr(tr(X))", AMD::INVALID), AMD::Exception);
-    BOOST_CHECK_THROW(validateExprTestHelper("tr(lgdt(X))", AMD::INVALID), AMD::Exception);
-    BOOST_CHECK_THROW(validateExprTestHelper("lgdt(tr(X))", AMD::INVALID), AMD::Exception);
-    BOOST_CHECK_THROW(validateExprTestHelper("lgdt(lgdt(X))", AMD::INVALID), AMD::Exception);
-    BOOST_CHECK_THROW(validateExprTestHelper("tr(M) + M", AMD::INVALID), AMD::Exception);
-    BOOST_CHECK_THROW(validateExprTestHelper("tr(M) o M", AMD::INVALID), AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("1.2 + M", AMD::INVALID), 
+        AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("tr(1.2)", AMD::INVALID), 
+        AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("lgdt(-3.14)", AMD::INVALID), 
+        AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("tr(tr(X))", AMD::INVALID), 
+        AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("tr(lgdt(X))", AMD::INVALID), 
+        AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("lgdt(tr(X))", AMD::INVALID), 
+        AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("lgdt(lgdt(X))", AMD::INVALID), 
+        AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("tr(M) + M", AMD::INVALID), 
+        AMD::Exception);
+    BOOST_CHECK_THROW(validateExprTestHelper("tr(M) o M", AMD::INVALID), 
+        AMD::Exception);
 }

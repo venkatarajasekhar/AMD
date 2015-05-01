@@ -49,7 +49,10 @@ Expression generateExpression(const std::string& exprString)
 template <typename MatrixType>
 void evaluate(const Expression& expr, 
               std::map<std::string, 
-              boost::variant<double, boost::shared_ptr<MatrixType> > >& matMap){    
+              boost::variant<double, boost::shared_ptr<MatrixType> > >& matMap){
+    typedef boost::shared_ptr<MatrixType> MatrixPtrType;
+    typedef AMD::MatrixAdaptor_t<MatrixType> MatrixAdaptorType;
+
     const detail::Tree& root = *expr;
     std::ostringstream stream;
     stream << root;
@@ -66,17 +69,26 @@ void evaluate(const Expression& expr,
         if (std::string::npos != 
             root.info().find_first_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ")) {
             // Matrix
+            if(matMap.find(key) == matMap.end()) {
+                LOG_ERROR << "Evaluate failed, Undefined Matrix: " 
+                    << root.info();
+            }
+
         }
     }
 
     // unary op (+, -, tr, lgdt, _, '')
     if (root.left() && false==root.right()) { 
-        LOG_INFO << "Found unary operation";
+        LOG_INFO << "Found unary operation: " << root.info();
 
         evaluate(root.left(), matMap);
 
         stream.str("");
         stream << *root.left();
+        if(matMap.find(stream.str()) == matMap.end()) {
+            LOG_ERROR << "Evaluate failed, Undefined Expression: " 
+                    << stream.str();
+        }
         boost::variant<double, boost::shared_ptr<MatrixType> > val = 
             matMap[stream.str()];
 
@@ -97,21 +109,42 @@ void evaluate(const Expression& expr,
 
     // binary op (+, -, o, *)
     if(root.left() && root.right()){
-        LOG_INFO << "Found binary operation";
+        LOG_INFO << "Found binary operation: " << root.info();
 
         std::ostringstream stream;
 
         stream << *root.left();
+        if(matMap.find(stream.str()) == matMap.end()) {
+            LOG_ERROR << "Evaluate failed, Undefined Expression: " 
+                    << stream.str();
+        }
         boost::variant<double, boost::shared_ptr<MatrixType> > leftVal = 
             matMap[stream.str()];
 
         stream.str("");
 
         stream << *root.right();
+        if(matMap.find(stream.str()) == matMap.end()) {
+            LOG_ERROR << "Evaluate failed, Undefined Expression: " 
+                    << stream.str();
+        }
         boost::variant<double, boost::shared_ptr<MatrixType> > rightVal = 
             matMap[stream.str()];
 
-        if ("+" == root.info()) { }
+        if ("+" == root.info()) { 
+
+            if(leftVal.which() == 0){ 
+                // Operands are doubles
+                matMap[key] = *leftVal + *rightVal;
+            }
+            else{
+                // Operands are matrices
+                MatrixPtrType result;
+                MatrixAdaptorType::add(*leftVal, *rightVal, result);
+                matMap[key] = result;
+            }
+
+        }
 
         else if ("-" == root.info()) { }
 

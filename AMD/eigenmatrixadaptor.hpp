@@ -6,7 +6,7 @@
 #include <Eigen/Sparse>
 #include <boost/shared_ptr.hpp>
 
-#include <AMD/MatrixAdaptor.hpp>
+#include <AMD/matrixadaptor.hpp>
 
 namespace AMD {
 
