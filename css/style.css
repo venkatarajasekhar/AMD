@@ -34,16 +34,17 @@ h1 {
 
 h2 {
     color: #be6c82;
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-family: 'merriweatherlight', sans-serif;
+    margin: 5px 0px;
 }
 
 h3 {
     color: #474747;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     text-transform: uppercase;
-    font-family: 'Source-Sans-Pro-Light', sans-serif;
-    font-weight: normal;
+    font-family: 'Source-Sans-Pro-Bold', sans-serif;
+    margin-top: 20px;
 }
 
 /* Navigation */
@@ -92,6 +93,15 @@ nav ul li a:hover {
     color: #474747;
 }
 
+.span-1 a {
+    color: #be6c82;
+    text-decoration: none;
+}
+
+.span-1 a:hover {
+    text-decoration: underline;
+}
+
 .code-inline {
     font-family: "Inconsolata", monospace;
     color: #be6c82;
@@ -111,6 +121,8 @@ nav ul li a:hover {
     font-family: "Inconsolata", monospace;
     color: #be6c82;
     background-color: #e6e6e6;
-    margin: 5px 15%;
+    margin: 5px 10%;
     font-size: 1.15rem;
+    padding: 5px;
+    overflow-x: auto;
 }
