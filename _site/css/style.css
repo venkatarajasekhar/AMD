@@ -36,7 +36,11 @@ h2 {
     color: #be6c82;
     font-size: 1.75rem;
     font-family: 'merriweatherlight', sans-serif;
-    margin: 5px 0px;
+    margin-top: 20px;
+}
+
+h2:first-of-type {
+    margin-top:5px;
 }
 
 h3 {
@@ -46,6 +50,15 @@ h3 {
     font-family: 'Source-Sans-Pro-Bold', sans-serif;
     margin-top: 20px;
 }
+
+h3:first-of-type {
+    margin-top:5px;
+}
+
+h2 + h3 {
+    margin-top:5px;
+}
+
 
 /* Navigation */
 nav ul {
@@ -100,6 +113,10 @@ nav ul li a:hover {
 
 .span-1 a:hover {
     text-decoration: underline;
+}
+
+.span-1 ul {
+    margin-left: 30px;
 }
 
 .code-inline {
