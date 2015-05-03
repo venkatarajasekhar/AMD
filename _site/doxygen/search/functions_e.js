@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['setinfo',['setInfo',['../class_a_m_d_1_1detail_1_1_tree.html#ac45b85b40eae8bd109ee18231043c164',1,'AMD::detail::Tree']]],
-  ['setleftchild',['setLeftChild',['../class_a_m_d_1_1detail_1_1_tree.html#a8738852f507baacb2438de39ee6affc5',1,'AMD::detail::Tree']]],
-  ['setloglevel',['setLogLevel',['../namespace_a_m_d.html#af5e5614b906324d33c441cb61e0617bf',1,'AMD::setLogLevel(LogLevel::severity threshold)'],['../namespace_a_m_d.html#a211d598eca013e6ce4e99ccbdd2b5601',1,'AMD::setLogLevel(int threshold)']]],
-  ['setrightchild',['setRightChild',['../class_a_m_d_1_1detail_1_1_tree.html#aef4572b8ed6bd54d4978f952b6418dd2',1,'AMD::detail::Tree']]],
-  ['swap',['swap',['../class_a_m_d_1_1detail_1_1_tree.html#a41a0aea0dbfe7db08b3910fda838cde4',1,'AMD::detail::Tree']]]
+  ['torightrecursiverep',['toRightRecursiveRep',['../namespace_a_m_d.html#a836f559e665029c52fd59ad1ade6fcb8',1,'AMD']]],
+  ['trace',['trace',['../struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_matrix_3_01_t_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#a1306328d258479ef0348ad5f0c5a774d',1,'AMD::MatrixAdaptor_t&lt; Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic &gt; &gt;::trace()'],['../struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#aa7b19079a0f62ec3f3daf42e3be86cfa',1,'AMD::MatrixAdaptor_t&lt; Eigen::SparseMatrix&lt; T &gt; &gt;::trace()'],['../struct_a_m_d_1_1_exception.html#ae8792058521ef158534a30ec551651ca',1,'AMD::Exception::trace()'],['../struct_a_m_d_1_1_exception_impl.html#a2e9a9acb5409ccd171dd51fe970cf10c',1,'AMD::ExceptionImpl::trace()']]],
+  ['tree',['Tree',['../class_a_m_d_1_1detail_1_1_tree.html#a03fee29c9db9066fa9af6e8735c981df',1,'AMD::detail::Tree']]]
 ];

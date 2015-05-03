@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['rethrow',['rethrow',['../struct_a_m_d_1_1_exception.html#a7266f85fec01e82e1adc6fa005d58949',1,'AMD::Exception::rethrow()'],['../struct_a_m_d_1_1_exception_impl.html#ab79fc4419a98784c8ce6801ee3a2a6f1',1,'AMD::ExceptionImpl::rethrow()']]],
-  ['right',['right',['../class_a_m_d_1_1detail_1_1_expression_tree.html#ac9c650b4ca2f71fd901ac64f07774e1a',1,'AMD::detail::ExpressionTree::right()'],['../class_a_m_d_1_1detail_1_1_tree.html#a4d68184ec6d7315bfc0e01412bd497d6',1,'AMD::detail::Tree::right()']]],
-  ['rrtesthelper',['RRTestHelper',['../expression_8t_8cpp.html#a03a1b0eb59a03d895a24072da3509859',1,'expression.t.cpp']]]
+  ['setinfo',['setInfo',['../class_a_m_d_1_1detail_1_1_tree.html#ac45b85b40eae8bd109ee18231043c164',1,'AMD::detail::Tree']]],
+  ['setleftchild',['setLeftChild',['../class_a_m_d_1_1detail_1_1_tree.html#a8738852f507baacb2438de39ee6affc5',1,'AMD::detail::Tree']]],
+  ['setloglevel',['setLogLevel',['../namespace_a_m_d.html#af5e5614b906324d33c441cb61e0617bf',1,'AMD::setLogLevel(LogLevel::severity threshold)'],['../namespace_a_m_d.html#a211d598eca013e6ce4e99ccbdd2b5601',1,'AMD::setLogLevel(int threshold)']]],
+  ['setrightchild',['setRightChild',['../class_a_m_d_1_1detail_1_1_tree.html#aef4572b8ed6bd54d4978f952b6418dd2',1,'AMD::detail::Tree']]],
+  ['swap',['swap',['../class_a_m_d_1_1detail_1_1_tree.html#a41a0aea0dbfe7db08b3910fda838cde4',1,'AMD::detail::Tree']]]
 ];

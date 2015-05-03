@@ -8,6 +8,14 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript">
+  $(document).ready(initResizable);
+  $(window).load(resizeHeight);
+</script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -65,6 +73,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="globals.html"><span>File&#160;Members</span></a></li>
     </ul>
   </div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){initNavTree('exception_8hpp.html','');});
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -79,7 +102,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-</div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
@@ -117,14 +139,17 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:aaaaa078abc5dfecf968e211dd9d1474c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exception_8hpp.html#aaaaa078abc5dfecf968e211dd9d1474c">LINE_TO_STR_HELP</a>(line)&#160;&#160;&#160;#line</td></tr>
-<tr class="memdesc:aaaaa078abc5dfecf968e211dd9d1474c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to covert line number to string.  <a href="#aaaaa078abc5dfecf968e211dd9d1474c">More...</a><br /></td></tr>
+<tr class="memitem:aaaaa078abc5dfecf968e211dd9d1474c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaaaa078abc5dfecf968e211dd9d1474c"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exception_8hpp.html#aaaaa078abc5dfecf968e211dd9d1474c">LINE_TO_STR_HELP</a>(line)&#160;&#160;&#160;#line</td></tr>
+<tr class="memdesc:aaaaa078abc5dfecf968e211dd9d1474c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to covert line number to string. <br /></td></tr>
 <tr class="separator:aaaaa078abc5dfecf968e211dd9d1474c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a371ae7b8610da0f7efcc0f862093183d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exception_8hpp.html#a371ae7b8610da0f7efcc0f862093183d">LINE_TO_STR</a>(line)&#160;&#160;&#160;<a class="el" href="exception_8hpp.html#aaaaa078abc5dfecf968e211dd9d1474c">LINE_TO_STR_HELP</a>(line)</td></tr>
-<tr class="memdesc:a371ae7b8610da0f7efcc0f862093183d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a string that represents the file name and the line number.  <a href="#a371ae7b8610da0f7efcc0f862093183d">More...</a><br /></td></tr>
+<tr class="memitem:a371ae7b8610da0f7efcc0f862093183d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a371ae7b8610da0f7efcc0f862093183d"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exception_8hpp.html#a371ae7b8610da0f7efcc0f862093183d">LINE_TO_STR</a>(line)&#160;&#160;&#160;<a class="el" href="exception_8hpp.html#aaaaa078abc5dfecf968e211dd9d1474c">LINE_TO_STR_HELP</a>(line)</td></tr>
+<tr class="memdesc:a371ae7b8610da0f7efcc0f862093183d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a string that represents the file name and the line number. <br /></td></tr>
 <tr class="separator:a371ae7b8610da0f7efcc0f862093183d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5131e02c31ef495a12f7b8aacf1cba04"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exception_8hpp.html#a5131e02c31ef495a12f7b8aacf1cba04">FILE_AND_LINE</a>()&#160;&#160;&#160;__FILE__ &quot;:&quot; <a class="el" href="exception_8hpp.html#a371ae7b8610da0f7efcc0f862093183d">LINE_TO_STR</a>(__LINE__)</td></tr>
-<tr class="memdesc:a5131e02c31ef495a12f7b8aacf1cba04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append file and line information to string.  <a href="#a5131e02c31ef495a12f7b8aacf1cba04">More...</a><br /></td></tr>
+<tr class="memitem:a5131e02c31ef495a12f7b8aacf1cba04"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5131e02c31ef495a12f7b8aacf1cba04"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exception_8hpp.html#a5131e02c31ef495a12f7b8aacf1cba04">FILE_AND_LINE</a>()&#160;&#160;&#160;__FILE__ &quot;:&quot; <a class="el" href="exception_8hpp.html#a371ae7b8610da0f7efcc0f862093183d">LINE_TO_STR</a>(__LINE__)</td></tr>
+<tr class="memdesc:a5131e02c31ef495a12f7b8aacf1cba04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append file and line information to string. <br /></td></tr>
 <tr class="separator:a5131e02c31ef495a12f7b8aacf1cba04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc1f2820adb97b0aaabd0c6d67255fd6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exception_8hpp.html#afc1f2820adb97b0aaabd0c6d67255fd6">APPEND_LOCATION</a>(str)&#160;&#160;&#160;str&quot; at &quot;FILE_AND_LINE()</td></tr>
 <tr class="separator:afc1f2820adb97b0aaabd0c6d67255fd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -134,11 +159,13 @@ Macros</h2></td></tr>
 <tr class="memitem:a81e166b03cb057a70e5f34a6ee38568b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exception_8hpp.html#a81e166b03cb057a70e5f34a6ee38568b">AMD_CATCH_AND_PRINT</a>()</td></tr>
 <tr class="memdesc:a81e166b03cb057a70e5f34a6ee38568b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to start the try block.  <a href="#a81e166b03cb057a70e5f34a6ee38568b">More...</a><br /></td></tr>
 <tr class="separator:a81e166b03cb057a70e5f34a6ee38568b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c7327f9f27749c16ca1b05d702ac4a3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exception_8hpp.html#a3c7327f9f27749c16ca1b05d702ac4a3">AMD_START_TRY_BLOCK</a>()&#160;&#160;&#160;try {</td></tr>
-<tr class="memdesc:a3c7327f9f27749c16ca1b05d702ac4a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to start the try block in the constructor.  <a href="#a3c7327f9f27749c16ca1b05d702ac4a3">More...</a><br /></td></tr>
+<tr class="memitem:a3c7327f9f27749c16ca1b05d702ac4a3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3c7327f9f27749c16ca1b05d702ac4a3"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exception_8hpp.html#a3c7327f9f27749c16ca1b05d702ac4a3">AMD_START_TRY_BLOCK</a>()&#160;&#160;&#160;try {</td></tr>
+<tr class="memdesc:a3c7327f9f27749c16ca1b05d702ac4a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to start the try block in the constructor. <br /></td></tr>
 <tr class="separator:a3c7327f9f27749c16ca1b05d702ac4a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5939678fedfc2ab8d00759967cdd9221"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exception_8hpp.html#a5939678fedfc2ab8d00759967cdd9221">AMD_CONSTRUCTOR_TRY_BLOCK</a>()&#160;&#160;&#160;try</td></tr>
-<tr class="memdesc:a5939678fedfc2ab8d00759967cdd9221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to end the try block.  <a href="#a5939678fedfc2ab8d00759967cdd9221">More...</a><br /></td></tr>
+<tr class="memitem:a5939678fedfc2ab8d00759967cdd9221"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5939678fedfc2ab8d00759967cdd9221"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exception_8hpp.html#a5939678fedfc2ab8d00759967cdd9221">AMD_CONSTRUCTOR_TRY_BLOCK</a>()&#160;&#160;&#160;try</td></tr>
+<tr class="memdesc:a5939678fedfc2ab8d00759967cdd9221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to end the try block. <br /></td></tr>
 <tr class="separator:a5939678fedfc2ab8d00759967cdd9221"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4879089b22b79dd95844cab928b45d75"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exception_8hpp.html#a4879089b22b79dd95844cab928b45d75">AMD_END_TRY_BLOCK</a>()&#160;&#160;&#160;}</td></tr>
 <tr class="separator:a4879089b22b79dd95844cab928b45d75"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -230,23 +257,6 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a5939678fedfc2ab8d00759967cdd9221"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define AMD_CONSTRUCTOR_TRY_BLOCK</td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td>&#160;&#160;&#160;try</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Used to end the try block. </p>
-
-</div>
-</div>
 <a class="anchor" id="a4879089b22b79dd95844cab928b45d75"></a>
 <div class="memitem">
 <div class="memproto">
@@ -260,23 +270,6 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Primary base class used to report errors up the call stack to the invocation site </p>
-
-</div>
-</div>
-<a class="anchor" id="a3c7327f9f27749c16ca1b05d702ac4a3"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define AMD_START_TRY_BLOCK</td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td>&#160;&#160;&#160;try {</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Used to start the try block in the constructor. </p>
 
 </div>
 </div>
@@ -297,59 +290,6 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a5131e02c31ef495a12f7b8aacf1cba04"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define FILE_AND_LINE</td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td>&#160;&#160;&#160;__FILE__ &quot;:&quot; <a class="el" href="exception_8hpp.html#a371ae7b8610da0f7efcc0f862093183d">LINE_TO_STR</a>(__LINE__)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Append file and line information to string. </p>
-
-</div>
-</div>
-<a class="anchor" id="a371ae7b8610da0f7efcc0f862093183d"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define LINE_TO_STR</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">line</td><td>)</td>
-          <td>&#160;&#160;&#160;<a class="el" href="exception_8hpp.html#aaaaa078abc5dfecf968e211dd9d1474c">LINE_TO_STR_HELP</a>(line)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns a string that represents the file name and the line number. </p>
-
-</div>
-</div>
-<a class="anchor" id="aaaaa078abc5dfecf968e211dd9d1474c"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define LINE_TO_STR_HELP</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">line</td><td>)</td>
-          <td>&#160;&#160;&#160;#line</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Helper function to covert line number to string. </p>
-
-</div>
-</div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a class="anchor" id="a06fc87d81c62e9abb8790b6e5713c55b"></a>
 <div class="memitem">
@@ -365,11 +305,15 @@ Enumerations</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated on Fri May 1 2015 11:30:52 for AMD by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.9.1
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="exception_8hpp.html">exception.hpp</a></li>
+    <li class="footer">Generated on Sun May 3 2015 03:26:43 for AMD by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
+  </ul>
+</div>
 </body>
 </html>

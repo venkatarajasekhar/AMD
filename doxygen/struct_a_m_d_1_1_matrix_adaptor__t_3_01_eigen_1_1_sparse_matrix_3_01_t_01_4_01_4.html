@@ -8,6 +8,14 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript">
+  $(document).ready(initResizable);
+  $(window).load(resizeHeight);
+</script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -67,6 +75,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
     </ul>
   </div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){initNavTree('struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html','');});
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -81,11 +104,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="namespace_a_m_d.html">AMD</a></li><li class="navelem"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html">MatrixAdaptor_t&lt; Eigen::SparseMatrix&lt; T &gt; &gt;</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
@@ -95,8 +113,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">AMD::MatrixAdaptor_t&lt; Eigen::SparseMatrix&lt; T &gt; &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><code>#include &lt;<a class="el" href="eigenmatrixadaptor_8hpp_source.html">eigenmatrixadaptor.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for AMD::MatrixAdaptor_t&lt; Eigen::SparseMatrix&lt; T &gt; &gt;:</div>
 <div class="dyncontent">
@@ -109,108 +125,84 @@ Inheritance diagram for AMD::MatrixAdaptor_t&lt; Eigen::SparseMatrix&lt; T &gt; 
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a93bf3b18e77d696426edc0a50564b5fc"><td class="memItemLeft" align="right" valign="top">typedef T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a93bf3b18e77d696426edc0a50564b5fc">value_type</a></td></tr>
+<tr class="memitem:a93bf3b18e77d696426edc0a50564b5fc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a93bf3b18e77d696426edc0a50564b5fc"></a>
+typedef T&#160;</td><td class="memItemRight" valign="bottom"><b>value_type</b></td></tr>
 <tr class="separator:a93bf3b18e77d696426edc0a50564b5fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a346624961788b574ecd6f73d7bf020ce"><td class="memItemLeft" align="right" valign="top">typedef Eigen::SparseMatrix&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a></td></tr>
+<tr class="memitem:a346624961788b574ecd6f73d7bf020ce"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a346624961788b574ecd6f73d7bf020ce"></a>
+typedef Eigen::SparseMatrix&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>matrix_type</b></td></tr>
 <tr class="separator:a346624961788b574ecd6f73d7bf020ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a274014c193671d374157c51ef942914e"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html">EigenMatrixAdaptorBase</a>&lt; <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a93bf3b18e77d696426edc0a50564b5fc">value_type</a>, <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a274014c193671d374157c51ef942914e">base_type</a></td></tr>
+<tr class="memitem:a274014c193671d374157c51ef942914e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a274014c193671d374157c51ef942914e"></a>
+typedef <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html">EigenMatrixAdaptorBase</a>&lt; value_type, matrix_type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>base_type</b></td></tr>
 <tr class="separator:a274014c193671d374157c51ef942914e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_types_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td colspan="2" onclick="javascript:toggleInherit('pub_types_struct_a_m_d_1_1_eigen_matrix_adaptor_base')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html">AMD::EigenMatrixAdaptorBase&lt; T, Eigen::SparseMatrix&lt; T &gt; &gt;</a></td></tr>
-<tr class="memitem:a4ff77135b757db42845f27bb0d6521b3 inherit pub_types_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">typedef T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a4ff77135b757db42845f27bb0d6521b3">value_type</a></td></tr>
+<tr class="memitem:a4ff77135b757db42845f27bb0d6521b3 inherit pub_types_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4ff77135b757db42845f27bb0d6521b3"></a>
+typedef T&#160;</td><td class="memItemRight" valign="bottom"><b>value_type</b></td></tr>
 <tr class="separator:a4ff77135b757db42845f27bb0d6521b3 inherit pub_types_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57c833b1c900bd80a219b8f15bdc1771 inherit pub_types_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">typedef Eigen::SparseMatrix&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a></td></tr>
+<tr class="memitem:a57c833b1c900bd80a219b8f15bdc1771 inherit pub_types_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a57c833b1c900bd80a219b8f15bdc1771"></a>
+typedef Eigen::SparseMatrix&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>matrix_type</b></td></tr>
 <tr class="separator:a57c833b1c900bd80a219b8f15bdc1771 inherit pub_types_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a0b3a2c634f07778ba87604a9439ee451"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a0b3a2c634f07778ba87604a9439ee451">inv</a> (const <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a> &amp;A, <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a> &amp;B)</td></tr>
+<tr class="memitem:a0b3a2c634f07778ba87604a9439ee451"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a0b3a2c634f07778ba87604a9439ee451">inv</a> (const matrix_type &amp;A, matrix_type &amp;B)</td></tr>
 <tr class="memdesc:a0b3a2c634f07778ba87604a9439ee451"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the inverse of a matrix.  <a href="#a0b3a2c634f07778ba87604a9439ee451">More...</a><br /></td></tr>
 <tr class="separator:a0b3a2c634f07778ba87604a9439ee451"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa7b19079a0f62ec3f3daf42e3be86cfa"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a93bf3b18e77d696426edc0a50564b5fc">value_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#aa7b19079a0f62ec3f3daf42e3be86cfa">trace</a> (const <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a> &amp;A)</td></tr>
+<tr class="memitem:aa7b19079a0f62ec3f3daf42e3be86cfa"><td class="memItemLeft" align="right" valign="top">static value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#aa7b19079a0f62ec3f3daf42e3be86cfa">trace</a> (const matrix_type &amp;A)</td></tr>
 <tr class="memdesc:aa7b19079a0f62ec3f3daf42e3be86cfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the trace of a matrix.  <a href="#aa7b19079a0f62ec3f3daf42e3be86cfa">More...</a><br /></td></tr>
 <tr class="separator:aa7b19079a0f62ec3f3daf42e3be86cfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2a8bd33aec640ffac14aacd041dda7e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#ac2a8bd33aec640ffac14aacd041dda7e">eye</a> (int n)</td></tr>
+<tr class="memitem:ac2a8bd33aec640ffac14aacd041dda7e"><td class="memItemLeft" align="right" valign="top">static matrix_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#ac2a8bd33aec640ffac14aacd041dda7e">eye</a> (int n)</td></tr>
 <tr class="memdesc:ac2a8bd33aec640ffac14aacd041dda7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an identity matrix of the requested size.  <a href="#ac2a8bd33aec640ffac14aacd041dda7e">More...</a><br /></td></tr>
 <tr class="separator:ac2a8bd33aec640ffac14aacd041dda7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5da68ce091c4cbcd3621f8821c538bd"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#ac5da68ce091c4cbcd3621f8821c538bd">zeros</a> (int m, int n)</td></tr>
+<tr class="memitem:ac5da68ce091c4cbcd3621f8821c538bd"><td class="memItemLeft" align="right" valign="top">static matrix_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#ac5da68ce091c4cbcd3621f8821c538bd">zeros</a> (int m, int n)</td></tr>
 <tr class="memdesc:ac5da68ce091c4cbcd3621f8821c538bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an zero matrix of the requested size.  <a href="#ac5da68ce091c4cbcd3621f8821c538bd">More...</a><br /></td></tr>
 <tr class="separator:ac5da68ce091c4cbcd3621f8821c538bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fc6d0bf7b166e2b5f378cbc347d80b0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a0fc6d0bf7b166e2b5f378cbc347d80b0">diag</a> (const <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a> &amp;A, <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a> &amp;B)</td></tr>
+<tr class="memitem:a0fc6d0bf7b166e2b5f378cbc347d80b0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a0fc6d0bf7b166e2b5f378cbc347d80b0">diag</a> (const matrix_type &amp;A, matrix_type &amp;B)</td></tr>
 <tr class="memdesc:a0fc6d0bf7b166e2b5f378cbc347d80b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract the diagonal elements of a matrix.  <a href="#a0fc6d0bf7b166e2b5f378cbc347d80b0">More...</a><br /></td></tr>
 <tr class="separator:a0fc6d0bf7b166e2b5f378cbc347d80b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html">AMD::EigenMatrixAdaptorBase&lt; T, Eigen::SparseMatrix&lt; T &gt; &gt;</a></td></tr>
-<tr class="memitem:a56a5ea728e52af0481df724640dc5d7b inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static boost::shared_ptr&lt; <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a56a5ea728e52af0481df724640dc5d7b">defaultConstructMatrix</a> (int m, int n, std::string name=&quot;&quot;)</td></tr>
+<tr class="memitem:a56a5ea728e52af0481df724640dc5d7b inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56a5ea728e52af0481df724640dc5d7b"></a>
+static boost::shared_ptr&lt; matrix_type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>defaultConstructMatrix</b> (int m, int n, std::string name=&quot;&quot;)</td></tr>
 <tr class="separator:a56a5ea728e52af0481df724640dc5d7b inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ec664c962f95be13a5102882537e641 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static boost::shared_ptr&lt; <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a0ec664c962f95be13a5102882537e641">copyConstructMatrix</a> (const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;original)</td></tr>
+<tr class="memitem:a0ec664c962f95be13a5102882537e641 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0ec664c962f95be13a5102882537e641"></a>
+static boost::shared_ptr&lt; matrix_type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>copyConstructMatrix</b> (const matrix_type &amp;original)</td></tr>
 <tr class="separator:a0ec664c962f95be13a5102882537e641 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba585ff273ae085a5cc648aee4483751 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#aba585ff273ae085a5cc648aee4483751">getNumRows</a> (const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;A)</td></tr>
+<tr class="memitem:aba585ff273ae085a5cc648aee4483751 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba585ff273ae085a5cc648aee4483751"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>getNumRows</b> (const matrix_type &amp;A)</td></tr>
 <tr class="separator:aba585ff273ae085a5cc648aee4483751 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c55ac88ef31e8afe1bbff15a3bf60b3 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a9c55ac88ef31e8afe1bbff15a3bf60b3">getNumCols</a> (const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;A)</td></tr>
+<tr class="memitem:a9c55ac88ef31e8afe1bbff15a3bf60b3 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c55ac88ef31e8afe1bbff15a3bf60b3"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>getNumCols</b> (const matrix_type &amp;A)</td></tr>
 <tr class="separator:a9c55ac88ef31e8afe1bbff15a3bf60b3 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36e1ec2aee1a3e269d611d20cd4a0621 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a36e1ec2aee1a3e269d611d20cd4a0621">add</a> (const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;A, const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;B, <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;C)</td></tr>
+<tr class="memitem:a36e1ec2aee1a3e269d611d20cd4a0621 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a36e1ec2aee1a3e269d611d20cd4a0621"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (const matrix_type &amp;A, const matrix_type &amp;B, matrix_type &amp;C)</td></tr>
 <tr class="separator:a36e1ec2aee1a3e269d611d20cd4a0621 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96f7014fed20939517533fd0e2e662df inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a96f7014fed20939517533fd0e2e662df">minus</a> (const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;A, const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;B, <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;C)</td></tr>
+<tr class="memitem:a96f7014fed20939517533fd0e2e662df inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a96f7014fed20939517533fd0e2e662df"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>minus</b> (const matrix_type &amp;A, const matrix_type &amp;B, matrix_type &amp;C)</td></tr>
 <tr class="separator:a96f7014fed20939517533fd0e2e662df inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89dc84102e2877855d20cf30d501c16b inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a89dc84102e2877855d20cf30d501c16b">multiply</a> (const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;A, const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;B, <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;C)</td></tr>
+<tr class="memitem:a89dc84102e2877855d20cf30d501c16b inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a89dc84102e2877855d20cf30d501c16b"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>multiply</b> (const matrix_type &amp;A, const matrix_type &amp;B, matrix_type &amp;C)</td></tr>
 <tr class="separator:a89dc84102e2877855d20cf30d501c16b inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a999b8dea9c1d6b3758e6c32f2acd9863 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a999b8dea9c1d6b3758e6c32f2acd9863">multiply</a> (const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;A, const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a4ff77135b757db42845f27bb0d6521b3">value_type</a> &amp;a, <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;B)</td></tr>
+<tr class="memitem:a999b8dea9c1d6b3758e6c32f2acd9863 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a999b8dea9c1d6b3758e6c32f2acd9863"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>multiply</b> (const matrix_type &amp;A, const value_type &amp;a, matrix_type &amp;B)</td></tr>
 <tr class="separator:a999b8dea9c1d6b3758e6c32f2acd9863 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d8dc222c58ad6b586e7a9293146ce5b inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a3d8dc222c58ad6b586e7a9293146ce5b">transpose</a> (const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;A, <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;B)</td></tr>
+<tr class="memitem:a3d8dc222c58ad6b586e7a9293146ce5b inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d8dc222c58ad6b586e7a9293146ce5b"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>transpose</b> (const matrix_type &amp;A, matrix_type &amp;B)</td></tr>
 <tr class="separator:a3d8dc222c58ad6b586e7a9293146ce5b inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aacb95cbd9c6c70b1590d9df650ba1ee0 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#aacb95cbd9c6c70b1590d9df650ba1ee0">negation</a> (const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;A, <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;B)</td></tr>
+<tr class="memitem:aacb95cbd9c6c70b1590d9df650ba1ee0 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aacb95cbd9c6c70b1590d9df650ba1ee0"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>negation</b> (const matrix_type &amp;A, matrix_type &amp;B)</td></tr>
 <tr class="separator:aacb95cbd9c6c70b1590d9df650ba1ee0 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a411b5c20315f0e57edf5744df883477f inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a411b5c20315f0e57edf5744df883477f">logdet</a> (const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;A)</td></tr>
+<tr class="memitem:a411b5c20315f0e57edf5744df883477f inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a411b5c20315f0e57edf5744df883477f"></a>
+static double&#160;</td><td class="memItemRight" valign="bottom"><b>logdet</b> (const matrix_type &amp;A)</td></tr>
 <tr class="separator:a411b5c20315f0e57edf5744df883477f inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad153bae4ce688364ad65ae8701f1b5e7 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#ad153bae4ce688364ad65ae8701f1b5e7">copy</a> (<a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;A, const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;B)</td></tr>
+<tr class="memitem:ad153bae4ce688364ad65ae8701f1b5e7 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad153bae4ce688364ad65ae8701f1b5e7"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>copy</b> (matrix_type &amp;A, const matrix_type &amp;B)</td></tr>
 <tr class="separator:ad153bae4ce688364ad65ae8701f1b5e7 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c0d753997a85f9a0c697e3e058c4691 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a3c0d753997a85f9a0c697e3e058c4691">print</a> (const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;A, std::ostream &amp;os=std::cout)</td></tr>
+<tr class="memitem:a3c0d753997a85f9a0c697e3e058c4691 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3c0d753997a85f9a0c697e3e058c4691"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>print</b> (const matrix_type &amp;A, std::ostream &amp;os=std::cout)</td></tr>
 <tr class="separator:a3c0d753997a85f9a0c697e3e058c4691 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a372b890f6b9e8ab80fe98651a4230f63 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a372b890f6b9e8ab80fe98651a4230f63">elementwiseProduct</a> (const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;A, const <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;B, <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">matrix_type</a> &amp;C)</td></tr>
+<tr class="memitem:a372b890f6b9e8ab80fe98651a4230f63 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a372b890f6b9e8ab80fe98651a4230f63"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>elementwiseProduct</b> (const matrix_type &amp;A, const matrix_type &amp;B, matrix_type &amp;C)</td></tr>
 <tr class="separator:a372b890f6b9e8ab80fe98651a4230f63 inherit pub_static_methods_struct_a_m_d_1_1_eigen_matrix_adaptor_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
-<a class="anchor" id="a274014c193671d374157c51ef942914e"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html">EigenMatrixAdaptorBase</a>&lt;<a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a93bf3b18e77d696426edc0a50564b5fc">value_type</a>, <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a>&gt; <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t.html">AMD::MatrixAdaptor_t</a>&lt; Eigen::SparseMatrix&lt; T &gt; &gt;::<a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a274014c193671d374157c51ef942914e">base_type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a346624961788b574ecd6f73d7bf020ce"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Eigen::SparseMatrix&lt;T&gt; <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t.html">AMD::MatrixAdaptor_t</a>&lt; Eigen::SparseMatrix&lt; T &gt; &gt;::<a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a93bf3b18e77d696426edc0a50564b5fc"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef T <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t.html">AMD::MatrixAdaptor_t</a>&lt; Eigen::SparseMatrix&lt; T &gt; &gt;::<a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a93bf3b18e77d696426edc0a50564b5fc">value_type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a0fc6d0bf7b166e2b5f378cbc347d80b0"></a>
 <div class="memitem">
@@ -224,13 +216,13 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">static void <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t.html">AMD::MatrixAdaptor_t</a>&lt; Eigen::SparseMatrix&lt; T &gt; &gt;::diag </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a> &amp;&#160;</td>
+          <td class="paramtype">const matrix_type &amp;&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a> &amp;&#160;</td>
+          <td class="paramtype">matrix_type &amp;&#160;</td>
           <td class="paramname"><em>B</em>&#160;</td>
         </tr>
         <tr>
@@ -270,7 +262,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a> <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t.html">AMD::MatrixAdaptor_t</a>&lt; Eigen::SparseMatrix&lt; T &gt; &gt;::eye </td>
+          <td class="memname">static matrix_type <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t.html">AMD::MatrixAdaptor_t</a>&lt; Eigen::SparseMatrix&lt; T &gt; &gt;::eye </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>n</em></td><td>)</td>
@@ -310,13 +302,13 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">static void <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t.html">AMD::MatrixAdaptor_t</a>&lt; Eigen::SparseMatrix&lt; T &gt; &gt;::inv </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a> &amp;&#160;</td>
+          <td class="paramtype">const matrix_type &amp;&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a> &amp;&#160;</td>
+          <td class="paramtype">matrix_type &amp;&#160;</td>
           <td class="paramname"><em>B</em>&#160;</td>
         </tr>
         <tr>
@@ -356,9 +348,9 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a93bf3b18e77d696426edc0a50564b5fc">value_type</a> <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t.html">AMD::MatrixAdaptor_t</a>&lt; Eigen::SparseMatrix&lt; T &gt; &gt;::trace </td>
+          <td class="memname">static value_type <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t.html">AMD::MatrixAdaptor_t</a>&lt; Eigen::SparseMatrix&lt; T &gt; &gt;::trace </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a> &amp;&#160;</td>
+          <td class="paramtype">const matrix_type &amp;&#160;</td>
           <td class="paramname"><em>A</em></td><td>)</td>
           <td></td>
         </tr>
@@ -394,7 +386,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">matrix_type</a> <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t.html">AMD::MatrixAdaptor_t</a>&lt; Eigen::SparseMatrix&lt; T &gt; &gt;::zeros </td>
+          <td class="memname">static matrix_type <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t.html">AMD::MatrixAdaptor_t</a>&lt; Eigen::SparseMatrix&lt; T &gt; &gt;::zeros </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>m</em>, </td>
@@ -436,11 +428,15 @@ template&lt;typename T &gt; </div>
 <li><a class="el" href="eigenmatrixadaptor_8hpp_source.html">eigenmatrixadaptor.hpp</a></li>
 </ul>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated on Fri May 1 2015 11:30:52 for AMD by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.9.1
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="namespace_a_m_d.html">AMD</a></li><li class="navelem"><a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html">MatrixAdaptor_t&lt; Eigen::SparseMatrix&lt; T &gt; &gt;</a></li>
+    <li class="footer">Generated on Sun May 3 2015 03:26:43 for AMD by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
+  </ul>
+</div>
 </body>
 </html>

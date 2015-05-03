@@ -8,6 +8,14 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript">
+  $(document).ready(initResizable);
+  $(window).load(resizeHeight);
+</script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -70,11 +78,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="namespacemembers.html"><span>All</span></a></li>
       <li class="current"><a href="namespacemembers_func.html"><span>Functions</span></a></li>
       <li><a href="namespacemembers_type.html"><span>Typedefs</span></a></li>
-      <li><a href="namespacemembers_enum.html"><span>Enumerations</span></a></li>
-      <li><a href="namespacemembers_eval.html"><span>Enumerator</span></a></li>
     </ul>
   </div>
 </div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){initNavTree('namespacemembers_func.html','');});
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -91,29 +111,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="contents">
 &#160;<ul>
-<li>calcAdditionDerivative()
-: <a class="el" href="namespace_a_m_d.html#a7f8856bd7256de1486a95c8fb978e3a7">AMD</a>
-</li>
-<li>calcElemProductDerivative()
-: <a class="el" href="namespace_a_m_d.html#af4b37a10edb3c1cbe3ad17856c8870c9">AMD</a>
-</li>
-<li>calcInverseDerivative()
-: <a class="el" href="namespace_a_m_d.html#a9dcd21859f8bb5318c347b1f25a71bc6">AMD</a>
-</li>
-<li>calcLogDetDerivative()
-: <a class="el" href="namespace_a_m_d.html#a7da7b39e39896ce9c4394923d26fcf0d">AMD</a>
-</li>
 <li>calcNegationDerivative()
 : <a class="el" href="namespace_a_m_d.html#a8cf2766d80b22167b57065c3dbe29f39">AMD</a>
-</li>
-<li>calcProductDerivative()
-: <a class="el" href="namespace_a_m_d.html#a4d764ad3e5e1d4eb45ebc9a8e2551315">AMD</a>
-</li>
-<li>calcTraceDerivative()
-: <a class="el" href="namespace_a_m_d.html#adc1628c0d5667453a0be1c550b4a34ab">AMD</a>
-</li>
-<li>calcTransposeDerivative()
-: <a class="el" href="namespace_a_m_d.html#a76bca5be6e14bf61e0b9e47dc0d659f2">AMD</a>
 </li>
 <li>compareExpectedExpressions()
 : <a class="el" href="namespace_a_m_d.html#a6cd0317337b69d65c421e532a07ed3ef">AMD</a>
@@ -134,8 +133,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="namespace_a_m_d.html#a276ba4d9c0504c59bbb4099cecf42134">AMD</a>
 </li>
 <li>operator&lt;&lt;()
-: <a class="el" href="namespace_a_m_d_1_1detail.html#a23a7faf21011001431a220e58ed8717e">AMD::detail</a>
-, <a class="el" href="namespace_a_m_d.html#af4fd00ff03d2b293a570bf2c7526ab25">AMD</a>
+: <a class="el" href="namespace_a_m_d.html#af4fd00ff03d2b293a570bf2c7526ab25">AMD</a>
 </li>
 <li>postProcess()
 : <a class="el" href="namespace_a_m_d.html#a63c9e8a448698a1fd5626dd853dcb535">AMD</a>
@@ -154,11 +152,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 </ul>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated on Fri May 1 2015 11:30:52 for AMD by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.9.1
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated on Sun May 3 2015 03:26:43 for AMD by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
+  </ul>
+</div>
 </body>
 </html>

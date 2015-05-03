@@ -1,0 +1,6 @@
+var struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_matrix_3_01_t_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4 =
+[
+    [ "base_type", "struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_matrix_3_01_t_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#af4789a5f9e7eb5ee670922a6b8310f98", null ],
+    [ "matrix_type", "struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_matrix_3_01_t_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#aa8b7bd356e0f2f4d96feefe5ee8a7d49", null ],
+    [ "value_type", "struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_matrix_3_01_t_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#a0fe510216c95ac752546dc5fd5e92e89", null ]
+];

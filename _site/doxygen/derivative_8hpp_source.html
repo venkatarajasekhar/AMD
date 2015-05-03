@@ -8,6 +8,14 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript">
+  $(document).ready(initResizable);
+  $(window).load(resizeHeight);
+</script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -66,6 +74,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     </ul>
   </div>
 </div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){initNavTree('derivative_8hpp_source.html','');});
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -97,8 +119,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="exception_8hpp.html">AMD/exception.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="expressiontree_8hpp.html">AMD/expressiontree.hpp</a>&gt;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="matrixgrammar_8hpp.html">AMD/matrixgrammar.hpp</a>&gt;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="log_8hpp.html">AMD/log.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;AMD/matrixgrammar.hpp&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;AMD/log.hpp&gt;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespace_a_m_d.html">AMD</a> {</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
@@ -136,25 +158,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                  <a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> Z,</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                                  <span class="keyword">const</span> std::string variable);</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> <a class="code" href="namespace_a_m_d.html#a76bca5be6e14bf61e0b9e47dc0d659f2">calcTransposeDerivative</a>(<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> expr,</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> calcTransposeDerivative(<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> expr,</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                                   <a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> Z,</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                                   <span class="keyword">const</span> std::string variable);</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> <a class="code" href="namespace_a_m_d.html#a4d764ad3e5e1d4eb45ebc9a8e2551315">calcProductDerivative</a>(<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> expr,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> calcProductDerivative(<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> expr,</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                                 <a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> Z,</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                                 <span class="keyword">const</span> std::string variable);</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> <a class="code" href="namespace_a_m_d.html#af4b37a10edb3c1cbe3ad17856c8870c9">calcElemProductDerivative</a>(<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> expr,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> calcElemProductDerivative(<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> expr,</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                                     <a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> Z,</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                                     <span class="keyword">const</span> std::string variable);</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> <a class="code" href="namespace_a_m_d.html#adc1628c0d5667453a0be1c550b4a34ab">calcTraceDerivative</a>(<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> expr,</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> calcTraceDerivative(<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> expr,</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                               <span class="keyword">const</span> std::string variable);</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> <a class="code" href="namespace_a_m_d.html#a7da7b39e39896ce9c4394923d26fcf0d">calcLogDetDerivative</a>(<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> expr,</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> calcLogDetDerivative(<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> expr,</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                                <span class="keyword">const</span> std::string variable);</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> <a class="code" href="namespace_a_m_d.html#a9dcd21859f8bb5318c347b1f25a71bc6">calcInverseDerivative</a>(<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> expr,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> calcInverseDerivative(<a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> expr,</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                                 <a class="code" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">Expression</a> Z,</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                                 <span class="keyword">const</span> std::string variable);</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
@@ -166,26 +188,22 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}<span class="comment">//End AMD namespace</span></div>
 <div class="ttc" id="expressiontree_8hpp_html"><div class="ttname"><a href="expressiontree_8hpp.html">expressiontree.hpp</a></div></div>
-<div class="ttc" id="namespace_a_m_d_html_af4b37a10edb3c1cbe3ad17856c8870c9"><div class="ttname"><a href="namespace_a_m_d.html#af4b37a10edb3c1cbe3ad17856c8870c9">AMD::calcElemProductDerivative</a></div><div class="ttdeci">Expression calcElemProductDerivative(Expression expr, Expression Z, const std::string variable)</div><div class="ttdef"><b>Definition:</b> derivative.cpp:103</div></div>
-<div class="ttc" id="namespace_a_m_d_html_a7da7b39e39896ce9c4394923d26fcf0d"><div class="ttname"><a href="namespace_a_m_d.html#a7da7b39e39896ce9c4394923d26fcf0d">AMD::calcLogDetDerivative</a></div><div class="ttdeci">Expression calcLogDetDerivative(Expression expr, const std::string variable)</div><div class="ttdef"><b>Definition:</b> derivative.cpp:23</div></div>
-<div class="ttc" id="namespace_a_m_d_html_a76bca5be6e14bf61e0b9e47dc0d659f2"><div class="ttname"><a href="namespace_a_m_d.html#a76bca5be6e14bf61e0b9e47dc0d659f2">AMD::calcTransposeDerivative</a></div><div class="ttdeci">Expression calcTransposeDerivative(Expression expr, Expression Z, const std::string variable)</div><div class="ttdef"><b>Definition:</b> derivative.cpp:37</div></div>
-<div class="ttc" id="namespace_a_m_d_html_a4d764ad3e5e1d4eb45ebc9a8e2551315"><div class="ttname"><a href="namespace_a_m_d.html#a4d764ad3e5e1d4eb45ebc9a8e2551315">AMD::calcProductDerivative</a></div><div class="ttdeci">Expression calcProductDerivative(Expression expr, Expression Z, const std::string variable)</div><div class="ttdef"><b>Definition:</b> derivative.cpp:87</div></div>
 <div class="ttc" id="namespace_a_m_d_html"><div class="ttname"><a href="namespace_a_m_d.html">AMD</a></div><div class="ttdef"><b>Definition:</b> derivative.cpp:10</div></div>
-<div class="ttc" id="namespace_a_m_d_html_a86c4d02c7edc22df3fe54160c75c8aa3"><div class="ttname"><a href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">AMD::Expression</a></div><div class="ttdeci">boost::shared_ptr&lt; detail::ExpressionTree &gt; Expression</div><div class="ttdoc">Typedef for the expression tree that is parsed by Parser. </div><div class="ttdef"><b>Definition:</b> expression.hpp:25</div></div>
+<div class="ttc" id="namespace_a_m_d_html_a86c4d02c7edc22df3fe54160c75c8aa3"><div class="ttname"><a href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">AMD::Expression</a></div><div class="ttdeci">boost::shared_ptr&lt; detail::ExpressionTree &gt; Expression</div><div class="ttdoc">Typedef for the expression tree that is parsed by Parser. </div><div class="ttdef"><b>Definition:</b> expression.hpp:26</div></div>
 <div class="ttc" id="namespace_a_m_d_html_a8cf2766d80b22167b57065c3dbe29f39"><div class="ttname"><a href="namespace_a_m_d.html#a8cf2766d80b22167b57065c3dbe29f39">AMD::calcNegationDerivative</a></div><div class="ttdeci">Expression calcNegationDerivative(Expression expr, Expression Z, const std::string variable)</div><div class="ttdef"><b>Definition:</b> derivative.cpp:60</div></div>
-<div class="ttc" id="namespace_a_m_d_html_a9dcd21859f8bb5318c347b1f25a71bc6"><div class="ttname"><a href="namespace_a_m_d.html#a9dcd21859f8bb5318c347b1f25a71bc6">AMD::calcInverseDerivative</a></div><div class="ttdeci">Expression calcInverseDerivative(Expression expr, Expression Z, const std::string variable)</div><div class="ttdef"><b>Definition:</b> derivative.cpp:117</div></div>
-<div class="ttc" id="namespace_a_m_d_html_adc1628c0d5667453a0be1c550b4a34ab"><div class="ttname"><a href="namespace_a_m_d.html#adc1628c0d5667453a0be1c550b4a34ab">AMD::calcTraceDerivative</a></div><div class="ttdeci">Expression calcTraceDerivative(Expression expr, const std::string variable)</div><div class="ttdef"><b>Definition:</b> derivative.cpp:31</div></div>
-<div class="ttc" id="matrixgrammar_8hpp_html"><div class="ttname"><a href="matrixgrammar_8hpp.html">matrixgrammar.hpp</a></div></div>
 <div class="ttc" id="namespace_a_m_d_html_adbb297f3b29d5eba40890548fabc66f7"><div class="ttname"><a href="namespace_a_m_d.html#adbb297f3b29d5eba40890548fabc66f7">AMD::generateDerivativeExpression</a></div><div class="ttdeci">Expression generateDerivativeExpression(const Expression &amp;expr, const std::string variable)</div><div class="ttdoc">Harness for differentiation, takes in an expression and sets up. </div><div class="ttdef"><b>Definition:</b> derivative.cpp:129</div></div>
 <div class="ttc" id="exception_8hpp_html"><div class="ttname"><a href="exception_8hpp.html">exception.hpp</a></div><div class="ttdoc">This file defines the exception classes for AMD, each containing a different exception to be thrown o...</div></div>
 <div class="ttc" id="namespace_a_m_d_html_ad39381f76112d6b04244bdf95a3ec945"><div class="ttname"><a href="namespace_a_m_d.html#ad39381f76112d6b04244bdf95a3ec945">AMD::generateDerivativeExpressionHelper</a></div><div class="ttdeci">Expression generateDerivativeExpressionHelper(const Expression &amp;expr, const Expression &amp;Z, const std::string variable)</div><div class="ttdoc">Recursive function to generate the derivative expression tree for a given. </div><div class="ttdef"><b>Definition:</b> derivative.cpp:150</div></div>
-<div class="ttc" id="log_8hpp_html"><div class="ttname"><a href="log_8hpp.html">log.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated on Fri May 1 2015 11:30:52 for AMD by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.9.1
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="derivative_8hpp.html">derivative.hpp</a></li>
+    <li class="footer">Generated on Sun May 3 2015 03:26:43 for AMD by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
+  </ul>
+</div>
 </body>
 </html>

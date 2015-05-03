@@ -2,7 +2,7 @@ body, html {
     width: 100%;
     padding: 0%;
     margin: 0%;
-    text-align: center;
+/*    text-align: center; */
     height: 100%;
     cursor: default;
     -webkit-font-smoothing: antialiased;
@@ -134,7 +134,7 @@ nav ul li a:hover {
 
 /* Code */
 
-.code {
+.amd_code {
     font-family: "Inconsolata", monospace;
     color: #be6c82;
     background-color: #e6e6e6;

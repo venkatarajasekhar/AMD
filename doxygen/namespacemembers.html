@@ -8,6 +8,14 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript">
+  $(document).ready(initResizable);
+  $(window).load(resizeHeight);
+</script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -70,11 +78,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li class="current"><a href="namespacemembers.html"><span>All</span></a></li>
       <li><a href="namespacemembers_func.html"><span>Functions</span></a></li>
       <li><a href="namespacemembers_type.html"><span>Typedefs</span></a></li>
-      <li><a href="namespacemembers_enum.html"><span>Enumerations</span></a></li>
-      <li><a href="namespacemembers_eval.html"><span>Enumerator</span></a></li>
     </ul>
   </div>
 </div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){initNavTree('namespacemembers.html','');});
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -90,30 +110,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 
 <div class="contents">
-<div class="textblock">Here is a list of all namespace members with links to the namespace documentation for each member:</div><ul>
-<li>calcAdditionDerivative()
-: <a class="el" href="namespace_a_m_d.html#a7f8856bd7256de1486a95c8fb978e3a7">AMD</a>
-</li>
-<li>calcElemProductDerivative()
-: <a class="el" href="namespace_a_m_d.html#af4b37a10edb3c1cbe3ad17856c8870c9">AMD</a>
-</li>
-<li>calcInverseDerivative()
-: <a class="el" href="namespace_a_m_d.html#a9dcd21859f8bb5318c347b1f25a71bc6">AMD</a>
-</li>
-<li>calcLogDetDerivative()
-: <a class="el" href="namespace_a_m_d.html#a7da7b39e39896ce9c4394923d26fcf0d">AMD</a>
-</li>
+<div class="textblock">Here is a list of all documented namespace members with links to the namespaces they belong to:</div><ul>
 <li>calcNegationDerivative()
 : <a class="el" href="namespace_a_m_d.html#a8cf2766d80b22167b57065c3dbe29f39">AMD</a>
-</li>
-<li>calcProductDerivative()
-: <a class="el" href="namespace_a_m_d.html#a4d764ad3e5e1d4eb45ebc9a8e2551315">AMD</a>
-</li>
-<li>calcTraceDerivative()
-: <a class="el" href="namespace_a_m_d.html#adc1628c0d5667453a0be1c550b4a34ab">AMD</a>
-</li>
-<li>calcTransposeDerivative()
-: <a class="el" href="namespace_a_m_d.html#a76bca5be6e14bf61e0b9e47dc0d659f2">AMD</a>
 </li>
 <li>compareExpectedExpressions()
 : <a class="el" href="namespace_a_m_d.html#a6cd0317337b69d65c421e532a07ed3ef">AMD</a>
@@ -127,12 +126,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Expression
 : <a class="el" href="namespace_a_m_d.html#a86c4d02c7edc22df3fe54160c75c8aa3">AMD</a>
 </li>
-<li>ExpressionTree
-: <a class="el" href="namespace_a_m_d.html#a56488d25d884e802e1d846be512964f1">AMD</a>
-</li>
-<li>ExpressionType
-: <a class="el" href="namespace_a_m_d.html#a3c6f1aee18fc2af65f8b2835ded723d5">AMD</a>
-</li>
 <li>findMatchingParen()
 : <a class="el" href="namespace_a_m_d.html#aa48699c42a66ff71fbfb8a0cfdba8b8c">AMD</a>
 </li>
@@ -145,15 +138,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>generateExpression()
 : <a class="el" href="namespace_a_m_d.html#a276ba4d9c0504c59bbb4099cecf42134">AMD</a>
 </li>
-<li>INVALID
-: <a class="el" href="namespace_a_m_d.html#a3c6f1aee18fc2af65f8b2835ded723d5a65aa2fc87ed98aeb406b3b349db97df5">AMD</a>
-</li>
-<li>MATRIX
-: <a class="el" href="namespace_a_m_d.html#a3c6f1aee18fc2af65f8b2835ded723d5a81aacfa3a1bb931122a89b4c7b132b6e">AMD</a>
-</li>
 <li>operator&lt;&lt;()
-: <a class="el" href="namespace_a_m_d_1_1detail.html#a23a7faf21011001431a220e58ed8717e">AMD::detail</a>
-, <a class="el" href="namespace_a_m_d.html#af4fd00ff03d2b293a570bf2c7526ab25">AMD</a>
+: <a class="el" href="namespace_a_m_d.html#af4fd00ff03d2b293a570bf2c7526ab25">AMD</a>
 </li>
 <li>postProcess()
 : <a class="el" href="namespace_a_m_d.html#a63c9e8a448698a1fd5626dd853dcb535">AMD</a>
@@ -161,11 +147,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>preProcess()
 : <a class="el" href="namespace_a_m_d.html#aba4ff7e846047358ca1dfae2fd1bfcba">AMD</a>
 </li>
-<li>SCALAR
-: <a class="el" href="namespace_a_m_d.html#a3c6f1aee18fc2af65f8b2835ded723d5a9428c984c675bc1742d200e4852fce8b">AMD</a>
-</li>
 <li>setLogLevel()
-: <a class="el" href="namespace_a_m_d.html#a211d598eca013e6ce4e99ccbdd2b5601">AMD</a>
+: <a class="el" href="namespace_a_m_d.html#af5e5614b906324d33c441cb61e0617bf">AMD</a>
 </li>
 <li>toRightRecursiveRep()
 : <a class="el" href="namespace_a_m_d.html#a836f559e665029c52fd59ad1ade6fcb8">AMD</a>
@@ -175,11 +158,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 </ul>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated on Fri May 1 2015 11:30:52 for AMD by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.9.1
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated on Sun May 3 2015 03:26:43 for AMD by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
+  </ul>
+</div>
 </body>
 </html>

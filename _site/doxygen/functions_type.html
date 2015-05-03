@@ -8,6 +8,14 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript">
+  $(document).ready(initResizable);
+  $(window).load(resizeHeight);
+</script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -75,20 +83,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li class="current"><a href="functions_type.html"><span>Typedefs</span></a></li>
     </ul>
   </div>
-  <div id="navrow4" class="tabs3">
-    <ul class="tablist">
-      <li><a href="#index_b"><span>b</span></a></li>
-      <li><a href="#index_d"><span>d</span></a></li>
-      <li><a href="#index_e"><span>e</span></a></li>
-      <li><a href="#index_l"><span>l</span></a></li>
-      <li><a href="#index_m"><span>m</span></a></li>
-      <li><a href="#index_s"><span>s</span></a></li>
-      <li><a href="#index_t"><span>t</span></a></li>
-      <li><a href="#index_u"><span>u</span></a></li>
-      <li class="current"><a href="#index_v"><span>v</span></a></li>
-    </ul>
-  </div>
 </div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){initNavTree('functions_type.html','');});
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -104,79 +113,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 
 <div class="contents">
-&#160;
-
-<h3><a class="anchor" id="index_b"></a>- b -</h3><ul>
-<li>base_type
-: <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_matrix_3_01_t_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#af4789a5f9e7eb5ee670922a6b8310f98">AMD::MatrixAdaptor_t&lt; Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic &gt; &gt;</a>
-, <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a274014c193671d374157c51ef942914e">AMD::MatrixAdaptor_t&lt; Eigen::SparseMatrix&lt; T &gt; &gt;</a>
-</li>
-<li>bernoulli_real_prng_type
-: <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_sparse_matrix_3_01double_01_4_01_4.html#ac60929f35ff70ae91f67990adbb2b2a3">AMD::rand_psd_t&lt; Eigen::SparseMatrix&lt; double &gt; &gt;</a>
-</li>
-<li>bernoulli_real_type
-: <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_sparse_matrix_3_01double_01_4_01_4.html#aab4b1bb67c7a6823ce3179d4b6bfbb9c">AMD::rand_psd_t&lt; Eigen::SparseMatrix&lt; double &gt; &gt;</a>
-</li>
-</ul>
-
-
-<h3><a class="anchor" id="index_d"></a>- d -</h3><ul>
-<li>DenseMatrixPtrType
-: <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_sparse_matrix_3_01double_01_4_01_4.html#a2f2b3dbe4698977d7ea623067b9b5365">AMD::rand_psd_t&lt; Eigen::SparseMatrix&lt; double &gt; &gt;</a>
-</li>
-<li>DenseMatrixType
-: <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_sparse_matrix_3_01double_01_4_01_4.html#af35c239d966b790e29fea04dabe9f64c">AMD::rand_psd_t&lt; Eigen::SparseMatrix&lt; double &gt; &gt;</a>
-</li>
-</ul>
-
-
-<h3><a class="anchor" id="index_e"></a>- e -</h3><ul>
-<li>engine_type
-: <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_matrix_3_01double_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#a6c7179c29ce3062c959104f796a1774a">AMD::rand_psd_t&lt; Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic &gt; &gt;</a>
-, <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_sparse_matrix_3_01double_01_4_01_4.html#a955ad7c40a2ed5ed87312dc332bb569e">AMD::rand_psd_t&lt; Eigen::SparseMatrix&lt; double &gt; &gt;</a>
-</li>
-</ul>
-
-
-<h3><a class="anchor" id="index_l"></a>- l -</h3><ul>
-<li>LLTType
-: <a class="el" href="struct_a_m_d_1_1eigen__llt__t_3_01_eigen_1_1_matrix_3_01_t_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#a8ea14e7a6dd62f4194e371e66026da8b">AMD::eigen_llt_t&lt; Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic &gt; &gt;</a>
-, <a class="el" href="struct_a_m_d_1_1eigen__llt__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#aa53497b0f8de736b6d8b33adc0c1d5ad">AMD::eigen_llt_t&lt; Eigen::SparseMatrix&lt; T &gt; &gt;</a>
-</li>
-</ul>
-
-
-<h3><a class="anchor" id="index_m"></a>- m -</h3><ul>
-<li>matrix_type
-: <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a57c833b1c900bd80a219b8f15bdc1771">AMD::EigenMatrixAdaptorBase&lt; ScalarType, SparseOrDenseMatrixType &gt;</a>
-, <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_matrix_3_01_t_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#aa8b7bd356e0f2f4d96feefe5ee8a7d49">AMD::MatrixAdaptor_t&lt; Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic &gt; &gt;</a>
-, <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a346624961788b574ecd6f73d7bf020ce">AMD::MatrixAdaptor_t&lt; Eigen::SparseMatrix&lt; T &gt; &gt;</a>
-</li>
-<li>MatrixPtrType
-: <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_matrix_3_01double_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#a15677c52f63c183f9b64b4b83da7048a">AMD::rand_psd_t&lt; Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic &gt; &gt;</a>
-</li>
-<li>MatrixType
-: <a class="el" href="struct_a_m_d_1_1eigen__llt__t_3_01_eigen_1_1_matrix_3_01_t_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#ab9bb4a8be83126b33ea35d46cf832481">AMD::eigen_llt_t&lt; Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic &gt; &gt;</a>
-, <a class="el" href="struct_a_m_d_1_1eigen__llt__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#aac6e9aacd6f622bd7e6e2ddab324639e">AMD::eigen_llt_t&lt; Eigen::SparseMatrix&lt; T &gt; &gt;</a>
-, <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_matrix_3_01double_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#ae632bd2661503acbae69fe3d9e22ced6">AMD::rand_psd_t&lt; Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic &gt; &gt;</a>
-</li>
-</ul>
-
-
-<h3><a class="anchor" id="index_s"></a>- s -</h3><ul>
-<li>SparseMatrixPtrType
-: <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_sparse_matrix_3_01double_01_4_01_4.html#aebe4ef615f21050651e75d01d77ed555">AMD::rand_psd_t&lt; Eigen::SparseMatrix&lt; double &gt; &gt;</a>
-</li>
-<li>SparseMatrixType
-: <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_sparse_matrix_3_01double_01_4_01_4.html#ab13413146a39b7c66d2cc649165e8c41">AMD::rand_psd_t&lt; Eigen::SparseMatrix&lt; double &gt; &gt;</a>
-</li>
-</ul>
-
-
-<h3><a class="anchor" id="index_t"></a>- t -</h3><ul>
-<li>TripletType
-: <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_sparse_matrix_3_01double_01_4_01_4.html#a7637656f763df7122985e343638c53c3">AMD::rand_psd_t&lt; Eigen::SparseMatrix&lt; double &gt; &gt;</a>
-</li>
+&#160;<ul>
 <li>type
 : <a class="el" href="struct_a_m_d_1_1detail_1_1_binary_op_1_1result.html#a9c4dd0e8b8059cfaa3d5362baf74071c">AMD::detail::BinaryOp::result&lt; T1, T2 &gt;</a>
 , <a class="el" href="struct_a_m_d_1_1detail_1_1_leaf_op_1_1result.html#a205663160e993f7c4fcd4e7ea9bfd3f3">AMD::detail::LeafOp&lt; T &gt;::result&lt; T1, T2 &gt;</a>
@@ -184,33 +121,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="struct_a_m_d_1_1detail_1_1_unary_op_1_1result.html#a42f704aca23b1ffd7ffaff274016d01b">AMD::detail::UnaryOp::result&lt; T1, T2 &gt;</a>
 </li>
 </ul>
-
-
-<h3><a class="anchor" id="index_u"></a>- u -</h3><ul>
-<li>uni_real_prng_type
-: <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_matrix_3_01double_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#ac3943a2ee190c146fe1defd37cb3ad7f">AMD::rand_psd_t&lt; Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic &gt; &gt;</a>
-, <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_sparse_matrix_3_01double_01_4_01_4.html#a55d3d60defc3b0de559e26303a73c87b">AMD::rand_psd_t&lt; Eigen::SparseMatrix&lt; double &gt; &gt;</a>
-</li>
-<li>uni_real_type
-: <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_matrix_3_01double_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#a97dc7e3ef9dde587f43cf650b1e148ee">AMD::rand_psd_t&lt; Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic &gt; &gt;</a>
-, <a class="el" href="struct_a_m_d_1_1rand__psd__t_3_01_eigen_1_1_sparse_matrix_3_01double_01_4_01_4.html#ab26efb16f1b2245ada4f04ffd74fa329">AMD::rand_psd_t&lt; Eigen::SparseMatrix&lt; double &gt; &gt;</a>
-</li>
-</ul>
-
-
-<h3><a class="anchor" id="index_v"></a>- v -</h3><ul>
-<li>value_type
-: <a class="el" href="struct_a_m_d_1_1_eigen_matrix_adaptor_base.html#a4ff77135b757db42845f27bb0d6521b3">AMD::EigenMatrixAdaptorBase&lt; ScalarType, SparseOrDenseMatrixType &gt;</a>
-, <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_matrix_3_01_t_00_01_eigen_1_1_dynamic_00_01_eigen_1_1_dynamic_01_4_01_4.html#a0fe510216c95ac752546dc5fd5e92e89">AMD::MatrixAdaptor_t&lt; Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic &gt; &gt;</a>
-, <a class="el" href="struct_a_m_d_1_1_matrix_adaptor__t_3_01_eigen_1_1_sparse_matrix_3_01_t_01_4_01_4.html#a93bf3b18e77d696426edc0a50564b5fc">AMD::MatrixAdaptor_t&lt; Eigen::SparseMatrix&lt; T &gt; &gt;</a>
-</li>
-</ul>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated on Fri May 1 2015 11:30:52 for AMD by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.9.1
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated on Sun May 3 2015 03:26:43 for AMD by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
+  </ul>
+</div>
 </body>
 </html>
