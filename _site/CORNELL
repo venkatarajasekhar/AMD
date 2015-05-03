@@ -1,0 +1,23 @@
+(1) Make a random function of square matrices (inputs and operations are random).
+Measure the time that it takes to compute the derivative versus the function. 
+Give worst case, best case scenario as average. Can we give a histogram?
+    -- Once the student locates the bad cases, can symbolic differentiation to
+    see if there is a better implementation possible.
+
+(2) Logging and exception handling should be improved heavily.
+
+(3) Optimization during the computation of the function and the derivative
+should be done in a uniform fashion when and where possible.
+
+(4) Symbolic matrices should be first class objects. Maybe have everything as 
+as string expression that is compiled (like python regular expressions) and 
+then run by attaching matrices to particular variables.
+
+(5) Parenthesis elimination in Symbolic matrices.
+
+(6) Some problems that were solved using AMD (|| A(B.*X) - C ||_F^2). Or
+compute vec(X)=H^{-1}vec(G), logdet(X) + trace(S*X) + lambda||X||_F^2.
+
+(7) Parallelism in computation.
+
+(8) Webserver for queries on differentiation.

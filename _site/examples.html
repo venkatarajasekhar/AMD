@@ -46,6 +46,140 @@
             <div class="row white-bg-grey-border">
                 <div class="column-1">
                     <h2>Examples</h2>
+<h3>Supported Operations</h3>
+<span class="span-1">
+AMD supports the following operations:
+<pre class="code">
++      : Binary Addition (infix)
+-      : Binary Subtraction (infix)
+*      : Binary Multiplication (infix)
+/      : Binary Division (infix)
+o      : Binary Element-wise Multiplication (infix)
+'      : Unary Transpose (postfix)
+_      : Unary Inverse (postfix)
++      : Unary Positive (prefix)
+-      : Unary Negation (prefix)
+tr()   : Trace (matrix function)
+lgdt() : Log Determinant (matrix function)
+</pre>
+</span>
+
+<h3>Invalid Operations</h3>
+<span class="span-1">
+The following operations are only valid when both operands are of the same type 
+(i.e. both matrix or both scalar):
+<pre class="code">
++, -, o
+</pre>
+
+The following operations are only valid on matrices:
+<pre class="code">
+', tr(), lgdt()
+</pre>
+
+The following operations return scalars:
+<pre class="code">
+tr(), lgdt()
+</pre>
+
+The following operations are only valid when both operands are of the same type 
+(i.e. both matrix or both scalar):
+<pre class="code">
++, -, o
+</pre>
+
+Therefore the following operation, for example, is invalid:
+<pre class="code">
+tr(X) + X
+</pre>
+This is invalid because we cannot add a scalar and a matrix.
+</span>
+
+<h3>Grammar</h3>
+<pre class="code">
+&lt;Expr&gt; = &lt;Term&gt;, { ("+"|"-"), &lt;Term&gt; };
+
+&lt;Term&gt; = &lt;InvTran&gt;, { ("*"|"/"|"o"), &lt;InvTran&gt; };
+
+&lt;InvTran&gt; = &lt;Expr&gt;, "'"  
+          | &lt;Expr&gt;, "_"  
+          | &lt;Factor&gt;;
+
+&lt;Factor> = &lt;Literal&gt;  
+         | "(", &lt;Expr&gt;, ")"    
+         | "-", &lt;InvTran&gt;  
+         | "+", &lt;InvTran&gt;  
+         | "tr(", &lt;Expr&gt;, ")"  
+         | "lgdt(", &lt;Expr&gt;, ")";
+
+&lt;Literal&gt; = ? uppercase character ?  
+            | ? double ?
+</pre>
+
+<h3>Grammar Key</h3>
+<span class="span-1">
+This grammar is written using 
+<a href="http://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_Form">
+Extended Backus-Naur Form</a>.  
+The following is a table of important symbols and how they can be 
+interpreted.
+<pre class="code">
+=     : Definition
+,     : Concatenation 
+;     : Termination (end of rule)
+|     : Alternation (can be at most one of the alternations in a group)
+{...} : Repetition (can be repeated 0 or more times)
+(...) : Grouping
+"..." : Terminal string
+?...? : Special sequence (e.g. integer, character)
+</pre>
+
+<h3>Examples</h3>
+Examples are shown with the input string on the left and the recursive 
+rule matches on the right.
+<pre class="code">
+A + B = &lt;Expr&gt;
+      = &lt;Term&gt; + &lt;Term&gt;
+      = &lt;InvTran&gt; + &lt;InvTran&gt;
+      = &lt;Factor&gt; + &lt;Factor&gt;
+      = &lt;Literal&gt; + &lt;Literal&gt;
+      = ? uppercase character ? + ? uppercase character ?
+
+tr(A'_) = &lt;Expr&gt; 
+        = &lt;Term&gt;
+        = &lt;InvTran&gt;
+        = &lt;Factor&gt;
+        = "tr(", &lt;Expr&gt;, ")"
+        = "tr(", &lt;Term&gt;, ")"
+        = "tr(", &lt;InvTran&gt;, ")"
+        = "tr(", &lt;Expr&gt;, "_", ")"
+        = "tr(", &lt;Term&gt;, "_", ")"
+        = "tr(", &lt;InvTran&gt;, "_", ")"
+        = "tr(", &lt;Expr&gt;, "'", "_", ")"
+        = "tr(", &lt;Term&gt;, "'", "_", ")"
+        = "tr(", &lt;InvTran&gt;, "'", "_", ")"
+        = "tr(", &lt;Factor&gt;, "'", "_", ")"
+        = "tr(", &lt;Literal&gt;, "'", "_", ")"
+        = "tr(", ? uppercase character ? , "'", "_", ")"
+
+C'+ tr(A*B) = &lt;Expr&gt;
+            = &lt;Term&gt; + &lt;Term&gt;
+            = &lt;InvTran&gt; + &lt;InvTran&gt;
+            = &lt;Expr&gt;, "'" + &lt;Factor&gt;
+            = &lt;Term&gt;, "'" + "tr(", &lt;Expr&gt;, ")"
+            = &lt;InvTran&gt;, "'" + "tr(", &lt;Term&gt;, ")"
+            = &lt;Factor&gt;, "'" + "tr(", &lt;InvTran&gt; * &lt;InvTran&gt;, ")" 
+            = &lt;Literal&gt;, "'" + "tr(", &lt;Factor&gt; * &lt;Factor&gt;, ")"
+            = ? uppercase character ?, "'" + "tr(", &lt;Literal&gt; * &lt;Literal&gt;, ")"
+            = ? uppercase character ?, "'" + "tr(", ? uppercase character ? * ? uppercase character ?, ")"
+Note: Though this expression would be parsed correctly by the parser, it would 
+eventually fail the validation step when AMD detects that this expression is 
+attempting to add a Matrix value to a Scalar value.
+</pre>
+Please note that the current implementation of AMD only allows tr() and lgdt() 
+as the outermost operation.
+</span>
+
 
                 </div>
             </div>
@@ -55,7 +189,7 @@
             <div class="row">
                 <div class="column-1">
                     <span class="span-1">
-                        Credits, etc.
+                        <!-- Credits, etc. -->
                     </span>
                 </div>
             </div>

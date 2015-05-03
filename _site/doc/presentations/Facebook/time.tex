@@ -1,0 +1,114 @@
+\section{How We Spent Our Time}
+
+\begin{frame}
+\frametitle{Learning Terminology}
+Classical calculus:
+\begin{itemize}
+\item \alert{scalar-scalar functions} ($\color{m1}f:\R\rightarrow\R$).
+\item \alert{scalar-vector functions} ($\color{m1}f:\R^d\rightarrow\R$).  
+\end{itemize}
+
+Matrix calculus:
+\begin{itemize}
+\item \alert{scalar-matrix functions}
+        ($\color{m1}f:\R^{m\times{}n}\rightarrow\R$).
+\item \alert{matrix-matrix functions}
+        ($\color{m1}f:\R^{m\times{} n}\rightarrow\R^{k\times l}$).
+\end{itemize}
+
+Note:
+\begin{enumerate}
+\item Derivatives of scalar-matrix functions require derivatives of
+matrix-matrix functions. 
+\item Matrix-matrix derivatives should be computed implicitly when possible.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Learning Numerical Techniques}
+%
+\begin{description}
+\item[Numerical] Use finite difference formulae for differentiation (e.g.,
+$\color{m1} f'(x) \approx \frac{f(x+h)-f(x)}{h} $).
+%
+These methods are simple to program, but loose half of all significant
+digits.
+%
+\item[Symbolic] Give the symbolic representation of the derivative without
+saying how best to implement the derivative; these are as accurate as they
+come.
+%
+\item[Algorithmic]  Something between numeric and symbolic differentiation.
+The derivative implementation is computed from the code for $\color{m1}f(x)$.
+%
+\end{description}
+%
+\end{frame}
+
+\begin{frame}
+\frametitle{Learning Automatic Differentiation}
+%
+Consider a concrete $\color{m1}f(x)$ and it's transformation:
+%
+\tiny
+\begin{eqnarray*}
+  \color{m1}f(x)= (x-1)(x-2)(x-3) \\
+  \color{m1}    = *_2(*_1(x-1,x-2),x-3) \\
+  \color{m1}f'(x) = \frac{d*_2}{d*_2}
+                      \left[
+                        \frac{\partial *_2}{\partial *_1}
+                          \left(
+                            \frac{\partial *_1}{\partial (x-1})\frac{d(x-1)}{dx} +
+                            \frac{\partial *_1}{\partial (x-2)}\frac{d(x-2)}{dx}
+                          \right) +
+                          \frac{\partial *_2}{\partial (x-3)}\frac{d(x-3)}{dx}
+                    \right] \\
+  \color{m1} = (x-2)(x-3)+(x-1)(x-3)+(x-1)(x-2) 
+\end{eqnarray*}
+\normalsize
+%
+\vspace{-10pt}
+%
+\begin{itemize}
+%
+  \item Apply the chain rule repeatedly to obtain $\color{m1}f'(x)$.
+  \item Choices:
+    \begin{itemize}
+      \item Inside-out application (forward-mode)
+      \item Outside-in application (reverse-mode)
+    \end{itemize}
+%
+\end{itemize}
+%
+\end{frame}
+
+\begin{frame}
+\frametitle{Learning Rules of Matrix-Matrix Derivative}
+We define the matrix--matrix derivative to be: 
+%
+$$\color{m1}
+\frac{\partial \mF}{\partial \mX} \stackrel{\mathrm{def}}{=} 
+\frac{\partial
+  \myvec(\mF^\top)}{\partial \myvec^\top(\mX^\top)} = 
+\begin{pmatrix} 
+\frac{\partial f_{11}}{\partial x_{11}} &
+\frac{\partial f_{11}}{\partial x_{12}} & \cdots & 
+\frac{\partial f_{11}}{\partial x_{mn}}\\
+\frac{\partial f_{12}}{\partial x_{11}} &
+\frac{\partial f_{12}}{\partial x_{12}} & \cdots & 
+\frac{\partial f_{12}}{\partial x_{mn}}\\
+\vdots & \vdots & \ddots & \vdots \\
+\frac{\partial f_{kl}}{\partial x_{11}} &
+\frac{\partial f_{kl}}{\partial x_{12}} & \cdots & 
+\frac{\partial f_{kl}}{\partial x_{mn}}
+\end{pmatrix}.
+$$
+%
+Note that the matrix--matrix derivative of a scalar--matrix function
+is not the same as the scalar--matrix derivative:
+$$\color{m1}
+\frac{\partial\;\mbox{mat}(f)}{\partial\mX} = \myvec^\top\left(
+\left( \frac{\partial f}{\partial\mX}\right)^\top
+\right) .
+$$
+\end{frame}

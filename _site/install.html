@@ -45,7 +45,113 @@
         <section id = "text" class="wrapper-nopadding left">
             <div class="row white-bg-grey-border">
                 <div class="column-1">
-                    <h2>Installation</h2>
+                    <h2>Download</h2>
+<span class="span-1">
+To download the latest version of AMD, please run the command:
+<pre class="code">
+$ git clone http://github.com/pkambadu/AMD.git
+</pre>
+</span>
+
+<h2>Installation</h2>
+<span class="span-1">
+<b>AMD</b> is configured, compiled, and installed using the Python-based 
+<b>Waf</b>* program.</span>
+<h3>Why Waf?</h3>
+<span class="span-1">
+The following quote on the Black Duck Open Hub review of Waf** best describes 
+the reason why we decided to choose Waf:
+<ul>
+<li>Waf depends on Python only which is ported on most platforms</li>
+<li>Waf scripts are Python modules which are easier to learn and to maintain 
+    that custom languages</li>
+<li>Waf license has very little constraints (BSD) and can be redistributed 
+    easily (all in one 100kb script)</li>
+<li>Waf architecture is modular and can be extended easily, it relies on 
+    state-of-the-art algorithms</li>
+<li>Waf provides many more features than its competitors</li>
+<li>Waf provides many small projects and code snippets</li>
+</ul>
+</span>
+<h3>System Requirements</h3>
+<span class="span-1">
+<ul>
+<li>git</li>
+<li>Python 2.6 or 2.7</li>
+<li>Python C libraries (e.g., libpython2.7)</li>
+<li>C and C++ compilers supporting C++03 standard.</li>
+<li>GNU make: make in Linux, or gnumake in darwin-MacOSX</li>
+<li>Boost***</li>
+</ul>
+</span>
+
+<h3>Configure</h3>
+<span class="span-1">
+After download, <code class="code-inline">cd</code> to the top-level directory, 
+then run one of the following commands:
+<ul>
+<li>To build the libraries and the examples, run: 
+    <pre class="code">$ ./waf configure</pre>
+<li>To build the libraries only, run: 
+    <pre class="code">$ ./waf configure --bld-AMD</pre>
+<li>To build the examples, run:
+<pre class="code">$ ./waf configure --bld-examples</pre>
+<li>To build the tests, run:
+<pre class="code">$ ./waf configure --bld-AMD --tests</pre>
+<li>To build Python bindings, run
+<pre class="code">$ ./waf configure --bld-python</pre>
+<li>Individual examples, packages, and dependencies can also be configured to 
+    be built, and command line flags can be combined. Run the following command 
+    for more information about available options:
+<pre class="code">$ ./waf --help</pre>
+</ul>
+</span>
+
+<h3>Build</h3>
+<span class="span-1">
+To actually execute the build after running one of the configuration commands 
+above, run
+<pre class="code">$ ./waf build</pre>
+See "Troubleshooting" below for possible solutions in case the build command 
+above does not succeed.
+</span>
+
+<h3>Installing Packages</h3>
+<span class="span-1">
+Most of the required third-party dependencies can be automatically installed as 
+follows. After downloading NLP&lt;Go&gt;, cd to the top-level directory and run 
+the command:
+<pre class="code">$ ./waf configure --install-deps</pre>
+</span>
+
+<h2>Documentation</h2>
+<span class="span-1">
+Examples of using the framework and provided attribute and algorithm classes 
+can be found in the <code class="code-inline">examples</code> directory. Every 
+header file has complete documentation of the public classes contained in that 
+component.
+</span>
+
+<h2>Troubleshooting</h2>
+<h3>If Waf cannot find python lib</h3>
+<span class="span-1">
+If Waf cannot find the Python lib, i.e. a message “/usr/bin/ld: cannot find 
+-lpython” is obtained after trying to build. A possible solution is to create a 
+symbolic link to the library in /usr/lib/. For example, run the command
+<pre class="code">
+$ sudo ln -s /usr/lib/x86_64-linux-gnu/libpython2.7.so.1.0 /usr/lib/libpython2.7.so
+</pre>
+<br><br>
+*Waf - The meta build system - Google Project Hosting. Retrieved January 27, 
+2015, from 
+<a href="https://code.google.com/p/waf/">https://code.google.com/p/waf/</a>
+<br>
+**The Waf Open Project on Open Hub. Retrieved January 27, 2015, from 
+<a href="https://www.openhub.net/p/waf">https://www.openhub.net/p/waf</a>
+<br>
+***Boost C++ Libraries. Retrieved January 29, 2015, from 
+<a href="http://www.boost.org/">http://www.boost.org/</a>
+</span>
 
                 </div>
             </div>
@@ -55,7 +161,7 @@
             <div class="row">
                 <div class="column-1">
                     <span class="span-1">
-                        Credits, etc.
+                        <!-- Credits, etc. -->
                     </span>
                 </div>
             </div>

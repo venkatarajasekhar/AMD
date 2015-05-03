@@ -1,0 +1,93 @@
+\section{Motivation}
+\label{sec:motivation}
+%
+
+\begin{frame}
+\frametitle{Covariance: A Motivating Example}
+
+\begin{center}
+\colorbox{green!10}{
+$\textnormal{Gaussian pdf} = 
+    \color{m1}(2\pi{})^{\frac{-n}{2}}\det(\mSigma)^{\frac{-1}{2}}
+           e^{-\left((\mx-\mu)^\top{}\mSigma^{-1}(\mx-\mu)\right)}$
+}
+\end{center}
+%
+Tikhonov regularized maximum log-likelihood for learning the covariance
+$\color{m1}\mSigma$ given an empirical covariance $\color{m1}\mS$ is:
+%
+\begin{center}
+\colorbox{green!10}{
+$\color{m1}
+f(\mSigma)=-\logdet(\mSigma)-\trace(\mS\mSigma^{-1})-\|\mSigma^{-1}\|_F^2.$
+}
+\end{center}
+%
+\begin{itemize}
+\item To optimize $\color{m1}f(\mSigma)$, using first-order methods we need 
+      $\color{m1}f'(\mSigma)$.
+\item To use second-order methods, we also need $\color{m1}f''(\mSigma)$.
+\end{itemize}
+%
+\begin{center}
+What are $\color{m1}f'(\mSigma)$ and $\color{m1}f''(\mSigma)$?
+\end{center}
+%
+\end{frame}
+
+%
+\begin{frame}
+\frametitle{Objectives of AMD}
+%
+\begin{itemize}
+\item Theory: Define matrix-derivative calculus rules.
+  \begin{itemize}
+  \item No simple ``calculus'' for computing matrix derivatives.
+  \item Matrix derivatives of simple functions can be complicated.
+  \end{itemize}
+
+\item Software: Easy mechanism for matrix differentiation.
+  \begin{itemize}
+  \item Symbolic and numerical differentiation made simple.
+  \item Efficient optimizing of matrix-valued functions.
+  \end{itemize}
+\end{itemize}
+%
+\begin{center}
+\textcolor{blue}{\href{https://github.com/pkambadu/AMD}{AMD}} is an open-source
+\Cpp{} library to accomplish these goals.
+\end{center}
+%
+\begin{center}
+\textcolor{blue}{
+Critical in Machine Learning, Sensitivity Analysis, and Optimization.
+}
+\end{center}
+%
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{AMD in Action} 
+%
+We have a simplified interface for computing symbolic derivatives with respect
+to a matrix $\color{m1}\mX$. For the covariance example:
+%
+\begin{lstlisting}[style=basic]
+$ ./SymbolicCalculator 'logdet(X)'
+Function:   log(det(X))
+Derivative: inv(X)'
+\end{lstlisting}
+%
+\begin{lstlisting}[style=basic]
+$ ./SymbolicCalculator 'trace(S*inv(X))'
+Function:   trace(S*inv(X))
+Derivative: (-(inv(X)*(S*inv(X))))'
+\end{lstlisting}
+%
+\begin{lstlisting}[style=basic]
+$ ./SymbolicCalculator 'trace(inv(trans(X)*X))'
+Function:   trace(inv(X'*X))
+Derivative: ((X*(-(inv(X'*X)*inv(X'*X))))+((-(inv(X'*X)*inv(X'*X)))*X')')
+\end{lstlisting}
+%
+\end{frame}
