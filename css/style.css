@@ -134,8 +134,8 @@ nav ul li a:hover {
 
 /* Code */
 
-.amd_code {
-    font-family: "Inconsolata", monospace;
+.code {
+    font-family: monospace;
     color: #be6c82;
     background-color: #e6e6e6;
     margin: 5px 10%;
