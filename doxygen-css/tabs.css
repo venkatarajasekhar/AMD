@@ -1,0 +1,49 @@
+.tabs, .tabs2, .tabs3 {
+    background-color:#474747;
+    width: 100%;
+    z-index: 101;
+    font-size: 13px;
+    font: 20px "Source-Sans-Pro-Light",sans-serif;
+}
+
+
+.tabs2 {
+    font-size: 15px;
+}
+.tabs3 {
+    font-size: 9px;
+}
+
+.tablist {
+    margin: 0;
+    padding: 0;
+    display: table;
+}
+
+.tablist li {
+    float: left;
+    display: table-cell;
+    line-height: 36px;
+    list-style: none;
+}
+
+.tablist a {
+    display: block;
+    padding: 0 20px;
+    color: #be6c82;
+    text-decoration: none;
+    outline: none;
+}
+
+.tabs3 .tablist a {
+    padding: 0 10px;
+}
+
+.tablist a:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.tablist li.current a {
+    color: #fff;
+}
